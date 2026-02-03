@@ -1,0 +1,8 @@
+{
+  "name": "Nexus CRM SuperAdmin",
+  "description": "A premium, domain-driven SuperAdmin CRM dashboard with tenant management, analytics, and authentication, featuring a modern aesthetic inspired by high-end design systems.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
