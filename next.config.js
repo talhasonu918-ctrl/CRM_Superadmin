@@ -12,6 +12,13 @@ const nextConfig = {
     ignoreDuringBuilds: false,
   },
   output: 'standalone',
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@heroicons/react', 'recharts', 'framer-motion'],
+  },
+  // Vercel build optimization
+  generateBuildId: async () => {
+    return process.env.VERCEL_GIT_COMMIT_SHA || 'development'
+  },
 }
 
 module.exports = nextConfig
