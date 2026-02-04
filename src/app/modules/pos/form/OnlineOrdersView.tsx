@@ -1,38 +1,44 @@
 import React from 'react';
-import { mockQueueOrders } from '../mockData';
+import { mockOnlineOrders } from '../mockData';
 import { OrderQueueTable } from '../table/table';
 import { getThemeColors } from '../../../../theme/colors';
 
-interface OrderQueueViewProps {
+interface OnlineOrdersViewProps {
   isDarkMode?: boolean;
 }
 
-export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = false }) => {
+export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode = false }) => {
   const theme = getThemeColors(isDarkMode);
+
   const handlePayment = (order: any) => {
-    console.log('Payment for order:', order);
+    console.log('Payment for online order:', order);
   };
 
   const handleMarkPaid = (order: any) => {
-    console.log('Mark paid order:', order);
+    console.log('Mark paid online order:', order);
   };
 
   const handleEdit = (order: any) => {
-    console.log('Edit order:', order);
+    console.log('Edit online order:', order);
   };
 
   const handleCancel = (order: any) => {
-    console.log('Cancel order:', order);
+    console.log('Cancel online order:', order);
   };
 
   const handlePrint = (order: any) => {
-    console.log('Print order:', order);
+    console.log('Print online order:', order);
   };
 
   return (
     <div className={`min-h-[calc(100vh-16rem)] p-6 ${theme.neutral.background}`}>
+      <div className="mb-6">
+        <h2 className={`text-2xl font-bold mb-2 ${theme.text.primary}`}>Online Orders</h2>
+        <p className={`${theme.text.secondary}`}>Manage incoming online orders and delivery requests</p>
+      </div>
+
       <OrderQueueTable
-        orders={mockQueueOrders}
+        orders={mockOnlineOrders}
         onPayment={handlePayment}
         onMarkPaid={handleMarkPaid}
         onEdit={handleEdit}

@@ -18,6 +18,7 @@ interface TabsProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   isDarkMode?: boolean;
+  headerRight?: React.ReactNode;
   onTabChange?: (tabId: string) => void;
 }
 
@@ -28,6 +29,7 @@ const Tabs: React.FC<TabsProps> = ({
   size = 'md',
   className = '',
   isDarkMode = false,
+  headerRight,
   onTabChange
 }) => {
   const theme = getThemeColors(isDarkMode);
@@ -81,33 +83,38 @@ const Tabs: React.FC<TabsProps> = ({
   return (
     <div className={`w-full ${className}`}>
       {/* Tab List */}
-      <div className={`flex ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : 'space-x-1'}`}>
-        {items.map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => handleTabChange(item.id)}
-              className={`${getTabStyles(isActive)} ${getSizeStyles()}`}
-            >
-              {item.icon && (
-                <span className={`${size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5'}`}>
-                  {item.icon}
-                </span>
-              )}
-              <span>{item.name}</span>
-              {item.badge && (
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                  isActive
-                    ? 'bg-white/20 text-white'
-                    : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
-                }`}>
-                  {item.badge}
-                </span>
-              )}
-            </button>
-          );
-        })}
+      <div className={`flex items-center  justify-between ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''}`}>
+        <div className="flex items-center gap-4 space-x-1 overflow-x-auto">
+          {items.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleTabChange(item.id)}
+                className={`${getTabStyles(isActive)} ${getSizeStyles()}`}
+              >
+                {item.icon && (
+                  <span className={`${size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5'}`}>
+                    {item.icon}
+                  </span>
+                )}
+                <span>{item.name}</span>
+                {item.badge && (
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                    isActive
+                      ? 'bg-white/20 text-white'
+                      : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
+                  }`}>
+                    {item.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Optional right-side header (notifications, actions) */}
+        {headerRight && <div className="ml-4 flex items-center">{headerRight}</div>}
       </div>
 
       {/* Tab Content */}

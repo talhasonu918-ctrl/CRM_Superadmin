@@ -225,7 +225,7 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
           </div>
 
           {/* Search */}
-          <div className="relative w-full">
+          <div className="relative max-w-xs flex-1">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
             <input
               type="text"

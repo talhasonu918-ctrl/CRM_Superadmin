@@ -18,7 +18,7 @@ interface FilterFormData {
 
 export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }) => {
   const theme = getThemeColors(isDarkMode);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<'all' | 'ready' | 'progress' | 'served'>('all');
 
   const { control, watch } = useForm<FilterFormData>({
@@ -186,55 +186,61 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   return (
     <div className={`h-[calc(100vh-12rem)] flex flex-col ${theme.neutral.background} ${isDarkMode ? '' : 'p-3'}`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className={`text-2xl font-bold ${theme.text.primary}`}>
+      <div className="flex items-center  gap-4 mb-6">
+        <h1 className={`text-2xl font-bold whitespace-nowrap ${theme.text.primary}`}>
           TakeAway Orders
         </h1>
+
+      
+<div className="flex items-center w-full justify-end gap-4 ml-auto">
+        {/* Search */}
+        <div className="flex-1 max-w-sm">
+        <Controller
+          name="search"
+          control={control}
+          render={({ field }) => (
+            <div className="relative flex-1">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={16} />
+              <input
+                {...field}
+                type="text"
+                placeholder="Search"
+                className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+              />
+            </div>
+          )}
+        />
+
+        </div>
+          {/* View Toggle */}
+        <div className={`flex gap-1 p-1 border rounded-lg ${theme.neutral.card}`}>
+         
+          <button
+            onClick={() => setViewMode('list')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              viewMode === 'list'
+                ? `${theme.primary.main} text-white shadow-sm`
+                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
+            }`}
+          >
+            <List size={16} />
+          </button>
+           <button
+            onClick={() => setViewMode('grid')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+              viewMode === 'grid'
+                ? `${theme.primary.main} text-white shadow-sm`
+                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
+            }`}
+          >
+            <Grid size={16} />
+          </button>
+        </div>
+        </div>
       </div>
 
       {/* Filters */}
-      <div className="space-y-3 mb-6">
-        {/* View Toggle and Search Row */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className={`flex gap-1 p-1 rounded-lg ${theme.neutral.card} w-fit`}>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'grid'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-              }`}
-            >
-              <Grid size={16} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'list'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-              }`}
-            >
-              <List size={16} />
-            </button>
-          </div>
-
-          <Controller
-            name="search"
-            control={control}
-            render={({ field }) => (
-              <div className="relative flex-1">
-                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={16} />
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Search"
-                  className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                />
-              </div>
-            )}
-          />
-        </div>
+      <div className="mb-6">
 
         {/* Date Range and Status Buttons Row */}
         <div className="flex flex-col sm:flex-row gap-3 items-end">
