@@ -4,6 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import toast, { Toaster } from 'react-hot-toast';
 import '../../styles/global.css';
 
 // Component that handles authentication routing
@@ -60,6 +61,30 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <AuthProvider>
         <ThemeProvider>
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: '#f97316',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                duration: 4000,
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
           <AppContent Component={Component} pageProps={pageProps} />
         </ThemeProvider>
       </AuthProvider>

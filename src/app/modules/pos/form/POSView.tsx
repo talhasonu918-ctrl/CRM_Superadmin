@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Product, CartItem } from '../types';
 import { mockProducts, categories, mockTables } from '../mockData';
-import { Search, ShoppingCart, Plus, Minus, X, DollarSign, UserPlus } from 'lucide-react';
+import { Search, ShoppingCart, Plus, Minus, X, DollarSign, UserPlus, Trash2 } from 'lucide-react';
 import { AddCustomerModal } from './AddCustomerModal';
 import { getThemeColors } from '../../../../theme/colors';
+import { sendToKitchen } from '../../../../utils/kitchenDisplay';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface POSViewProps {
   isDarkMode?: boolean;
@@ -29,6 +31,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const [selectedWaiter, setSelectedWaiter] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('');
   const [showCustomerModal, setShowCustomerModal] = useState(false);
+  const [orderType, setOrderType] = useState<'DineIn' | 'TakeAway' | 'Delivery'>('DineIn');
   
   // Mock data for waiters and customers
   const [waiters] = useState<Waiter[]>([
@@ -96,6 +99,49 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
     const discount = 0;
     const tax = 0;
     return { itemsCount, subtotal, discount, tax, total: subtotal - discount + tax };
+  };
+
+  const handleSendToKitchen = () => {
+    if (cart.length === 0) {
+      toast.error('Please add items to cart before sending to kitchen', {
+        duration: 3000,
+        position: 'top-right',
+      });
+      return;
+    }
+
+    const selectedTableData = availableTables.find(t => t.id === selectedTable);
+    const selectedWaiterData = waiters.find(w => w.id === selectedWaiter);
+    const selectedCustomerData = customers.find(c => c.id === selectedCustomer);
+    
+    const orderNumber = `# ${Math.floor(Math.random() * 900) + 100}`;
+    const tableNumber = orderType === 'DineIn' && selectedTableData 
+      ? selectedTableData.number 
+      : `${orderType === 'TakeAway' ? 'TKA' : 'DEL'}-${Math.floor(Math.random() * 900 + 100)}`;
+    
+    sendToKitchen({
+      orderNumber,
+      tableNumber,
+      orderType: orderType,
+      waiterName: selectedWaiterData?.name || 'POS System',
+      customerName: selectedCustomerData?.name,
+      customerPhone: selectedCustomerData?.phone,
+      items: cart.map((item, index) => ({
+        id: `${Date.now()}-${index}`,
+        name: item.product.name,
+        quantity: item.quantity,
+        completed: false,
+      })),
+    });
+
+    // Show success toast
+    toast.success(`Order ${orderNumber} sent to Kitchen Display!`, {
+      duration: 3000,
+      position: 'top-right',
+    });
+    
+    // Optional: Clear cart after sending
+    // setCart([]);
   };
 
   const totals = calculateTotals();
@@ -182,21 +228,57 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
         <div className="p-3 lg:p-4 flex flex-col h-full">
           <h2 className={`text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 ${theme.text.primary}`}>
             <ShoppingCart size={20} className="text-orange-500 lg:w-6 lg:h-6" />
-            DINE IN
+            {orderType === 'DineIn' ? 'DINE IN' : orderType === 'TakeAway' ? 'TAKE AWAY' : 'DELIVERY'}
           </h2>
+
+          {/* Order Type Selector */}
+          <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0">
+            <button
+              onClick={() => setOrderType('DineIn')}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                orderType === 'DineIn'
+                  ? 'bg-orange-500 text-white'
+                  : `${theme.neutral.card} ${theme.text.secondary} hover:bg-orange-100 dark:hover:bg-orange-900/20`
+              }`}
+            >
+              Dine In
+            </button>
+            <button
+              onClick={() => setOrderType('TakeAway')}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                orderType === 'TakeAway'
+                  ? 'bg-orange-500 text-white'
+                  : `${theme.neutral.card} ${theme.text.secondary} hover:bg-orange-100 dark:hover:bg-orange-900/20`
+              }`}
+            >
+              Take Away
+            </button>
+            <button
+              onClick={() => setOrderType('Delivery')}
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                orderType === 'Delivery'
+                  ? 'bg-orange-500 text-white'
+                  : `${theme.neutral.card} ${theme.text.secondary} hover:bg-orange-100 dark:hover:bg-orange-900/20`
+              }`}
+            >
+              Delivery
+            </button>
+          </div>
 
           {/* Select Dropdowns */}
           <div className="space-y-2 lg:space-y-3 mb-3 lg:mb-4 flex-shrink-0">
-            <select 
-              value={selectedTable}
-              onChange={(e) => setSelectedTable(e.target.value)}
-              className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
-            >
-              <option value="">Select Table</option>
-              {availableTables.map(table => (
-                <option key={table.id} value={table.id}>{table.number} - {table.capacity} seats</option>
-              ))}
-            </select>
+            {orderType === 'DineIn' && (
+              <select 
+                value={selectedTable}
+                onChange={(e) => setSelectedTable(e.target.value)}
+                className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+              >
+                <option value="">Select Table</option>
+                {availableTables.map(table => (
+                  <option key={table.id} value={table.id}>{table.number} - {table.capacity} seats</option>
+                ))}
+              </select>
+            )}
             <div className="grid grid-cols-2 gap-2 lg:gap-3">
               <select 
                 value={selectedWaiter}
@@ -255,8 +337,17 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
               </div>
             ) : (
               cart.map(item => (
-                <div key={item.product.id} className={`grid grid-cols-4 gap-1 lg:gap-2 py-2 lg:py-3 border-b ${theme.border.secondary}`}>
-                  <div className={`text-[10px] lg:text-xs ${theme.text.primary} truncate`}>{item.product.name}</div>
+                <div key={item.product.id} className={`grid grid-cols-4 gap-1 lg:gap-2 py-2 lg:py-3 border-b ${theme.border.secondary} items-center`}>
+                  <div className="flex items-center gap-1">
+                    <button 
+                      onClick={() => removeFromCart(item.product.id)}
+                      className="p-0.5 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                      title="Remove item"
+                    >
+                      <X size={12} className="text-red-500" />
+                    </button>
+                    <div className={`text-[10px] lg:text-xs ${theme.text.primary} truncate`}>{item.product.name}</div>
+                  </div>
                   <div className="flex items-center justify-center gap-0.5 lg:gap-1">
                     <button onClick={() => updateQuantity(item.product.id, -1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'} hover:${theme.primary.main} hover:text-white transition-colors`}>
                       <Minus size={10} className="lg:w-3 lg:h-3" />
@@ -324,7 +415,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
-            <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'}`}>
+            <button 
+              onClick={handleSendToKitchen}
+              className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-300 hover:bg-gray-400'}`}
+            >
               Send To Kitchen
             </button>
             <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium ${theme.button.primary}`}>

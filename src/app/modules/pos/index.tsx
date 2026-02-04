@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { TabItem } from '../../../components/Tabs';
 import Tabs from '../../../components/Tabs';
-import { POSView } from './components/POSView';
-import { TablesView } from './components/TablesView';
-import { TakeAwayView } from './components/TakeAwayView';
-import { OrderQueueView } from './components/OrderQueueView';
+import { POSView } from './form/POSView';
+import { TablesView } from './form/TablesView';
+import { TakeAwayView } from './form/TakeAwayView';
+import { OrderQueueView } from './form/OrderQueueView';
 import { ShoppingCart, Users, Package, ListOrdered } from 'lucide-react';
 
 interface POSModuleProps {
@@ -53,8 +53,8 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
 };
 
 // Export individual components for flexibility
-export { POSView } from './components/POSView';
-export { TablesView } from './components/TablesView';
-export { TakeAwayView } from './components/TakeAwayView';
-export { OrderQueueView } from './components/OrderQueueView';
+export { POSView } from './form/POSView';
+export { TablesView } from './form/TablesView';
+export { TakeAwayView } from './form/TakeAwayView';
+export { OrderQueueView } from './form/OrderQueueView';
 export * from './types';
