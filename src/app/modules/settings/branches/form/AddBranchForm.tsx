@@ -75,11 +75,11 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
       <div className="grid grid-cols-2 gap-y-5 gap-x-5">
         {/* Branch Name */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
             Branch Name
           </label>
           <Controller
-            name="branchName"
+            name="name"
             control={control}
             rules={{ required: 'Branch name is required' }}
             render={({ field, fieldState }) => (
@@ -87,7 +87,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter branch name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
                     fieldState.error
                       ? theme.status.error.border
                       : `${theme.border.input} focus:border-orange-500`
@@ -101,21 +101,21 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           />
         </div>
 
-        {/* Manager Name */}
+        {/* Manager User ID */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
-            Manager Name
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
+            Manager User ID
           </label>
           <Controller
-            name="managerName"
+            name="managerUserId"
             control={control}
-            rules={{ required: 'Manager name is required' }}
+            rules={{}}
             render={({ field, fieldState }) => (
               <>
                 <input
                   {...field}
-                  placeholder="Enter manager name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
+                  placeholder="Enter manager user ID"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
                     fieldState.error
                       ? theme.status.error.border
                       : `${theme.border.input} focus:border-orange-500`
@@ -131,11 +131,11 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
         {/* Phone Number */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
             Phone Number
           </label>
           <Controller
-            name="phoneNumber"
+            name="phone"
             control={control}
             rules={{ 
               required: 'Phone number is required',
@@ -150,7 +150,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                   {...field}
                   type="tel"
                   placeholder="+1 (555) 123-4567"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
                     fieldState.error
                       ? theme.status.error.border
                       : `${theme.border.input} focus:border-orange-500`
@@ -166,7 +166,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
         {/* Status */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
             Status
           </label>
           <Controller
@@ -195,7 +195,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
         {/* Address */}
         <div className="col-span-2">
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
             Address
           </label>
           <Controller
@@ -208,7 +208,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                   {...field}
                   placeholder="Enter full address"
                   rows={3}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} resize-none ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} resize-none ${
                     fieldState.error
                       ? theme.status.error.border
                       : `${theme.border.input} focus:border-orange-500`
@@ -221,10 +221,123 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             )}
           />
         </div>
+
+        {/* City */}
+        <div>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
+            City
+          </label>
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+                <input
+                {...field}
+                placeholder="City"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
+
+        {/* Country */}
+        <div>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
+            Country
+          </label>
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+                <input
+                {...field}
+                placeholder="Country"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+            Email
+          </label>
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="email"
+                placeholder="email@example.com"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
+
+        {/* Timezone */}
+        <div>
+          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+            Timezone
+          </label>
+          <Controller
+            name="timezone"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                placeholder="Timezone (e.g. America/New_York)"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
+
+        {/* Lat */}
+        <div>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
+            Lat
+          </label>
+          <Controller
+            name="lat"
+            control={control}
+            render={({ field }) => (
+                <input
+                {...field}
+                type="number"
+                step="any"
+                placeholder="Latitude"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
+
+        {/* Lng */}
+        <div>
+          <label className={`block text-sm font-semibold mb-2 ${theme.text.tertiary}`}>
+            Lng
+          </label>
+          <Controller
+            name="lng"
+            control={control}
+            render={({ field }) => (
+                <input
+                {...field}
+                type="number"
+                step="any"
+                placeholder="Longitude"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-start gap-3 pt-2">
+      <div className="flex items-center justify-end gap-3 pt-2">
         <Button
           type="submit"
           className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}

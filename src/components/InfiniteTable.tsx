@@ -143,7 +143,7 @@ function InfiniteTable<T = any>({
             (rows || table.getRowModel().rows).map((row: any) => (
               <Table.Row
                 key={row.id}
-                className={`transition-colors ${theme.neutral.hoverLight}`}
+                className={`transition-colors ${theme.neutral.card} `}
               >
                 {row.getVisibleCells().map((cell: any) => {
                   // Check column visibility

@@ -239,7 +239,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
 
                 {/* Column Toggle Dropdown */}
                 {showColumnToggle && (
-                  <div className={`absolute right-0 top-full mt-2 w-56 rounded-lg shadow-xl border z-50 ${
+                  <div className={`absolute right-0 top-full mt-2 w-56 rounded-lg border z-50 ${
                     isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                   }`}>
                     <div className={`p-3 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>

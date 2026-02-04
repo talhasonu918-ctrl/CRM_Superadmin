@@ -25,41 +25,91 @@ export const ViewBranchDetails: React.FC<ViewBranchDetailsProps> = ({
     <div className="space-y-6">
       {/* Branch Details */}
       <div className="space-y-4">
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className={`text-xl font-bold ${theme.text.primary}`}>{branchData.name || '-'}</h3>
+            <div className={`text-sm ${theme.text.secondary} mt-1`}>{branchData.slug ? `Slug: ${branchData.slug}` : branchData.id ? `ID: ${branchData.id}` : null}</div>
+          </div>
+       
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
-              Branch Name
+              Manager
             </label>
             <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
-              {branchData.branchName || '-'}
+              {(branchData as any).managerUserId || '-'}
             </p>
           </div>
+
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
-              Manager Name
+              Phone
             </label>
             <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
-              {branchData.managerName || '-'}
+              {(branchData as any).phone || '-'}
             </p>
           </div>
-          <div>
-            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
-              Phone Number
-            </label>
-            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
-              {branchData.phoneNumber || '-'}
-            </p>
-          </div>
+
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
               Status
             </label>
             <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background}`}>
-              <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(branchData.status || '', isDarkMode)}`}>
-                {branchData.status || '-'}
-              </span>
+              <div className="flex items-center justify-center">
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge((branchData.status as string) || '', isDarkMode)}`}>
+                  {branchData.status || '-'}
+                </span>
+              </div>
             </p>
           </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              Email
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
+              {branchData.email || '-'}
+            </p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              City
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
+              {branchData.city || '-'}
+            </p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              Country
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
+              {branchData.country || '-'}
+            </p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              Lat
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
+              {typeof branchData.lat === 'number' ? branchData.lat : (branchData.lat || '-')}
+            </p>
+          </div>
+
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              Lng
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.input.background} ${theme.text.primary}`}>
+              {typeof branchData.lng === 'number' ? branchData.lng : (branchData.lng || '-')}
+            </p>
+          </div>
+
           <div className="col-span-2">
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
               Address

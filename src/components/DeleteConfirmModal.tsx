@@ -69,7 +69,7 @@ export const DeleteConfirmContent: React.FC<DeleteConfirmContentProps> = ({
         <Button
           type="button"
           onClick={onConfirm}
-          className={`${theme.status.error.bg} ${theme.status.error.hover} text-white h-10 rounded-lg px-6`}
+          className={`${theme.status.error.bg} ${theme.status.error.hover} text-black h-10 rounded-lg px-6`}
         >
           {confirmButtonText}
         </Button>

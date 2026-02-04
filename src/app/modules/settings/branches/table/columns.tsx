@@ -14,40 +14,43 @@ interface BranchColumnProps {
 export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: BranchColumnProps = {}): ColumnDef<Branch>[] => {
   const theme = getThemeColors(isDarkMode);
   return [
+  // tenantId and slug removed — tenants shouldn't see these columns
   {
-    accessorKey: 'branchName',
+    accessorKey: 'name',
     header: 'Branch Name',
     size: 180,
     cell: ({ getValue }) => (
-      <span className={`font-bold ${theme.text.primary}`}>
+      <span className={`font-semibold ${theme.text.primary}`}>
         {getValue() as string}
       </span>
     ),
   },
   {
-    accessorKey: 'managerName',
+    accessorKey: 'managerUserId',
     header: 'Manager',
     size: 160,
     cell: ({ row }) => {
       const branch = row.original;
+      const display = (branch as any).managerName || branch.managerUserId || '-';
       return (
         <div className="text-sm">
           <div className={theme.text.secondary}>
-            Manager: <span className={theme.text.primary}>{branch.managerName}</span>
+           <span className={theme.text.primary}>{display}</span>
           </div>
         </div>
       );
     },
   },
   {
-    accessorKey: 'phoneNumber',
+    accessorKey: 'phone',
     header: 'Phone',
     size: 160,
     cell: ({ row }) => {
       const branch = row.original;
+      const phone = (branch as any).phone || (branch as any).phoneNumber || '-';
       return (
         <div className={`text-sm ${theme.text.secondary}`}>
-          Phone: <span className={theme.text.primary}>{branch.phoneNumber}</span>
+           <span className={theme.text.primary}>{phone}</span>
         </div>
       );
     },
@@ -57,11 +60,41 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
     header: 'Address',
     size: 250,
     cell: ({ getValue }) => (
-      <span className={`text-sm ${theme.text.secondary}`}>
+      <span className={`text-sm ${theme.text.primary}`}>
         {getValue() as string}
       </span>
     ),
   },
+  {
+    accessorKey: 'city',
+    header: 'City',
+    size: 140,
+    cell: ({ getValue }) => <span className={`text-sm ${theme.text.primary}`}>{getValue() as string || '-'}</span>,
+  },
+  {
+    accessorKey: 'country',
+    header: 'Country',
+    size: 140,
+    cell: ({ getValue }) => <span className={`text-sm ${theme.text.primary}`}>{getValue() as string || '-'}</span>,
+  },
+  {
+    accessorKey: 'lat',
+    header: 'Lat',
+    size: 100,
+    cell: ({ getValue }) => <span className={`text-sm ${theme.text.primary}`}>{getValue() as number ?? '-'}</span>,
+  },
+  {
+    accessorKey: 'lng',
+    header: 'Lng',
+    size: 100,
+    cell: ({ getValue }) => <span className={`text-sm ${theme.text.primary}`}>{getValue() as number ?? '-'}</span>,
+  },
+  // {
+  //   accessorKey: 'timezone',
+  //   header: 'Timezone',
+  //   size: 160,
+  //   cell: ({ getValue }) => <span className={`text-sm ${theme.text.primary}`}>{getValue() as string || '-'}</span>,
+  // },
   {
     accessorKey: 'status',
     header: 'Status',
@@ -76,14 +109,25 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
       } else if (statusLower === 'inactive') {
         badgeClass = isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700';
       } else if (statusLower === 'under maintenance') {
-        badgeClass = `${theme.status.warning.bg} ${theme.status.warning.text}`;
+        badgeClass = `${theme.status.warning.bg} ${theme.status.warning.text} whitespace-nowrap`;
       }
 
       return (
-        <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold ${badgeClass}`}>
-          {status}
-        </span>
+        <div className="flex items-center justify-center">
+          <span className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-semibold ${badgeClass}`}>
+            {status}
+          </span>
+        </div>
       );
+    },
+  },
+  {
+    accessorKey: 'createdAt',
+    header: 'Created',
+    size: 160,
+    cell: ({ getValue }) => {
+      const val = getValue() as string | undefined;
+      return <span className={`text-sm ${theme.text.primary}`}>{val ? new Date(val).toLocaleString() : '-'}</span>;
     },
   },
   {

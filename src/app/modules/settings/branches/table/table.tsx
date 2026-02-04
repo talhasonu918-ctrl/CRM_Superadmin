@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'rizzui';
@@ -17,21 +17,30 @@ interface BranchTableProps {
   onEditBranch?: (branch: Branch) => void;
   onViewBranch?: (branch: Branch) => void;
   onDeleteBranch?: (branch: Branch) => void;
+  data?: Branch[];
 }
 
 // Generate more mock branches for infinite scroll
 const generateMockBranches = (count: number): Branch[] => {
   const statuses: ('Active' | 'Inactive' | 'Under Maintenance')[] = ['Active', 'Inactive', 'Under Maintenance'];
   const branches: Branch[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const num = mockBranches.length + i + 1;
     branches.push({
       id: String(num),
-      branchName: `Branch ${num}`,
-      managerName: `Manager ${num}`,
-      phoneNumber: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      tenantId: 'tenant_1',
+      name: `Branch ${num}`,
+      slug: `branch-${num}`,
       address: `${num} Street, City, State ${String(10000 + num).slice(0, 5)}`,
+      city: 'City',
+      country: 'Country',
+      lat: 0,
+      lng: 0,
+      phone: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      email: `branch${num}@example.com`,
+      timezone: 'UTC',
+      managerUserId: `user_${num}`,
       status: statuses[Math.floor(Math.random() * statuses.length)],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -53,7 +62,8 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   onAddBranch, 
   onEditBranch, 
   onViewBranch, 
-  onDeleteBranch 
+  onDeleteBranch,
+  data,
 }) => {
   const theme = getThemeColors(isDarkMode);
   const cardStyle = `rounded-xl border shadow-sm p-8 ${theme.neutral.background} ${theme.border.main}`;
@@ -64,12 +74,19 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 100;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
-    branchName: true,
-    managerName: true,
-    phoneNumber: true,
+    name: true, // Make name non-hideable
+    managerUserId: true,
+    phone: true,
+    email: true,
     address: true,
+    city: true,
+    country: true,
+    lat: true,
+    lng: true,
+    timezone: true,
     status: true,
-    actions: true,
+    createdAt: true,
+    actions: true, // Make actions non-hideable
   });
 
   const { control, watch } = useForm({
@@ -87,19 +104,26 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     [onEditBranch, onViewBranch, onDeleteBranch, isDarkMode]
   );
 
-  // Initialize table with infinite scroll
-  const initialData = [...mockBranches, ...generateMockBranches(17)];
+  // Initialize table with provided data or mock/infinite data
+  const initialData = data && data.length > 0 ? data : [...mockBranches, ...generateMockBranches(17)];
   const {
     table,
     isLoading,
     hasNextPage,
     loadMore,
+    setInitialData,
   } = useInfiniteTable<Branch>({
     columns,
     initialData,
     pageSize: 20,
     onLoadMore: loadMoreBranches,
   });
+  // If parent provides `data` (from localStorage), keep the internal table data in sync
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setInitialData(data);
+    }
+  }, [data, setInitialData]);
 
   // Custom load more with count tracking
   const loadMoreWithCount = async () => {
@@ -118,9 +142,9 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         const branch = row.original;
         const search = searchTerm.toLowerCase();
         return (
-          branch.branchName.toLowerCase().includes(search) ||
-          branch.managerName.toLowerCase().includes(search) ||
-          branch.phoneNumber.includes(search) ||
+          branch.name.toLowerCase().includes(search) ||
+          (branch.managerUserId || '').toLowerCase().includes(search) ||
+          (branch.phone || '').includes(search) ||
           branch.address.toLowerCase().includes(search)
         );
       });
@@ -187,13 +211,20 @@ export const BranchTable: React.FC<BranchTableProps> = ({
           className="flex-shrink-0"
           columnVisibility={columnVisibility}
           onToggleColumn={toggleColumn}
-          disabledColumns={['branchName', 'actions']}
+          disabledColumns={['name', 'actions']}
           columnLabels={{
-            branchName: 'Branch Name',
-            managerName: 'Manager',
-            phoneNumber: 'Phone',
+            name: 'Branch Name',
+            managerUserId: 'Manager',
+            phone: 'Phone',
+            email: 'Email',
             address: 'Address',
+            city: 'City',
+            country: 'Country',
+            lat: 'Lat',
+            lng: 'Lng',
+            timezone: 'Timezone',
             status: 'Status',
+            createdAt: 'Created',
             actions: 'Actions',
           }}
           isDarkMode={isDarkMode}
@@ -206,7 +237,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         hasNextPage={hasNextPage}
         onLoadMore={loadMoreWithCount}
         emptyComponent={
-          <div className={`text-center py-8 ${theme.text.secondary}`}>
+          <div className={`text-center py-8  ${theme.text.secondary}`}>
             {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
           </div>
         }
