@@ -55,8 +55,8 @@ export function useInfiniteTable<T extends { id: string }>({
       if (newData.length < pageSize) {
         setHasNextPage(false);
       }
-      setData(prev => [...prev, ...newData]);
-      setCurrentPage(prev => prev + 1);
+      setData((prev: T[]) => [...prev, ...newData]);
+      setCurrentPage((prev: number) => prev + 1);
     } catch (error) {
       console.error('Error loading more data:', error);
     } finally {

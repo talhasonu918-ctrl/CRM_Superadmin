@@ -60,15 +60,15 @@ export const SettingsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) 
             onAddUser={() => {
               setAddModalOpen(true);
             }}
-            onEditUser={(user) => {
+            onEditUser={(user: User) => {
               setSelectedUser(user);
               setEditModalOpen(true);
             }}
-            onViewUser={(user) => {
+            onViewUser={(user: User) => {
               setSelectedUser(user);
               setViewModalOpen(true);
             }}
-            onDeleteUser={(user) => {
+            onDeleteUser={(user: User) => {
               setSelectedUser(user);
               setDeleteModalOpen(true);
             }}
@@ -82,7 +82,7 @@ export const SettingsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) 
             isDarkMode={isDarkMode}
           >
             <AddUserForm
-              onSubmit={(data) => {
+              onSubmit={(data: any) => {
                 console.log('Add user:', data);
                 setAddModalOpen(false);
               }}
@@ -100,7 +100,7 @@ export const SettingsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) 
           >
             <EditUserForm
               initialData={selectedUser}
-              onSubmit={(data) => {
+              onSubmit={(data: any) => {
                 console.log('Update user:', data);
                 setEditModalOpen(false);
               }}

@@ -38,17 +38,17 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
       <Controller
         name={name}
         control={control}
-        render={({ field }) => (
+        render={({ field }: any) => (
           <div className="relative">
             <Select
-              value={options.find(opt => opt.value === field.value) || null}
-              onChange={option => field.onChange(option ? option.value : '')}
+              value={options.find((opt: any) => opt.value === field.value) || null}
+              onChange={(option: any) => field.onChange(option ? option.value : '')}
               options={options}
               placeholder={placeholder}
               classNamePrefix="custom-select"
               isSearchable={false}
               styles={{
-                control: (base, state) => ({
+                control: (base: any, state: any) => ({
                   ...base,
                   minHeight: 48,
                   height: 48,
@@ -61,13 +61,13 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
                   boxShadow:'none'
                   
                 }),
-                valueContainer: base => ({ ...base, padding: '0 8px' }),
-                input: base => ({ ...base, margin: 0, padding: 0 }),
-                singleValue: base => ({ ...base, margin: 0, padding: 0, color: textColor }),
-                dropdownIndicator: base => ({ ...base, padding: 4 }),
+                valueContainer: (base: any) => ({ ...base, padding: '0 8px' }),
+                input: (base: any) => ({ ...base, margin: 0, padding: 0 }),
+                singleValue: (base: any) => ({ ...base, margin: 0, padding: 0, color: textColor }),
+                dropdownIndicator: (base: any) => ({ ...base, padding: 4 }),
                 indicatorSeparator: () => ({ display: 'none' }),
-                menu: base => ({ ...base, zIndex: 20, backgroundColor: menuBgColor, borderRadius: 8, border: `1px solid ${menuBorderColor}` }),
-                option: (base, state) => ({
+                menu: (base: any) => ({ ...base, zIndex: 20, backgroundColor: menuBgColor, borderRadius: 8, border: `1px solid ${menuBorderColor}` }),
+                option: (base: any, state: any) => ({
                   ...base,
                   backgroundColor: state.isSelected
                     ? optionSelectedBg
@@ -79,8 +79,8 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
                   cursor: 'pointer',
                 }),
               }}
-              getOptionLabel={option => option.label}
-              getOptionValue={option => option.value}
+              getOptionLabel={(option: any) => option.label}
+              getOptionValue={(option: any) => option.value}
             />
             <span className={`absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none ${theme.text.muted}`}>
               <Filter size={16} />

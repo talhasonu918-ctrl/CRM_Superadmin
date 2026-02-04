@@ -63,8 +63,8 @@ function InfiniteTable<T = any>({
 
   const footers = table
     .getFooterGroups()
-    .map((group) =>
-      group.headers.map((header) => header.column.columnDef.footer)
+    .map((group: any) =>
+      group.headers.map((header: any) => header.column.columnDef.footer)
     )
     .flat()
     .filter(Boolean);
@@ -99,10 +99,10 @@ function InfiniteTable<T = any>({
         }}
       >
         <Table.Header className={`!border-y-0 ${theme.neutral.backgroundSecondary}`}>
-          {table.getHeaderGroups().map((headerGroup) => {
+          {table.getHeaderGroups().map((headerGroup: any) => {
             return (
               <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map((header: any) => {
                   // Check column visibility
                   if (columnVisibility && columnVisibility[header.column.id] === false) {
                     return null;
@@ -140,12 +140,12 @@ function InfiniteTable<T = any>({
               </Table.Cell>
             </Table.Row>
           ) : (
-            (rows || table.getRowModel().rows).map((row) => (
+            (rows || table.getRowModel().rows).map((row: any) => (
               <Table.Row
                 key={row.id}
                 className={`transition-colors ${theme.neutral.hoverLight}`}
               >
-                {row.getVisibleCells().map((cell) => {
+                {row.getVisibleCells().map((cell: any) => {
                   // Check column visibility
                   if (columnVisibility && columnVisibility[cell.column.id] === false) {
                     return null;
@@ -182,9 +182,9 @@ function InfiniteTable<T = any>({
 
         {footers.length > 0 && (
           <Table.Footer>
-            {table.getFooterGroups().map((footerGroup) => (
+            {table.getFooterGroups().map((footerGroup: any) => (
               <Table.Row key={footerGroup.id}>
-                {footerGroup.headers.map((footer) => {
+                {footerGroup.headers.map((footer: any) => {
                   return (
                     <Table.Cell key={footer.id} className="!py-4">
                       {footer.isPlaceholder ? null : (
