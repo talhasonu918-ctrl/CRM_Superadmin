@@ -128,7 +128,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h3 className={`font-bold text-lg ${theme.text.primary}`}>
-            Order # {order.orderNumber.replace('1/30/2026-', '')}
+             {order.orderNumber.replace('1/30/2026-', '')}
           </h3>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'served'
               ? `${theme.status.success.bg} ${theme.status.success.text}`
