@@ -43,25 +43,22 @@ const Tabs: React.FC<TabsProps> = ({
 
     switch (variant) {
       case 'pills':
-        return `${baseStyles} px-4 py-2 rounded-full ${
-          isActive
+        return `${baseStyles} px-4 py-2 rounded-full ${isActive
             ? `${theme.primary.main} text-white ${theme.shadow.md}`
             : `${theme.text.tertiary} ${theme.neutral.hover}`
-        }`;
+          }`;
 
       case 'underline':
-        return `${baseStyles} px-1 py-2 border-b-2 ${
-          isActive
+        return `${baseStyles} px-1 py-2 border-b-2 ${isActive
             ? `${theme.primary.border} ${theme.primary.darkText}`
             : `border-transparent ${theme.text.tertiary} ${theme.border.inputFocus.replace('focus:', 'hover:')}`
-        }`;
+          }`;
 
       default: // 'default'
-        return `${baseStyles} px-4 py-2 rounded-lg ${
-          isActive
+        return `${baseStyles} px-4 py-2 rounded-lg ${isActive
             ? `${theme.primary.main} text-white ${theme.shadow.md}`
             : `${theme.text.tertiary} ${theme.neutral.hoverLight}`
-        }`;
+          }`;
     }
   };
 
@@ -81,7 +78,7 @@ const Tabs: React.FC<TabsProps> = ({
   return (
     <div className={`w-full ${className}`}>
       {/* Tab List */}
-      <div className={`flex ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : 'space-x-1'}`}>
+      <div className={`flex overflow-x-auto scrollbar-hide ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : 'space-x-1'}`}>
         {items.map((item) => {
           const isActive = activeTab === item.id;
           return (
@@ -97,11 +94,10 @@ const Tabs: React.FC<TabsProps> = ({
               )}
               <span>{item.name}</span>
               {item.badge && (
-                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                  isActive
+                <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive
                     ? 'bg-white/20 text-white'
                     : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
-                }`}>
+                  }`}>
                   {item.badge}
                 </span>
               )}

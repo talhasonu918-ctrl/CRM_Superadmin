@@ -35,7 +35,7 @@ export const DeleteConfirmContent: React.FC<DeleteConfirmContentProps> = ({
   const theme = getThemeColors(isDarkMode);
   
   return (
-    <div className={`text-center py-4 ${theme.neutral.backgroundSecondary}`}>
+    <div className={`text-center py-4`}>
       {/* Warning Icon */}
       <div className="flex justify-center mb-4">
         <div className={`w-16 h-16 rounded-full ${theme.status.error.bg} flex items-center justify-center`}>
@@ -57,19 +57,19 @@ export const DeleteConfirmContent: React.FC<DeleteConfirmContentProps> = ({
     
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex items-center justify-end gap-3 pt-2">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`border h-10 ${theme.border.input} rounded-lg ${theme.button.secondary} px-6`}
+          className={`${theme.button.secondary} h-10 rounded-lg px-8`}
         >
           {cancelButtonText}
         </Button>
         <Button
           type="button"
           onClick={onConfirm}
-          className={`${theme.status.error.bg} ${theme.status.error.hover} text-black h-10 rounded-lg px-6`}
+          className={`${theme.button.primary} h-10 text-white whitespace-nowrap rounded-lg px-8`}
         >
           {confirmButtonText}
         </Button>

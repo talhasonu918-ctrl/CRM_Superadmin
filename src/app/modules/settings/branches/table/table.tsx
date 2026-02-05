@@ -57,19 +57,18 @@ const loadMoreBranches = async (): Promise<Branch[]> => {
   });
 };
 
-export const BranchTable: React.FC<BranchTableProps> = ({ 
-  isDarkMode, 
-  onAddBranch, 
-  onEditBranch, 
-  onViewBranch, 
+export const BranchTable: React.FC<BranchTableProps> = ({
+  isDarkMode,
+  onAddBranch,
+  onEditBranch,
+  onViewBranch,
   onDeleteBranch,
   data,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl border shadow-sm p-8 ${theme.neutral.background} ${theme.border.main}`;
-  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-    isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
-  }`;
+  const cardStyle = `rounded-xl border shadow-sm p-4 sm:p-8 ${theme.neutral.background} ${theme.border.main}`;
+  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
+    }`;
 
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 100;
@@ -134,7 +133,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   // Filter data based on search and status
   const filteredData = useMemo(() => {
     if (!table.getRowModel) return [];
-    
+
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
@@ -151,7 +150,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(row => 
+      filtered = filtered.filter(row =>
         row.original.status.toLowerCase() === statusFilter.toLowerCase()
       );
     }
@@ -168,7 +167,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
 
   return (
     <div className={cardStyle}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h4 className={`text-lg font-bold tracking-tight ${theme.text.primary}`}>Branches</h4>
           <p className={`text-sm mt-1 ${theme.text.secondary}`}>
@@ -177,7 +176,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         </div>
         <Button
           onClick={onAddBranch}
-          className={`${theme.button.primary} h-10 text-white rounded-lg`}
+          className={`${theme.button.primary} w-full sm:w-auto h-10 text-white whitespace-nowrap rounded-lg`}
           size="lg"
         >
           + Add New Branch
@@ -231,37 +230,39 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         />
       </div>
 
-      <InfiniteTable
-        table={table}
-        isLoading={isLoading}
-        hasNextPage={hasNextPage}
-        onLoadMore={loadMoreWithCount}
-        emptyComponent={
-          <div className={`text-center py-8  ${theme.text.secondary}`}>
-            {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
-          </div>
-        }
-        loadingComponent={
-          <div className={`flex items-center justify-center gap-2 py-4 ${theme.text.secondary}`}>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
-            <span>Loading branches...</span>
-          </div>
-        }
-        columnVisibility={columnVisibility}
-        rows={searchTerm || statusFilter !== 'all' ? filteredData : undefined}
-        className="max-h-[600px]"
-        isDarkMode={isDarkMode}
-      />
+      <div className="overflow-hidden w-full">
+        <InfiniteTable
+          table={table}
+          isLoading={isLoading}
+          hasNextPage={hasNextPage}
+          onLoadMore={loadMoreWithCount}
+          emptyComponent={
+            <div className={`text-center py-8  ${theme.text.secondary}`}>
+              {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
+            </div>
+          }
+          loadingComponent={
+            <div className={`flex items-center justify-center gap-2 py-4 ${theme.text.secondary}`}>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
+              <span>Loading branches...</span>
+            </div>
+          }
+          columnVisibility={columnVisibility}
+          rows={searchTerm || statusFilter !== 'all' ? filteredData : undefined}
+          className="max-h-[600px]"
+          isDarkMode={isDarkMode}
+        />
+      </div>
 
       {/* Table Footer */}
       <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
-        <div className={`flex items-center justify-between text-sm ${theme.text.secondary}`}>
-          <span>
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
+          <span className="text-center sm:text-left">
             Showing <span className={`font-semibold ${theme.text.primary}`}>{Math.min(loadedCount, filteredData.length || loadedCount)}</span> of{' '}
             <span className={`font-semibold ${theme.text.primary}`}>{total}</span> branches
           </span>
           {hasNextPage && !isLoading && (
-            <span className={`text-xs animate-pulse ${theme.text.tertiary}`}>
+            <span className={`animate-pulse ${theme.text.tertiary}`}>
               Scroll down to load more
             </span>
           )}
