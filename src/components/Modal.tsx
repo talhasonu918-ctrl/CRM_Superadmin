@@ -19,10 +19,10 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
   // map size to max-width classes
   const sizeClass =
     size === 'sm' ? 'max-w-sm' :
-    size === 'md' ? 'max-w-md' :
-    size === 'lg' ? 'max-w-lg' :
-    size === 'xl' ? 'max-w-4xl' :
-    size === 'full' ? 'max-w-full' : 'max-w-lg';
+      size === 'md' ? 'max-w-md' :
+        size === 'lg' ? 'max-w-lg' :
+          size === 'xl' ? 'max-w-4xl' :
+            size === 'full' ? 'max-w-full' : 'max-w-lg';
 
   // prevent body scroll when modal is open
   React.useEffect(() => {
@@ -33,24 +33,24 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
       document.body.style.overflow = prev;
     };
   }, [isOpen]);
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.98, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-            className={`relative w-full ${sizeClass} p-6 rounded-lg border ${theme.neutral.background} ${theme.border.main} ${theme.text.heading} max-h-[90vh] overflow-y-auto hide-scrollbar shadow-md`}
+            className={`relative w-full ${sizeClass} p-6 rounded-lg border ${theme.neutral.background} ${theme.border.main} ${theme.text.heading} max-h-[90vh] overflow-y-auto scrollbar-hidden shadow-md`}
             style={{ fontFamily: fontFamily || undefined }}
           >
             {children}

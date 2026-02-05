@@ -94,9 +94,6 @@ function InfiniteTable<T = any>({
     >
       <Table
         className="!shadow-none !border-0"
-        style={{
-          width: table.getTotalSize(),
-        }}
       >
         <Table.Header className={`!border-y-0 ${theme.neutral.backgroundSecondary}`}>
           {table.getHeaderGroups().map((headerGroup: any) => {
@@ -111,17 +108,14 @@ function InfiniteTable<T = any>({
                     <Table.Head
                       key={header.id}
                       colSpan={header.colSpan}
-                      style={{
-                        width: header.getSize(),
-                      }}
-                      className={`!text-start !font-semibold ${theme.text.primary}`}
+                      className={`!text-start !font-semibold !py-2 sm:!py-3 !px-2 sm:!px-4 ${theme.text.primary}`}
                     >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </Table.Head>
                   );
                 })}
@@ -153,10 +147,7 @@ function InfiniteTable<T = any>({
                   return (
                     <Table.Cell
                       key={cell.id}
-                      className="!text-start !py-4"
-                      style={{
-                        width: cell.column.getSize(),
-                      }}
+                      className="!text-start !py-1 sm:!py-4 !px-1 sm:!px-4"
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </Table.Cell>

@@ -199,7 +199,7 @@ export const SettingsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="p-2">
           <h1 className={`text-2xl font-bold tracking-tight ${theme.text.primary}`}>Settings</h1>
           <p className={`text-sm mt-1 ${theme.text.muted}`}>Manage your practice settings and configurations</p>
         </div>

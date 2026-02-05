@@ -184,50 +184,51 @@ export const BranchTable: React.FC<BranchTableProps> = ({
       </div>
 
       {/* Search, Filter and Column Toggle Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center justify-between">
         <SearchInput
           control={control}
           placeholder="Search branches..."
           inputStyle={inputStyle}
           isDarkMode={isDarkMode}
         />
+        <div className='flex gap-4  sm:justify-start p-2 items-center justify-between '>
+          <FilterDropdown
+            control={control}
+            name="statusFilter"
+            options={[
+              { label: 'All Status', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' },
+              { label: 'Under Maintenance', value: 'under maintenance' },
+            ]}
+            placeholder="Select status"
+            inputStyle={inputStyle}
+            isDarkMode={isDarkMode}
+          />
 
-        <FilterDropdown
-          control={control}
-          name="statusFilter"
-          options={[
-            { label: 'All Status', value: 'all' },
-            { label: 'Active', value: 'active' },
-            { label: 'Inactive', value: 'inactive' },
-            { label: 'Under Maintenance', value: 'under maintenance' },
-          ]}
-          placeholder="Select status"
-          inputStyle={inputStyle}
-          isDarkMode={isDarkMode}
-        />
-
-        <ColumnToggle
-          className="flex-shrink-0"
-          columnVisibility={columnVisibility}
-          onToggleColumn={toggleColumn}
-          disabledColumns={['name', 'actions']}
-          columnLabels={{
-            name: 'Branch Name',
-            managerUserId: 'Manager',
-            phone: 'Phone',
-            email: 'Email',
-            address: 'Address',
-            city: 'City',
-            country: 'Country',
-            lat: 'Lat',
-            lng: 'Lng',
-            timezone: 'Timezone',
-            status: 'Status',
-            createdAt: 'Created',
-            actions: 'Actions',
-          }}
-          isDarkMode={isDarkMode}
-        />
+          <ColumnToggle
+            className="flex-shrink-0"
+            columnVisibility={columnVisibility}
+            onToggleColumn={toggleColumn}
+            disabledColumns={['name', 'actions']}
+            columnLabels={{
+              name: 'Branch Name',
+              managerUserId: 'Manager',
+              phone: 'Phone',
+              email: 'Email',
+              address: 'Address',
+              city: 'City',
+              country: 'Country',
+              lat: 'Lat',
+              lng: 'Lng',
+              timezone: 'Timezone',
+              status: 'Status',
+              createdAt: 'Created',
+              actions: 'Actions',
+            }}
+            isDarkMode={isDarkMode}
+          />
+        </div>
       </div>
 
       <div className="overflow-hidden w-full">

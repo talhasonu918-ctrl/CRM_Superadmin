@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TakeawayOrder } from '../types';
 import { mockTakeawayOrders } from '../mockData';
-import { Search, Calendar, Grid, List, Phone, User, ShoppingBag } from 'lucide-react';
+import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { getThemeColors } from '../../../../theme/colors';
@@ -18,7 +18,7 @@ interface FilterFormData {
 
 export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }) => {
   const theme = getThemeColors(isDarkMode);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<'all' | 'ready' | 'progress' | 'served'>('all');
 
   const { control, watch } = useForm<FilterFormData>({
@@ -32,10 +32,10 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   const filters = watch();
 
   const filteredOrders = mockTakeawayOrders.filter(order => {
-    const matchesSearch = !filters.search || 
+    const matchesSearch = !filters.search ||
       order.orderNumber.toLowerCase().includes(filters.search.toLowerCase());
-    
-    const matchesStatus = activeFilter === 'all' || 
+
+    const matchesStatus = activeFilter === 'all' ||
       (activeFilter === 'ready' && order.status === 'ready') ||
       (activeFilter === 'progress' && order.status === 'preparing') ||
       (activeFilter === 'served' && order.status === 'served');
@@ -49,14 +49,14 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   // Calculate accurate grand total from items
   const calculateGrandTotal = (order: TakeawayOrder): number => {
     if (!order.items || order.items.length === 0) return order.grandTotal;
-    
+
     const itemsTotal = order.items.reduce((total, item) => {
       return total + (item.product.price * item.quantity);
     }, 0);
-    
+
     const discount = order.discount || 0;
     const tax = order.tax || 0;
-    
+
     return itemsTotal - discount + tax;
   };
   const OrderCard: React.FC<{ order: TakeawayOrder }> = ({ order }) => (
@@ -64,10 +64,10 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
       <div className="flex items-start justify-between mb-3">
         <div>
           <h3 className={`font-bold text-base ${theme.text.primary}`}>
-             {order.orderNumber.replace('1/30/2026-', '')}
+            {order.orderNumber.replace('1/30/2026-', '')}
           </h3>
         </div>
-        <OrderActionsDropdown 
+        <OrderActionsDropdown
           isDarkMode={isDarkMode}
           onViewDetails={() => console.log('View details', order.id)}
           onMarkAsReady={() => console.log('Mark as ready', order.id)}
@@ -75,7 +75,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           onCancelOrder={() => console.log('Cancel order', order.id)}
         />
       </div>
-      
+
       {/* Items List */}
       <div className="space-y-2 mb-3">
         <div className={`flex items-center gap-2 mb-2 ${theme.text.tertiary}`}>
@@ -101,7 +101,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
             <span>{order.customerName}</span>
           </div>
         )}
-        
+
         {order.customerPhone && (
           <div className={`flex items-center gap-2 ${theme.text.tertiary}`}>
             <Phone size={14} />
@@ -123,56 +123,23 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   );
 
   const OrderListItem: React.FC<{ order: TakeawayOrder }> = ({ order }) => (
-    <div className={`p-4 rounded-lg border transition-all hover:shadow-md ${theme.neutral.card} ${theme.border.secondary}`}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6 flex-1">
-          <div className="min-w-[120px]">
-            <h3 className={`font-bold text-base ${theme.text.primary}`}>
-              {order.orderNumber.replace('1/30/2026-', '')}
-            </h3>
-          </div>
-
-          <div className="flex-1">
-            <div className={`flex items-center gap-2 mb-1 ${theme.text.tertiary}`}>
-              <ShoppingBag size={16} />
-              <span className="text-sm font-medium">{order.items?.length || 0} items</span>
-            </div>
-            {order.items && order.items.length > 0 && (
-              <div className={`text-xs ${theme.text.tertiary}`}>
-                {order.items.map((item, index) => (
-                  <span key={index}>
-                    {item.quantity}x {item.product.name} - ₹{(item.product.price * item.quantity).toFixed(2)}
-                    {index < order.items!.length - 1 && ', '}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {order.customerName && (
-            <div className={`flex items-center gap-2 ${theme.text.tertiary}`}>
-              <User size={16} />
-              <span className="text-sm">{order.customerName}</span>
-            </div>
-          )}
-
-          {order.customerPhone && (
-            <div className={`flex items-center gap-2 ${theme.text.tertiary}`}>
-              <Phone size={16} />
-              <span className="text-sm">{order.customerPhone}</span>
-            </div>
-          )}
-
-          <div className="text-orange-600 font-bold text-lg">
-            ₹{calculateGrandTotal(order).toFixed(2)}
-          </div>
-
-          <div className={`text-sm ${theme.text.muted}`}>
-            {order.pickupTime}
-          </div>
+    <div className={`p-4 sm:p-5 rounded-lg border transition-all hover:shadow-md ${theme.neutral.card} ${theme.border.secondary}`}>
+      {/* Header Row - Order Number and Status */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <h3 className={`font-bold text-lg ${theme.text.primary}`}>
+             {order.orderNumber.replace('1/30/2026-', '')}
+          </h3>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'served'
+              ? `${theme.status.success.bg} ${theme.status.success.text}`
+              : order.status === 'preparing'
+                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
+            }`}>
+            {order.status === 'served' ? 'Served' : order.status === 'preparing' ? 'Preparing' : order.status === 'pending' ? 'Pending' : 'Cancelled'}
+          </span>
         </div>
-
-        <OrderActionsDropdown 
+        <OrderActionsDropdown
           isDarkMode={isDarkMode}
           onViewDetails={() => console.log('View details', order.id)}
           onMarkAsReady={() => console.log('Mark as ready', order.id)}
@@ -180,132 +147,192 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           onCancelOrder={() => console.log('Cancel order', order.id)}
         />
       </div>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Items Section */}
+        <div className="lg:col-span-2">
+          <div className={`flex items-center gap-2 mb-2 ${theme.text.secondary}`}>
+            <ShoppingBag size={16} />
+            <span className="text-sm font-semibold">{order.items?.length || 0} items</span>
+          </div>
+          {order.items && order.items.length > 0 && (
+            <div className={`text-sm ${theme.text.tertiary} space-y-1`}>
+              {order.items.map((item, index) => (
+                <div key={index} className="flex justify-between">
+                  <span>{item.quantity}x {item.product.name}</span>
+                  <span className="font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Customer Info Section */}
+        <div className="space-y-2">
+          <div className={`text-xs font-semibold uppercase ${theme.text.muted}`}>Customer</div>
+          {order.customerName && (
+            <div className={`flex items-center gap-2 ${theme.text.secondary}`}>
+              <User size={16} />
+              <span className="text-sm">{order.customerName}</span>
+            </div>
+          )}
+          {order.customerPhone && (
+            <div className={`flex items-center gap-2 ${theme.text.secondary}`}>
+              <Phone size={16} />
+              <span className="text-sm">{order.customerPhone}</span>
+            </div>
+          )}
+          {!order.customerName && !order.customerPhone && (
+            <span className={`text-sm ${theme.text.muted}`}>Walk-in</span>
+          )}
+        </div>
+
+        {/* Price and Time Section */}
+        <div className="space-y-2">
+          <div className={`text-xs font-semibold uppercase ${theme.text.muted}`}>Total & Time</div>
+          <div className="text-orange-600 dark:text-orange-400 font-bold text-xl">
+            ₹{calculateGrandTotal(order).toFixed(2)}
+          </div>
+          <div className={`text-sm ${theme.text.muted} flex items-center gap-1`}>
+            <Clock size={14} />
+            {order.pickupTime}
+          </div>
+        </div>
+      </div>
     </div>
   );
 
   return (
-    <div className={`h-[calc(100vh-12rem)] flex flex-col ${theme.neutral.background} ${isDarkMode ? '' : 'p-3'}`}>
+    <div className={`min-h-[calc(100vh-12rem)] flex flex-col ${theme.neutral.background} p-3 sm:p-4 lg:p-6`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className={`text-2xl font-bold ${theme.text.primary}`}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 lg:mb-6">
+        <h1 className={`text-xl sm:text-2xl font-bold whitespace-nowrap ${theme.text.primary}`}>
           TakeAway Orders
         </h1>
-      </div>
 
-      {/* Filters */}
-      <div className="space-y-3 mb-6">
-        {/* View Toggle and Search Row */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className={`flex gap-1 p-1 rounded-lg ${theme.neutral.card} w-fit`}>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'grid'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-              }`}
-            >
-              <Grid size={16} />
-            </button>
+
+        <div className="flex items-center w-full sm:w-auto justify-end gap-3 sm:gap-4 sm:ml-auto">
+          {/* Search */}
+          <div className="flex-1 sm:flex-none sm:w-64">
+            <Controller
+              name="search"
+              control={control}
+              render={({ field }) => (
+                <div className="relative">
+                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={16} />
+                  <input
+                    {...field}
+                    type="text"
+                    placeholder="Search"
+                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                  />
+                </div>
+              )}
+            />
+          </div>
+
+          {/* View Toggle */}
+          <div className={`flex gap-1 p-1 border rounded-lg ${theme.neutral.card} flex-shrink-0`}>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'list'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-              }`}
+              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'list'
+                ? `${theme.primary.main} text-white shadow-sm`
+                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
+                }`}
             >
               <List size={16} />
             </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'grid'
+                ? `${theme.primary.main} text-white shadow-sm`
+                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
+                }`}
+            >
+              <Grid size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="mb-4 lg:mb-6">
+        {/* Date Range and Status Buttons Row */}
+        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-end">
+          {/* Date Range - Always horizontal in 2 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 lg:flex-none lg:w-auto">
+            <Controller
+              name="dateFrom"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  <label className={`text-xs font-medium ${theme.text.tertiary}`}>
+                    From
+                  </label>
+                  <div className="relative">
+                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
+                    <input
+                      {...field}
+                      type="date"
+                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+                    />
+                  </div>
+                </div>
+              )}
+            />
+
+            <Controller
+              name="dateTo"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  <label className={`text-xs font-medium ${theme.text.tertiary}`}>
+                    To
+                  </label>
+                  <div className="relative">
+                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
+                    <input
+                      {...field}
+                      type="date"
+                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+                    />
+                  </div>
+                </div>
+              )}
+            />
           </div>
 
-          <Controller
-            name="search"
-            control={control}
-            render={({ field }) => (
-              <div className="relative flex-1">
-                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={16} />
-                <input
-                  {...field}
-                  type="text"
-                  placeholder="Search"
-                  className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                />
-              </div>
-            )}
-          />
-        </div>
-
-        {/* Date Range and Status Buttons Row */}
-        <div className="flex flex-col sm:flex-row gap-3 items-end">
-          <Controller
-            name="dateFrom"
-            control={control}
-            render={({ field }) => (
-              <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
-                <label className={`text-xs font-medium ${theme.text.tertiary}`}>
-                  From
-                </label>
-                <div className="relative">
-                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
-                  <input
-                    {...field}
-                    type="date"
-                    className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
-                  />
-                </div>
-              </div>
-            )}
-          />
-
-          <Controller
-            name="dateTo"
-            control={control}
-            render={({ field }) => (
-              <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
-                <label className={`text-xs font-medium ${theme.text.tertiary}`}>
-                  To
-                </label>
-                <div className="relative">
-                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
-                  <input
-                    {...field}
-                    type="date"
-                    className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
-                  />
-                </div>
-              </div>
-            )}
-          />
-
           {/* Status Buttons */}
-          <div className="flex gap-2 flex-wrap">
-            <button 
-              onClick={() => setActiveFilter('progress')}
-              className={`h-[42px] px-4 py-2 rounded-lg transition-colors font-medium ${
-                activeFilter === 'progress' ? 'bg-purple-600 text-white' : isDarkMode ? 'bg-purple-600/20 text-purple-400 hover:bg-purple-600/30' : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
-              }`}
-            >
-              InProgress
-            </button>
-            <button 
-              onClick={() => setActiveFilter('served')}
-              className={`h-[42px] px-4 py-2 rounded-lg transition-colors font-medium ${
-                activeFilter === 'served' ? `${theme.primary.main} text-white` : isDarkMode ? 'bg-orange-500/20 text-orange-400 hover:bg-orange-500/30' : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
-              }`}
-            >
-              Served
-            </button>
-            <button 
+          <div className="flex flex-wrap gap-2 lg:flex-1 lg:justify-end">
+            <button
               onClick={() => setActiveFilter('all')}
-              className={`h-[42px] px-4 py-2 rounded-lg transition-colors font-medium ${
-                activeFilter === 'all' 
-                  ? `${theme.primary.main} text-white` 
-                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
-              }`}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'all'
+                ? `${theme.primary.main} text-white shadow-md`
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
+                }`}
             >
               All
             </button>
+            <button
+              onClick={() => setActiveFilter('progress')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'progress'
+                ? 'bg-purple-500 text-white shadow-md'
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
+                }`}
+            >
+              InProgress
+            </button>
+            <button
+              onClick={() => setActiveFilter('served')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'served'
+                ? 'bg-orange-500 text-white shadow-md'
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
+                }`}
+            >
+              Served
+            </button>
+
           </div>
         </div>
       </div>
@@ -316,12 +343,12 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           <>
             {/* Ready For Pickup */}
             {readyOrders.length > 0 && (
-              <div className="mb-6 ">
-                <h2 className={`text-lg font-bold mb-3 ${theme.text.primary}`}>
+              <div className="mb-6">
+                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
                   Ready For Pickup
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 px-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {readyOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -339,11 +366,11 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
             {/* In Progress */}
             {progressOrders.length > 0 && (
               <div className="mb-6">
-                <h2 className={`text-lg font-bold mb-3 ${theme.text.primary}`}>
+                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
                   In Progress
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 px-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
                     {progressOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -361,11 +388,11 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
             {/* Served */}
             {servedOrders.length > 0 && (
               <div>
-                <h2 className={`text-lg font-bold mb-3 ${theme.text.primary}`}>
+                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
                   Served
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 px-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {servedOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -392,13 +419,13 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           <>
             {filteredOrders.length > 0 ? (
               <div className="mb-6">
-                <h2 className={`text-lg font-bold mb-3 ${theme.text.primary}`}>
+                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
                   {activeFilter === 'ready' && 'Ready For Pickup'}
                   {activeFilter === 'progress' && 'In Progress'}
                   {activeFilter === 'served' && 'Served'}
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 px-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {filteredOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}

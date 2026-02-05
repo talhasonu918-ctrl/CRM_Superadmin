@@ -1,6 +1,6 @@
 // Mock Data for POS Module
 
-import { Product, Table, TakeawayOrder } from './types';
+import { Product, Table, TakeawayOrder, Order } from './types';
 
 export const mockProducts: Product[] = [
   // Deals
@@ -348,23 +348,6 @@ export const mockTakeawayOrders: TakeawayOrder[] = [
   
 ];
 
-// Order interface for queue orders
-interface Order {
-  id: string;
-  orderNumber: string;
-  total: number;
-  discount: number;
-  tax: number;
-  grandTotal: number;
-  paymentMode: 'cash' | 'card' | 'online';
-  cashBack: number;
-  status: 'pending' | 'preparing' | 'ready' | 'served' | 'cancelled';
-  type: 'dine-in' | 'takeaway' | 'delivery';
-  createdAt: string;
-  tableId: string;
-  items: any[];
-}
-
 // Mock Queue Orders
 export const mockQueueOrders: Order[] = [
   { id: '1', orderNumber: '1/30/2026-562', total: 2395.00, discount: 0, tax: 0, grandTotal: 2395.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 9:09 PM', tableId: 'G6', items: [] },
@@ -376,6 +359,14 @@ export const mockQueueOrders: Order[] = [
   { id: '7', orderNumber: '1/30/2026-568', total: 1900.00, discount: 0, tax: 0, grandTotal: 1900.00, paymentMode: 'cash', cashBack: 0, status: 'ready', type: 'takeaway', createdAt: '30-01-2026 9:01 PM', tableId: 'F8', items: [] },
   { id: '8', orderNumber: '1/30/2026-569', total: 1980.00, discount: 0, tax: 0, grandTotal: 1980.00, paymentMode: 'cash', cashBack: 0, status: 'ready', type: 'takeaway', createdAt: '30-01-2026 8:09 PM', tableId: 'F10', items: [] },
   { id: '9', orderNumber: '1/30/2026-570', total: 1380.00, discount: 0, tax: 0, grandTotal: 1380.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 8:02 PM', tableId: 'F19', items: [] },
+];
+
+export const mockOnlineOrders: Order[] = [
+  { id: 'online-1', orderNumber: 'ONLINE-001', total: 1890.00, discount: 100, tax: 0, grandTotal: 1790.00, paymentMode: 'online', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 10:15 AM', customerName: 'John Doe', items: [] },
+  { id: 'online-2', orderNumber: 'ONLINE-002', total: 2450.00, discount: 0, tax: 0, grandTotal: 2450.00, paymentMode: 'card', cashBack: 0, status: 'preparing', type: 'delivery', createdAt: '30-01-2026 10:30 AM', customerName: 'Jane Smith', items: [] },
+  { id: 'online-3', orderNumber: 'ONLINE-003', total: 1200.00, discount: 50, tax: 0, grandTotal: 1150.00, paymentMode: 'online', cashBack: 0, status: 'ready', type: 'delivery', createdAt: '30-01-2026 10:45 AM', customerName: 'Mike Johnson', items: [] },
+  { id: 'online-4', orderNumber: 'ONLINE-004', total: 3200.00, discount: 200, tax: 0, grandTotal: 3000.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 11:00 AM', customerName: 'Sarah Wilson', items: [] },
+  { id: 'online-5', orderNumber: 'ONLINE-005', total: 950.00, discount: 0, tax: 0, grandTotal: 950.00, paymentMode: 'online', cashBack: 0, status: 'preparing', type: 'delivery', createdAt: '30-01-2026 11:15 AM', customerName: 'David Brown', items: [] },
 ];
 
 export const categories = [

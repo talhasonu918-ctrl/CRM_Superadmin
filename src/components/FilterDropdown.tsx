@@ -34,7 +34,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   
   return (
     <div className="relative">
-      <Filter size={16} className={`absolute left-3 top-1/2 transform -translate-y-1/2 z-10 ${theme.text.muted}`} />
+
       <Controller
         name={name}
         control={control}

@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Order } from '../types';
-import { Search, Grid, List, Calendar, Settings } from 'lucide-react';
-import { HiAdjustmentsHorizontal } from 'react-icons/hi2';
+import { Search, Grid, List, Calendar } from 'lucide-react';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../theme/colors';
+import { ColumnToggle } from '../../../../components/ColumnToggle';
 interface OrderQueueTableProps {
-  isDarkMode?: boolean;
   orders: Order[];
   onPayment: (order: Order) => void;
   onMarkPaid: (order: Order) => void;
@@ -23,7 +24,6 @@ interface FilterFormData {
 }
 
 export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
-  isDarkMode = false,
   orders,
   onPayment,
   onMarkPaid,
@@ -31,10 +31,11 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
   onCancel,
   onPrint,
 }) => {
+  const { isDarkMode } = useTheme();
+  const theme = getThemeColors(isDarkMode);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
-  const [showColumnToggle, setShowColumnToggle] = useState(false);
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
-  
+
   const { control, watch, reset } = useForm<FilterFormData>({
     defaultValues: {
       search: '',
@@ -50,12 +51,12 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
 
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
-      const matchesSearch = !filters.search || 
+      const matchesSearch = !filters.search ||
         order.orderNumber.toLowerCase().includes(filters.search.toLowerCase());
-      
-      const matchesTable = !filters.searchTable || 
+
+      const matchesTable = !filters.searchTable ||
         order.tableId?.toLowerCase().includes(filters.searchTable.toLowerCase());
-      
+
       const matchesInvoiceType = !filters.invoiceType || order.type === filters.invoiceType;
 
       return matchesSearch && matchesTable && matchesInvoiceType;
@@ -82,194 +83,158 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
   const isColumnVisible = (columnId: string) => !hiddenColumns.includes(columnId);
 
   const toggleColumn = (columnId: string) => {
-    setHiddenColumns(prev => 
-      prev.includes(columnId) 
+    setHiddenColumns(prev =>
+      prev.includes(columnId)
         ? prev.filter(id => id !== columnId)
         : [...prev, columnId]
     );
   };
 
   return (
-    <div className={`${isDarkMode ? 'bg-gray-900' : 'bg-white'} rounded-lg shadow-lg`}>
-      {/* Filters - Responsive */}
-      <div className="p-4 space-y-3">
-        {/* First Row: View Toggle + Search Inputs */}
-        <div className="flex flex-col lg:flex-row gap-3 items-stretch">
-          {/* View Mode Toggle */}
-          <div className={`flex gap-1 p-1 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'} w-fit`}>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'list'
-                  ? 'bg-orange-500 text-white shadow-sm'
-                  : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <List size={16} />
-              <span className="hidden sm:inline">List</span>
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                viewMode === 'grid'
-                  ? 'bg-orange-500 text-white shadow-sm'
-                  : isDarkMode ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              <Grid size={16} />
-              <span className="hidden sm:inline">Grid</span>
-            </button>
-          </div>
+    <div className={`${theme.neutral.card} rounded-lg shadow-lg`}>
+      {/* Header with Title, Search, and View Toggle */}
+      <div className={`p-3 sm:p-4 ${theme.border.main}`}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+          <h1 className={`text-xl sm:text-2xl font-bold whitespace-nowrap ${theme.text.primary}`}>
+            Current Order
+          </h1>
 
-          {/* Search Inputs */}
-          <div className="flex flex-col sm:flex-row gap-3 flex-1">
-            <Controller
-              name="search"
-              control={control}
-              render={({ field }) => (
-                <div className="relative flex-1">
-                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} size={16} />
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Search"
-                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDarkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 placeholder-gray-400'
-                    }`}
-                  />
-                </div>
-              )}
-            />
+          <div className="flex items-center w-full sm:w-auto justify-end gap-3 sm:gap-4 sm:ml-auto">
+            {/* Search */}
+            <div className="flex-1 sm:flex-none sm:w-64">
+              <Controller
+                name="search"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary}`} size={16} />
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="Search"
+                      className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none ${theme.input.border} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:ring-2 ${theme.primary.ring} transition-all`}
+                    />
+                  </div>
+                )}
+              />
+            </div>
 
-            <Controller
-              name="searchTable"
-              control={control}
-              render={({ field }) => (
-                <div className="relative flex-1">
-                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} size={16} />
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Search Table"
-                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDarkMode ? 'bg-gray-800 border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 placeholder-gray-400'
-                    }`}
-                  />
-                </div>
-              )}
-            />
+            {/* View Toggle */}
+            <div className={`flex gap-1 p-1 border rounded-lg ${theme.neutral.backgroundSecondary} ${theme.border.secondary} flex-shrink-0`}>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'list'
+                  ? `${theme.primary.main} text-white shadow-sm`
+                  : `${theme.text.secondary} ${theme.neutral.hover}`
+                  }`}
+              >
+                <List size={16} />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'grid'
+                  ? `${theme.primary.main} text-white shadow-sm`
+                  : `${theme.text.secondary} ${theme.neutral.hover}`
+                  }`}
+              >
+                <Grid size={16} />
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Second Row: Date Range, Invoice Type, and Columns */}
-        <div className="flex flex-col sm:flex-row gap-3 items-end">
+      {/* Filters - Responsive */}
+      <div className="p-3 sm:p-4">
+        {/* Date Range, Table Search, Invoice Type, and Columns */}
+        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-end">
+          {/* Date Range - Horizontal on all screens */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 lg:flex-none lg:w-auto">
+            <Controller
+              name="dateFrom"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  <label className={`text-xs font-medium ${theme.text.secondary}`}>
+                    From
+                  </label>
+                  <div className="relative">
+                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary} pointer-events-none`} size={16} />
+                    <input
+                      {...field}
+                      type="date"
+                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                    />
+                  </div>
+                </div>
+              )}
+            />
+
+            <Controller
+              name="dateTo"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-col gap-1">
+                  <label className={`text-xs font-medium ${theme.text.secondary}`}>
+                    To
+                  </label>
+                  <div className="relative">
+                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary} pointer-events-none`} size={16} />
+                    <input
+                      {...field}
+                      type="date"
+                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                    />
+                  </div>
+                </div>
+              )}
+            />
+          </div>
+
+          {/* Table Search */}
           <Controller
-            name="dateFrom"
+            name="searchTable"
             control={control}
             render={({ field }) => (
-              <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
-                <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  From
-                </label>
-                <div className="relative">
-                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} pointer-events-none`} size={16} />
-                  <input
-                    {...field}
-                    type="date"
-                    className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
-                    }`}
-                  />
-                </div>
+              <div className="relative flex-1 lg:w-48">
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`} size={16} />
+                <input
+                  {...field}
+                  type="text"
+                  placeholder="Search Table"
+                  className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text} ${theme.input.placeholder}`}
+                />
               </div>
             )}
           />
 
-          <Controller
-            name="dateTo"
-            control={control}
-            render={({ field }) => (
-              <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
-                <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  To
-                </label>
-                <div className="relative">
-                  <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${isDarkMode ? 'text-gray-500' : 'text-gray-400'} pointer-events-none`} size={16} />
-                  <input
-                    {...field}
-                    type="date"
-                    className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all ${
-                      isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
-                    }`}
-                  />
-                </div>
-              </div>
-            )}
-          />
-
+          {/* Invoice Type */}
           <Controller
             name="invoiceType"
             control={control}
             render={({ field }) => (
-              <select 
-                {...field}
-                className={`h-[42px] px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 focus:ring-orange-500 transition-all min-w-[180px] ${
-                  isDarkMode ? 'bg-gray-800 border-gray-700 text-white' : 'bg-white border-gray-300'
-                }`}
-              >
-                <option value="">Select Invoice Type</option>
-                <option value="dine-in">Dine In</option>
-                <option value="takeaway">Takeaway</option>
-                <option value="delivery">Delivery</option>
-              </select>
+              <div className="relative flex-1 lg:w-48">
+                <select
+                  {...field}
+                  className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all appearance-none ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                >
+                  <option value="">Select Invoice Type</option>
+                  <option value="Dine In">Dine In</option>
+                  <option value="TakeAway">TakeAway</option>
+                  <option value="Delivery">Delivery</option>
+                </select>
+              </div>
             )}
           />
 
           {/* Column Toggle */}
-          <div className="relative">
-            <button 
-              onClick={() => setShowColumnToggle(!showColumnToggle)}
-              className={`h-[42px] px-4 py-2 rounded-lg transition-colors text-sm font-medium whitespace-nowrap flex items-center gap-2 ${
-                isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-              }`}
-            >
-              <HiAdjustmentsHorizontal size={18} />
-              
-            </button>
-
-                {/* Column Toggle Dropdown */}
-                {showColumnToggle && (
-                  <div className={`absolute right-0 top-full mt-2 w-56 rounded-lg border z-50 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-                  }`}>
-                    <div className={`p-3 border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        Toggle Columns
-                      </h3>
-                    </div>
-                    <div className="p-2 max-h-64 overflow-y-auto">
-                      {allColumns.map((column) => (
-                        <label
-                          key={column.id}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer transition-colors ${
-                            isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isColumnVisible(column.id)}
-                            onChange={() => toggleColumn(column.id)}
-                            className="w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
-                          />
-                          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                            {column.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+          <ColumnToggle
+            columns={allColumns}
+            hiddenColumns={hiddenColumns}
+            onToggleColumn={toggleColumn}
+            isDarkMode={isDarkMode}
+            className="flex ml-auto w-fit  justify-end items-end"
+          />
         </div>
       </div>
 
@@ -277,8 +242,8 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
       {viewMode === 'list' && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1200px]">
-            <thead className={`sticky top-0 ${isDarkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
-              <tr className={`text-left text-xs font-semibold ${isDarkMode ? 'text-gray-400' : 'text-gray-700'}`}>
+            <thead className={`sticky top-0 ${theme.neutral.backgroundSecondary}`}>
+              <tr className={`text-left text-xs font-semibold ${theme.text.secondary}`}>
                 {isColumnVisible('orderNo') && <th className="px-4 py-3">Order No</th>}
                 {isColumnVisible('staff') && <th className="px-4 py-3">Staff</th>}
                 {isColumnVisible('tableNo') && <th className="px-4 py-3">Table No</th>}
@@ -295,13 +260,12 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                 {isColumnVisible('actions') && <th className="px-4 py-3">Actions</th>}
               </tr>
             </thead>
-            <tbody className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+            <tbody className={`text-sm ${theme.text.secondary}`}>
               {filteredOrders.map((order) => (
-                <tr 
-                  key={order.id} 
-                  className={`border-b ${
-                    isDarkMode ? 'border-gray-800 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'
-                  } transition-colors`}
+                <tr
+                  key={order.id}
+                  className={`border-b ${isDarkMode ? 'border-gray-800 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'
+                    } transition-colors`}
                 >
                   {isColumnVisible('orderNo') && (
                     <td className="px-4 py-3">
@@ -331,11 +295,10 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                   {isColumnVisible('createdAt') && <td className="px-4 py-3 whitespace-nowrap">{order.createdAt}</td>}
                   {isColumnVisible('status') && (
                     <td className="px-4 py-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
-                        order.status === 'ready' 
-                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                          : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                      }`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${order.status === 'ready'
+                        ? `${theme.status.success.bg} ${theme.status.success.text}`
+                        : `${theme.status.warning.bg} ${theme.status.warning.text}`
+                        }`}>
                         {order.status === 'ready' ? 'Ready/ForPickup' : 'InProgress'}
                       </span>
                     </td>
@@ -344,41 +307,35 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                     <td className="px-4 py-3">
                       <div className="flex flex-col gap-2">
                         <div className="flex gap-2">
-                          <button 
+                          <button
                             onClick={() => onPayment(order)}
-                            className="px-3 py-1.5 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs font-medium whitespace-nowrap"
+                            className={`px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium whitespace-nowrap`}
                           >
                             Payment
                           </button>
-                          <button 
+                          <button
                             onClick={() => onMarkPaid(order)}
-                            className="px-3 py-1.5 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs font-medium whitespace-nowrap"
+                            className={`px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium whitespace-nowrap`}
                           >
                             Mark Paid
                           </button>
-                          <button 
+                          <button
                             onClick={() => onEdit(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${
-                              isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                            }`}
+                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
                           >
                             Edit
                           </button>
                         </div>
                         <div className="flex gap-2">
-                          <button 
+                          <button
                             onClick={() => onCancel(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${
-                              isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                            }`}
+                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
                           >
                             Cancel
                           </button>
-                          <button 
+                          <button
                             onClick={() => onPrint(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${
-                              isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                            }`}
+                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
                           >
                             Invoice Print
                           </button>
@@ -395,13 +352,11 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
 
       {/* Grid View */}
       {viewMode === 'grid' && (
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
           {filteredOrders.map((order) => (
             <div
               key={order.id}
-              className={`rounded-lg border p-4 ${
-                isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-              } hover:shadow-lg transition-all`}
+              className={`rounded-lg border p-4 ${theme.neutral.card} ${theme.border.secondary} hover:shadow-lg transition-all`}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -413,11 +368,10 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                     {order.createdAt}
                   </div>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  order.status === 'ready' 
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                }`}>
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'ready'
+                  ? `${theme.status.success.bg} ${theme.status.success.text}`
+                  : `${theme.status.warning.bg} ${theme.status.warning.text}`
+                  }`}>
                   {order.status === 'ready' ? 'Ready' : 'In Progress'}
                 </span>
               </div>
@@ -425,34 +379,34 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Table</div>
-                  <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{order.tableId}</div>
+                  <div className={`text-xs ${theme.text.muted}`}>Table</div>
+                  <div className={`font-medium ${theme.text.primary}`}>{order.tableId}</div>
                 </div>
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Floor</div>
-                  <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`text-xs ${theme.text.muted}`}>Floor</div>
+                  <div className={`font-medium ${theme.text.primary}`}>
                     {order.tableId?.startsWith('G') ? 'Ground' : '1st Floor'}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Type</div>
-                  <div className={`font-medium capitalize ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`text-xs ${theme.text.muted}`}>Type</div>
+                  <div className={`font-medium capitalize ${theme.text.primary}`}>
                     {order.type.replace('-', ' ')}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Items</div>
-                  <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`text-xs ${theme.text.muted}`}>Items</div>
+                  <div className={`font-medium ${theme.text.primary}`}>
                     {order.items?.length || 0}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Net Sale</div>
-                  <div className={`font-bold text-orange-500`}>₹{order.grandTotal.toFixed(2)}</div>
+                  <div className={`text-xs ${theme.text.muted}`}>Net Sale</div>
+                  <div className={`font-bold ${theme.primary.text}`}>₹{order.grandTotal.toFixed(2)}</div>
                 </div>
                 <div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>Customer</div>
-                  <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`text-xs ${theme.text.muted}`}>Customer</div>
+                  <div className={`font-medium ${theme.text.primary}`}>
                     {order.customerName || '-'}
                   </div>
                 </div>
@@ -461,41 +415,35 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               {/* Actions */}
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     onClick={() => onPayment(order)}
-                    className="flex-1 px-3 py-1.5 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs font-medium"
+                    className={`flex-1 px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium`}
                   >
                     Payment
                   </button>
-                  <button 
+                  <button
                     onClick={() => onMarkPaid(order)}
-                    className="flex-1 px-3 py-1.5 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors text-xs font-medium"
+                    className={`flex-1 px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium`}
                   >
                     Mark Paid
                   </button>
-                  <button 
+                  <button
                     onClick={() => onEdit(order)}
-                    className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${
-                      isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                    }`}
+                    className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
                   >
                     Edit
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <button 
+                  <button
                     onClick={() => onCancel(order)}
-                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${
-                      isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                    }`}
+                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     onClick={() => onPrint(order)}
-                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${
-                      isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
-                    }`}
+                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
                   >
                     Invoice Print
                   </button>
@@ -507,12 +455,10 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
       )}
 
       {/* Footer */}
-      <div className={`mt-4 p-4 border-t text-sm ${
-        isDarkMode ? 'border-gray-800 text-gray-400' : 'border-gray-200 text-gray-600'
-      }`}>
+      <div className={`mt-4 p-4 border-t text-sm ${theme.border.main} ${theme.text.secondary}`}>
         <div className="flex justify-between items-center">
           <span>Showing {filteredOrders.length} orders</span>
-          <span className={isDarkMode ? 'text-gray-500' : 'text-gray-500'}>
+          <span className={theme.text.muted}>
             Total: {filteredOrders.length} orders
           </span>
         </div>

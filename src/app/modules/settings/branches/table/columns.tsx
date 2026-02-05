@@ -20,7 +20,10 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
       header: 'Branch Name',
       size: 180,
       cell: ({ getValue }) => (
-        <span className={`font-semibold text-xs sm:text-sm ${theme.text.primary}`}>
+        <span
+          className={`font-semibold text-xs sm:text-sm block truncate max-w-[120px] sm:max-w-none ${theme.text.primary}`}
+          title={getValue() as string}
+        >
           {getValue() as string}
         </span>
       ),
@@ -34,7 +37,7 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
         const display = (branch as any).managerName || branch.managerUserId || '-';
         return (
           <div className="text-xs sm:text-sm">
-            <div className={theme.text.secondary}>
+            <div className={`${theme.text.secondary} truncate max-w-[100px] sm:max-w-none`} title={display}>
               <span className={theme.text.primary}>{display}</span>
             </div>
           </div>
@@ -49,7 +52,7 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
         const branch = row.original;
         const phone = (branch as any).phone || (branch as any).phoneNumber || '-';
         return (
-          <div className={`text-xs sm:text-sm ${theme.text.secondary}`}>
+          <div className={`text-xs sm:text-sm ${theme.text.secondary} truncate max-w-[100px] sm:max-w-none`} title={phone}>
             <span className={theme.text.primary}>{phone}</span>
           </div>
         );
@@ -60,7 +63,10 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
       header: 'Address',
       size: 250,
       cell: ({ getValue }) => (
-        <span className={`text-xs sm:text-sm ${theme.text.primary}`}>
+        <span
+          className={`text-xs sm:text-sm block truncate max-w-[150px] sm:max-w-none ${theme.text.primary}`}
+          title={getValue() as string}
+        >
           {getValue() as string}
         </span>
       ),
@@ -69,13 +75,27 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
       accessorKey: 'city',
       header: 'City',
       size: 140,
-      cell: ({ getValue }) => <span className={`text-xs sm:text-sm ${theme.text.primary}`}>{getValue() as string || '-'}</span>,
+      cell: ({ getValue }) => (
+        <span
+          className={`text-xs sm:text-sm block truncate max-w-[80px] sm:max-w-none ${theme.text.primary}`}
+          title={getValue() as string || '-'}
+        >
+          {getValue() as string || '-'}
+        </span>
+      ),
     },
     {
       accessorKey: 'country',
       header: 'Country',
       size: 140,
-      cell: ({ getValue }) => <span className={`text-xs sm:text-sm ${theme.text.primary}`}>{getValue() as string || '-'}</span>,
+      cell: ({ getValue }) => (
+        <span
+          className={`text-xs sm:text-sm block truncate max-w-[80px] sm:max-w-none ${theme.text.primary}`}
+          title={getValue() as string || '-'}
+        >
+          {getValue() as string || '-'}
+        </span>
+      ),
     },
     {
       accessorKey: 'lat',
