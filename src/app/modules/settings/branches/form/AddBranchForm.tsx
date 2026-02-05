@@ -11,11 +11,14 @@ interface AddBranchFormProps {
   isDarkMode?: boolean;
 }
 
-const statusOptions = [
+// Define the option type explicitly
+type StatusOption = { label: string; value: Branch['status'] };
+
+const statusOptions: readonly StatusOption[] = [
   { label: 'Active', value: 'Active' },
   { label: 'Inactive', value: 'Inactive' },
   { label: 'Under Maintenance', value: 'Under Maintenance' },
-];
+] as const;
 
 const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) => ({
   control: (base: any, state: any) => ({
@@ -87,7 +90,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Branch name"
-                    className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -111,7 +114,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Manager user ID"
-                    className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -129,7 +132,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           <Controller
             name="phone"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Phone number is required',
               pattern: {
                 value: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
@@ -142,7 +145,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                   {...field}
                   type="tel"
                   placeholder="Phone number"
-                    className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -163,14 +166,14 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             rules={{ required: 'Status is required' }}
             render={({ field, fieldState }) => (
               <>
-                <Select
+                <Select<StatusOption>
                   {...field}
                   options={statusOptions}
-                    className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} resize-none ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                   onChange={(opt) => field.onChange(opt?.value)}
+                  value={statusOptions.find((opt) => opt.value === field.value)}
                   classNamePrefix="custom-select"
                   placeholder="Select status"
-                  className={`text-sm focus:ring-none focus:outline-none ${isDarkMode ? 'dark:text-white' : ''}`}
+                  className={`w-full text-sm focus:ring-none focus:outline-none ${isDarkMode ? 'dark:text-white' : ''}`}
                   styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
                 />
                 {fieldState.error && (
@@ -215,7 +218,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             name="city"
             control={control}
             render={({ field }) => (
-                <input
+              <input
                 {...field}
                 placeholder="City"
                 className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
@@ -233,7 +236,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             name="country"
             control={control}
             render={({ field }) => (
-                <input
+              <input
                 {...field}
                 placeholder="Country"
                 className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
@@ -288,7 +291,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             name="lat"
             control={control}
             render={({ field }) => (
-                <input
+              <input
                 {...field}
                 type="number"
                 step="any"
@@ -308,7 +311,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             name="lng"
             control={control}
             render={({ field }) => (
-                <input
+              <input
                 {...field}
                 type="number"
                 step="any"
@@ -322,7 +325,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
       {/* Action Buttons */}
       <div className="flex items-center justify-end gap-3 pt-2">
-       
+
         <Button
           type="button"
           variant="outline"
@@ -332,7 +335,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           Cancel
         </Button>
 
-         <Button
+        <Button
           type="submit"
           className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}
         >

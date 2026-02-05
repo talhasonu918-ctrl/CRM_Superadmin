@@ -12,7 +12,7 @@ export const ViewPracticeSetting: React.FC<ViewPracticeSettingProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  
+
   return (
     <div className="space-y-6">
       {/* Practice Setting Details */}

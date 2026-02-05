@@ -20,48 +20,48 @@ const timezoneOptions = [
   { label: 'MST (Mountain Standard Time)', value: 'MST (Mountain Standard Time)' },
 ];
 
-const getSelectStyles = (hasError?: boolean) => ({
+const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) => ({
   control: (base: any, state: any) => ({
     ...base,
-    backgroundColor: 'inherit',
-    border: hasError 
-      ? `2px solid ${statusColors.error.main}` 
-      : state.isFocused 
-        ? `2px solid ${primaryColors[500]}` 
-        : `2px solid ${neutralColors[300]}`,
+    backgroundColor: isDarkMode ? theme?.neutral?.background : 'inherit',
+    border: hasError
+      ? `1px solid ${theme?.status?.error?.border || '#ef4444'}`
+      : state.isFocused
+        ? `1px solid ${theme?.border?.focus || '#f97316'}`
+        : `1px solid ${theme?.border?.input || '#d1d5db'}`,
     borderRadius: '0.5rem',
     padding: '0.25rem',
-    boxShadow: state.isFocused ? `0 0 0 1px ${primaryColors[500]}` : 'none',
+    boxShadow: 'none',
     '&:hover': {
-      borderColor: primaryColors[500],
+      borderColor: state.isFocused ? (theme?.border?.focus || '#f97316') : (theme?.border?.input || '#d1d5db'),
     },
   }),
   menu: (base: any) => ({
     ...base,
-    backgroundColor: 'inherit',
-    border: `1px solid ${neutralColors[300]}`,
+    backgroundColor: isDarkMode ? theme?.neutral?.backgroundSecondary : 'inherit',
+    border: `1px solid ${theme?.border?.input || '#d1d5db'}`,
   }),
   option: (base: any, state: any) => ({
     ...base,
     backgroundColor: state.isSelected
-      ? primaryColors[500]
+      ? theme?.primary?.main || '#f97316'
       : state.isFocused
-        ? primaryColors[100]
+        ? theme?.primary?.light || '#fed7aa'
         : 'transparent',
-    color: state.isSelected ? 'white' : 'inherit',
+    color: state.isSelected ? theme?.text?.onPrimary || 'white' : theme?.text?.primary || 'inherit',
     cursor: 'pointer',
   }),
   singleValue: (base: any) => ({
     ...base,
-    color: 'inherit',
+    color: theme?.text?.primary || 'inherit',
   }),
   input: (base: any) => ({
     ...base,
-    color: 'inherit',
+    color: theme?.text?.primary || 'inherit',
   }),
   placeholder: (base: any) => ({
     ...base,
-    color: neutralColors[400],
+    color: theme?.text?.tertiary || '#94a3b8',
   }),
 });
 
@@ -88,7 +88,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
       <div className="grid grid-cols-2 gap-y-5 gap-x-5">
         {/* Practice Name */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.secondary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Practice Name
           </label>
           <Controller
@@ -100,14 +100,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter practice name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.input.placeholder} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
-                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
               </>
             )}
@@ -116,13 +115,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
         {/* Contact Email */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.secondary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Contact Email
           </label>
           <Controller
             name="contactEmail"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Email is required',
               pattern: {
                 value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -135,14 +134,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="admin@example.com"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.input.placeholder} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
-                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
               </>
             )}
@@ -151,13 +149,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
         {/* Phone Number */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.secondary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Phone Number
           </label>
           <Controller
             name="phoneNumber"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Phone number is required',
               pattern: {
                 value: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
@@ -170,14 +168,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   {...field}
                   type="tel"
                   placeholder="+1 (555) 123-4567"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.input.placeholder} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
-                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
               </>
             )}
@@ -186,7 +183,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
         {/* Timezone */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.secondary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Timezone
           </label>
           <Controller
@@ -202,11 +199,11 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   onChange={(opt) => field.onChange(opt?.value)}
                   classNamePrefix="custom-select"
                   placeholder="Select timezone"
-                  className="dark:text-white"
-                  styles={getSelectStyles(!!fieldState.error)}
+                  className="text-sm"
+                  styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
                 />
                 {fieldState.error && (
-                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
               </>
             )}
@@ -215,7 +212,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
         {/* Address */}
         <div className="col-span-2">
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.secondary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Address
           </label>
           <Controller
@@ -228,14 +225,13 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   {...field}
                   placeholder="Enter full address"
                   rows={3}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors resize-none ${theme.input.background} ${theme.text.primary} ${theme.input.placeholder} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors resize-none ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
-                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
               </>
             )}
@@ -244,23 +240,23 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-start gap-3 pt-2">
-        <Button
-          type="submit"
-          className={`h-10 rounded-lg px-8 ${theme.button.primary}`}
-        >
-          {isEditMode ? 'Update Settings' : 'Save Changes'}
-        </Button>
+      <div className="flex items-center justify-end gap-3 pt-2">
         {onCancel && (
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
-            className={`h-10 rounded-lg px-8 ${theme.button.secondary}`}
+            className={`${theme.button.secondary} h-10 rounded-lg px-8`}
           >
             Cancel
           </Button>
         )}
+        <Button
+          type="submit"
+          className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}
+        >
+          {isEditMode ? 'Update Settings' : 'Save Changes'}
+        </Button>
       </div>
     </form>
   );

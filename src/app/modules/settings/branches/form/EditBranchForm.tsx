@@ -12,7 +12,10 @@ interface EditBranchFormProps {
   isDarkMode?: boolean;
 }
 
-const statusOptions = [
+// Define the option type explicitly
+type StatusOption = { label: string; value: Branch['status'] };
+
+const statusOptions: StatusOption[] = [
   { label: 'Active', value: 'Active' },
   { label: 'Inactive', value: 'Inactive' },
   { label: 'Under Maintenance', value: 'Under Maintenance' },
@@ -109,7 +112,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                   placeholder="Enter branch name"
                   className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error
                     ? theme.status.error.border
-                    : `${theme.border.input} focus:border-orange-500`
+                    : `${theme.border.input} focus:border-orange-orange-500`
                     }`}
                 />
                 {fieldState.error && (
@@ -185,7 +188,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
             rules={{ required: 'Status is required' }}
             render={({ field, fieldState }) => (
               <>
-                <Select
+                <Select<StatusOption>
                   {...field}
                   options={statusOptions}
                   value={statusOptions.find((opt) => opt.value === field.value)}
@@ -193,7 +196,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                   classNamePrefix="custom-select"
                   placeholder="Select status"
                   styles={getSelectStyles(!!fieldState.error, isDarkMode)}
-                  className="text-sm"
+                  className="w-full text-sm"
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
