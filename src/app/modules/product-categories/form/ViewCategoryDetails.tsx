@@ -230,20 +230,20 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
             </div>
 
             {/* Descriptions */}
-            <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
+            {/* <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle>Descriptions</SectionTitle>
               <DetailRow label="Summary" value={productDetails.summary} />
               <DetailRow label="Description" value={productDetails.description} />
               <DetailRow label="Detailed Description" value={productDetails.detailDescription} />
-            </div>
+            </div> */}
 
             {/* Codes & Identifiers */}
             <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle icon={Barcode}>Codes & Identifiers</SectionTitle>
-              <div className="grid grid-cols-2 gap-x-4">
+              {/* <div className="grid grid-cols-2 gap-x-4">
                 <DetailRow label="Barcode" value={productDetails.barCode} />
                 <DetailRow label="PCT Code" value={productDetails.pctCode} />
-              </div>
+              </div> */}
             </div>
 
             {/* Supplier Information */}

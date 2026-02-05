@@ -143,7 +143,7 @@ export const ProductPricing: React.FC<ProductPricingProps> = ({
                     className={inputClass}
                   />
                 </div>
-                <div>
+                {/* <div>
                   <label className={`block text-xs font-semibold mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                     Mean Price
                   </label>
@@ -153,7 +153,7 @@ export const ProductPricing: React.FC<ProductPricingProps> = ({
                     onChange={(e) => updateBranchPricing('Main Branch', 'meanPrice', parseFloat(e.target.value) || 0)}
                     className={inputClass}
                   />
-                </div>
+                </div> */}
                 <div>
                   <label className={`block text-xs font-semibold mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                     Retail Price
@@ -167,7 +167,7 @@ export const ProductPricing: React.FC<ProductPricingProps> = ({
                 </div>
                 <div>
                   <label className={`block text-xs font-semibold mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                    Sale Price
+                    Discount Price
                   </label>
                   <input
                     type="number"
