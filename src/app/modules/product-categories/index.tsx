@@ -6,6 +6,7 @@ import { DeleteConfirmModal } from '../../../components/DeleteConfirmModal';
 import { CategoryTable } from './table/table';
 import { AddCategoryForm, EditCategoryForm, ViewCategoryDetails } from './form';
 import { Category } from './types';
+import { showToast } from './utils/toastUtils';
 
 interface ProductCategoriesViewProps {
   isDarkMode: boolean;
@@ -19,12 +20,13 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Partial<Category>>({});
+  const [isSortedByNewest, setIsSortedByNewest] = useState(false);
 
   const handleAddCategory = (data: Partial<Category>) => {
     console.log('Add category:', data);
     setAddModalOpen(false);
   };
- const handleEditCategory = (data: Partial<Category>) => {
+  const handleEditCategory = (data: Partial<Category>) => {
     console.log('Edit category:', data);
     setEditModalOpen(false);
   };
@@ -33,38 +35,41 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
     if (selectedCategory.id) {
       // Get products from localStorage
       const productsStr = localStorage.getItem('products_list');
-      
+
       if (productsStr) {
         try {
           const products = JSON.parse(productsStr);
-          
+
           // Filter out the deleted product
           const updatedProducts = products.filter(
             (product: any) => product.id !== selectedCategory.id
           );
-          
+
           // Save back to localStorage
           localStorage.setItem('products_list', JSON.stringify(updatedProducts));
-          
+
           // Trigger refresh event for table
           window.dispatchEvent(new Event('refreshCategories'));
-          
+
+          window.dispatchEvent(new Event('refreshCategories'));
+
           console.log('✅ Product deleted successfully:', selectedCategory.id);
+          showToast(`"${selectedCategory.categoryName}" deleted successfully!`, '🗑️');
         } catch (error) {
           console.error('❌ Failed to delete product:', error);
         }
       }
     }
-    
+
     setDeleteModalOpen(false);
   };
 
   const handleBulkDiscount = () => {
-    console.log('Bulk discount clicked');
+    showToast('Bulk Discount feature is coming soon!', '🏷️');
   };
 
   const handleSortCategories = () => {
-    console.log('Sort categories clicked');
+    setIsSortedByNewest(!isSortedByNewest);
   };
 
   const openEditModal = (category: Category) => {
@@ -100,11 +105,10 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-                isDarkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
-                  : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
-              }`}
+              className={`w-full pl-10 pr-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
+                : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
+                }`}
             />
           </div>
         </div>
@@ -113,31 +117,28 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
         <div className="flex items-center gap-3">
           <button
             onClick={handleBulkDiscount}
-            className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${
-              isDarkMode
-                ? 'bg-orange-500 text-white hover:bg-orange-700'
-                : 'bg-orange-500 text-white hover:bg-orange-700'
-            } shadow-sm hover:shadow-md`}
+            className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${isDarkMode
+              ? 'bg-orange-500 text-white hover:bg-orange-700'
+              : 'bg-orange-500 text-white hover:bg-orange-700'
+              } shadow-sm hover:shadow-md`}
           >
             Bulk Discount
           </button>
           <button
             onClick={handleSortCategories}
-            className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${
-              isDarkMode
-                ? 'bg-orange-500 text-white hover:bg-orange-700'
-                : 'bg-orange-500 text-white hover:bg-orange-700'
-            } shadow-sm hover:shadow-md`}
+            className={`px-4 py-2.5 rounded-lg font-semibold text-sm transition-all ${isDarkMode
+              ? 'bg-orange-500 text-white hover:bg-orange-700'
+              : 'bg-orange-500 text-white hover:bg-orange-700'
+              } shadow-sm hover:shadow-md`}
           >
-            Sort Categories
+            Sort Categories {isSortedByNewest ? '(Newest First)' : ''}
           </button>
           <button
             onClick={() => router.push('/product-categories/add')}
-            className={`px-4 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all ${
-              isDarkMode
-                ? 'bg-orange-500 text-white hover:bg-orange-700'
-                : 'bg-orange-500 text-white hover:bg-orange-700'
-            } shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40`}
+            className={`px-4 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all ${isDarkMode
+              ? 'bg-orange-500 text-white hover:bg-orange-700'
+              : 'bg-orange-500 text-white hover:bg-orange-700'
+              } shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40`}
           >
             <Plus size={18} />
             Add Category
@@ -154,6 +155,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
         onDeleteCategory={openDeleteModal}
         onBulkDiscount={handleBulkDiscount}
         onSortCategories={handleSortCategories}
+        isSortedByNewest={isSortedByNewest}
         searchTerm={searchTerm}
       />
 

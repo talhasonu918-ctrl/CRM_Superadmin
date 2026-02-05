@@ -17,6 +17,7 @@ interface CategoryTableProps {
   onDeleteCategory?: (category: Category) => void;
   onBulkDiscount?: () => void;
   onSortCategories?: () => void;
+  isSortedByNewest?: boolean;
   searchTerm?: string;
 }
 
@@ -52,6 +53,7 @@ export const CategoryTable: React.FC<CategoryTableProps> = ({
   onDeleteCategory,
   onBulkDiscount,
   onSortCategories,
+  isSortedByNewest = false,
   searchTerm = ''
 }) => {
   const theme = getThemeColors(isDarkMode);
@@ -86,6 +88,18 @@ export const CategoryTable: React.FC<CategoryTableProps> = ({
     [onEditCategory, onViewCategory, onDeleteCategory, isDarkMode]
   );
 
+  const sortedCategories = useMemo(() => {
+    if (!isSortedByNewest) return categories;
+    return [...categories].sort((a, b) => {
+      // Handle potential invalid dates safely
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      if (isNaN(dateA)) return 1;
+      if (isNaN(dateB)) return -1;
+      return dateB - dateA;
+    });
+  }, [categories, isSortedByNewest]);
+
   const {
     table,
     isLoading: isTableLoading,
@@ -93,7 +107,7 @@ export const CategoryTable: React.FC<CategoryTableProps> = ({
     loadMore,
   } = useInfiniteTable<Category>({
     columns,
-    data: categories, // Pass the state directly to the 'data' prop
+    data: sortedCategories, // Pass the state directly to the 'data' prop
     pageSize: 11,
     onLoadMore: () => loadMoreCategories(categories.length),
   });

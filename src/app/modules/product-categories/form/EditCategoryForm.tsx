@@ -1,36 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
+import { Info, Package, Barcode, Settings, Upload, X } from 'lucide-react';
+
+import { ProductFormData } from '../product-types';
+import { showToast } from '../utils/toastUtils';
 import { Category } from '../types';
 import { getThemeColors } from '../../../../theme/colors';
-import { Package, DollarSign, Settings, Info, Barcode, Image as ImageIcon } from 'lucide-react';
 
 interface EditCategoryFormProps {
   initialData: Partial<Category>;
   onSubmit: (data: any) => void;
   onCancel: () => void;
   isDarkMode?: boolean;
-}
-
-interface ProductFormData {
-  name: string;
-  category: string;
-  subCategory: string;
-  description?: string;
-  detailDescription?: string;
-  summary?: string;
-  genericName?: string;
-  productType?: string;
-  barCode?: string;
-  pctCode?: string;
-  manufacturer?: string;
-  supplier?: string;
-  racks?: string;
-  showInMobileApp?: boolean;
-  showInWebApp?: boolean;
-  showOnPos?: boolean;
-  isAutoReady?: boolean;
-  productImage?: string;
 }
 
 export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
@@ -61,7 +42,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
     }
   }, [initialData.id]);
 
-  const { control, handleSubmit, formState: { errors } } = useForm<ProductFormData>({
+  const { control, handleSubmit, setValue, formState: { errors } } = useForm<ProductFormData>({
     defaultValues: productData || {
       name: initialData.categoryName || '',
       category: '',
@@ -140,8 +121,35 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
         }
       }
     }
-
+    // Submit to parent component
+    console.log('Valid form data:', updatedProduct);
     onSubmit(updatedProduct);
+    showToast('Category updated successfully!', '✅');
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert('File size exceeds 5MB limit');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        // Update the form value
+        setValue(fieldName, base64String, { shouldValidate: true, shouldDirty: true });
+
+        // Also update local state to show preview immediately if needed
+        setProductData((prev: any) => ({
+          ...prev,
+          [fieldName]: base64String
+        }));
+        showToast('Image uploaded successfully!', '🖼️');
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const tabs = [
@@ -305,11 +313,65 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
               placeholder="Enter product type"
             />
 
-            <InputField
-              name="productImage"
-              label="Image URL"
-              placeholder="Enter image URL"
-            />
+
+            <div>
+              <label className={`block text-xs font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                Product Image
+              </label>
+              <Controller
+                name="productImage"
+                control={control}
+                render={({ field }) => (
+                  <div className="space-y-3">
+                    <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
+                      ? 'border-slate-700 hover:border-orange-500 bg-slate-800'
+                      : 'border-slate-300 hover:border-orange-500 bg-slate-50'
+                      }`}>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          handleImageUpload(e, 'productImage');
+                          // We don't call field.onChange here directly because handleImageUpload does it with the base64 string
+                        }}
+                        className="hidden"
+                        id="product-image-upload"
+                      />
+                      <label htmlFor="product-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
+                        {field.value ? (
+                          <div className="relative w-full h-32">
+                            <img
+                              src={field.value}
+                              alt="Preview"
+                              className="w-full h-full object-contain rounded-md"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                              <span className="text-white text-xs">Click to change</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className={`mx-auto ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} size={24} />
+                            <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                              Click to upload image
+                            </span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                    {field.value && (
+                      <button
+                        type="button"
+                        onClick={() => field.onChange('')}
+                        className="text-xs text-red-500 hover:text-red-600 underline"
+                      >
+                        Remove Image
+                      </button>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
           </div>
         )}
 

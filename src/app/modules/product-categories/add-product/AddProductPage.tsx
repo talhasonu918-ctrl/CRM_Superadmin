@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ArrowLeft, Check } from 'lucide-react';
 import { ProductFormData } from '../product-types';
-import { 
+import {
   ProductBasicInfo,
   ProductAddons,
   ProductVariants,
   ProductPricing,
   ProductSummary
 } from './index';
+import { showToast } from '../utils/toastUtils';
 
 interface AddProductPageProps {
   isDarkMode: boolean;
@@ -78,22 +79,22 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
           return { isValid: false, message: 'Category is required' };
         }
         return { isValid: true, message: '' };
-      
+
       case 3: // Pricing
         const branchPricing = formData.branchPricing || [];
         if (branchPricing.length === 0) {
           return { isValid: false, message: 'Please add pricing information' };
         }
-        
+
         const hasValidPricing = branchPricing.some(
           (branch) => branch.retailPrice > 0 || branch.costPrice > 0
         );
-        
+
         if (!hasValidPricing) {
           return { isValid: false, message: 'Please enter valid pricing (Retail Price or Cost Price must be greater than 0)' };
         }
         return { isValid: true, message: '' };
-      
+
       default:
         return { isValid: true, message: '' };
     }
@@ -101,12 +102,12 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
 
   const handleNext = () => {
     const validation = validateCurrentTab();
-    
+
     if (!validation.isValid) {
       alert(validation.message);
       return;
     }
-    
+
     if (currentTab < tabs.length - 1) {
       setCurrentTab(currentTab + 1);
     }
@@ -124,35 +125,37 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
     // Save to products list in localStorage
     const productsKey = 'products_list';
     const existingProducts = JSON.parse(localStorage.getItem(productsKey) || '[]');
-    
+
     const newProduct = {
       ...formData,
       id: Date.now().toString(),
-      createdAt: new Date().toLocaleString('en-US', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      createdAt: new Date().toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       }),
-      updatedAt: new Date().toLocaleString('en-US', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit' 
+      updatedAt: new Date().toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       }),
     };
-    
+
     existingProducts.push(newProduct);
     localStorage.setItem(productsKey, JSON.stringify(existingProducts));
-    
+
+    showToast('Product added successfully!', '🎉');
+
     // Clear form data
     localStorage.removeItem(STORAGE_KEY);
-    
+
     // Trigger refresh event for table
     window.dispatchEvent(new Event('refreshCategories'));
-    
+
     // Small delay before redirect to ensure event fires
     setTimeout(() => {
       router.push('/product-categories');
@@ -169,9 +172,8 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
           <div className="flex items-center gap-4">
             <button
               onClick={handleBack}
-              className={`p-2 rounded-lg transition-colors ${
-                isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-              }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
+                }`}
             >
               <ArrowLeft size={20} />
             </button>
@@ -195,15 +197,14 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
               <button
                 key={tab.id}
                 onClick={() => setCurrentTab(index)}
-                className={`px-6 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${
-                  currentTab === index
+                className={`px-6 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${currentTab === index
                     ? isDarkMode
                       ? 'text-orange-400'
                       : 'text-orange-500'
                     : isDarkMode
-                    ? 'text-slate-400 hover:text-slate-300'
-                    : 'text-slate-500 hover:text-slate-700'
-                }`}
+                      ? 'text-slate-400 hover:text-slate-300'
+                      : 'text-slate-500 hover:text-slate-700'
+                  }`}
               >
                 <div className="flex items-center gap-2">
                   {index < currentTab && (

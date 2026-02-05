@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ProductFormData } from '../product-types';
+import { showToast } from '../utils/toastUtils';
 
 interface ProductBasicInfoProps {
   formData: ProductFormData;
@@ -34,11 +35,28 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
     }
   };
 
-  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-    isDarkMode
-      ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500'
-      : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500'
-  }`;
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert('File size exceeds 5MB limit');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        onUpdateFormData({ [fieldName]: base64String });
+        showToast('Image uploaded successfully!', '🖼️');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
+    ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500'
+    : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500'
+    }`;
 
   const labelClass = `block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`;
 
@@ -246,15 +264,46 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
         {/* Image Upload */}
         <div className="mt-6">
           <label className={labelClass}>Select Product Image</label>
-          <div className={`px-4 py-3 rounded-lg border border-dashed ${isDarkMode ? 'border-slate-700' : 'border-slate-300'}`}>
+          <div className={`mt-2 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
+            ? 'border-slate-700 hover:border-purple-500 bg-slate-800'
+            : 'border-slate-300 hover:border-purple-500 bg-slate-50'
+            }`}>
             <input
-              type="text"
-              placeholder="Image URL or file name (e.g., HNY Special.png)"
-              value={formData.productImage || ''}
-              onChange={(e) => onUpdateFormData({ productImage: e.target.value })}
-              className={inputClass}
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleImageUpload(e, 'productImage')}
+              className="hidden"
+              id="product-image-upload"
             />
+            <label htmlFor="product-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
+              {formData.productImage ? (
+                <div className="relative w-full h-40">
+                  <img
+                    src={formData.productImage}
+                    alt="Product Preview"
+                    className="w-full h-full object-contain rounded-md"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                    <span className="text-white text-xs">Click to change</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8">
+                  <span className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    Click to upload product image
+                  </span>
+                </div>
+              )}
+            </label>
           </div>
+          {formData.productImage && (
+            <button
+              onClick={() => onUpdateFormData({ productImage: '' })}
+              className="mt-2 text-xs text-red-500 hover:text-red-600 underline"
+            >
+              Remove Image
+            </button>
+          )}
         </div>
       </div>
 
@@ -313,26 +362,76 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
             </label>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Select Mobile Image</label>
-              <input
-                type="text"
-                placeholder="Mobile image URL"
-                value={formData.mobileImage || ''}
-                onChange={(e) => onUpdateFormData({ mobileImage: e.target.value })}
-                className={inputClass}
-              />
+              <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
+                ? 'border-slate-700 hover:border-purple-500 bg-slate-800'
+                : 'border-slate-300 hover:border-purple-500 bg-slate-50'
+                }`}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'mobileImage')}
+                  className="hidden"
+                  id="mobile-image-upload"
+                />
+                <label htmlFor="mobile-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
+                  {formData.mobileImage ? (
+                    <div className="relative w-full h-32">
+                      <img
+                        src={formData.mobileImage}
+                        alt="Mobile Preview"
+                        className="w-full h-full object-contain rounded-md"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                        <span className="text-white text-xs">Click to change</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-6">
+                      <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Upload mobile image
+                      </span>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
             <div>
               <label className={labelClass}>Select Web Image</label>
-              <input
-                type="text"
-                placeholder="Web image URL"
-                value={formData.webImage || ''}
-                onChange={(e) => onUpdateFormData({ webImage: e.target.value })}
-                className={inputClass}
-              />
+              <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
+                ? 'border-slate-700 hover:border-purple-500 bg-slate-800'
+                : 'border-slate-300 hover:border-purple-500 bg-slate-50'
+                }`}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'webImage')}
+                  className="hidden"
+                  id="web-image-upload"
+                />
+                <label htmlFor="web-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
+                  {formData.webImage ? (
+                    <div className="relative w-full h-32">
+                      <img
+                        src={formData.webImage}
+                        alt="Web Preview"
+                        className="w-full h-full object-contain rounded-md"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                        <span className="text-white text-xs">Click to change</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="py-6">
+                      <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                        Upload web image
+                      </span>
+                    </div>
+                  )}
+                </label>
+              </div>
             </div>
           </div>
         </div>
