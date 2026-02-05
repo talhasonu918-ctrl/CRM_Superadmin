@@ -30,7 +30,7 @@ export const MenuManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMo
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         <div>
-          <h2 className="text-xl font-extrabold tracking-tight">Menu Catalog</h2>
+          <h2 className="text-xl font-extrabold tracking-tight">Menu Catalog </h2>
           <p className="text-slate-400 text-xs font-medium">Manage categories, availability and recipes.</p>
         </div>
         <div className="flex items-center gap-4">

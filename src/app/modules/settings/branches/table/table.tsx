@@ -23,7 +23,7 @@ interface BranchTableProps {
 const generateMockBranches = (count: number): Branch[] => {
   const statuses: ('Active' | 'Inactive' | 'Under Maintenance')[] = ['Active', 'Inactive', 'Under Maintenance'];
   const branches: Branch[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const num = mockBranches.length + i + 1;
     branches.push({
@@ -48,18 +48,17 @@ const loadMoreBranches = async (): Promise<Branch[]> => {
   });
 };
 
-export const BranchTable: React.FC<BranchTableProps> = ({ 
-  isDarkMode, 
-  onAddBranch, 
-  onEditBranch, 
-  onViewBranch, 
-  onDeleteBranch 
+export const BranchTable: React.FC<BranchTableProps> = ({
+  isDarkMode,
+  onAddBranch,
+  onEditBranch,
+  onViewBranch,
+  onDeleteBranch
 }) => {
   const theme = getThemeColors(isDarkMode);
   const cardStyle = `rounded-xl border shadow-sm p-8 ${theme.neutral.background} ${theme.border.main}`;
-  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-    isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
-  }`;
+  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
+    }`;
 
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 100;
@@ -96,7 +95,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     loadMore,
   } = useInfiniteTable<Branch>({
     columns,
-    initialData,
+    data: initialData,
     pageSize: 20,
     onLoadMore: loadMoreBranches,
   });
@@ -110,7 +109,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   // Filter data based on search and status
   const filteredData = useMemo(() => {
     if (!table.getRowModel) return [];
-    
+
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
@@ -127,7 +126,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(row => 
+      filtered = filtered.filter(row =>
         row.original.status.toLowerCase() === statusFilter.toLowerCase()
       );
     }

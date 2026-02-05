@@ -21,7 +21,7 @@ interface PracticeTableProps {
 // Generate more mock settings for display
 const generateMockSettings = (count: number): PracticeSetting[] => {
   const settings: PracticeSetting[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const num = mockPracticeSettings.length + i + 1;
     settings.push({
@@ -46,18 +46,17 @@ const loadMoreSettings = async (): Promise<PracticeSetting[]> => {
   });
 };
 
-export const PracticeTable: React.FC<PracticeTableProps> = ({ 
-  isDarkMode = false, 
-  onAddSetting, 
-  onEditSetting, 
-  onViewSetting, 
-  onDeleteSetting 
+export const PracticeTable: React.FC<PracticeTableProps> = ({
+  isDarkMode = false,
+  onAddSetting,
+  onEditSetting,
+  onViewSetting,
+  onDeleteSetting
 }) => {
   const theme = getThemeColors(isDarkMode);
   const cardStyle = `rounded-xl border shadow-sm p-8 ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100'}`;
-  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-    isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
-  }`;
+  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
+    }`;
 
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 100;
@@ -92,7 +91,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
     loadMore,
   } = useInfiniteTable<PracticeSetting>({
     columns,
-    initialData,
+    data: initialData,
     pageSize: 20,
     onLoadMore: loadMoreSettings,
   });
@@ -106,7 +105,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
   // Filter data based on search
   const filteredData = useMemo(() => {
     if (!table.getRowModel) return [];
-    
+
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
