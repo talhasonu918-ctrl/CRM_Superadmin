@@ -139,9 +139,9 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
                   className={inputClass}
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  Display Name
+                  Display Name hshs
                 </label>
                 <input
                   type="text"
@@ -150,10 +150,10 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
                   onChange={(e) => setCurrentAddon({ ...currentAddon, displayName: e.target.value })}
                   className={inputClass}
                 />
-              </div>
+              </div> */}
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  Instructions
+                  description
                 </label>
                 <input
                   type="text"
@@ -164,8 +164,7 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
                 />
               </div>
             </div>
-
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Minimum Selection

@@ -92,7 +92,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Bar Code */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Bar Code</label>
             <input
               type="text"
@@ -101,10 +101,10 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ barCode: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Generic Name */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Generic Name</label>
             <input
               type="text"
@@ -113,7 +113,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ genericName: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Description */}
           <div>
@@ -128,7 +128,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* PCT Code */}
-          <div>
+          {/* <div>
             <label className={labelClass}>PCT Code</label>
             <input
               type="text"
@@ -137,7 +137,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ pctCode: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Category */}
           <div>
@@ -174,7 +174,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Racks */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Racks</label>
             <input
               type="text"
@@ -183,10 +183,10 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ racks: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Supplier */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Supplier</label>
             <input
               type="text"
@@ -195,8 +195,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ supplier: e.target.value })}
               className={inputClass}
             />
-          </div>
-
+          </div> */}
           {/* Manufacturer */}
           <div>
             <label className={labelClass}>Manufacturer</label>
@@ -208,17 +207,19 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               className={inputClass}
             />
           </div>
-
-          {/* Product Type */}
+          {/* Product Type  at drop down on it  */} 
           <div>
-            <label className={labelClass}>Product Type</label>
-            <input
-              type="text"
-              placeholder="Menu"
-              value={formData.productType || 'Menu'}
+            <label className={labelClass} >Product Type</label>
+            <select
+              value={formData.productType || 'SIMPLE'}
               onChange={(e) => onUpdateFormData({ productType: e.target.value })}
               className={inputClass}
-            />
+            >
+              <option value="SIMPLE">SIMPLE</option>
+              <option value="VARIABLE">VARIABLE</option>
+              <option value="COMBO">COMBO</option>
+              <option value="BUNDLE">BUNDLE</option>
+            </select>
           </div>
 
           {/* Assigned Branches */}
@@ -299,22 +300,20 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           {formData.productImage && (
             <button
               onClick={() => onUpdateFormData({ productImage: '' })}
-              className="mt-2 text-xs text-red-500 hover:text-red-600 underline"
-            >
+              className="mt-2 text-xs text-red-500 hover:text-red-600 underline">
               Remove Image
             </button>
           )}
         </div>
       </div>
-
-      {/* Mobile / Web Configuration */}
+{/* Mobile / Web Configuration */}
       <div className={`rounded-xl border p-6 ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-200'}`}>
         <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           Mobile / Web Configuration
         </h3>
 
         <div className="space-y-4">
-          <div>
+          {/* <div>
             <label className={labelClass}>Summary</label>
             <textarea
               placeholder="Our signature pizza loaded with premium..."
@@ -323,7 +322,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               rows={2}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           <div>
             <label className={labelClass}>Detail Description</label>

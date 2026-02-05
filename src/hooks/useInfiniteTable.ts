@@ -25,14 +25,12 @@ export interface User {
   branch: string;
   createdAt: string;
 }
-
 interface UseInfiniteTableOptions<T> {
   columns: ColumnDef<T>[];
   data?: T[];
   pageSize?: number;
   onLoadMore?: (page: number) => Promise<T[]>;
 }
-
 export function useInfiniteTable<T extends { id: string }>({
   columns,
   data: propData = [],
