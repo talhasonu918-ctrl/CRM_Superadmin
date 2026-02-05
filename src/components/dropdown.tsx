@@ -125,3 +125,5 @@ export const OrderActionsDropdown: React.FC<OrderActionsDropdownProps> = ({
 
   return <DropdownMenu items={items} isDarkMode={isDarkMode} />;
 };
+
+export default DropdownMenu;

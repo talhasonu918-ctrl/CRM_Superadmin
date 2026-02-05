@@ -93,7 +93,7 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     name: 'Menu',
-    href: ROUTES.MENU,
+    href: ROUTES.PRODUCT_CATEGORIES,
     icon: UtensilsCrossed,
     description: 'Menu management and items'
   },

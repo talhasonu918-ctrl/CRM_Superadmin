@@ -15,6 +15,7 @@ export const ROUTES = {
   CRM: '/crm',
   PREFERENCES: '/preferences',
   MENU: '/menu',
+  PRODUCT_CATEGORIES: '/product-categories',
   SETTINGS: '/settings',
   ORDERS: '/orders',
   CUSTOMERS: '/customers',

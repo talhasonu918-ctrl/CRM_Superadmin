@@ -63,7 +63,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     loadMore,
   } = useInfiniteTable<User>({
     columns,
-    initialData,
+    data: initialData,
     pageSize: 20,
     onLoadMore: loadMoreUsers,
   });
@@ -77,7 +77,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   // Filter data based on search and active
   const filteredData = useMemo(() => {
     if (!table.getRowModel) return [];
-    
+
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
