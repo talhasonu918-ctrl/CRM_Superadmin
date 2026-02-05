@@ -75,7 +75,7 @@ export function Layout({ children }: LayoutProps) {
           </div>
 
           {/* Navigation */}
-          <nav className={`flex-1 ${isCollapsed ? 'lg:px-2' : 'lg:px-4'} px-4 py-6 space-y-2 min-h-20 overflow-y-auto custom-scrollbar scrollbar-thin scrollbar-thumb-orange-500 scrollbar-track-orange-500`}>
+          <nav className={`flex-1 ${isCollapsed ? 'lg:px-2' : 'lg:px-4'} px-4 py-6 space-y-2 min-h-20 overflow-y-auto custom-scrollbar scrollbar-thin `}>
             {navigationItems.map((item) => {
               const isActive = router.pathname === item.href;
               return (

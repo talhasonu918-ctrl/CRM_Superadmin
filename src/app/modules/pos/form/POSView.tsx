@@ -7,6 +7,7 @@ import { getThemeColors } from '../../../../theme/colors';
 import { sendToKitchen } from '../../../../utils/kitchenDisplay';
 import toast, { Toaster } from 'react-hot-toast';
 import Select from 'react-select';
+import useSound from 'use-sound';
 
 interface POSViewProps {
   isDarkMode?: boolean;
@@ -45,6 +46,9 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [cashback, setCashback] = useState(0);
   const [kotNote, setKotNote] = useState('');
+
+  // Sound for "Send to Kitchen"
+  const [playBeep] = useSound('/sounds/soap.wav');
 
   // Mock data for waiters and customers
   const [waiters] = useState<Waiter[]>([
@@ -205,6 +209,9 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
       })),
     });
 
+    // Play beep sound
+    playBeep();
+
     // Show success toast
     toast.success(`Order ${orderNumber} sent to Kitchen Display!`, {
       duration: 3000,
@@ -241,8 +248,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
               key={category}
               onClick={() => setSelectedCategory(category)}
               className={`px-3 lg:px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 text-sm ${selectedCategory === category
-                  ? `${theme.primary.main} text-white`
-                  : `${theme.neutral.card} ${theme.text.tertiary} ${theme.neutral.hover}`
+                ? `${theme.primary.main} text-white`
+                : `${theme.neutral.card} ${theme.text.tertiary} ${theme.neutral.hover}`
                 }`}
             >
               {category}
@@ -287,8 +294,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
             <button
               onClick={() => setOrderType('DineIn')}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
-                  ? `${theme.primary.main} text-white`
-                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                ? `${theme.primary.main} text-white`
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
                 }`}
             >
               Dine In
@@ -296,8 +303,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
             <button
               onClick={() => setOrderType('TakeAway')}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
-                  ? `${theme.primary.main} text-white`
-                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                ? `${theme.primary.main} text-white`
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
                 }`}
             >
               Take Away
@@ -305,8 +312,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
             <button
               onClick={() => setOrderType('Delivery')}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
-                  ? `${theme.primary.main} text-white`
-                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                ? `${theme.primary.main} text-white`
+                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
                 }`}
             >
               Delivery
@@ -327,10 +334,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                   styles={{
                     control: (base, state) => ({
                       ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
+                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
                       borderColor: state.isFocused
                         ? theme.raw.primary[500]
-                        : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
+                        : isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary,
                       borderRadius: '0.5rem',
                       minHeight: '2.5rem',
                       boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
@@ -340,8 +347,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     }),
                     menu: (base) => ({
                       ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db'}`,
+                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
+                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary}`,
                       borderRadius: '0.5rem'
                     }),
                     option: (base, state) => ({
@@ -349,26 +356,26 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                       backgroundColor: state.isSelected
                         ? theme.raw.primary[500]
                         : state.isFocused
-                          ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                          ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                           : 'transparent',
                       color: state.isSelected
                         ? '#ffffff'
-                        : isDarkMode ? theme.raw.mode.text.primary : '#111827',
+                        : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
                       '&:hover': {
-                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                       }
                     }),
                     singleValue: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                     }),
                     placeholder: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.muted : '#6b7280'
+                      color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
                     }),
                     input: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                     })
                   }}
                 />
@@ -386,10 +393,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                   styles={{
                     control: (base, state) => ({
                       ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
+                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
                       borderColor: state.isFocused
                         ? theme.raw.primary[500]
-                        : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
+                        : isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary,
                       borderRadius: '0.5rem',
                       minHeight: '2.5rem',
                       boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
@@ -399,8 +406,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     }),
                     menu: (base) => ({
                       ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db'}`,
+                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
+                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary}`,
                       borderRadius: '0.5rem'
                     }),
                     option: (base, state) => ({
@@ -408,26 +415,26 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                       backgroundColor: state.isSelected
                         ? theme.raw.primary[500]
                         : state.isFocused
-                          ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                          ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                           : 'transparent',
                       color: state.isSelected
                         ? '#ffffff'
-                        : isDarkMode ? theme.raw.mode.text.primary : '#111827',
+                        : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
                       '&:hover': {
-                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                       }
                     }),
                     singleValue: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                     }),
                     placeholder: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.muted : '#6b7280'
+                      color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
                     }),
                     input: (base) => ({
                       ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                     })
                   }}
                 />
@@ -466,26 +473,26 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                         backgroundColor: state.isSelected
                           ? theme.raw.primary[500]
                           : state.isFocused
-                            ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                            ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                             : 'transparent',
                         color: state.isSelected
                           ? '#ffffff'
-                          : isDarkMode ? theme.raw.mode.text.primary : '#111827',
+                          : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
                         '&:hover': {
-                          backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
+                          backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
                         }
                       }),
                       singleValue: (base) => ({
                         ...base,
-                        color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                        color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                       }),
                       placeholder: (base) => ({
                         ...base,
-                        color: isDarkMode ? theme.raw.mode.text.muted : '#6b7280'
+                        color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
                       }),
                       input: (base) => ({
                         ...base,
-                        color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
+                        color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
                       })
                     }}
                   />
