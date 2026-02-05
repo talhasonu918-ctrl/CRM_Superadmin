@@ -9,39 +9,50 @@ interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  isDarkMode: boolean;
+  isDarkMode?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  fontFamily?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDarkMode }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDarkMode = false, size = 'lg', fontFamily }) => {
   const theme = getThemeColors(isDarkMode);
-  
+  // map size to max-width classes
+  const sizeClass =
+    size === 'sm' ? 'max-w-sm' :
+      size === 'md' ? 'max-w-md' :
+        size === 'lg' ? 'max-w-lg' :
+          size === 'xl' ? 'max-w-4xl' :
+            size === 'full' ? 'max-w-full' : 'max-w-lg';
+
+  // prevent body scroll when modal is open
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98, y: 8 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`relative w-full max-w-lg p-8 rounded-[2rem] ${theme.shadow['2xl']} border ${theme.neutral.backgroundTertiary} ${theme.border.main} ${theme.text.heading}`}
+            exit={{ opacity: 0, scale: 0.98, y: 8 }}
+            transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+            className={`relative w-full ${sizeClass} p-6 rounded-lg border ${theme.neutral.background} ${theme.border.main} ${theme.text.heading} max-h-[90vh] overflow-y-auto scrollbar-hidden shadow-md`}
+            style={{ fontFamily: fontFamily || undefined }}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-extrabold tracking-tight">{title}</h3>
-              <button 
-                onClick={onClose} 
-                className={`p-2 ${theme.neutral.hoverLight} rounded-full transition-colors`}
-              >
-                <X size={20} className={theme.text.muted} />
-              </button>
-            </div>
             {children}
           </motion.div>
         </div>

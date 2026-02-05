@@ -45,25 +45,22 @@ const Tabs: React.FC<TabsProps> = ({
 
     switch (variant) {
       case 'pills':
-        return `${baseStyles} px-4 py-2 rounded-full ${
-          isActive
-            ? `${theme.primary.main} text-white ${theme.shadow.md}`
-            : `${theme.text.tertiary} ${theme.neutral.hover}`
-        }`;
+        return `${baseStyles} px-4 py-2 rounded-full ${isActive
+          ? `${theme.primary.main} text-white ${theme.shadow.md}`
+          : `${theme.text.tertiary} ${theme.neutral.hover}`
+          }`;
 
       case 'underline':
-        return `${baseStyles} px-1 py-2 border-b-2 ${
-          isActive
-            ? `${theme.primary.border} ${theme.primary.darkText}`
-            : `border-transparent ${theme.text.tertiary} ${theme.border.inputFocus.replace('focus:', 'hover:')}`
-        }`;
+        return `${baseStyles} px-1 py-2 border-b-2 ${isActive
+          ? `${theme.primary.border} ${theme.primary.darkText}`
+          : `border-transparent ${theme.text.tertiary} ${theme.border.inputFocus.replace('focus:', 'hover:')}`
+          }`;
 
       default: // 'default'
-        return `${baseStyles} px-4 py-2 rounded-lg ${
-          isActive
-            ? `${theme.primary.main} text-white ${theme.shadow.md}`
-            : `${theme.text.tertiary} ${theme.neutral.hoverLight}`
-        }`;
+        return `${baseStyles} px-4 py-2 rounded-lg ${isActive
+          ? `${theme.primary.main} text-white ${theme.shadow.md}`
+          : `${theme.text.tertiary} ${theme.neutral.hoverLight}`
+          }`;
     }
   };
 
@@ -83,15 +80,15 @@ const Tabs: React.FC<TabsProps> = ({
   return (
     <div className={`w-full ${className}`}>
       {/* Tab List */}
-      <div className={`flex items-center  justify-between ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''}`}>
-        <div className="flex items-center whitespace-nowrap gap-4 space-x-1 overflow-x-auto">
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''}`}>
+        <div className="w-full text-sm md:w-auto flex items-center whitespace-nowrap gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
           {items.map((item) => {
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
-                className={`${getTabStyles(isActive)} ${getSizeStyles()}`}
+                className={`${getTabStyles(isActive)} ${getSizeStyles()} flex-shrink-0`}
               >
                 {item.icon && (
                   <span className={`${size === 'sm' ? 'w-4 h-4' : size === 'lg' ? 'w-6 h-6' : 'w-5 h-5'}`}>
@@ -100,11 +97,10 @@ const Tabs: React.FC<TabsProps> = ({
                 )}
                 <span>{item.name}</span>
                 {item.badge && (
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                    isActive
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive
                       ? 'bg-white/20 text-white'
                       : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
-                  }`}>
+                    }`}>
                     {item.badge}
                   </span>
                 )}
@@ -114,7 +110,7 @@ const Tabs: React.FC<TabsProps> = ({
         </div>
 
         {/* Optional right-side header (notifications, actions) */}
-        {headerRight && <div className="ml-4 flex items-center">{headerRight}</div>}
+        {headerRight && <div className="self-end md:self-auto flex items-center">{headerRight}</div>}
       </div>
 
       {/* Tab Content */}

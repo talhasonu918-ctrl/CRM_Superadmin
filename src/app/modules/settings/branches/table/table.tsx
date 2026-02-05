@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'rizzui';
@@ -17,6 +17,7 @@ interface BranchTableProps {
   onEditBranch?: (branch: Branch) => void;
   onViewBranch?: (branch: Branch) => void;
   onDeleteBranch?: (branch: Branch) => void;
+  data?: Branch[];
 }
 
 // Generate more mock branches for infinite scroll
@@ -28,10 +29,18 @@ const generateMockBranches = (count: number): Branch[] => {
     const num = mockBranches.length + i + 1;
     branches.push({
       id: String(num),
-      branchName: `Branch ${num}`,
-      managerName: `Manager ${num}`,
-      phoneNumber: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      tenantId: 'tenant_1',
+      name: `Branch ${num}`,
+      slug: `branch-${num}`,
       address: `${num} Street, City, State ${String(10000 + num).slice(0, 5)}`,
+      city: 'City',
+      country: 'Country',
+      lat: 0,
+      lng: 0,
+      phone: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      email: `branch${num}@example.com`,
+      timezone: 'UTC',
+      managerUserId: `user_${num}`,
       status: statuses[Math.floor(Math.random() * statuses.length)],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -53,22 +62,30 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   onAddBranch,
   onEditBranch,
   onViewBranch,
-  onDeleteBranch
+  onDeleteBranch,
+  data,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl border shadow-sm p-8 ${theme.neutral.background} ${theme.border.main}`;
-  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
+  const cardStyle = `rounded-xl border shadow-sm p-4 sm:p-8 ${theme.neutral.background} ${theme.border.main}`;
+  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
     }`;
 
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 100;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
-    branchName: true,
-    managerName: true,
-    phoneNumber: true,
+    name: true, // Make name non-hideable
+    managerUserId: true,
+    phone: true,
+    email: true,
     address: true,
+    city: true,
+    country: true,
+    lat: true,
+    lng: true,
+    timezone: true,
     status: true,
-    actions: true,
+    createdAt: true,
+    actions: true, // Make actions non-hideable
   });
 
   const { control, watch } = useForm({
@@ -86,19 +103,26 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     [onEditBranch, onViewBranch, onDeleteBranch, isDarkMode]
   );
 
-  // Initialize table with infinite scroll
-  const initialData = [...mockBranches, ...generateMockBranches(17)];
+  // Initialize table with provided data or mock/infinite data
+  const initialData = data && data.length > 0 ? data : [...mockBranches, ...generateMockBranches(17)];
   const {
     table,
     isLoading,
     hasNextPage,
     loadMore,
+    setInitialData,
   } = useInfiniteTable<Branch>({
     columns,
     data: initialData,
     pageSize: 20,
     onLoadMore: loadMoreBranches,
   });
+  // If parent provides `data` (from localStorage), keep the internal table data in sync
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setInitialData(data);
+    }
+  }, [data, setInitialData]);
 
   // Custom load more with count tracking
   const loadMoreWithCount = async () => {
@@ -117,9 +141,9 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         const branch = row.original;
         const search = searchTerm.toLowerCase();
         return (
-          branch.branchName.toLowerCase().includes(search) ||
-          branch.managerName.toLowerCase().includes(search) ||
-          branch.phoneNumber.includes(search) ||
+          branch.name.toLowerCase().includes(search) ||
+          (branch.managerUserId || '').toLowerCase().includes(search) ||
+          (branch.phone || '').includes(search) ||
           branch.address.toLowerCase().includes(search)
         );
       });
@@ -143,7 +167,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
 
   return (
     <div className={cardStyle}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h4 className={`text-lg font-bold tracking-tight ${theme.text.primary}`}>Branches</h4>
           <p className={`text-sm mt-1 ${theme.text.secondary}`}>
@@ -152,7 +176,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         </div>
         <Button
           onClick={onAddBranch}
-          className={`${theme.button.primary} h-10 text-white rounded-lg`}
+          className={`${theme.button.primary} w-full sm:w-auto h-10 text-white whitespace-nowrap rounded-lg`}
           size="lg"
         >
           + Add New Branch
@@ -160,76 +184,86 @@ export const BranchTable: React.FC<BranchTableProps> = ({
       </div>
 
       {/* Search, Filter and Column Toggle Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 sm:items-center justify-between">
         <SearchInput
           control={control}
           placeholder="Search branches..."
           inputStyle={inputStyle}
           isDarkMode={isDarkMode}
         />
+        <div className='flex gap-4  sm:justify-start p-2 items-center justify-between '>
+          <FilterDropdown
+            control={control}
+            name="statusFilter"
+            options={[
+              { label: 'All Status', value: 'all' },
+              { label: 'Active', value: 'active' },
+              { label: 'Inactive', value: 'inactive' },
+              { label: 'Under Maintenance', value: 'under maintenance' },
+            ]}
+            placeholder="Select status"
+            inputStyle={inputStyle}
+            isDarkMode={isDarkMode}
+          />
 
-        <FilterDropdown
-          control={control}
-          name="statusFilter"
-          options={[
-            { label: 'All Status', value: 'all' },
-            { label: 'Active', value: 'active' },
-            { label: 'Inactive', value: 'inactive' },
-            { label: 'Under Maintenance', value: 'under maintenance' },
-          ]}
-          placeholder="Select status"
-          inputStyle={inputStyle}
-          isDarkMode={isDarkMode}
-        />
+          <ColumnToggle
+            className="flex-shrink-0"
+            columnVisibility={columnVisibility}
+            onToggleColumn={toggleColumn}
+            disabledColumns={['name', 'actions']}
+            columnLabels={{
+              name: 'Branch Name',
+              managerUserId: 'Manager',
+              phone: 'Phone',
+              email: 'Email',
+              address: 'Address',
+              city: 'City',
+              country: 'Country',
+              lat: 'Lat',
+              lng: 'Lng',
+              timezone: 'Timezone',
+              status: 'Status',
+              createdAt: 'Created',
+              actions: 'Actions',
+            }}
+            isDarkMode={isDarkMode}
+          />
+        </div>
+      </div>
 
-        <ColumnToggle
-          className="flex-shrink-0"
+      <div className="overflow-hidden w-full">
+        <InfiniteTable
+          table={table}
+          isLoading={isLoading}
+          hasNextPage={hasNextPage}
+          onLoadMore={loadMoreWithCount}
+          emptyComponent={
+            <div className={`text-center py-8  ${theme.text.secondary}`}>
+              {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
+            </div>
+          }
+          loadingComponent={
+            <div className={`flex items-center justify-center gap-2 py-4 ${theme.text.secondary}`}>
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
+              <span>Loading branches...</span>
+            </div>
+          }
           columnVisibility={columnVisibility}
-          onToggleColumn={toggleColumn}
-          disabledColumns={['branchName', 'actions']}
-          columnLabels={{
-            branchName: 'Branch Name',
-            managerName: 'Manager',
-            phoneNumber: 'Phone',
-            address: 'Address',
-            status: 'Status',
-            actions: 'Actions',
-          }}
+          rows={searchTerm || statusFilter !== 'all' ? filteredData : undefined}
+          className="max-h-[600px]"
           isDarkMode={isDarkMode}
         />
       </div>
 
-      <InfiniteTable
-        table={table}
-        isLoading={isLoading}
-        hasNextPage={hasNextPage}
-        onLoadMore={loadMoreWithCount}
-        emptyComponent={
-          <div className={`text-center py-8 ${theme.text.secondary}`}>
-            {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
-          </div>
-        }
-        loadingComponent={
-          <div className={`flex items-center justify-center gap-2 py-4 ${theme.text.secondary}`}>
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-orange-500"></div>
-            <span>Loading branches...</span>
-          </div>
-        }
-        columnVisibility={columnVisibility}
-        rows={searchTerm || statusFilter !== 'all' ? filteredData : undefined}
-        className="max-h-[600px]"
-        isDarkMode={isDarkMode}
-      />
-
       {/* Table Footer */}
       <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
-        <div className={`flex items-center justify-between text-sm ${theme.text.secondary}`}>
-          <span>
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
+          <span className="text-center sm:text-left">
             Showing <span className={`font-semibold ${theme.text.primary}`}>{Math.min(loadedCount, filteredData.length || loadedCount)}</span> of{' '}
             <span className={`font-semibold ${theme.text.primary}`}>{total}</span> branches
           </span>
           {hasNextPage && !isLoading && (
-            <span className={`text-xs animate-pulse ${theme.text.tertiary}`}>
+            <span className={`animate-pulse ${theme.text.tertiary}`}>
               Scroll down to load more
             </span>
           )}

@@ -254,9 +254,9 @@ export const getThemeColors = (isDarkMode: boolean) => {
     },
     // Input/Form colors
     input: {
-      background: isDarkMode ? 'bg-slate-800' : 'bg-slate-50',
+      background: isDarkMode ? 'bg-slate-800' : 'bg-white',
       backgroundFocus: isDarkMode ? 'focus:bg-slate-800' : 'focus:bg-white',
-      border: isDarkMode ? 'border-slate-700' : 'border-slate-100',
+      border: isDarkMode ? 'border-slate-700' : 'border-gray-300',
       borderHover: isDarkMode ? 'hover:border-slate-600' : 'hover:border-slate-200',
       text: isDarkMode ? 'text-white' : 'text-gray-900',
       placeholder: isDarkMode ? 'placeholder-gray-500' : 'placeholder-gray-400',
@@ -312,7 +312,7 @@ export const getThemeColors = (isDarkMode: boolean) => {
     },
     // Button styles
     button: {
-      primary: 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20',
+      primary: 'bg-gradient-to-r from-orange-500 to-orange-400 text-white hover:from-orange-600 hover:to-orange-500 shadow-md shadow-orange-300/30 ring-1 ring-transparent focus:ring-orange-200',
       secondary: isDarkMode 
         ? 'border border-gray-600 hover:bg-gray-700 text-gray-300'
         : 'border border-gray-300 hover:bg-gray-100 text-gray-700',

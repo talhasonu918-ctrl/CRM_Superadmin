@@ -72,6 +72,12 @@ export function Layout({ children }: LayoutProps) {
           {/* Mobile Header inside sidebar */}
           <div className="lg:hidden flex items-center justify-between h-16 px-4 bg-orange-500">
             <h1 className="text-xl font-bold text-white">Nexus CRM</h1>
+            <button
+              className="md:hidden text-white"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Navigation */}
