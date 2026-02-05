@@ -352,7 +352,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
 
       {/* Grid View */}
       {viewMode === 'grid' && (
-        <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
+        <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
           {filteredOrders.map((order) => (
             <div
               key={order.id}

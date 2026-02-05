@@ -348,7 +348,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
                   Ready For Pickup
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {readyOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -370,7 +370,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
                   In Progress
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
                     {progressOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -392,7 +392,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
                   Served
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {servedOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
@@ -425,7 +425,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
                   {activeFilter === 'served' && 'Served'}
                 </h2>
                 {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 lg:gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                     {filteredOrders.map(order => (
                       <OrderCard key={order.id} order={order} />
                     ))}
