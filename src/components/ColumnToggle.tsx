@@ -2,25 +2,28 @@ import React, { useState, useRef, useEffect } from 'react';
 import { HiAdjustmentsHorizontal } from "react-icons/hi2";
 import { getThemeColors } from '../theme/colors';
 
-interface Column {
-  id: string;
-  label: string;
-}
-
 interface ColumnToggleProps {
-  columns: Column[];
-  hiddenColumns: string[];
+  columnVisibility?: Record<string, boolean>;
   onToggleColumn: (columnId: string) => void;
+  disabledColumns?: string[];
+  columnLabels?: Record<string, string>;
   isDarkMode?: boolean;
   className?: string;
+  // Legacy props for backward compatibility
+  columns?: Array<{ id: string; label: string }>;
+  hiddenColumns?: string[];
 }
 
 export const ColumnToggle: React.FC<ColumnToggleProps> = ({
-  columns,
-  hiddenColumns,
+  columnVisibility,
   onToggleColumn,
+  disabledColumns = [],
+  columnLabels = {},
   isDarkMode = false,
   className = '',
+  // Legacy props
+  columns,
+  hiddenColumns,
 }) => {
   const theme = getThemeColors(isDarkMode);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -43,7 +46,30 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
     };
   }, [showDropdown]);
 
-  const isColumnVisible = (columnId: string) => !hiddenColumns.includes(columnId);
+  // Support both new and legacy prop structures
+  const getColumns = () => {
+    if (columns) return columns;
+    if (columnLabels) {
+      return Object.entries(columnLabels).map(([id, label]) => ({ id, label }));
+    }
+    return [];
+  };
+
+  const isColumnVisible = (columnId: string) => {
+    if (columnVisibility) {
+      return columnVisibility[columnId] !== false;
+    }
+    if (hiddenColumns) {
+      return !hiddenColumns.includes(columnId);
+    }
+    return true;
+  };
+
+  const isColumnDisabled = (columnId: string) => {
+    return disabledColumns.includes(columnId);
+  };
+
+  const columnsList = getColumns();
 
   return (
     <div ref={dropdownRef} className={`relative flex-shrink-0 ${className}`}>
@@ -62,12 +88,13 @@ export const ColumnToggle: React.FC<ColumnToggleProps> = ({
               Show/Hide Columns
             </h3>
             <div className="space-y-2">
-              {columns.map((column) => (
-                <label key={column.id} className="flex items-center gap-2 cursor-pointer">
+              {columnsList.map((column) => (
+                <label key={column.id} className={`flex items-center gap-2 cursor-pointer ${isColumnDisabled(column.id) ? 'opacity-50 cursor-not-allowed' : ''}`}>
                   <input
                     type="checkbox"
                     checked={isColumnVisible(column.id)}
-                    onChange={() => onToggleColumn(column.id)}
+                    onChange={() => !isColumnDisabled(column.id) && onToggleColumn(column.id)}
+                    disabled={isColumnDisabled(column.id)}
                     className={`rounded ${theme.border.input} ${theme.primary.text} focus:ring-2 ${theme.primary.ring}`}
                   />
                   <span className={`text-sm ${theme.text.secondary}`}>

@@ -51,7 +51,7 @@ export function Layout({ children }: LayoutProps) {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 shadow-lg border-r transition-all duration-300 overflow-hidden z-50
+      <div className={`fixed inset-y-0 left-0 shadow-lg transition-all duration-300 overflow-hidden z-50
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         ${isCollapsed ? 'lg:w-20' : 'lg:w-64'} 
         w-64
