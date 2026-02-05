@@ -20,6 +20,7 @@ interface TabsProps {
   isDarkMode?: boolean;
   headerRight?: React.ReactNode;
   onTabChange?: (tabId: string) => void;
+  fullHeight?: boolean;
 }
 
 const Tabs: React.FC<TabsProps> = ({
@@ -30,7 +31,8 @@ const Tabs: React.FC<TabsProps> = ({
   className = '',
   isDarkMode = false,
   headerRight,
-  onTabChange
+  onTabChange,
+  fullHeight = false
 }) => {
   const theme = getThemeColors(isDarkMode);
   const [activeTab, setActiveTab] = useState(defaultActiveTab || items[0]?.id || '');
@@ -78,9 +80,9 @@ const Tabs: React.FC<TabsProps> = ({
   const activeContent = items.find(item => item.id === activeTab)?.content;
 
   return (
-    <div className={`w-full ${className}`}>
+    <div className={`w-full ${fullHeight ? 'h-full flex flex-col' : ''} ${className}`}>
       {/* Tab List */}
-      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''}`}>
+      <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''} flex-shrink-0`}>
         <div className="w-full text-sm md:w-auto flex items-center whitespace-nowrap gap-2 overflow-x-auto no-scrollbar pb-1 md:pb-0">
           {items.map((item) => {
             const isActive = activeTab === item.id;
@@ -98,8 +100,8 @@ const Tabs: React.FC<TabsProps> = ({
                 <span>{item.name}</span>
                 {item.badge && (
                   <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${isActive
-                      ? 'bg-white/20 text-white'
-                      : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
+                    ? 'bg-white/20 text-white'
+                    : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
                     }`}>
                     {item.badge}
                   </span>
@@ -114,7 +116,7 @@ const Tabs: React.FC<TabsProps> = ({
       </div>
 
       {/* Tab Content */}
-      <div className="mt-6">
+      <div className={`${fullHeight ? 'flex-1 min-h-0' : 'mt-6'}`}>
         {activeContent}
       </div>
     </div>

@@ -78,8 +78,8 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
             }}
             placeholder="Enter customer name"
             className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border text-sm transition-all ${errors.name
-                ? `${theme.status.error.border} focus:ring-red-500`
-                : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
+              ? `${theme.status.error.border} focus:ring-red-500`
+              : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
               } ${theme.input.background} ${theme.input.text} ${theme.input.placeholder}`}
           />
           {errors.name && <p className={`${theme.status.error.main} text-xs mt-1`}>{errors.name}</p>}
@@ -97,8 +97,8 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
             }}
             placeholder="+92 300 1234567"
             className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border text-sm transition-all ${errors.phone
-                ? `${theme.status.error.border} focus:ring-red-500`
-                : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
+              ? `${theme.status.error.border} focus:ring-red-500`
+              : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
               } ${theme.input.background} ${theme.input.text} ${theme.input.placeholder}`}
           />
           {errors.phone && <p className={`${theme.status.error.main} text-xs mt-1`}>{errors.phone}</p>}

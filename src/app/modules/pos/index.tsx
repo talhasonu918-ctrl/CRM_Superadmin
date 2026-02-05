@@ -8,6 +8,7 @@ import { OrderQueueView } from './form/OrderQueueView';
 import { OnlineOrdersView } from './form/OnlineOrdersView';
 import { ShoppingCart, Users, Package, ListOrdered, Bell } from 'lucide-react';
 import { getThemeColors } from '../../../theme/colors';
+import { FullScreenToggle } from '../../../components/FullScreenToggle';
 
 interface POSModuleProps {
   isDarkMode?: boolean;
@@ -74,23 +75,25 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
   ];
 
   return (
-    <div className={` ${theme.neutral.background} ${theme.text.primary}`}>
+    <div id="pos-module-container" className={` ${theme.neutral.background} ${theme.text.primary} h-full w-full overflow-auto scrollbar-hidden`}>
       <Tabs
-        className=""
+        className="h-full"
         items={tabs}
         defaultActiveTab="pos"
         variant="underline"
         size="md"
+        fullHeight={true}
         headerRight={
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-2 rounded ${theme.neutral.hoverLight} ${theme.text.secondary}`}
+              className={`relative p-2 rounded-lg ${theme.neutral.hoverLight} ${theme.text.secondary} transition-all duration-200`}
               title="Notifications"
             >
               <Bell size={18} />
-              <span className={`absolute -top-1 -right-1 ${theme.primary.main} text-white text-xs rounded-full px-1`}>{notifications.length}</span>
+              <span className={`absolute top-0 right-0 ${theme.primary.main} text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 ${isDarkMode ? 'border-[#16191F]' : 'border-white'}`}>{notifications.length}</span>
             </button>
+            <FullScreenToggle isDarkMode={isDarkMode} className="ml-1" targetId="pos-module-container" />
 
             {showNotifications && (
               <div className={`absolute right-0 mt-2 w-72 rounded-lg shadow-lg ${theme.neutral.card} border ${theme.border.secondary} z-10`}>

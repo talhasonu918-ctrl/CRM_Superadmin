@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product, CartItem } from '../types';
 import { mockProducts, categories, mockTables } from '../mockData';
-import { Search, ShoppingCart, Plus, Minus, X, DollarSign, UserPlus, Trash2 } from 'lucide-react';
+import { Search, ShoppingCart, Plus, Minus, DollarSign, UserPlus } from 'lucide-react';
 import { AddCustomerModal } from './AddCustomerModal';
 import { getThemeColors } from '../../../../theme/colors';
 import { sendToKitchen } from '../../../../utils/kitchenDisplay';
 import toast, { Toaster } from 'react-hot-toast';
-import Select from 'react-select';
+import { CustomSelect, CustomSelectOption } from '../../../../components/CustomSelect';
 import useSound from 'use-sound';
+import { useForm, useWatch } from 'react-hook-form';
+import { SearchInput } from '../../../../components/SearchInput';
 
 interface POSViewProps {
   isDarkMode?: boolean;
@@ -22,18 +24,32 @@ interface Customer {
 interface Waiter {
   id: string;
   name: string;
+  phone: string;
+  status: 'Available' | 'Working';
 }
 
 export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const theme = getThemeColors(isDarkMode);
   const [selectedCategory, setSelectedCategory] = useState('All Products');
-  const [searchQuery, setSearchQuery] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedTable, setSelectedTable] = useState<any>(null);
-  const [selectedWaiter, setSelectedWaiter] = useState<any>(null);
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
+  const [selectedTable, setSelectedTable] = useState<CustomSelectOption | null>(null);
+  const [selectedWaiter, setSelectedWaiter] = useState<CustomSelectOption | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomSelectOption | null>(null);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [orderType, setOrderType] = useState<'DineIn' | 'TakeAway' | 'Delivery'>('DineIn');
+
+  // Form for search
+  const { control } = useForm({
+    defaultValues: {
+      searchTerm: ''
+    }
+  });
+
+  const searchQuery = useWatch({
+    control,
+    name: 'searchTerm',
+    defaultValue: ''
+  });
 
   // Editable fields
   const [serviceChargePercent, setServiceChargePercent] = useState('');
@@ -50,44 +66,99 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   // Sound for "Send to Kitchen"
   const [playBeep] = useSound('/sounds/soap.wav');
 
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
   // Mock data for waiters and customers
   const [waiters] = useState<Waiter[]>([
-    { id: 'w1', name: 'Ahmed Ali' },
-    { id: 'w2', name: 'Sara Khan' },
-    { id: 'w3', name: 'Hassan Raza' },
-    { id: 'w4', name: 'Fatima Sheikh' },
+    { id: 'w1', name: 'Ahmed Ali', phone: '+91 98765 43210', status: 'Available' },
+    { id: 'w2', name: 'Sara Khan', phone: '+91 98765 43211', status: 'Working' },
+    { id: 'w3', name: 'Hassan Raza', phone: '+91 98765 43212', status: 'Available' },
+    { id: 'w4', name: 'Fatima Sheikh', phone: '+91 98765 43213', status: 'Working' },
+    { id: 'w5', name: 'Zainab Bibi', phone: '+91 98765 43214', status: 'Available' },
+    { id: 'w6', name: 'Usman Ghani', phone: '+91 98765 43215', status: 'Working' },
+    { id: 'w7', name: 'Ibrahim Lodi', phone: '+91 98765 43216', status: 'Available' },
+    { id: 'w8', name: 'Sana Safinaz', phone: '+91 98765 43217', status: 'Working' },
+    { id: 'w9', name: 'Ali Hamza', phone: '+91 98765 43218', status: 'Available' },
+    { id: 'w10', name: 'Maria B', phone: '+91 98765 43219', status: 'Working' },
   ]);
 
   const [customers, setCustomers] = useState<Customer[]>([
-    { id: 'c1', name: 'Walk-in Customer', phone: '' },
+    { id: 'c1', name: 'Walk-in Customer', phone: 'No phone number' },
     { id: 'c2', name: 'John Doe', phone: '+92 300 1234567' },
     { id: 'c3', name: 'Ali Ahmed', phone: '+92 321 9876543' },
+    { id: 'c4', name: 'Sarah Wilson', phone: '+44 7700 900000' },
+    { id: 'c5', name: 'Michael Chen', phone: '+1 202 555 0101' },
+    { id: 'c6', name: 'Fatima Zahra', phone: '+971 50 123 4567' },
+    { id: 'c7', name: 'Robert Brown', phone: '+61 412 345 678' },
+    { id: 'c8', name: 'Yuki Tanaka', phone: '+81 90 1234 5678' },
+    { id: 'c9', name: 'David Smith', phone: '+27 82 123 4567' },
+    { id: 'c10', name: 'Elena Rossi', phone: '+39 333 123 4567' },
   ]);
 
   // Get available tables
   const availableTables = mockTables.filter(table => table.status === 'available');
 
-  // React Select options
-  const tableOptions = availableTables.map(table => ({
+  const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+  // Auto-calculate amounts based on percentages
+  useEffect(() => {
+    const scPercent = parseFloat(serviceChargePercent) || 0;
+    const taxPercentVal = parseFloat(taxPercent) || 0;
+    const disPercent = parseFloat(discountPercent) || 0;
+
+    const scAmount = (subtotal * scPercent) / 100;
+    setServiceChargeAmount(scAmount > 0 ? scAmount.toFixed(2) : '');
+
+    const disAmount = (subtotal * disPercent) / 100;
+    setDiscountAmount(disAmount > 0 ? disAmount.toFixed(2) : '');
+
+    // Taxable amount = Subtotal + Service Charge - Discount
+    const taxableAmount = subtotal + scAmount - disAmount;
+    const tAmount = (taxableAmount * taxPercentVal) / 100;
+    setTaxAmount(tAmount > 0 ? tAmount.toFixed(2) : '');
+  }, [subtotal, serviceChargePercent, taxPercent, discountPercent]);
+
+  // Custom Select options
+  const tableOptions: CustomSelectOption[] = availableTables.map(table => ({
     value: table.id,
-    label: `${table.number} - ${table.capacity} seats`
+    label: `${table.number}`,
+    sublabel: `${table.capacity} Seats Available`,
+    badge: table.capacity,
+    badgeColor: isDarkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600'
   }));
 
-  const waiterOptions = waiters.map(waiter => ({
-    value: waiter.id,
-    label: waiter.name
-  }));
+  const waiterOptions: CustomSelectOption[] = waiters
+    .map(waiter => ({
+      value: waiter.id,
+      label: waiter.name,
+      sublabel: waiter.phone,
+      badge: waiter.status === 'Available' ? 'A' : 'W',
+      badgeColor: waiter.status === 'Available'
+        ? (isDarkMode ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-600')
+        : (isDarkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600')
+    }))
+    .sort((a, b) => (a.badge === 'A' ? -1 : 1));
 
-  const customerOptions = customers.map(customer => ({
+  const customerOptions: CustomSelectOption[] = customers.map(customer => ({
     value: customer.id,
-    label: customer.name
+    label: customer.name,
+    sublabel: customer.phone || 'No phone number'
   }));
 
-  const paymentModeOptions = [
-    { value: 'Cash', label: 'Cash' },
-    { value: 'Card', label: 'Card' },
-    { value: 'UPI', label: 'UPI' },
-    { value: 'Bank Transfer', label: 'Bank Transfer' }
+  const paymentModeOptions: CustomSelectOption[] = [
+    { value: 'Cash', label: 'Cash', icon: <DollarSign size={14} className="text-green-500" /> },
+    { value: 'Card', label: 'Card', icon: <DollarSign size={14} className="text-blue-500" /> },
+    { value: 'UPI', label: 'UPI', icon: <DollarSign size={14} className="text-purple-500" /> },
+    { value: 'Bank Transfer', label: 'Bank', icon: <DollarSign size={14} className="text-orange-500" /> }
   ];
 
   const handleAddCustomer = (customerData: { name: string; phone: string }) => {
@@ -97,7 +168,11 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
       phone: customerData.phone,
     };
     setCustomers([...customers, newCustomer]);
-    setSelectedCustomer(newCustomer.id);
+    setSelectedCustomer({
+      value: newCustomer.id,
+      label: newCustomer.name,
+      sublabel: newCustomer.phone || 'No phone number'
+    });
   };
 
   const filteredProducts = mockProducts.filter(product => {
@@ -120,10 +195,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   };
 
   const updateQuantity = (productId: string, delta: number) => {
-    setCart(cart.map(item => {
+    setCart(prevCart => prevCart.map(item => {
       if (item.product.id === productId) {
         const newQuantity = item.quantity + delta;
-        return newQuantity > 0 ? { ...item, quantity: newQuantity } : item;
+        return { ...item, quantity: newQuantity };
       }
       return item;
     }).filter(item => item.quantity > 0));
@@ -135,42 +210,22 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
 
   const calculateTotals = () => {
     const itemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
 
-    // Convert string values to numbers, defaulting to 0 if empty
-    const serviceChargePercentNum = serviceChargePercent ? parseFloat(serviceChargePercent) : 0;
-    const serviceChargeAmountNum = serviceChargeAmount ? parseFloat(serviceChargeAmount) : 0;
-    const taxPercentNum = taxPercent ? parseFloat(taxPercent) : 0;
-    const taxAmountNum = taxAmount ? parseFloat(taxAmount) : 0;
-    const discountPercentNum = discountPercent ? parseFloat(discountPercent) : 0;
-    const discountAmountNum = discountAmount ? parseFloat(discountAmount) : 0;
-    const paymentAmountNum = paymentAmount ? parseFloat(paymentAmount) : 0;
+    // Use the values from state (already calculated by useEffect)
+    const serviceChargeAmountNum = parseFloat(serviceChargeAmount) || 0;
+    const taxAmountNum = parseFloat(taxAmount) || 0;
+    const discountAmountNum = parseFloat(discountAmount) || 0;
+    const paymentAmountNum = parseFloat(paymentAmount) || 0;
 
-    // Calculate service charge
-    const calculatedServiceCharge = serviceChargePercentNum > 0
-      ? (subtotal * serviceChargePercentNum) / 100
-      : serviceChargeAmountNum;
-
-    // Calculate discount
-    const calculatedDiscount = discountPercentNum > 0
-      ? (subtotal * discountPercentNum) / 100
-      : discountAmountNum;
-
-    // Calculate tax on subtotal + service charge - discount
-    const taxableAmount = subtotal + calculatedServiceCharge - calculatedDiscount;
-    const calculatedTax = taxPercentNum > 0
-      ? (taxableAmount * taxPercentNum) / 100
-      : taxAmountNum;
-
-    const total = subtotal + calculatedServiceCharge - calculatedDiscount + calculatedTax;
+    const total = subtotal + serviceChargeAmountNum - discountAmountNum + taxAmountNum;
     const calculatedCashback = paymentAmountNum > total ? paymentAmountNum - total : 0;
 
     return {
       itemsCount,
       subtotal,
-      serviceCharge: calculatedServiceCharge,
-      discount: calculatedDiscount,
-      tax: calculatedTax,
+      serviceCharge: serviceChargeAmountNum,
+      discount: discountAmountNum,
+      tax: taxAmountNum,
       total,
       cashback: calculatedCashback
     };
@@ -225,581 +280,373 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const totals = calculateTotals();
 
   return (
-    <div className={`flex flex-col lg:flex-row gap-4 lg:gap-0 ${theme.neutral.background}`}>
-      {/* Left Section - Products */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pr-0">
+    <>
+      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-0 ${theme.neutral.background} overflow-hidden ${isFullscreen ? 'h-full' : 'h-[460px]'}`}>
+        {/* Left Section - Products */}
+        <div className="flex-1 flex flex-col min-w-0 lg:pr-0 h-full overflow-hidden">
 
-        {/* Search */}
-        <div className="relative mb-3 lg:mb-4 mt-2 lg:mt-3 px-2 flex-shrink-0">
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
-          <input
-            type="text"
-            placeholder="Search Product"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={`w-full pl-10 pr-4 py-2.5 rounded-lg border outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
-          />
-        </div>
+          {/* Search */}
+          <div className="mb-3 lg:mb-4 mt-2 lg:mt-3 px-2 flex-shrink-0">
+            <SearchInput
+              control={control}
+              placeholder="Search Product..."
+              inputStyle={`w-full rounded-lg border outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+              isDarkMode={isDarkMode}
+            />
+          </div>
 
-        {/* Categories */}
-        <div className="flex gap-2 px-2 mb-3 lg:mb-4 overflow-x-auto scrollbar-hidden pb-2 flex-shrink-0">
-          {categories.map(category => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-3 lg:px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 text-sm ${selectedCategory === category
-                ? `${theme.primary.main} text-white`
-                : `${theme.neutral.card} ${theme.text.tertiary} ${theme.neutral.hover}`
-                }`}
-            >
-              {category}
-            </button>
-          ))}
-        </div>
-
-        {/* Products Grid */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-thin overflow-x-hidden pb-4 pr-2 max-h-[400px] lg:max-h-[450px]">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 px-2 lg:gap-3">
-            {filteredProducts.map(product => (
+          {/* Categories */}
+          <div className="flex gap-2 px-2 mb-3 lg:mb-4 overflow-x-auto scrollbar-hidden pb-2 flex-shrink-0">
+            {categories.map(category => (
               <button
-                key={product.id}
-                onClick={() => addToCart(product)}
-                className={`p-2 lg:p-3 rounded-lg border transition-all hover:shadow-lg ${theme.neutral.card} ${theme.border.secondary} hover:${theme.primary.border}`}
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                className={`px-3 lg:px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 text-sm ${selectedCategory === category
+                  ? `${theme.primary.main} text-white`
+                  : `${theme.neutral.card} ${theme.text.tertiary} ${theme.neutral.hover}`
+                  }`}
               >
-                <div className={`aspect-square rounded-lg mb-2 flex items-center justify-center ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary}`}>
-                  <ShoppingCart className={theme.text.muted} size={24} />
-                </div>
-                <h3 className={`text-xs font-semibold mb-1 line-clamp-2 ${theme.text.primary}`}>
-                  {product.name}
-                </h3>
-                <p className={`font-bold text-xs ${theme.primary.text}`}>
-                  {product.price > 0 ? `₹${product.price.toFixed(2)}` : '₹0.00'}
-                </p>
+                {category}
               </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      {/* Right Section - Cart */}
-      <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border rounded-md max-h-[600px] lg:max-h-[450px] ${theme.border.main} ${theme.neutral.card} overflow-y-auto scrollbar-hidden`}>
-        <div className="p-3 lg:p-4 flex flex-col h-full ">
-          <h2 className={`text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 ${theme.text.primary}`}>
-            <ShoppingCart size={20} className={`${theme.primary.text} lg:w-6 lg:h-6`} />
-            {orderType === 'DineIn' ? 'DINE IN' : orderType === 'TakeAway' ? 'TAKE AWAY' : 'DELIVERY'}
-          </h2>
-
-          {/* Order Type Selector */}
-          <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0 ">
-            <button
-              onClick={() => setOrderType('DineIn')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
-                ? `${theme.primary.main} text-white`
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-                }`}
-            >
-              Dine In
-            </button>
-            <button
-              onClick={() => setOrderType('TakeAway')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
-                ? `${theme.primary.main} text-white`
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-                }`}
-            >
-              Take Away
-            </button>
-            <button
-              onClick={() => setOrderType('Delivery')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
-                ? `${theme.primary.main} text-white`
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-                }`}
-            >
-              Delivery
-            </button>
+          {/* Products Grid */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-thin overflow-x-hidden pb-4 pr-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 px-2 lg:gap-3">
+              {filteredProducts.map(product => (
+                <button
+                  key={product.id}
+                  onClick={() => addToCart(product)}
+                  className={`p-2 lg:p-3 rounded-lg border transition-all hover:shadow-lg ${theme.neutral.card} ${theme.border.secondary} hover:${theme.primary.border}`}
+                >
+                  <div className={`aspect-square rounded-lg mb-2 flex items-center justify-center ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary}`}>
+                    <ShoppingCart className={theme.text.muted} size={24} />
+                  </div>
+                  <h3 className={`text-xs font-semibold mb-1 line-clamp-2 ${theme.text.primary}`}>
+                    {product.name}
+                  </h3>
+                  <p className={`font-bold text-xs ${theme.primary.text}`}>
+                    {product.price > 0 ? `₹${product.price.toFixed(2)}` : '₹0.00'}
+                  </p>
+                </button>
+              ))}
+            </div>
           </div>
+        </div>
 
-          {/* Select Dropdowns */}
-          <div className="space-y-2 lg:space-y-3 mb-3 lg:mb-4 flex-shrink-0">
-            {orderType === 'DineIn' && (
-              <div>
-                <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Table</label>
-                <Select
+        {/* Right Section - Cart */}
+        <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border rounded-md ${isFullscreen ? 'h-full ' : 'h-[460px]'} ${theme.border.main} ${theme.neutral.card} overflow-y-auto custom-scrollbar scrollbar-thin`}>
+          <div className="p-3 lg:p-4 flex flex-col h-full ">
+            <h2 className={`text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 ${theme.text.primary}`}>
+              <ShoppingCart size={20} className={`${theme.primary.text} lg:w-6 lg:h-6`} />
+              {orderType === 'DineIn' ? 'DINE IN' : orderType === 'TakeAway' ? 'TAKE AWAY' : 'DELIVERY'}
+            </h2>
+
+            {/* Order Type Selector */}
+            <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0 ">
+              <button
+                onClick={() => setOrderType('DineIn')}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
+                  ? `${theme.primary.main} text-white`
+                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                  }`}
+              >
+                Dine In
+              </button>
+              <button
+                onClick={() => setOrderType('TakeAway')}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
+                  ? `${theme.primary.main} text-white`
+                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                  }`}
+              >
+                Take Away
+              </button>
+              <button
+                onClick={() => setOrderType('Delivery')}
+                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
+                  ? `${theme.primary.main} text-white`
+                  : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
+                  }`}
+              >
+                Delivery
+              </button>
+            </div>
+
+            {/* Select Dropdowns */}
+            <div className="space-y-2 lg:space-y-3 mb-3 lg:mb-4 flex-shrink-0">
+              {orderType === 'DineIn' && (
+                <CustomSelect
+                  label="Table"
                   value={selectedTable}
                   onChange={setSelectedTable}
                   options={tableOptions}
                   placeholder="Select Table"
-                  className="text-sm"
-                  styles={{
-                    control: (base, state) => ({
-                      ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
-                      borderColor: state.isFocused
-                        ? theme.raw.primary[500]
-                        : isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary,
-                      borderRadius: '0.5rem',
-                      minHeight: '2.5rem',
-                      boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
-                      '&:hover': {
-                        borderColor: theme.raw.primary[500]
-                      }
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
-                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary}`,
-                      borderRadius: '0.5rem'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? theme.raw.primary[500]
-                        : state.isFocused
-                          ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                          : 'transparent',
-                      color: state.isSelected
-                        ? '#ffffff'
-                        : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
-                      '&:hover': {
-                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                      }
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                    }),
-                    placeholder: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
-                    }),
-                    input: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                    })
-                  }}
+                  isDarkMode={isDarkMode}
                 />
-              </div>
-            )}
-            <div className="grid grid-cols-2 gap-2 lg:gap-3">
-              <div>
-                <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Waiter</label>
-                <Select
+              )}
+              <div className="grid grid-cols-2 gap-2 lg:gap-3">
+                <CustomSelect
+                  label="Waiter"
                   value={selectedWaiter}
                   onChange={setSelectedWaiter}
                   options={waiterOptions}
                   placeholder="Select Waiter"
-                  className="text-sm"
-                  styles={{
-                    control: (base, state) => ({
-                      ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
-                      borderColor: state.isFocused
-                        ? theme.raw.primary[500]
-                        : isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary,
-                      borderRadius: '0.5rem',
-                      minHeight: '2.5rem',
-                      boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
-                      '&:hover': {
-                        borderColor: theme.raw.primary[500]
-                      }
-                    }),
-                    menu: (base) => ({
-                      ...base,
-                      backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
-                      border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary}`,
-                      borderRadius: '0.5rem'
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? theme.raw.primary[500]
-                        : state.isFocused
-                          ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                          : 'transparent',
-                      color: state.isSelected
-                        ? '#ffffff'
-                        : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
-                      '&:hover': {
-                        backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                      }
-                    }),
-                    singleValue: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                    }),
-                    placeholder: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
-                    }),
-                    input: (base) => ({
-                      ...base,
-                      color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                    })
-                  }}
+                  isDarkMode={isDarkMode}
                 />
-              </div>
-              <div>
-                <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Customer</label>
-                <div className="relative">
-                  <Select
-                    value={selectedCustomer}
-                    onChange={setSelectedCustomer}
-                    options={customerOptions}
-                    placeholder="Select Customer"
-                    className="text-sm"
-                    styles={{
-                      control: (base, state) => ({
-                        ...base,
-                        backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                        borderColor: state.isFocused
-                          ? theme.raw.primary[500]
-                          : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
-                        borderRadius: '0.5rem',
-                        minHeight: '2.5rem',
-                        boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
-                        '&:hover': {
-                          borderColor: theme.raw.primary[500]
-                        }
-                      }),
-                      menu: (base) => ({
-                        ...base,
-                        backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                        border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db'}`,
-                        borderRadius: '0.5rem'
-                      }),
-                      option: (base, state) => ({
-                        ...base,
-                        backgroundColor: state.isSelected
-                          ? theme.raw.primary[500]
-                          : state.isFocused
-                            ? (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                            : 'transparent',
-                        color: state.isSelected
-                          ? '#ffffff'
-                          : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
-                        '&:hover': {
-                          backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : theme.raw.mode.background.tertiary)
-                        }
-                      }),
-                      singleValue: (base) => ({
-                        ...base,
-                        color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                      }),
-                      placeholder: (base) => ({
-                        ...base,
-                        color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
-                      }),
-                      input: (base) => ({
-                        ...base,
-                        color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
-                      })
-                    }}
-                  />
-                  <button
-                    onClick={() => setShowCustomerModal(true)}
-                    className={`absolute right-1  top-1/2 -translate-y-1/2 p-1 rounded ${theme.button.primary} transition-colors z-10`}
-                    title="Add Customer"
-                  >
-                    <UserPlus size={14} />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                <div>
 
-          {/* Customer Modal */}
-          <AddCustomerModal
-            isOpen={showCustomerModal}
-            onClose={() => setShowCustomerModal(false)}
-            onAddCustomer={handleAddCustomer}
-            isDarkMode={isDarkMode}
-          />
-
-          {/* Cart Header */}
-          <div className={`grid grid-cols-4 gap-1 lg:gap-2 pb-2 border-b ${theme.border.secondary} mb-2 text-[10px] lg:text-xs font-semibold flex-shrink-0`}>
-            <div className={theme.text.tertiary}>Items</div>
-            <div className={`text-center ${theme.text.tertiary}`}>Quantity</div>
-            <div className={`text-center ${theme.text.tertiary}`}>Disc</div>
-            <div className={`text-right ${theme.text.tertiary}`}>Price</div>
-          </div>
-
-          {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto mb-3 lg:mb-4 scrollbar-hidden min-h-[100px]">
-            {cart.length === 0 ? (
-              <div className={`flex flex-col items-center justify-center h-full ${theme.text.muted}`}>
-                <ShoppingCart size={36} className="lg:w-12 lg:h-12 mb-2 opacity-50" />
-                <p className="text-xs lg:text-sm">No Products in Cart</p>
-              </div>
-            ) : (
-              cart.map(item => (
-                <div key={item.product.id} className={`grid grid-cols-4 gap-1 lg:gap-2 py-2 lg:py-3 border-b ${theme.border.secondary} items-center`}>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => removeFromCart(item.product.id)}
-                      className={`p-0.5 hover:${theme.status.error.hover} rounded transition-colors`}
-                      title="Remove item"
-                    >
-                      <X size={12} className={theme.status.error.main} />
-                    </button>
-                    <div className={`text-[10px] lg:text-xs ${theme.text.primary} truncate`}>{item.product.name}</div>
-                  </div>
-                  <div className="flex items-center justify-center gap-0.5 lg:gap-1">
-                    <button onClick={() => updateQuantity(item.product.id, -1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary} hover:${theme.primary.main} hover:text-white transition-colors`}>
-                      <Minus size={10} className="lg:w-3 lg:h-3" />
-                    </button>
-                    <span className={`w-6 lg:w-8 text-center text-xs lg:text-sm font-medium ${theme.text.primary}`}>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.product.id, 1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary} hover:${theme.primary.main} hover:text-white transition-colors`}>
-                      <Plus size={10} className="lg:w-3 lg:h-3" />
-                    </button>
-                  </div>
-                  <div className={`text-center text-[10px] lg:text-xs ${theme.text.tertiary}`}>
-                    <input
-                      type="number"
-                      className={`w-12 text-center bg-transparent border-0 outline-none ${theme.text.tertiary}`}
-                      placeholder="0"
-                      min="0"
-                      step="0.01"
+                  <div className="relative">
+                    <CustomSelect
+                      label="Customer"
+                      value={selectedCustomer}
+                      onChange={setSelectedCustomer}
+                      options={customerOptions}
+                      placeholder="Customer"
+                      isDarkMode={isDarkMode}
                     />
-                  </div>
-                  <div className={`text-right text-xs lg:text-sm font-semibold ${theme.text.primary}`}>
-                    {(item.product.price * item.quantity).toFixed(2)}
+                    <button
+                      onClick={() => setShowCustomerModal(true)}
+                      className={`absolute right-1  top-[calc(50%+10px)] -translate-y-1/2 p-1 rounded ${theme.button.primary} transition-colors z-10`}
+                      title="Add Customer"
+                    >
+                      <UserPlus size={14} />
+                    </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          {/* Totals */}
-          <div className={`space-y-2 pb-3 lg:pb-4 border-t ${theme.border.secondary} pt-3 lg:pt-4 flex-shrink-0`}>
-            <div className="flex justify-between text-xs lg:text-sm">
-              <span className={theme.text.tertiary}>Items Count: {totals.itemsCount}</span>
-              <span className={`font-semibold ${theme.text.primary}`}>Subtotal: ₹{totals.subtotal.toFixed(2)}</span>
-            </div>
-
-            {/* Service Charge */}
-            <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Sr Ch %</label>
-                <input
-                  type="number"
-                  value={serviceChargePercent}
-                  onChange={(e) => setServiceChargePercent(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Sr Ch Amount</label>
-                <input
-                  type="number"
-                  value={serviceChargeAmount}
-                  onChange={(e) => setServiceChargeAmount(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
               </div>
             </div>
 
-            {/* Tax */}
-            <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Tax %</label>
-                <input
-                  type="number"
-                  value={taxPercent}
-                  onChange={(e) => setTaxPercent(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="16"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Tax Amount</label>
-                <input
-                  type="number"
-                  value={taxAmount}
-                  onChange={(e) => setTaxAmount(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-            </div>
+            {/* Customer Modal */}
+            <AddCustomerModal
+              isOpen={showCustomerModal}
+              onClose={() => setShowCustomerModal(false)}
+              onAddCustomer={handleAddCustomer}
+              isDarkMode={isDarkMode}
+            />
 
-            {/* Discount */}
-            <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Dis %</label>
-                <input
-                  type="number"
-                  value={discountPercent}
-                  onChange={(e) => setDiscountPercent(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              <div>
-                <label className={`${theme.text.tertiary} block mb-1`}>Dis Amount</label>
-                <input
-                  type="number"
-                  value={discountAmount}
-                  onChange={(e) => setDiscountAmount(e.target.value)}
-                  className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-            </div>
-
-            {/* Calculated Values Display */}
-            <div className={`text-xs space-y-1 pt-2 border-t ${theme.border.secondary}`}>
+            {/* Cart Header */}
+            <div className={`grid grid-cols-2 gap-1 lg:gap-2 pb-2 border-b ${theme.border.secondary} mb-2 text-[10px] lg:text-xs font-semibold flex-shrink-0`}>
+              <div className={theme.text.tertiary}>Items</div>
               <div className="flex justify-between">
-                <span className={theme.text.tertiary}>Service Charge:</span>
-                <span className={theme.text.primary}>₹{totals.serviceCharge.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.text.tertiary}>Tax:</span>
-                <span className={theme.text.primary}>₹{totals.tax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className={theme.text.tertiary}>Discount:</span>
-                <span className={theme.text.primary}>-₹{totals.discount.toFixed(2)}</span>
+                <div className={`text-center ${theme.text.tertiary}`}>Quantity</div>
+                <div className={`text-right ${theme.text.tertiary}`}>Price</div>
               </div>
             </div>
-          </div>
 
-          {/* Grand Total */}
-          <div className={`${theme.primary.dark} text-white p-3 lg:p-4 rounded-lg mb-3 lg:mb-4 flex justify-between items-center flex-shrink-0`}>
-            <span className="text-sm lg:text-base font-semibold">Grand Total</span>
-            <span className="text-xl lg:text-2xl font-bold">PKR {totals.total.toFixed(2)}</span>
-          </div>
+            {/* Cart Items */}
+            <div className="flex-1 overflow-y-auto mb-3 lg:mb-4 scrollbar-hidden min-h-[100px]">
+              {cart.length === 0 ? (
+                <div className={`flex flex-col items-center justify-center h-full ${theme.text.muted}`}>
+                  <ShoppingCart size={36} className="lg:w-12 lg:h-12 mb-2 opacity-50" />
+                  <p className="text-xs lg:text-sm">No Products in Cart</p>
+                </div>
+              ) : (
+                cart.map(item => (
+                  <div key={item.product.id} className={`grid grid-cols-2 gap-1 lg:gap-2 py-2 lg:py-3 border-b ${theme.border.secondary} items-center`}>
+                    <div className="flex items-center gap-1">
+                      <div className={`text-[10px] lg:text-xs ${theme.text.primary} break-words line-clamp-2 max-w-[120px] lg:max-w-none`} title={item.product.name}>
+                        {item.product.name.length > 50 ? `${item.product.name.substring(0, 47)}...` : item.product.name}
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <div className="flex items-center justify-center gap-0.5 lg:gap-1">
+                        <button onClick={() => updateQuantity(item.product.id, -1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary} hover:${theme.primary.main} hover:text-white transition-colors`}>
+                          <Minus size={10} className="lg:w-3 lg:h-3" />
+                        </button>
+                        <span className={`w-6 lg:w-8 text-center text-xs lg:text-sm font-medium ${theme.text.primary}`}>{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.product.id, 1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary} hover:${theme.primary.main} hover:text-white transition-colors`}>
+                          <Plus size={10} className="lg:w-3 lg:h-3" />
+                        </button>
+                      </div>
+                      <div className={`text-right text-xs lg:text-sm font-semibold ${theme.text.primary}`}>
+                        {(item.product.price * item.quantity).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
 
-          {/* Payment */}
-          <div className="grid grid-cols-1 gap-3 mb-3 lg:mb-4 text-xs lg:text-sm flex-shrink-0">
-            <div>
-              <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Payment Mode</label>
-              <Select
+            {/* Totals */}
+            <div className={`space-y-2 pb-3 lg:pb-4 border-t ${theme.border.secondary} pt-3 lg:pt-4 flex-shrink-0`}>
+              <div className="flex justify-between text-xs lg:text-sm">
+                <span className={theme.text.tertiary}>Items Count: {totals.itemsCount}</span>
+                <span className={`font-semibold ${theme.text.primary}`}>Subtotal: ₹{totals.subtotal.toFixed(2)}</span>
+              </div>
+
+              {/* Service Charge */}
+              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Sr Ch %</label>
+                  <input
+                    type="number"
+                    value={serviceChargePercent}
+                    onChange={(e) => setServiceChargePercent(e.target.value)}
+                    className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Sr Ch Amount</label>
+                  <input
+                    type="number"
+                    value={serviceChargeAmount}
+                    disabled
+                    className={`w-full px-2 py-1 rounded border text-xs cursor-not-allowed opacity-75 ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Tax */}
+              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Tax %</label>
+                  <input
+                    type="number"
+                    value={taxPercent}
+                    onChange={(e) => setTaxPercent(e.target.value)}
+                    className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="16"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Tax Amount</label>
+                  <input
+                    type="number"
+                    value={taxAmount}
+                    disabled
+                    className={`w-full px-2 py-1 rounded border text-xs cursor-not-allowed opacity-75 ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Discount */}
+              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Dis %</label>
+                  <input
+                    type="number"
+                    value={discountPercent}
+                    onChange={(e) => setDiscountPercent(e.target.value)}
+                    className={`w-full px-2 py-1 rounded border text-xs ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <label className={`${theme.text.tertiary} block mb-1`}>Dis Amount</label>
+                  <input
+                    type="number"
+                    value={discountAmount}
+                    disabled
+                    className={`w-full px-2 py-1 rounded border text-xs cursor-not-allowed opacity-75 ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+
+              {/* Calculated Values Display */}
+              <div className={`text-xs space-y-1 pt-2 border-t ${theme.border.secondary}`}>
+                <div className="flex justify-between">
+                  <span className={theme.text.tertiary}>Service Charge:</span>
+                  <span className={theme.text.primary}>₹{totals.serviceCharge.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={theme.text.tertiary}>Tax:</span>
+                  <span className={theme.text.primary}>₹{totals.tax.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className={theme.text.tertiary}>Discount:</span>
+                  <span className={theme.text.primary}>-₹{totals.discount.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Grand Total */}
+            <div className={`${theme.primary.dark} text-white p-3 lg:p-4 rounded-lg mb-3 lg:mb-4 flex justify-between items-center flex-shrink-0`}>
+              <span className="text-sm lg:text-base font-semibold">Grand Total</span>
+              <span className="text-xl lg:text-2xl font-bold">PKR {totals.total.toFixed(2)}</span>
+            </div>
+
+            {/* Payment */}
+            <div className="grid grid-cols-1 gap-3 mb-3 lg:mb-4 text-xs lg:text-sm flex-shrink-0">
+              <CustomSelect
+                label="Payment Mode"
                 value={paymentModeOptions.find(option => option.value === paymentMode)}
-                onChange={(option) => setPaymentMode(option?.value || 'Cash')}
+                onChange={(option: CustomSelectOption | null) => setPaymentMode(option ? String(option.value) : 'Cash')}
                 options={paymentModeOptions}
-                className="text-sm"
-                styles={{
-                  control: (base, state) => ({
-                    ...base,
-                    backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                    borderColor: state.isFocused
-                      ? theme.raw.primary[500]
-                      : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
-                    borderRadius: '0.5rem',
-                    minHeight: '2.5rem',
-                    boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
-                    '&:hover': {
-                      borderColor: theme.raw.primary[500]
-                    }
-                  }),
-                  menu: (base) => ({
-                    ...base,
-                    backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                    border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db'}`,
-                    borderRadius: '0.5rem'
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    backgroundColor: state.isSelected
-                      ? theme.raw.primary[500]
-                      : state.isFocused
-                        ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
-                        : 'transparent',
-                    color: state.isSelected
-                      ? '#ffffff'
-                      : isDarkMode ? theme.raw.mode.text.primary : '#111827',
-                    '&:hover': {
-                      backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
-                    }
-                  }),
-                  singleValue: (base) => ({
-                    ...base,
-                    color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
-                  }),
-                  placeholder: (base) => ({
-                    ...base,
-                    color: isDarkMode ? theme.raw.mode.text.muted : '#6b7280'
-                  }),
-                  input: (base) => ({
-                    ...base,
-                    color: isDarkMode ? theme.raw.mode.text.primary : '#111827'
-                  })
-                }}
+                placeholder="Select Payment Mode"
+                isDarkMode={isDarkMode}
+              />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Payment Amount</label>
+                  <input
+                    type="number"
+                    value={paymentAmount}
+                    onChange={(e) => setPaymentAmount(e.target.value)}
+                    className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Cashback</label>
+                  <input
+                    type="number"
+                    value={totals.cashback.toFixed(2)}
+                    readOnly
+                    className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm outline-none ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* KOT Note */}
+            <div className="flex-shrink-0">
+              <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>KOT Note</label>
+              <textarea
+                value={kotNote}
+                onChange={(e) => setKotNote(e.target.value)}
+                placeholder="KOT Note"
+                className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border resize-none text-xs lg:text-sm flex-shrink-0 ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
+                rows={2}
               />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Payment Amount</label>
-                <input
-                  type="number"
-                  value={paymentAmount}
-                  onChange={(e) => setPaymentAmount(e.target.value)}
-                  className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  placeholder="0.00"
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              <div>
-                <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>Cashback</label>
-                <input
-                  type="number"
-                  value={totals.cashback.toFixed(2)}
-                  readOnly
-                  className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border text-sm outline-none ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
-                  placeholder="0.00"
-                />
-              </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
+              <button
+                onClick={handleSendToKitchen}
+                className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}
+              >
+                Send To Kitchen
+              </button>
+              <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium ${theme.button.primary}`}>
+                Save
+              </button>
+              <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}>
+                KOT Print
+              </button>
+              <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}>
+                KDS Print
+              </button>
             </div>
-          </div>
-
-          {/* KOT Note */}
-          <div className="flex-shrink-0">
-            <label className={`block text-xs font-medium mb-1 ${theme.text.secondary}`}>KOT Note</label>
-            <textarea
-              value={kotNote}
-              onChange={(e) => setKotNote(e.target.value)}
-              placeholder="KOT Note"
-              className={`w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border resize-none text-xs lg:text-sm flex-shrink-0 ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-              rows={2}
-            />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
-            <button
-              onClick={handleSendToKitchen}
-              className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}
-            >
-              Send To Kitchen
-            </button>
-            <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium ${theme.button.primary}`}>
-              Save
-            </button>
-            <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}>
-              KOT Print
-            </button>
-            <button className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}>
-              KDS Print
-            </button>
           </div>
         </div>
       </div>
-    </div>
+      <Toaster />
+    </>
   );
 };
