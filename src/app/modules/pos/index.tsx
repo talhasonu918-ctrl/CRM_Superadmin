@@ -52,7 +52,7 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
       icon: <Users size={18} />,
       content: <TablesView isDarkMode={isDarkMode} />
     },
-  
+
     {
       id: 'takeaway',
       name: 'TakeAway Orders',
@@ -65,7 +65,7 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
       icon: <ListOrdered size={18} />,
       content: <OrderQueueView isDarkMode={isDarkMode} />
     },
-      {
+    {
       id: 'online',
       name: 'Online Orders',
       icon: <Package size={18} />,
@@ -75,7 +75,7 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
 
   return (
     <div className={` ${theme.neutral.background} ${theme.text.primary}`}>
-      <Tabs 
+      <Tabs
         className=""
         items={tabs}
         defaultActiveTab="pos"

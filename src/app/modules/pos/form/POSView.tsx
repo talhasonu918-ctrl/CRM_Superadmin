@@ -33,7 +33,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
   const [orderType, setOrderType] = useState<'DineIn' | 'TakeAway' | 'Delivery'>('DineIn');
-  
+
   // Editable fields
   const [serviceChargePercent, setServiceChargePercent] = useState('');
   const [serviceChargeAmount, setServiceChargeAmount] = useState('');
@@ -45,7 +45,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const [paymentAmount, setPaymentAmount] = useState('');
   const [cashback, setCashback] = useState(0);
   const [kotNote, setKotNote] = useState('');
-  
+
   // Mock data for waiters and customers
   const [waiters] = useState<Waiter[]>([
     { id: 'w1', name: 'Ahmed Ali' },
@@ -53,39 +53,39 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
     { id: 'w3', name: 'Hassan Raza' },
     { id: 'w4', name: 'Fatima Sheikh' },
   ]);
-  
+
   const [customers, setCustomers] = useState<Customer[]>([
     { id: 'c1', name: 'Walk-in Customer', phone: '' },
     { id: 'c2', name: 'John Doe', phone: '+92 300 1234567' },
     { id: 'c3', name: 'Ali Ahmed', phone: '+92 321 9876543' },
   ]);
-  
+
   // Get available tables
   const availableTables = mockTables.filter(table => table.status === 'available');
-  
+
   // React Select options
   const tableOptions = availableTables.map(table => ({
     value: table.id,
     label: `${table.number} - ${table.capacity} seats`
   }));
-  
+
   const waiterOptions = waiters.map(waiter => ({
     value: waiter.id,
     label: waiter.name
   }));
-  
+
   const customerOptions = customers.map(customer => ({
     value: customer.id,
     label: customer.name
   }));
-  
+
   const paymentModeOptions = [
     { value: 'Cash', label: 'Cash' },
     { value: 'Card', label: 'Card' },
     { value: 'UPI', label: 'UPI' },
     { value: 'Bank Transfer', label: 'Bank Transfer' }
   ];
-  
+
   const handleAddCustomer = (customerData: { name: string; phone: string }) => {
     const newCustomer: Customer = {
       id: `c${customers.length + 1}`,
@@ -105,8 +105,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const addToCart = (product: Product) => {
     const existingItem = cart.find(item => item.product.id === product.id);
     if (existingItem) {
-      setCart(cart.map(item => 
-        item.product.id === product.id 
+      setCart(cart.map(item =>
+        item.product.id === product.id
           ? { ...item, quantity: item.quantity + 1 }
           : item
       ));
@@ -132,7 +132,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const calculateTotals = () => {
     const itemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     const subtotal = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-    
+
     // Convert string values to numbers, defaulting to 0 if empty
     const serviceChargePercentNum = serviceChargePercent ? parseFloat(serviceChargePercent) : 0;
     const serviceChargeAmountNum = serviceChargeAmount ? parseFloat(serviceChargeAmount) : 0;
@@ -141,29 +141,29 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
     const discountPercentNum = discountPercent ? parseFloat(discountPercent) : 0;
     const discountAmountNum = discountAmount ? parseFloat(discountAmount) : 0;
     const paymentAmountNum = paymentAmount ? parseFloat(paymentAmount) : 0;
-    
+
     // Calculate service charge
-    const calculatedServiceCharge = serviceChargePercentNum > 0 
-      ? (subtotal * serviceChargePercentNum) / 100 
+    const calculatedServiceCharge = serviceChargePercentNum > 0
+      ? (subtotal * serviceChargePercentNum) / 100
       : serviceChargeAmountNum;
-    
+
     // Calculate discount
-    const calculatedDiscount = discountPercentNum > 0 
-      ? (subtotal * discountPercentNum) / 100 
+    const calculatedDiscount = discountPercentNum > 0
+      ? (subtotal * discountPercentNum) / 100
       : discountAmountNum;
-    
+
     // Calculate tax on subtotal + service charge - discount
     const taxableAmount = subtotal + calculatedServiceCharge - calculatedDiscount;
-    const calculatedTax = taxPercentNum > 0 
-      ? (taxableAmount * taxPercentNum) / 100 
+    const calculatedTax = taxPercentNum > 0
+      ? (taxableAmount * taxPercentNum) / 100
       : taxAmountNum;
-    
+
     const total = subtotal + calculatedServiceCharge - calculatedDiscount + calculatedTax;
     const calculatedCashback = paymentAmountNum > total ? paymentAmountNum - total : 0;
-    
-    return { 
-      itemsCount, 
-      subtotal, 
+
+    return {
+      itemsCount,
+      subtotal,
       serviceCharge: calculatedServiceCharge,
       discount: calculatedDiscount,
       tax: calculatedTax,
@@ -184,12 +184,12 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
     const selectedTableData = availableTables.find(t => t.id === selectedTable?.value);
     const selectedWaiterData = waiters.find(w => w.id === selectedWaiter?.value);
     const selectedCustomerData = customers.find(c => c.id === selectedCustomer?.value);
-    
+
     const orderNumber = `# ${Math.floor(Math.random() * 900) + 100}`;
-    const tableNumber = orderType === 'DineIn' && selectedTableData 
-      ? selectedTableData.number 
+    const tableNumber = orderType === 'DineIn' && selectedTableData
+      ? selectedTableData.number
       : `${orderType === 'TakeAway' ? 'TKA' : 'DEL'}-${Math.floor(Math.random() * 900 + 100)}`;
-    
+
     sendToKitchen({
       orderNumber,
       tableNumber,
@@ -210,7 +210,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
       duration: 3000,
       position: 'top-right',
     });
-    
+
     // Optional: Clear cart after sending
     // setCart([]);
   };
@@ -218,31 +218,12 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
   const totals = calculateTotals();
 
   return (
-    <div className={`flex h-[450px] overflow-hidden ${theme.neutral.background}`}>
+    <div className={`flex flex-col lg:flex-row gap-4 lg:gap-0 ${theme.neutral.background}`}>
       {/* Left Section - Products */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden pr-0">
-        
-        {/* <div className="flex items-center gap-2 mb-4 flex-wrap">
-          <button className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors whitespace-nowrap">
-            <Plus size={18} />
-            <span className="font-medium">New Order</span>
-          </button>
-          <button className={`px-4 py-2 rounded-lg border transition-colors whitespace-nowrap ${isDarkMode ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-50'}`}>
-            Tables <span className="ml-2 bg-orange-500 text-white px-2 py-0.5 rounded text-sm">0</span>
-          </button>
-          <button className={`px-4 py-2 rounded-lg border transition-colors whitespace-nowrap ${isDarkMode ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-50'}`}>
-            Delivery <span className="ml-2 bg-orange-500 text-white px-2 py-0.5 rounded text-sm">0</span>
-          </button>
-          <button className={`px-4 py-2 rounded-lg border transition-colors whitespace-nowrap ${isDarkMode ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-50'}`}>
-            Take Away <span className="ml-2 bg-orange-500 text-white px-2 py-0.5 rounded text-sm">0</span>
-          </button>
-          <button className={`px-4 py-2 rounded-lg border transition-colors whitespace-nowrap ${isDarkMode ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-50'}`}>
-            Order Queue <span className="ml-2 bg-orange-500 text-white px-2 py-0.5 rounded text-sm">0</span>
-          </button>
-        </div> */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden lg:pr-0">
 
         {/* Search */}
-        <div className="relative mb-4 mt-3 px-2 flex-shrink-0">
+        <div className="relative mb-3 lg:mb-4 mt-2 lg:mt-3 px-2 flex-shrink-0">
           <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
           <input
             type="text"
@@ -254,16 +235,15 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
         </div>
 
         {/* Categories */}
-        <div className="flex gap-2 px-2 mb-4 overflow-x-auto scrollbar-hidden pb-2  flex-shrink-0">
+        <div className="flex gap-2 px-2 mb-3 lg:mb-4 overflow-x-auto scrollbar-hidden pb-2 flex-shrink-0">
           {categories.map(category => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 ${
-                selectedCategory === category
+              className={`px-3 lg:px-4 py-2 rounded-lg whitespace-nowrap transition-colors flex-shrink-0 text-sm ${selectedCategory === category
                   ? `${theme.primary.main} text-white`
                   : `${theme.neutral.card} ${theme.text.tertiary} ${theme.neutral.hover}`
-              }`}
+                }`}
             >
               {category}
             </button>
@@ -271,16 +251,16 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
         </div>
 
         {/* Products Grid */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden pb-4 pr-2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3">
+        <div className="flex-1 overflow-y-auto custom-scrollbar scrollbar-thin overflow-x-hidden pb-4 pr-2 max-h-[400px] lg:max-h-[450px]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 px-2 lg:gap-3">
             {filteredProducts.map(product => (
               <button
                 key={product.id}
                 onClick={() => addToCart(product)}
-                className={`p-3 rounded-lg border transition-all hover:shadow-lg ${theme.neutral.card} ${theme.border.secondary} hover:${theme.primary.border}`}
+                className={`p-2 lg:p-3 rounded-lg border transition-all hover:shadow-lg ${theme.neutral.card} ${theme.border.secondary} hover:${theme.primary.border}`}
               >
                 <div className={`aspect-square rounded-lg mb-2 flex items-center justify-center ${isDarkMode ? theme.neutral.card : theme.neutral.backgroundSecondary}`}>
-                  <ShoppingCart className={theme.text.muted} size={32} />
+                  <ShoppingCart className={theme.text.muted} size={24} />
                 </div>
                 <h3 className={`text-xs font-semibold mb-1 line-clamp-2 ${theme.text.primary}`}>
                   {product.name}
@@ -295,7 +275,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
       </div>
 
       {/* Right Section - Cart */}
-      <div className={`w-80 lg:w-96 flex-shrink-0 flex flex-col border  rounded-md h-[450px]  ${theme.border.main} ${theme.neutral.card} overflow-y-auto scrollbar-hidden`}>
+      <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border rounded-md max-h-[600px] lg:max-h-[450px] ${theme.border.main} ${theme.neutral.card} overflow-y-auto scrollbar-hidden`}>
         <div className="p-3 lg:p-4 flex flex-col h-full ">
           <h2 className={`text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 ${theme.text.primary}`}>
             <ShoppingCart size={20} className={`${theme.primary.text} lg:w-6 lg:h-6`} />
@@ -306,31 +286,28 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
           <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0 ">
             <button
               onClick={() => setOrderType('DineIn')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                orderType === 'DineIn'
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
                   ? `${theme.primary.main} text-white`
                   : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-              }`}
+                }`}
             >
               Dine In
             </button>
             <button
               onClick={() => setOrderType('TakeAway')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                orderType === 'TakeAway'
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
                   ? `${theme.primary.main} text-white`
                   : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-              }`}
+                }`}
             >
               Take Away
             </button>
             <button
               onClick={() => setOrderType('Delivery')}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                orderType === 'Delivery'
+              className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
                   ? `${theme.primary.main} text-white`
                   : `${theme.neutral.card} ${theme.text.secondary} ${theme.primary.lightHover}`
-              }`}
+                }`}
             >
               Delivery
             </button>
@@ -351,8 +328,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     control: (base, state) => ({
                       ...base,
                       backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                      borderColor: state.isFocused 
-                        ? theme.raw.primary[500] 
+                      borderColor: state.isFocused
+                        ? theme.raw.primary[500]
                         : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
                       borderRadius: '0.5rem',
                       minHeight: '2.5rem',
@@ -369,13 +346,13 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isSelected 
-                        ? theme.raw.primary[500] 
-                        : state.isFocused 
+                      backgroundColor: state.isSelected
+                        ? theme.raw.primary[500]
+                        : state.isFocused
                           ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
                           : 'transparent',
-                      color: state.isSelected 
-                        ? '#ffffff' 
+                      color: state.isSelected
+                        ? '#ffffff'
                         : isDarkMode ? theme.raw.mode.text.primary : '#111827',
                       '&:hover': {
                         backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
@@ -410,8 +387,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     control: (base, state) => ({
                       ...base,
                       backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                      borderColor: state.isFocused 
-                        ? theme.raw.primary[500] 
+                      borderColor: state.isFocused
+                        ? theme.raw.primary[500]
                         : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
                       borderRadius: '0.5rem',
                       minHeight: '2.5rem',
@@ -428,13 +405,13 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                     }),
                     option: (base, state) => ({
                       ...base,
-                      backgroundColor: state.isSelected 
-                        ? theme.raw.primary[500] 
-                        : state.isFocused 
+                      backgroundColor: state.isSelected
+                        ? theme.raw.primary[500]
+                        : state.isFocused
                           ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
                           : 'transparent',
-                      color: state.isSelected 
-                        ? '#ffffff' 
+                      color: state.isSelected
+                        ? '#ffffff'
                         : isDarkMode ? theme.raw.mode.text.primary : '#111827',
                       '&:hover': {
                         backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
@@ -468,8 +445,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                       control: (base, state) => ({
                         ...base,
                         backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                        borderColor: state.isFocused 
-                          ? theme.raw.primary[500] 
+                        borderColor: state.isFocused
+                          ? theme.raw.primary[500]
                           : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
                         borderRadius: '0.5rem',
                         minHeight: '2.5rem',
@@ -486,13 +463,13 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                       }),
                       option: (base, state) => ({
                         ...base,
-                        backgroundColor: state.isSelected 
-                          ? theme.raw.primary[500] 
-                          : state.isFocused 
+                        backgroundColor: state.isSelected
+                          ? theme.raw.primary[500]
+                          : state.isFocused
                             ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
                             : 'transparent',
-                        color: state.isSelected 
-                          ? '#ffffff' 
+                        color: state.isSelected
+                          ? '#ffffff'
                           : isDarkMode ? theme.raw.mode.text.primary : '#111827',
                         '&:hover': {
                           backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
@@ -551,7 +528,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
               cart.map(item => (
                 <div key={item.product.id} className={`grid grid-cols-4 gap-1 lg:gap-2 py-2 lg:py-3 border-b ${theme.border.secondary} items-center`}>
                   <div className="flex items-center gap-1">
-                    <button 
+                    <button
                       onClick={() => removeFromCart(item.product.id)}
                       className={`p-0.5 hover:${theme.status.error.hover} rounded transition-colors`}
                       title="Remove item"
@@ -592,7 +569,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
               <span className={theme.text.tertiary}>Items Count: {totals.itemsCount}</span>
               <span className={`font-semibold ${theme.text.primary}`}>Subtotal: ₹{totals.subtotal.toFixed(2)}</span>
             </div>
-            
+
             {/* Service Charge */}
             <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
               <div>
@@ -620,7 +597,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                 />
               </div>
             </div>
-            
+
             {/* Tax */}
             <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
               <div>
@@ -648,7 +625,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                 />
               </div>
             </div>
-            
+
             {/* Discount */}
             <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
               <div>
@@ -676,7 +653,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                 />
               </div>
             </div>
-            
+
             {/* Calculated Values Display */}
             <div className={`text-xs space-y-1 pt-2 border-t ${theme.border.secondary}`}>
               <div className="flex justify-between">
@@ -713,8 +690,8 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                   control: (base, state) => ({
                     ...base,
                     backgroundColor: isDarkMode ? theme.raw.mode.background.card : '#ffffff',
-                    borderColor: state.isFocused 
-                      ? theme.raw.primary[500] 
+                    borderColor: state.isFocused
+                      ? theme.raw.primary[500]
                       : isDarkMode ? theme.raw.mode.border.secondary : '#d1d5db',
                     borderRadius: '0.5rem',
                     minHeight: '2.5rem',
@@ -731,13 +708,13 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
                   }),
                   option: (base, state) => ({
                     ...base,
-                    backgroundColor: state.isSelected 
-                      ? theme.raw.primary[500] 
-                      : state.isFocused 
+                    backgroundColor: state.isSelected
+                      ? theme.raw.primary[500]
+                      : state.isFocused
                         ? (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
                         : 'transparent',
-                    color: state.isSelected 
-                      ? '#ffffff' 
+                    color: state.isSelected
+                      ? '#ffffff'
                       : isDarkMode ? theme.raw.mode.text.primary : '#111827',
                     '&:hover': {
                       backgroundColor: state.isSelected ? theme.raw.primary[500] : (isDarkMode ? theme.raw.mode.background.tertiary : '#f3f4f6')
@@ -798,7 +775,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false }) => {
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
-            <button 
+            <button
               onClick={handleSendToKitchen}
               className={`px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate ${theme.button.secondary}`}
             >

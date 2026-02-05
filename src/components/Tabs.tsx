@@ -84,7 +84,7 @@ const Tabs: React.FC<TabsProps> = ({
     <div className={`w-full ${className}`}>
       {/* Tab List */}
       <div className={`flex items-center  justify-between ${variant === 'underline' ? `border-b ${theme.border.secondary}` : ''} ${variant === 'pills' ? `${theme.neutral.backgroundSecondary} p-1 rounded-xl` : ''}`}>
-        <div className="flex items-center gap-4 space-x-1 overflow-x-auto">
+        <div className="flex items-center whitespace-nowrap gap-4 space-x-1 overflow-x-auto">
           {items.map((item) => {
             const isActive = activeTab === item.id;
             return (

@@ -1,69 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { HiAdjustmentsHorizontal } from "react-icons/hi2";
 import { getThemeColors } from '../theme/colors';
 
+interface Column {
+  id: string;
+  label: string;
+}
 
 interface ColumnToggleProps {
-  columnVisibility: Record<string, boolean>;
+  columns: Column[];
+  hiddenColumns: string[];
   onToggleColumn: (columnId: string) => void;
-  columnLabels?: Record<string, string>;
-  disabledColumns?: string[];
-  className?: string;
   isDarkMode?: boolean;
+  className?: string;
 }
 
 export const ColumnToggle: React.FC<ColumnToggleProps> = ({
-  columnVisibility,
+  columns,
+  hiddenColumns,
   onToggleColumn,
-  columnLabels = {},
-  disabledColumns = [],
-  className = '',
   isDarkMode = false,
+  className = '',
 }) => {
   const theme = getThemeColors(isDarkMode);
   const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const getColumnLabel = (columnId: string) => {
-    return columnLabels[columnId] || columnId;
-  };
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
+
+  const isColumnVisible = (columnId: string) => !hiddenColumns.includes(columnId);
 
   return (
-    <div className={`relative ${className}`}>
+    <div ref={dropdownRef} className={`relative flex-shrink-0 ${className}`}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className={`p-2 text-sm border ${theme.border.input} rounded-lg ${theme.neutral.hoverLight}`}
+        className={`p-2 rounded-lg border transition-all ${theme.button.secondary}`}
         title="Toggle Columns"
       >
-        <HiAdjustmentsHorizontal className={`w-8 h-8 ${theme.text.secondary}`} />
+        <HiAdjustmentsHorizontal size={20} />
       </button>
 
       {showDropdown && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setShowDropdown(false)}
-          />
-          <div className={`absolute right-0 top-full z-20 mt-1 w-48 ${theme.neutral.backgroundSecondary} border ${theme.border.main} rounded-md ${theme.shadow.lg}`}>
-            <div className="p-2">
-              <div className={`text-xs font-medium ${theme.text.tertiary} mb-2`}>Toggle Columns</div>
-              {Object.entries(columnVisibility).map(([columnId, isVisible]) => (
-                <label
-                  key={columnId}
-                  className={`flex items-center gap-2 w-full px-2 py-1 text-sm ${theme.text.secondary} ${theme.neutral.hoverLight} rounded cursor-pointer`}
-                >
+        <div className={`absolute right-0 top-full mt-2 w-56 rounded-lg shadow-xl border z-50 ${theme.dropdown.bg} ${theme.dropdown.border}`}>
+          <div className="p-3 max-h-80 overflow-y-auto">
+            <h3 className={`text-sm font-semibold mb-2 ${theme.text.primary}`}>
+              Show/Hide Columns
+            </h3>
+            <div className="space-y-2">
+              {columns.map((column) => (
+                <label key={column.id} className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={isVisible}
-                    onChange={() => onToggleColumn(columnId)}
-                    disabled={disabledColumns.includes(columnId)}
-                    className="w-4 h-4 text-orange-500 bg-white border-gray-300 rounded focus:ring-2 focus:ring-orange-500 dark:bg-slate-700 dark:border-slate-600"
+                    checked={isColumnVisible(column.id)}
+                    onChange={() => onToggleColumn(column.id)}
+                    className={`rounded ${theme.border.input} ${theme.primary.text} focus:ring-2 ${theme.primary.ring}`}
                   />
-                  {getColumnLabel(columnId)}
+                  <span className={`text-sm ${theme.text.secondary}`}>
+                    {column.label}
+                  </span>
                 </label>
               ))}
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

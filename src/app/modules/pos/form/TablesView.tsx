@@ -6,7 +6,7 @@ import { getThemeColors } from '../../../../theme/colors';
 
 interface TablesViewProps {
   isDarkMode?: boolean;
-  
+
 }
 
 interface TableCardProps {
@@ -16,39 +16,41 @@ interface TableCardProps {
 }
 
 const TableCard: React.FC<TableCardProps> = ({ table, isDarkMode, onClick }) => {
+  const theme = getThemeColors(isDarkMode);
+
   const getStatusStyles = () => {
     switch (table.status) {
       case 'occupied':
         return {
-          bg: 'from-orange-500 to-orange-600',
+          bg: theme.primary.gradient,
           text: 'text-white',
-          shadow: 'shadow-lg shadow-orange-500/30',
-          border: 'border-orange-400',
+          shadow: `shadow-lg ${theme.primary.shadow}`,
+          border: theme.primary.border,
           icon: 'text-white',
         };
       case 'reserved':
         return {
-          bg: isDarkMode ? 'from-gray-700 to-gray-800' : 'from-gray-200 to-gray-300',
-          text: isDarkMode ? 'text-gray-300' : 'text-gray-700',
+          bg: theme.neutral.backgroundSecondary,
+          text: theme.text.secondary,
           shadow: 'shadow-md',
-          border: isDarkMode ? 'border-gray-600' : 'border-gray-400',
-          icon: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+          border: theme.border.secondary,
+          icon: theme.text.muted,
         };
       case 'available':
         return {
-          bg: isDarkMode ? 'from-gray-700 to-gray-800' : 'from-gray-100 to-gray-200',
-          text: isDarkMode ? 'text-gray-300' : 'text-gray-600',
+          bg: theme.neutral.backgroundSecondary,
+          text: theme.text.tertiary,
           shadow: 'shadow-sm',
-          border: isDarkMode ? 'border-gray-600' : 'border-gray-300',
-          icon: isDarkMode ? 'text-gray-500' : 'text-gray-400',
+          border: theme.border.main,
+          icon: theme.text.muted,
         };
       default:
         return {
-          bg: isDarkMode ? 'from-gray-700 to-gray-800' : 'from-gray-200 to-gray-300',
-          text: isDarkMode ? 'text-gray-300' : 'text-gray-700',
+          bg: theme.neutral.backgroundSecondary,
+          text: theme.text.secondary,
           shadow: 'shadow-md',
-          border: isDarkMode ? 'border-gray-600' : 'border-gray-400',
-          icon: isDarkMode ? 'text-gray-400' : 'text-gray-600',
+          border: theme.border.secondary,
+          icon: theme.text.muted,
         };
     }
   };
@@ -75,7 +77,7 @@ const TableCard: React.FC<TableCardProps> = ({ table, isDarkMode, onClick }) => 
         <span className={`text-xl font-bold ${styles.text} mb-1`}>
           {table.number}
         </span>
-        
+
         {table.status === 'occupied' && (
           <>
             <Users size={16} className={`${styles.icon} opacity-90`} />
@@ -86,14 +88,14 @@ const TableCard: React.FC<TableCardProps> = ({ table, isDarkMode, onClick }) => 
               <Clock size={10} />
               <span>45m</span>
             </div>
-          </>       )}
-        
+          </>)}
+
         {table.status === 'reserved' && (
           <div className={`text-xs ${styles.text} opacity-70 font-medium mt-1`}>
             Reserved
           </div>
         )}
-        
+
         {table.status === 'available' && (
           <div className={`text-xs ${styles.text} opacity-50 font-medium mt-1`}>
             Available
@@ -102,11 +104,10 @@ const TableCard: React.FC<TableCardProps> = ({ table, isDarkMode, onClick }) => 
       </div>
 
       {/* Status Indicator Dot */}
-      <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${
-        table.status === 'occupied' ? 'bg-white' : 
-        table.status === 'reserved' ? 'bg-yellow-500' : 
-        'bg-green-500'
-      } shadow-md`} />
+      <div className={`absolute top-2 right-2 w-2 h-2 rounded-full ${table.status === 'occupied' ? 'bg-white' :
+          table.status === 'reserved' ? `${theme.status.warning.main}` :
+            `${theme.status.success.main}`
+        } shadow-md`} />
 
       {/* Hover Effect */}
       <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl" />
@@ -135,7 +136,7 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
       acc[table.status] = (acc[table.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    
+
     return {
       all: mockTables.filter(t => t.floor === selectedFloor).length,
       available: counts['available'] || 0,
@@ -147,49 +148,49 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
   return (
     <div className={`min-h-[calc(100vh-16rem)] flex flex-col ${isDarkMode ? theme.neutral.background : 'bg-gradient-to-br from-gray-50 to-gray-100'}`}>
       {/* Header with Stats */}
-      <div className={`px-6 pt-6 pb-4 border-b ${theme.border.main} ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-sm sticky top-0 z-20`}>
-        <div className="flex items-center justify-between mb-4">
+      <div className={`px-3 sm:px-4 lg:px-6 pt-4 lg:pt-6 pb-3 lg:pb-4 border-b ${theme.border.main} ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-sm sticky top-0 z-20`}>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 lg:mb-4 gap-3">
           <div>
-            <h1 className={`text-3xl font-bold ${theme.text.primary} mb-1`}>
+            <h1 className={`text-2xl lg:text-3xl font-bold ${theme.text.primary} mb-1`}>
               Tables Management
             </h1>
-            <p className={`text-sm ${theme.text.tertiary}`}>
+            <p className={`text-xs sm:text-sm ${theme.text.tertiary}`}>
               Floor: {selectedFloor === 'ground' ? 'Ground Floor' : '1st Floor'} • {filteredTables.length} tables
             </p>
           </div>
-          
+
           {/* Quick Stats */}
-          <div className="flex gap-3">
-            <div className={`px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
+          <div className="flex gap-2 lg:gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hidden">
+            <div className={`px-3 lg:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary} flex-shrink-0`}>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <div className={`w-2 h-2 rounded-full ${theme.status.success.main} animate-pulse`} />
                 <div>
                   <div className={`text-xs ${theme.text.tertiary}`}>Available</div>
-                  <div className={`text-lg font-bold ${theme.text.primary}`}>
+                  <div className={`text-base lg:text-lg font-bold ${theme.text.primary}`}>
                     {statusCounts.available || 0}
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div className={`px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
+
+            <div className={`px-3 lg:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary} flex-shrink-0`}>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <div className={`w-2 h-2 rounded-full ${theme.primary.main}`} />
                 <div>
                   <div className={`text-xs ${theme.text.tertiary}`}>Occupied</div>
-                  <div className={`text-lg font-bold ${theme.text.primary}`}>
+                  <div className={`text-base lg:text-lg font-bold ${theme.text.primary}`}>
                     {statusCounts.occupied || 0}
                   </div>
                 </div>
               </div>
             </div>
-            
-            <div className={`px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
+
+            <div className={`px-3 lg:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary} flex-shrink-0`}>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-yellow-500" />
+                <div className={`w-2 h-2 rounded-full ${theme.status.warning.main}`} />
                 <div>
                   <div className={`text-xs ${theme.text.tertiary}`}>Reserved</div>
-                  <div className={`text-lg font-bold ${theme.text.primary}`}>
+                  <div className={`text-base lg:text-lg font-bold ${theme.text.primary}`}>
                     {statusCounts.reserved || 0}
                   </div>
                 </div>
@@ -199,33 +200,31 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
         </div>
 
         {/* First Row: Floor Tabs and Search */}
-        <div className="flex items-center justify-between gap-4 mb-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 lg:gap-4 mb-3">
           {/* Floor Tabs */}
-          <div className={`flex gap-2 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
+          <div className={`flex gap-2 p-1 rounded-xl ${theme.neutral.card} shadow-sm w-full sm:w-auto`}>
             <button
               onClick={() => setSelectedFloor('ground')}
-              className={`px-6 py-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all ${
-                selectedFloor === 'ground'
-                  ? `bg-gradient-to-r ${theme.primary.gradient} text-white shadow-md shadow-orange-500/30`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-              }`}
+              className={`flex-1 sm:flex-none px-4 lg:px-6 py-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all ${selectedFloor === 'ground'
+                ? `bg-gradient-to-r ${theme.primary.gradient} text-white shadow-md ${theme.primary.shadow}`
+                : `${theme.text.muted} ${theme.neutral.hover}`
+                }`}
             >
               Ground Floor
             </button>
             <button
               onClick={() => setSelectedFloor('first')}
-              className={`px-6 py-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all ${
-                selectedFloor === 'first'
-                  ? `bg-gradient-to-r ${theme.primary.gradient} text-white shadow-md shadow-orange-500/30`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-              }`}
+              className={`flex-1 sm:flex-none px-4 lg:px-6 py-2 whitespace-nowrap rounded-lg text-sm font-semibold transition-all ${selectedFloor === 'first'
+                ? `bg-gradient-to-r ${theme.primary.gradient} text-white shadow-md ${theme.primary.shadow}`
+                : `${theme.text.muted} ${theme.neutral.hover}`
+                }`}
             >
               1st Floor
             </button>
           </div>
 
           {/* Search */}
-          <div className="relative max-w-xs flex-1">
+          <div className="relative w-full sm:max-w-xs sm:flex-1">
             <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={18} />
             <input
               type="text"
@@ -238,7 +237,7 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
         </div>
 
         {/* Second Row: Status Filters */}
-        <div className={`flex gap-2 p-1 rounded-xl ${theme.neutral.card} shadow-sm w-fit`}>
+        <div className={`flex gap-2 p-1 rounded-xl ${theme.neutral.card} shadow-sm w-full overflow-x-auto scrollbar-hidden`}>
           {[
             { key: 'all', label: 'All', count: statusCounts.all },
             { key: 'available', label: 'Available', count: statusCounts.available || 0 },
@@ -248,18 +247,16 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
             <button
               key={key}
               onClick={() => setFilterStatus(key as any)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                filterStatus === key
-                  ? isDarkMode ? 'bg-gray-700 text-white shadow-sm' : `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-              }`}
+              className={`px-3 lg:px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 flex-shrink-0 ${filterStatus === key
+                ? `${theme.primary.main} text-white shadow-sm`
+                : `${theme.text.muted} ${theme.neutral.hover}`
+                }`}
             >
               {label}
-              <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${
-                filterStatus === key
-                  ? `bg-white ${theme.primary.text}`
-                  : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'
-              }`}>
+              <span className={`px-2 py-0.5 rounded-md text-xs font-semibold ${filterStatus === key
+                ? `bg-white ${theme.primary.text}`
+                : `${theme.neutral.backgroundSecondary} ${theme.text.tertiary}`
+                }`}>
                 {count}
               </span>
             </button>
@@ -268,8 +265,8 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
       </div>
 
       {/* Tables Grid */}
-      <div className="flex-1 overflow-y-auto p-6">
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3 lg:gap-4">
           {filteredTables.map(table => (
             <TableCard
               key={table.id}
@@ -279,7 +276,7 @@ export const TablesView: React.FC<TablesViewProps> = ({ isDarkMode = false }) =>
             />
           ))}
         </div>
-        
+
         {filteredTables.length === 0 && (
           <div className={`text-center py-12 ${theme.text.muted}`}>
             <Users size={48} className="mx-auto mb-4 opacity-30" />

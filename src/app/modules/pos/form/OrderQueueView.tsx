@@ -30,7 +30,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
   };
 
   return (
-    <div className={`min-h-[calc(100vh-16rem)] p-6 ${theme.neutral.background}`}>
+    <div className={`min-h-[calc(100vh-16rem)]  ${theme.neutral.background}`}>
       <OrderQueueTable
         orders={mockQueueOrders}
         onPayment={handlePayment}
