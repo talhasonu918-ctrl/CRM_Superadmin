@@ -59,6 +59,20 @@ export const branchColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: 
       },
     },
     {
+      accessorKey: 'email',
+      header: 'Email',
+      size: 160,
+      cell: ({ row }) => {
+        const branch = row.original;
+        const email = (branch as any).email || '-';
+        return (
+          <div className={`text-xs sm:text-sm ${theme.text.secondary} truncate max-w-[100px] sm:max-w-none`} title={email}>
+            <span className={theme.text.primary}>{email}</span>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: 'address',
       header: 'Address',
       size: 250,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { Search, Filter } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'rizzui';
@@ -6,7 +6,7 @@ import InfiniteTable from '../../../../../components/InfiniteTable';
 import { SearchInput } from '../../../../../components/SearchInput';
 import { FilterDropdown } from '../../../../../components/FilterDropdown';
 import { ColumnToggle } from '../../../../../components/ColumnToggle';
-import { useInfiniteTable, loadMoreUsers } from '../../../../../hooks/useInfiniteTable';
+import { useInfiniteTable } from '../../../../../hooks/useInfiniteTable';
 import { Branch, mockBranches } from '../types';
 import { branchColumns } from './columns';
 import { getThemeColors } from '../../../../../theme/colors';
@@ -21,12 +21,12 @@ interface BranchTableProps {
 }
 
 // Generate more mock branches for infinite scroll
-const generateMockBranches = (count: number): Branch[] => {
+const generateMockBranches = (count: number, startIndex: number = 0): Branch[] => {
   const statuses: ('Active' | 'Inactive' | 'Under Maintenance')[] = ['Active', 'Inactive', 'Under Maintenance'];
   const branches: Branch[] = [];
 
   for (let i = 0; i < count; i++) {
-    const num = mockBranches.length + i + 1;
+    const num = startIndex + i + 1;
     branches.push({
       id: String(num),
       tenantId: 'tenant_1',
@@ -49,14 +49,6 @@ const generateMockBranches = (count: number): Branch[] => {
   return branches;
 };
 
-const loadMoreBranches = async (): Promise<Branch[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(generateMockBranches(20));
-    }, 800);
-  });
-};
-
 export const BranchTable: React.FC<BranchTableProps> = ({
   isDarkMode,
   onAddBranch,
@@ -70,8 +62,14 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
     }`;
 
-  const [loadedCount, setLoadedCount] = useState(20);
-  const total = 100;
+  // Establish source of truth for full dataset
+  const fullData = useMemo(() => {
+    if (data && data.length > 0) return data;
+    // Ensure we have at least 100 items for demo purpose if no data provided
+    const missingCount = 100 - mockBranches.length;
+    return [...mockBranches, ...generateMockBranches(Math.max(0, missingCount), mockBranches.length)];
+  }, [data]);
+
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
     name: true, // Make name non-hideable
     managerUserId: true,
@@ -103,32 +101,39 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     [onEditBranch, onViewBranch, onDeleteBranch, isDarkMode]
   );
 
-  // Initialize table with provided data or mock/infinite data
-  const initialData = data && data.length > 0 ? data : [...mockBranches, ...generateMockBranches(17)];
+  // Client-side pagination logic
+  const pageSize = 20;
+
+  const handleLoadMore = useCallback(async (page: number) => {
+    return new Promise<Branch[]>((resolve) => {
+      // Simulate network delay
+      setTimeout(() => {
+        const start = page * pageSize;
+        const end = start + pageSize;
+        resolve(fullData.slice(start, end));
+      }, 500);
+    });
+  }, [fullData]);
+
   const {
     table,
     isLoading,
     hasNextPage,
     loadMore,
     setInitialData,
+    data: tableData, // Get actual loaded data from hook
   } = useInfiniteTable<Branch>({
     columns,
-    initialData,
-    pageSize: 20,
-    onLoadMore: loadMoreBranches,
+    initialData: fullData.slice(0, pageSize),
+    pageSize,
+    onLoadMore: handleLoadMore,
   });
-  // If parent provides `data` (from localStorage), keep the internal table data in sync
-  useEffect(() => {
-    if (data && data.length > 0) {
-      setInitialData(data);
-    }
-  }, [data, setInitialData]);
 
-  // Custom load more with count tracking
-  const loadMoreWithCount = async () => {
-    await loadMore();
-    setLoadedCount(prev => Math.min(prev + 20, total));
-  };
+  // Keep table synced if fullData changes (e.g. invalidation or search change)
+  useEffect(() => {
+    setInitialData(fullData.slice(0, pageSize));
+  }, [fullData, setInitialData]);
+
 
   // Filter data based on search and status
   const filteredData = useMemo(() => {
@@ -156,7 +161,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     }
 
     return filtered;
-  }, [table, searchTerm, statusFilter]);
+  }, [table, searchTerm, statusFilter, tableData]); // Added tableData dependency
 
   const toggleColumn = (columnId: string) => {
     setColumnVisibility(prev => ({
@@ -164,6 +169,14 @@ export const BranchTable: React.FC<BranchTableProps> = ({
       [columnId]: !prev[columnId]
     }));
   };
+
+  const isFiltering = !!searchTerm || statusFilter !== 'all';
+  const displayedRows = isFiltering ? filteredData : undefined;
+  // If filtering, count based on filtered result. If not, use loaded count.
+  const currentCount = isFiltering ? filteredData.length : tableData.length;
+  // If filtering, total is vague in infinite scroll unless we filter fullData. 
+  // For now, keep showing fullData.length as total, or just filtered length if filtering.
+  const totalCount = isFiltering ? filteredData.length : fullData.length;
 
   return (
     <div className={cardStyle}>
@@ -235,8 +248,8 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         <InfiniteTable
           table={table}
           isLoading={isLoading}
-          hasNextPage={hasNextPage}
-          onLoadMore={loadMoreWithCount}
+          hasNextPage={hasNextPage && !isFiltering} // Disable load more if filtering (since we only filter loaded)
+          onLoadMore={loadMore}
           emptyComponent={
             <div className={`text-center py-8  ${theme.text.secondary}`}>
               {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
@@ -249,7 +262,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
             </div>
           }
           columnVisibility={columnVisibility}
-          rows={searchTerm || statusFilter !== 'all' ? filteredData : undefined}
+          rows={displayedRows}
           className="max-h-[600px]"
           isDarkMode={isDarkMode}
         />
@@ -259,10 +272,10 @@ export const BranchTable: React.FC<BranchTableProps> = ({
       <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
         <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
           <span className="text-center sm:text-left">
-            Showing <span className={`font-semibold ${theme.text.primary}`}>{Math.min(loadedCount, filteredData.length || loadedCount)}</span> of{' '}
-            <span className={`font-semibold ${theme.text.primary}`}>{total}</span> branches
+            Showing <span className={`font-semibold ${theme.text.primary}`}>{currentCount}</span> of{' '}
+            <span className={`font-semibold ${theme.text.primary}`}>{totalCount}</span> branches
           </span>
-          {hasNextPage && !isLoading && (
+          {hasNextPage && !isLoading && !isFiltering && (
             <span className={`animate-pulse ${theme.text.tertiary}`}>
               Scroll down to load more
             </span>

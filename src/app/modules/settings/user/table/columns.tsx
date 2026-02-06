@@ -16,12 +16,12 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
   return [
   {
     accessorKey: 'userCode',
-    header: 'User Code',
+    header: 'Employee Code',
     size: 120,
   },
   {
     accessorKey: 'firstName',
-    header: 'First Name',
+    header: 'Full Name',
     size: 120,
   },
   {
