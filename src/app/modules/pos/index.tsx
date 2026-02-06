@@ -6,8 +6,8 @@ import { TablesView } from './form/TablesView';
 import { TakeAwayView } from './form/TakeAwayView';
 import { OrderQueueView } from './form/OrderQueueView';
 import { OnlineOrdersView } from './form/OnlineOrdersView';
-import { ShoppingCart, Users, Package, ListOrdered, Bell } from 'lucide-react';
-import { getThemeColors } from '../../../theme/colors';
+import { RiderManagementView } from './form/RiderManagementView';
+import { ShoppingCart, Users, Package, ListOrdered, Bell, Bike } from 'lucide-react';
 import { FullScreenToggle } from '../../../components/FullScreenToggle';
 
 interface POSModuleProps {
@@ -15,8 +15,9 @@ interface POSModuleProps {
 }
 
 export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
-  const theme = getThemeColors(isDarkMode);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [activeTab, setActiveTab] = useState('pos');
+  const [targetRiderId, setTargetRiderId] = useState<string | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
 
   const notifications = [
@@ -24,6 +25,20 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
     { id: 2, title: 'New Online Order #103', time: '10m ago' },
     { id: 3, title: 'Payment failed for order #99', time: '1h ago' },
   ];
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    // storage updates if needed
+  };
+
+  const handleViewRiderDetail = (riderId: string) => {
+    setTargetRiderId(riderId);
+    setActiveTab('riders');
+  };
+
+  const handleConsumeInitialRiderId = () => {
+    setTargetRiderId(null);
+  };
 
   // Close notifications dropdown when clicking outside
   useEffect(() => {
@@ -45,20 +60,13 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
       id: 'pos',
       name: 'POS',
       icon: <ShoppingCart size={18} />,
-      content: <POSView isDarkMode={isDarkMode} />
+      content: <POSView isDarkMode={isDarkMode} onViewRiderDetail={handleViewRiderDetail} />
     },
     {
       id: 'tables',
       name: 'Tables',
       icon: <Users size={18} />,
       content: <TablesView isDarkMode={isDarkMode} />
-    },
-
-    {
-      id: 'takeaway',
-      name: 'TakeAway Orders',
-      icon: <Package size={18} />,
-      content: <TakeAwayView isDarkMode={isDarkMode} />
     },
     {
       id: 'queue',
@@ -67,19 +75,33 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
       content: <OrderQueueView isDarkMode={isDarkMode} />
     },
     {
+      id: 'takeaway',
+      name: 'TakeAway Orders',
+      icon: <Package size={18} />,
+      content: <TakeAwayView isDarkMode={isDarkMode} />
+    },
+
+    {
       id: 'online',
       name: 'Online Orders',
       icon: <Package size={18} />,
       content: <OnlineOrdersView isDarkMode={isDarkMode} />
     },
+    {
+      id: 'riders',
+      name: 'Rider Management',
+      icon: <Bike size={18} />,
+      content: <RiderManagementView isDarkMode={isDarkMode} initialRiderId={targetRiderId} onConsumeInitialRiderId={handleConsumeInitialRiderId} />
+    },
   ];
 
   return (
-    <div id="pos-module-container" className={` ${theme.neutral.background} ${theme.text.primary} h-full w-full overflow-auto scrollbar-hidden`}>
+    <div id="pos-module-container" className="bg-background text-textPrimary h-full w-full overflow-auto scrollbar-hidden">
       <Tabs
         className="h-full"
         items={tabs}
-        defaultActiveTab="pos"
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
         variant="underline"
         size="md"
         fullHeight={true}
@@ -87,24 +109,24 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-2 rounded-lg ${theme.neutral.hoverLight} ${theme.text.secondary} transition-all duration-200`}
+              className={`relative p-2 rounded-lg hover:bg-surface/10 text-textSecondary transition-all duration-200`}
               title="Notifications"
             >
               <Bell size={18} />
-              <span className={`absolute top-0 right-0 ${theme.primary.main} text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 ${isDarkMode ? 'border-[#16191F]' : 'border-white'}`}>{notifications.length}</span>
+              <span className={`absolute top-0 right-0 bg-primary text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border-2 border-background`}>{notifications.length}</span>
             </button>
             <FullScreenToggle isDarkMode={isDarkMode} className="ml-1" targetId="pos-module-container" />
 
             {showNotifications && (
-              <div className={`absolute right-0 mt-2 w-72 rounded-lg shadow-lg ${theme.neutral.card} border ${theme.border.secondary} z-10`}>
+              <div className="absolute right-0 mt-2 w-72 rounded-lg shadow-lg bg-surface border border-border z-10">
                 <div className="p-3">
-                  <div className={`text-sm font-semibold mb-2 ${theme.text.primary}`}>Notifications</div>
+                  <div className="text-sm font-semibold mb-2 text-textPrimary">Notifications</div>
                   {notifications.map(n => (
-                    <div key={n.id} className={`flex items-start gap-2 py-2 border-b last:border-0 ${theme.border.secondary}`}>
-                      <div className={`mt-0.5 ${theme.status.info.main}`}><Bell size={16} /></div>
+                    <div key={n.id} className="flex items-start gap-2 py-2 border-b last:border-0 border-border">
+                      <div className="mt-0.5 text-primary"><Bell size={16} /></div>
                       <div className="flex-1">
-                        <div className={`${theme.text.primary} text-sm`}>{n.title}</div>
-                        <div className={`${theme.text.tertiary} text-xs`}>{n.time}</div>
+                        <div className="text-textPrimary text-sm">{n.title}</div>
+                        <div className="text-textSecondary/60 text-xs">{n.time}</div>
                       </div>
                     </div>
                   ))}

@@ -1,6 +1,6 @@
 # Routes Configuration
 
-This directory contains all routing-related configuration and utilities for the Nexus CRM application.
+This directory contains all routing-related configuration and utilities for the Invex Food application.
 
 ## Structure
 
@@ -49,7 +49,7 @@ Contains route configuration with metadata like titles, descriptions, and layout
 export const routeConfigs: Record<string, RouteConfig> = {
   [ROUTES.DASHBOARD]: {
     path: ROUTES.DASHBOARD,
-    title: 'Dashboard - Nexus CRM',
+    title: 'Dashboard - Invex Food',
     description: 'CRM Dashboard and Analytics',
     requiresAuth: false,
     component: 'Dashboard',

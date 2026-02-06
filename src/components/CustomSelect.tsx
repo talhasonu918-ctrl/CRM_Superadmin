@@ -39,25 +39,25 @@ const CustomOption = (props: OptionProps<CustomSelectOption, false>) => {
                 {data.image ? (
                     <img src={data.image} alt={data.label} className="w-8 h-8 rounded-full object-cover border border-gray-200" />
                 ) : data.icon ? (
-                    <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                    <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-surface border border-border">
                         {data.icon}
                     </div>
                 ) : (
-                    <div className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold uppercase ${isDarkMode ? 'bg-orange-500/20 text-orange-400' : 'bg-orange-100 text-orange-600'}`}>
+                    <div className="w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold uppercase bg-primary/10 text-primary border border-primary/20">
                         {data.label.charAt(0)}
                     </div>
                 )}
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-medium ">{data.label}</span>
+                        <span className="text-xs font-medium text-textPrimary">{data.label}</span>
                         {data.badge && (
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${data.badgeColor || (isDarkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-600')}`}>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${data.badgeColor || 'bg-surface border border-border text-textSecondary'}`}>
                                 {data.badge}
                             </span>
                         )}
                     </div>
                     {data.sublabel && (
-                        <div className={`text-[10px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                        <div className="text-[10px] text-textSecondary opacity-80">
                             {data.sublabel}
                         </div>
                     )}
@@ -94,23 +94,23 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     const customStyles = {
         control: (base: any, state: any) => ({
             ...base,
-            backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
+            backgroundColor: 'var(--color-surface)',
             borderColor: state.isFocused
-                ? theme.raw.primary[500]
-                : isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary,
+                ? 'var(--color-primary)'
+                : 'var(--color-border)',
             borderRadius: '0.5rem',
             minHeight: '2.5rem',
             fontSize: '0.875rem',
-            boxShadow: state.isFocused ? `0 0 0 1px ${theme.raw.primary[500]}` : 'none',
+            boxShadow: state.isFocused ? `0 0 0 1px var(--color-primary)` : 'none',
             transition: 'all 0.2s ease',
             '&:hover': {
-                borderColor: theme.raw.primary[500]
+                borderColor: 'var(--color-primary)'
             }
         }),
         menu: (base: any) => ({
             ...base,
-            backgroundColor: isDarkMode ? theme.raw.mode.background.card : theme.raw.mode.background.primary,
-            border: `1px solid ${isDarkMode ? theme.raw.mode.border.secondary : theme.raw.mode.border.primary}`,
+            backgroundColor: 'var(--color-surface)',
+            border: `1px solid var(--color-border)`,
             borderRadius: '0.75rem',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             overflow: 'hidden',
@@ -126,54 +126,54 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 background: 'transparent',
             },
             '&::-webkit-scrollbar-thumb': {
-                background: isDarkMode ? '#475569' : '#cbd5e1',
+                background: 'var(--color-border)',
                 borderRadius: '10px',
             },
             '&::-webkit-scrollbar-thumb:hover': {
-                background: theme.raw.primary[500],
+                background: 'var(--color-primary)',
             },
             scrollbarWidth: 'thin',
-            scrollbarColor: `${isDarkMode ? '#475569' : '#cbd5e1'} transparent`,
+            scrollbarColor: `var(--color-border) transparent`,
         }),
         option: (base: any, state: any) => ({
             ...base,
             fontSize: '0.75rem',
             backgroundColor: state.isSelected
-                ? theme.raw.primary[500]
+                ? 'var(--color-primary)'
                 : state.isFocused
-                    ? (isDarkMode ? `${theme.raw.primary[500]}1a` : `${theme.raw.primary[500]}0d`) // 10% and 5% opacity
+                    ? 'rgba(var(--color-primary-rgb, 249, 115, 22), 0.1)'
                     : 'transparent',
             color: state.isSelected
                 ? '#ffffff'
-                : isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary,
+                : 'var(--color-text-primary)',
             borderRadius: '0.5rem',
             padding: '8px 12px',
             margin: '2px 0',
             cursor: 'pointer',
             '&:active': {
-                backgroundColor: theme.raw.primary[600]
+                backgroundColor: 'var(--color-primary)'
             }
         }),
         singleValue: (base: any) => ({
             ...base,
             fontSize: '0.75rem',
-            color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
+            color: 'var(--color-text-primary)'
         }),
         placeholder: (base: any) => ({
             ...base,
             fontSize: '0.75rem',
-            color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted
+            color: 'var(--color-text-secondary)'
         }),
         input: (base: any) => ({
             ...base,
-            color: isDarkMode ? theme.raw.mode.text.primary : theme.raw.mode.text.primary
+            color: 'var(--color-text-primary)'
         }),
         indicatorSeparator: () => ({ display: 'none' }),
         dropdownIndicator: (base: any) => ({
             ...base,
-            color: isDarkMode ? theme.raw.mode.text.muted : theme.raw.mode.text.muted,
+            color: 'var(--color-text-secondary)',
             '&:hover': {
-                color: theme.raw.primary[500]
+                color: 'var(--color-primary)'
             }
         })
     };

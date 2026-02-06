@@ -152,7 +152,7 @@ export const lightModeColors = {
 export const fonts = {
   // Font families
   family: {
-    sans: 'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    sans: "'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
   },
   // Font sizes
@@ -195,138 +195,131 @@ export const fonts = {
  * @returns Object containing all themed color utilities
  */
 export const getThemeColors = (isDarkMode: boolean) => {
-  const mode = isDarkMode ? 'dark' : 'light';
-  const modeColors = isDarkMode ? darkModeColors : lightModeColors;
-
   return {
     // Primary brand colors
     primary: {
-      main: 'bg-orange-500',
-      hover: 'hover:bg-orange-600',
-      text: 'text-orange-500',
-      textHover: 'hover:text-orange-600',
-      border: 'border-orange-500',
-      focus: 'focus:border-orange-500',
-      ring: 'focus:ring-orange-500',
-      gradient: 'from-orange-500 to-orange-600',
-      shadow: 'shadow-orange-500/20',
-      light: 'bg-orange-50',
-      lightHover: 'hover:bg-orange-50',
-      dark: 'bg-orange-600',
-      darkText: isDarkMode ? 'text-orange-400' : 'text-orange-600',
+      main: 'bg-primary',
+      hover: 'hover:opacity-90',
+      text: 'text-primary',
+      textHover: 'hover:opacity-90',
+      border: 'border-primary',
+      focus: 'focus:border-primary',
+      ring: 'focus:ring-primary',
+      gradient: 'from-primary to-primary/80',
+      shadow: 'shadow-primary/20',
+      light: 'bg-primary/10',
+      lightHover: 'hover:bg-primary/20',
+      dark: 'bg-primary',
+      darkText: 'text-primary',
     },
     // Secondary colors
     secondary: {
-      main: 'bg-purple-600',
-      hover: 'hover:bg-purple-700',
-      text: 'text-purple-600',
-      textHover: 'hover:text-purple-700',
-      border: 'border-purple-600',
-      gradient: 'from-purple-600 to-purple-700',
+      main: 'bg-secondary',
+      hover: 'hover:opacity-90',
+      text: 'text-secondary',
+      textHover: 'hover:opacity-90',
+      border: 'border-secondary',
+      gradient: 'from-secondary to-secondary/80',
     },
     // Neutral/Background colors
     neutral: {
-      background: isDarkMode ? 'bg-[#0F1115]' : 'bg-white',
-      backgroundSecondary: isDarkMode ? 'bg-[#16191F]' : 'bg-slate-50',
-      backgroundTertiary: isDarkMode ? 'bg-[#1A1E26]' : 'bg-slate-100',
-      card: isDarkMode ? 'bg-[#16191F]' : 'bg-white',
-      hover: isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100',
-      hoverLight: isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50',
-      active: isDarkMode ? 'bg-gray-700' : 'bg-gray-100',
+      background: 'bg-background',
+      backgroundSecondary: 'bg-surface/50',
+      backgroundTertiary: 'bg-surface/80',
+      card: 'bg-surface',
+      hover: 'hover:bg-surface/10',
+      hoverLight: 'hover:bg-surface/5',
+      active: 'bg-surface/20',
     },
     // Border colors
     border: {
-      main: isDarkMode ? 'border-slate-800' : 'border-slate-100',
-      secondary: isDarkMode ? 'border-slate-700' : 'border-slate-200',
-      tertiary: isDarkMode ? 'border-gray-700' : 'border-gray-300',
-      input: isDarkMode ? 'border-slate-700' : 'border-gray-300',
-      inputFocus: isDarkMode ? 'focus:border-orange-500' : 'focus:border-orange-500',
-      subtle: isDarkMode ? 'border-slate-800' : 'border-slate-50',
+      main: 'border-border',
+      secondary: 'border-border/80',
+      tertiary: 'border-border/60',
+      input: 'border-border',
+      inputFocus: 'focus:border-primary',
+      subtle: 'border-border/40',
     },
     // Text colors
     text: {
-      primary: isDarkMode ? 'text-slate-100' : 'text-slate-900',
-      secondary: isDarkMode ? 'text-slate-400' : 'text-slate-500',
-      tertiary: isDarkMode ? 'text-gray-400' : 'text-gray-600',
-      muted: isDarkMode ? 'text-gray-500' : 'text-gray-400',
-      heading: isDarkMode ? 'text-white' : 'text-slate-900',
-      inverse: isDarkMode ? 'text-slate-900' : 'text-white',
+      primary: 'text-textPrimary',
+      secondary: 'text-textSecondary',
+      tertiary: 'text-textSecondary/80',
+      muted: 'text-textSecondary/60',
+      heading: 'text-textPrimary',
+      inverse: isDarkMode ? 'text-background' : 'text-surface',
     },
     // Input/Form colors
     input: {
-      background: isDarkMode ? 'bg-slate-800' : 'bg-white',
-      backgroundFocus: isDarkMode ? 'focus:bg-slate-800' : 'focus:bg-white',
-      border: isDarkMode ? 'border-slate-700' : 'border-gray-300',
-      borderHover: isDarkMode ? 'hover:border-slate-600' : 'hover:border-slate-200',
-      text: isDarkMode ? 'text-white' : 'text-gray-900',
-      placeholder: isDarkMode ? 'placeholder-gray-500' : 'placeholder-gray-400',
+      background: 'bg-surface',
+      backgroundFocus: 'focus:bg-surface',
+      border: 'border-border',
+      borderHover: 'hover:border-primary/50',
+      text: 'text-textPrimary',
+      placeholder: 'placeholder-textSecondary/50',
     },
     // Status colors
     status: {
       success: {
-        bg: isDarkMode ? 'bg-green-900' : 'bg-green-100',
-        text: isDarkMode ? 'text-green-200' : 'text-green-800',
-        hover: isDarkMode ? 'hover:bg-green-900/20' : 'hover:bg-green-50',
-        main: 'text-green-600',
+        bg: 'bg-success/10',
+        text: 'text-success',
+        hover: 'hover:bg-success/20',
+        main: 'text-success',
       },
       error: {
-        bg: isDarkMode ? 'bg-red-900' : 'bg-red-100',
-        text: isDarkMode ? 'text-red-200' : 'text-red-800',
-        hover: isDarkMode ? 'hover:bg-red-900/20' : 'hover:bg-red-50',
-        main: 'text-red-500',
-        border: 'border-red-500',
+        bg: 'bg-error/10',
+        text: 'text-error',
+        hover: 'hover:bg-error/20',
+        main: 'text-error',
+        border: 'border-error',
       },
       warning: {
-        bg: isDarkMode ? 'bg-yellow-900' : 'bg-yellow-100',
-        text: isDarkMode ? 'text-yellow-200' : 'text-yellow-800',
-        hover: isDarkMode ? 'hover:bg-yellow-900/20' : 'hover:bg-yellow-50',
-        main: 'text-yellow-600',
+        bg: 'bg-warning/10',
+        text: 'text-warning',
+        hover: 'hover:bg-warning/20',
+        main: 'text-warning',
       },
       info: {
-        bg: isDarkMode ? 'bg-blue-900' : 'bg-blue-100',
-        text: isDarkMode ? 'text-blue-200' : 'text-blue-800',
-        hover: isDarkMode ? 'hover:bg-blue-900/20' : 'hover:bg-blue-50',
-        main: isDarkMode ? 'text-blue-400' : 'text-blue-600',
+        bg: 'bg-accent/10',
+        text: 'text-accent',
+        hover: 'hover:bg-accent/20',
+        main: 'text-accent',
       },
     },
     // Table status colors
     table: {
       occupied: {
-        gradient: 'from-orange-500 to-orange-600',
-        text: 'text-white',
-        shadow: 'shadow-lg shadow-orange-500/30',
-        border: 'border-orange-400',
+        gradient: 'from-primary to-primary/80',
+        text: 'text-surface',
+        shadow: 'shadow-lg shadow-primary/30',
+        border: 'border-primary/50',
       },
       available: {
-        bg: isDarkMode ? 'from-gray-700 to-gray-800' : 'from-gray-100 to-gray-200',
-        text: isDarkMode ? 'text-gray-300' : 'text-gray-600',
-        icon: isDarkMode ? 'text-gray-500' : 'text-gray-400',
-        border: isDarkMode ? 'border-gray-600' : 'border-gray-300',
+        bg: 'from-surface/50 to-surface',
+        text: 'text-textSecondary',
+        icon: 'text-textSecondary/50',
+        border: 'border-border',
       },
       reserved: {
-        bg: isDarkMode ? 'from-gray-700 to-gray-800' : 'from-gray-200 to-gray-300',
-        text: isDarkMode ? 'text-gray-300' : 'text-gray-700',
-        icon: isDarkMode ? 'text-gray-400' : 'text-gray-600',
-        border: isDarkMode ? 'border-gray-600' : 'border-gray-400',
+        bg: 'from-surface/80 to-surface',
+        text: 'text-textPrimary',
+        icon: 'text-textSecondary/80',
+        border: 'border-border',
       },
     },
     // Button styles
     button: {
-      primary: 'bg-gradient-to-r from-orange-500 to-orange-400 text-white hover:from-orange-600 hover:to-orange-500 shadow-md shadow-orange-300/30 ring-1 ring-transparent focus:ring-orange-200',
-      secondary: isDarkMode 
-        ? 'border border-gray-600 hover:bg-gray-700 text-gray-300'
-        : 'border border-gray-300 hover:bg-gray-100 text-gray-700',
-      outline: isDarkMode
-        ? 'border border-slate-600 hover:bg-slate-700 text-slate-300'
-        : 'border border-slate-500 hover:bg-slate-500 hover:text-white text-slate-700',
+      primary: 'bg-primary text-white hover:opacity-90 shadow-md ring-1 ring-transparent focus:ring-primary/20',
+      secondary: 'border border-border hover:bg-surface/10 text-textSecondary',
+      outline: 'border border-primary text-primary hover:bg-primary hover:text-white',
     },
     // Dropdown/Menu colors
     dropdown: {
-      bg: isDarkMode ? 'bg-gray-800' : 'bg-white',
-      border: isDarkMode ? 'border-gray-700' : 'border-gray-200',
-      item: isDarkMode ? 'text-gray-300' : 'text-gray-700',
-      itemHover: isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100',
-      danger: 'text-red-500',
+      bg: 'bg-surface',
+      border: 'border-border',
+      item: 'text-textSecondary',
+      itemHover: 'hover:bg-surface/10',
+      danger: 'text-error',
     },
     // Shadow utilities
     shadow: {
@@ -337,13 +330,23 @@ export const getThemeColors = (isDarkMode: boolean) => {
       '2xl': 'shadow-2xl',
       inner: 'shadow-inner',
     },
-    // Raw color values for custom styling
+    // Raw values are now CSS variables
     raw: {
-      primary: primaryColors,
-      secondary: secondaryColors,
-      neutral: neutralColors,
-      status: statusColors,
-      mode: modeColors,
+      primary: 'var(--color-primary)',
+      secondary: 'var(--color-secondary)',
+      neutral: 'var(--color-border)',
+      status: {
+        success: 'var(--color-success)',
+        error: 'var(--color-error)',
+        warning: 'var(--color-warning)',
+        info: 'var(--color-accent)',
+      },
+      mode: {
+        background: 'var(--color-background)',
+        surface: 'var(--color-surface)',
+        text: 'var(--color-text-primary)',
+        border: 'var(--color-border)',
+      },
     },
   };
 };
@@ -355,7 +358,7 @@ export const getThemeColors = (isDarkMode: boolean) => {
  */
 export const generateCSSVariables = (isDarkMode: boolean) => {
   const modeColors = isDarkMode ? darkModeColors : lightModeColors;
-  
+
   return {
     '--color-primary': primaryColors[500],
     '--color-primary-hover': primaryColors[600],

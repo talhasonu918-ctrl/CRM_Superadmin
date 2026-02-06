@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { TakeawayOrder } from '../types';
 import { mockTakeawayOrders } from '../mockData';
-import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock } from 'lucide-react';
+import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
+import toast, { Toaster } from 'react-hot-toast';
+import { CustomSelect, CustomSelectOption } from '../../../../components/CustomSelect';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
-import { getThemeColors } from '../../../../theme/colors';
+import { Badge } from 'rizzui';
+import Tabs, { TabItem } from '../../../../components/Tabs';
 
 interface TakeAwayViewProps {
   isDarkMode?: boolean;
@@ -17,9 +20,8 @@ interface FilterFormData {
 }
 
 export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }) => {
-  const theme = getThemeColors(isDarkMode);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [activeFilter, setActiveFilter] = useState<'all' | 'ready' | 'progress' | 'served'>('all');
+  const [activeFilter, setActiveFilter] = useState<string>('all');
 
   const { control, watch } = useForm<FilterFormData>({
     defaultValues: {
@@ -32,13 +34,20 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   const filters = watch();
 
   const filteredOrders = mockTakeawayOrders.filter(order => {
-    const matchesSearch = !filters.search ||
-      order.orderNumber.toLowerCase().includes(filters.search.toLowerCase());
+    const searchLower = filters.search?.toLowerCase();
+    const searchNormalized = searchLower?.replace(/\s+/g, '');
 
-    const matchesStatus = activeFilter === 'all' ||
+    const matchesSearch = !searchLower ||
+      order.orderNumber.toLowerCase().includes(searchLower) ||
+      order.customerName?.toLowerCase().includes(searchLower) ||
+      (order.customerPhone && order.customerPhone.replace(/\s+/g, '').includes(searchNormalized || ''));
+
+    const matchesStatus = activeFilter === 'all' || order.status === activeFilter ||
       (activeFilter === 'ready' && order.status === 'ready') ||
       (activeFilter === 'progress' && order.status === 'preparing') ||
-      (activeFilter === 'served' && order.status === 'served');
+      (activeFilter === 'preparing' && order.status === 'preparing') ||
+      (activeFilter === 'served' && order.status === 'served') ||
+      (activeFilter === 'cancelled' && order.status === 'cancelled');
 
     return matchesSearch && matchesStatus;
   });
@@ -60,391 +69,436 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
     return itemsTotal - discount + tax;
   };
   const OrderCard: React.FC<{ order: TakeawayOrder }> = ({ order }) => (
-    <div className={`p-4 rounded-lg border transition-all hover:shadow-lg min-h-[280px] flex flex-col ${theme.neutral.card} ${theme.border.secondary}`}>
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className={`font-bold text-base ${theme.text.primary}`}>
-            {order.orderNumber.replace('1/30/2026-', '')}
-          </h3>
+    <div className="p-3 rounded-xl border border-border transition-all hover:shadow-lg flex flex-col bg-surface">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-bold text-sm text-textPrimary">
+          {order.orderNumber.split('-').pop()}
+        </h3>
+        <div className="flex items-center gap-2">
+          <Badge
+            variant="flat"
+            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ${order.status === 'ready'
+              ? 'bg-primary/10 text-primary'
+              : order.status === 'preparing'
+                ? 'bg-secondary/10 text-secondary'
+                : order.status === 'served'
+                  ? 'bg-success/10 text-success'
+                  : 'bg-error/10 text-error'
+              }`}
+          >
+            {order.status === 'ready' ? 'READY' : order.status}
+          </Badge>
+          <OrderActionsDropdown
+            isDarkMode={isDarkMode}
+            onViewDetails={() => console.log('View details', order.id)}
+            onMarkAsReady={() => console.log('Mark as ready', order.id)}
+            onPrintReceipt={() => console.log('Print receipt', order.id)}
+            onCancelOrder={() => console.log('Cancel order', order.id)}
+          />
         </div>
-        <OrderActionsDropdown
-          isDarkMode={isDarkMode}
-          onViewDetails={() => console.log('View details', order.id)}
-          onMarkAsReady={() => console.log('Mark as ready', order.id)}
-          onPrintReceipt={() => console.log('Print receipt', order.id)}
-          onCancelOrder={() => console.log('Cancel order', order.id)}
-        />
       </div>
 
-      {/* Items List */}
-      <div className="space-y-2 mb-3">
-        <div className={`flex items-center gap-2 mb-2 ${theme.text.tertiary}`}>
-          <ShoppingBag size={14} />
-          <span className="text-sm font-medium">{order.items?.length || 0} items</span>
+      {/* Items Section */}
+      <div className="flex-1 mb-3 pt-2 border-t border-border">
+        <div className="grid grid-cols-4 gap-2 mb-1 text-[10px] font-bold uppercase text-textSecondary">
+          <div className="col-span-2">Item</div>
+          <div className="text-center">Qty</div>
+          <div className="text-right">Price</div>
         </div>
         {order.items && order.items.length > 0 && (
           <div className="space-y-1">
             {order.items.map((item, index) => (
-              <div key={index} className={`text-xs ${theme.text.tertiary}`}>
-                {item.quantity}x {item.product.name} - ₹{(item.product.price * item.quantity).toFixed(2)}
+              <div key={index} className="grid grid-cols-4 gap-2 text-[11px] text-textSecondary">
+                <div className="col-span-2 truncate">{item.product.name}</div>
+                <div className="text-center font-medium">{item.quantity}</div>
+                <div className="text-right font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</div>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* Customer Info */}
-      <div className="space-y-2 mb-3 text-sm">
-        {order.customerName && (
-          <div className={`flex items-center gap-2 ${theme.text.tertiary}`}>
-            <User size={14} />
-            <span>{order.customerName}</span>
+      {/* Customer & Footer */}
+      <div className="pt-2 border-t border-border">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold uppercase mb-0.5 text-textSecondary">Customer</span>
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-textPrimary">
+              <User size={12} className="opacity-70" />
+              <span className="truncate max-w-[100px]">{order.customerName || 'Walk-in'}</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px] mt-0.5 text-textSecondary">
+              <Phone size={10} className="opacity-70" />
+              <span>{order.customerPhone || 'N/A'}</span>
+            </div>
           </div>
-        )}
-
-        {order.customerPhone && (
-          <div className={`flex items-center gap-2 ${theme.text.tertiary}`}>
-            <Phone size={14} />
-            <span>{order.customerPhone}</span>
+          <div className="text-right">
+            <span className="text-[10px] font-bold uppercase mb-0.5 text-textSecondary">Total</span>
+            <div className="text-sm font-black text-primary">
+              ₹{calculateGrandTotal(order).toFixed(2)}
+            </div>
           </div>
-        )}
-      </div>
-
-      {/* Total Price */}
-      <div className="text-orange-600 font-bold text-xl mb-2">
-        ₹{calculateGrandTotal(order).toFixed(2)}
-      </div>
-
-      {/* Pickup Time */}
-      <div className={`text-xs mt-auto ${theme.text.muted}`}>
-        {order.pickupTime}
+        </div>
+        <div className="flex items-center gap-1 text-[10px] text-textSecondary opacity-70">
+          <Clock size={10} />
+          <span>{order.pickupTime}</span>
+        </div>
       </div>
     </div>
   );
 
-  const OrderListItem: React.FC<{ order: TakeawayOrder }> = ({ order }) => (
-    <div className={`p-4 sm:p-5 rounded-lg border transition-all hover:shadow-md ${theme.neutral.card} ${theme.border.secondary}`}>
-      {/* Header Row - Order Number and Status */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <h3 className={`font-bold text-lg ${theme.text.primary}`}>
-             {order.orderNumber.replace('1/30/2026-', '')}
-          </h3>
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'served'
-              ? `${theme.status.success.bg} ${theme.status.success.text}`
-              : order.status === 'preparing'
-                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
-                : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-            }`}>
-            {order.status === 'served' ? 'Served' : order.status === 'preparing' ? 'Preparing' : order.status === 'pending' ? 'Pending' : 'Cancelled'}
-          </span>
-        </div>
-        <OrderActionsDropdown
-          isDarkMode={isDarkMode}
-          onViewDetails={() => console.log('View details', order.id)}
-          onMarkAsReady={() => console.log('Mark as ready', order.id)}
-          onPrintReceipt={() => console.log('Print receipt', order.id)}
-          onCancelOrder={() => console.log('Cancel order', order.id)}
-        />
-      </div>
+  const OrderListItem: React.FC<{ order: TakeawayOrder }> = ({ order }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const displayedItems = isExpanded ? order.items : order.items?.slice(0, 2);
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Items Section */}
-        <div className="lg:col-span-2">
-          <div className={`flex items-center gap-2 mb-2 ${theme.text.secondary}`}>
-            <ShoppingBag size={16} />
-            <span className="text-sm font-semibold">{order.items?.length || 0} items</span>
+    return (
+      <div className="px-4 py-3 border-b border-border transition-all hover:bg-surface/50 bg-surface">
+        <div className="grid grid-cols-12 gap-4 items-center">
+          {/* Order / Time */}
+          <div className="col-span-2 flex flex-col gap-0.5">
+            <h3 className="font-bold text-sm text-textPrimary">
+              {order.orderNumber.split('-').pop()}
+            </h3>
+            <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+              <Clock size={11} className="opacity-60" />
+              <span>{order.pickupTime} </span>
+            </div>
           </div>
-          {order.items && order.items.length > 0 && (
-            <div className={`text-sm ${theme.text.tertiary} space-y-1`}>
-              {order.items.map((item, index) => (
-                <div key={index} className="flex justify-between">
-                  <span>{item.quantity}x {item.product.name}</span>
-                  <span className="font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</span>
+
+          {/* Status */}
+          <div className="col-span-1">
+            <Badge
+              variant="flat"
+              className={`py-1 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest ${order.status === 'ready'
+                ? 'bg-primary/10 text-primary'
+                : order.status === 'preparing'
+                  ? 'bg-secondary/10 text-secondary'
+                  : order.status === 'served'
+                    ? 'bg-success/10 text-success'
+                    : 'bg-error/10 text-error'
+                }`}
+            >
+              {order.status === 'ready' ? 'READY' : order.status}
+            </Badge>
+          </div>
+
+          {/* Items Column (Sub-grid 3+1+1 = 5) */}
+          <div className="col-span-5">
+            <div className="flex flex-col gap-1.5">
+              {displayedItems?.map((item, idx) => (
+                <div key={idx} className="grid grid-cols-5 gap-2 text-xs pl-5">
+                  <span className="col-span-3 truncate font-medium text-textSecondary">
+                    {item.product.name}
+                  </span>
+                  <span className="col-span-1 text-center font-medium text-textSecondary">
+                    {item.quantity}
+                  </span>
+                  <span className="col-span-1 text-right font-medium text-textSecondary">
+                    ₹{(item.product.price * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               ))}
+              {order.items && order.items.length > 2 && (
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-[11px] font-bold hover:underline mt-0.5 flex items-center gap-1 text-primary pl-5"
+                >
+                  {isExpanded ? (
+                    <>Show less <ChevronUp size={11} /></>
+                  ) : (
+                    <>+{order.items.length - 2} more... <ChevronDown size={11} /></>
+                  )}
+                </button>
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Customer Info Section */}
-        <div className="space-y-2">
-          <div className={`text-xs font-semibold uppercase ${theme.text.muted}`}>Customer</div>
-          {order.customerName && (
-            <div className={`flex items-center gap-2 ${theme.text.secondary}`}>
-              <User size={16} />
-              <span className="text-sm">{order.customerName}</span>
-            </div>
-          )}
-          {order.customerPhone && (
-            <div className={`flex items-center gap-2 ${theme.text.secondary}`}>
-              <Phone size={16} />
-              <span className="text-sm">{order.customerPhone}</span>
-            </div>
-          )}
-          {!order.customerName && !order.customerPhone && (
-            <span className={`text-sm ${theme.text.muted}`}>Walk-in</span>
-          )}
-        </div>
-
-        {/* Price and Time Section */}
-        <div className="space-y-2">
-          <div className={`text-xs font-semibold uppercase ${theme.text.muted}`}>Total & Time</div>
-          <div className="text-orange-600 dark:text-orange-400 font-bold text-xl">
-            ₹{calculateGrandTotal(order).toFixed(2)}
           </div>
-          <div className={`text-sm ${theme.text.muted} flex items-center gap-1`}>
-            <Clock size={14} />
-            {order.pickupTime}
+
+          {/* Customer Info */}
+          <div className="col-span-2">
+            <div className="text-sm font-bold truncate mb-0.5 text-textPrimary">
+              {order.customerName || 'Walk-in'}
+            </div>
+            <div className="text-[11px] font-medium text-textSecondary">
+              {order.customerPhone || 'N/A'}
+            </div>
+          </div>
+
+          {/* Total Amount & Actions */}
+          <div className="col-span-2 flex items-center justify-between pl-2">
+            <div className="text-lg font-bold text-primary whitespace-nowrap">
+              ₹{calculateGrandTotal(order).toFixed(2)}
+            </div>
+            <OrderActionsDropdown
+              isDarkMode={isDarkMode}
+              onViewDetails={() => console.log('View details', order.id)}
+              onMarkAsReady={() => console.log('Mark as ready', order.id)}
+              onPrintReceipt={() => console.log('Print receipt', order.id)}
+              onCancelOrder={() => console.log('Cancel order', order.id)}
+            />
           </div>
         </div>
       </div>
+    );
+  };
+
+  const ordersContent = (
+    <div className="min-h-[400px]">
+      {activeFilter === 'all' && (
+        <>
+          {/* Ready For Pickup */}
+          {readyOrders.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-base sm:text-lg font-bold mb-3 text-textPrimary">
+                Ready For Pickup
+              </h2>
+              {viewMode === 'list' && readyOrders.length > 0 && (
+                <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                  <div className="col-span-2">Order / Time</div>
+                  <div className="col-span-1">Status</div>
+                  <div className="col-span-3 pl-5 ">Item</div>
+                  <div className="col-span-1 text-center">Qty</div>
+                  <div className="col-span-1 text-center">Price</div>
+                  <div className="col-span-2">Customer Info</div>
+                  <div className="col-span-2 text-right pr-10 whitespace-nowrap">Total Amount</div>
+                </div>
+              )}
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                  {readyOrders.map(order => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {readyOrders.map(order => (
+                    <OrderListItem key={order.id} order={order} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* In Progress */}
+          {progressOrders.length > 0 && (
+            <div className="mb-6">
+              <h2 className="text-base sm:text-lg font-bold mb-3 text-textPrimary">
+                In Progress
+              </h2>
+              {viewMode === 'list' && progressOrders.length > 0 && (
+                <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                  <div className="col-span-2">Order / Time</div>
+                  <div className="col-span-1">Status</div>
+                  <div className="col-span-3 pl-5">Item</div>
+                  <div className="col-span-1 text-center">Qty</div>
+                  <div className="col-span-1 text-center">Price</div>
+                  <div className="col-span-2">Customer Info</div>
+                  <div className="col-span-2 text-right pr-10 whitespace-nowrap">Total Amount</div>
+                </div>
+              )}
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
+                  {progressOrders.map(order => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {progressOrders.map(order => (
+                    <OrderListItem key={order.id} order={order} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Served */}
+          {servedOrders.length > 0 && (
+            <div>
+              <h2 className="text-base sm:text-lg font-bold mb-3 text-textPrimary">
+                Served
+              </h2>
+              {viewMode === 'list' && servedOrders.length > 0 && (
+                <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                  <div className="col-span-2">Order / Time</div>
+                  <div className="col-span-1">Status</div>
+                  <div className="col-span-3 pl-5">Item</div>
+                  <div className="col-span-1 text-center">Qty</div>
+                  <div className="col-span-1 text-right">Price</div>
+                  <div className="col-span-2">Customer Info</div>
+                  <div className="col-span-2 text-right pr-10 whitespace-nowrap">Total Amount</div>
+                </div>
+              )}
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                  {servedOrders.map(order => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {servedOrders.map(order => (
+                    <OrderListItem key={order.id} order={order} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {filteredOrders.length === 0 && (
+            <p className="text-sm text-center py-8 text-textSecondary">
+              No matching orders
+            </p>
+          )}
+        </>
+      )}
+
+      {activeFilter !== 'all' && (
+        <>
+          {filteredOrders.length > 0 ? (
+            <div className="mb-6">
+              <h2 className="text-base sm:text-lg font-bold mb-3 text-textPrimary">
+                {activeFilter === 'ready' && 'Ready For Pickup'}
+                {activeFilter === 'preparing' && 'In Progress'}
+                {activeFilter === 'served' && 'Served'}
+                {activeFilter === 'cancelled' && 'Cancelled'}
+              </h2>
+              <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+                <div className="col-span-2">Order / Time</div>
+                <div className="col-span-1">Status</div>
+                <div className="col-span-3 pl-5">Item</div>
+                <div className="col-span-1 text-center">Qty</div>
+                <div className="col-span-1 text-right">Price</div>
+                <div className="col-span-2">Customer Info</div>
+                <div className="col-span-2 text-right pr-10 whitespace-nowrap">Total Amount</div>
+              </div>
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                  {filteredOrders.map(order => (
+                    <OrderCard key={order.id} order={order} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  {filteredOrders.map(order => (
+                    <OrderListItem key={order.id} order={order} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-center py-8 text-textSecondary">
+              No matching orders
+            </p>
+          )}
+        </>
+      )}
     </div>
   );
 
   return (
-    <div className={`min-h-[calc(100vh-12rem)] flex flex-col ${theme.neutral.background} p-3 sm:p-4 lg:p-6`}>
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 lg:mb-6">
-        <h1 className={`text-xl sm:text-2xl font-bold whitespace-nowrap ${theme.text.primary}`}>
-          TakeAway Orders
-        </h1>
+    <div className="min-h-[calc(100vh-12rem)] flex flex-col bg-background p-3 sm:p-4 lg:p-6">
+      {/* Header Box */}
+      <div className="p-4 sm:p-5 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4 lg:mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+            <h1 className="text-xl sm:text-xl font-bold whitespace-nowrap text-textPrimary">
+              TakeAway Orders
+            </h1>
 
 
-        <div className="flex items-center w-full sm:w-auto justify-end gap-3 sm:gap-4 sm:ml-auto">
-          {/* Search */}
-          <div className="flex-1 sm:flex-none sm:w-64">
-            <Controller
-              name="search"
-              control={control}
-              render={({ field }) => (
-                <div className="relative">
-                  <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted}`} size={16} />
-                  <input
-                    {...field}
-                    type="text"
-                    placeholder="Search"
-                    className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text} ${theme.input.placeholder}`}
-                  />
-                </div>
-              )}
-            />
           </div>
 
-          {/* View Toggle */}
-          <div className={`flex gap-1 p-1 border rounded-lg ${theme.neutral.card} flex-shrink-0`}>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'list'
-                ? `${theme.primary.main} text-white shadow-sm`
-                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-                }`}
-            >
-              <List size={16} />
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'grid'
-                ? `${theme.primary.main} text-white shadow-sm`
-                : `${theme.text.muted} ${isDarkMode ? 'hover:text-white' : 'hover:bg-gray-200'}`
-                }`}
-            >
-              <Grid size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="mb-4 lg:mb-6">
-        {/* Date Range and Status Buttons Row */}
-        <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-end">
-          {/* Date Range - Always horizontal in 2 columns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 flex-1 lg:flex-none lg:w-auto">
-            <Controller
-              name="dateFrom"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1">
-                  <label className={`text-xs font-medium ${theme.text.tertiary}`}>
-                    From
-                  </label>
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
+            {/* Search */}
+            <div className="w-full sm:w-64">
+              <Controller
+                name="search"
+                control={control}
+                render={({ field }) => (
                   <div className="relative">
-                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary pointer-events-none" size={16} />
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="Search..."
+                      className="w-full pl-10 pr-3 py-2 rounded-lg border border-border bg-surface text-textPrimary text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                    />
+                  </div>
+                )}
+              />
+            </div>
+
+            {/* Date Range */}
+            <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+              <Controller
+                name="dateFrom"
+                control={control}
+                render={({ field }) => (
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary pointer-events-none" size={16} />
                     <input
                       {...field}
                       type="date"
-                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+                      className="w-full pl-10 pr-3 py-2 rounded-lg border border-border bg-surface text-[10px] sm:text-xs text-textPrimary outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
-                </div>
-              )}
-            />
-
-            <Controller
-              name="dateTo"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-col gap-1">
-                  <label className={`text-xs font-medium ${theme.text.tertiary}`}>
-                    To
-                  </label>
+                )}
+              />
+              <Controller
+                name="dateTo"
+                control={control}
+                render={({ field }) => (
                   <div className="relative">
-                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.muted} pointer-events-none`} size={16} />
                     <input
                       {...field}
                       type="date"
-                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.border.input} ${theme.input.text}`}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-surface text-[10px] sm:text-xs text-textPrimary outline-none focus:ring-2 focus:ring-primary/20 transition-all"
                     />
                   </div>
-                </div>
-              )}
-            />
-          </div>
-
-          {/* Status Buttons */}
-          <div className="flex flex-wrap gap-2 lg:flex-1 lg:justify-end">
-            <button
-              onClick={() => setActiveFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'all'
-                ? `${theme.primary.main} text-white shadow-md`
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
-                }`}
-            >
-              All
-            </button>
-            <button
-              onClick={() => setActiveFilter('progress')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'progress'
-                ? 'bg-purple-500 text-white shadow-md'
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
-                }`}
-            >
-              InProgress
-            </button>
-            <button
-              onClick={() => setActiveFilter('served')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 sm:flex-none ${activeFilter === 'served'
-                ? 'bg-orange-500 text-white shadow-md'
-                : `${theme.neutral.card} ${theme.text.secondary} ${theme.neutral.hover}`
-                }`}
-            >
-              Served
-            </button>
-
+                )}
+              />
+            </div>
+            {/* View Mode Toggle */}
+            <div className="flex items-center p-1 rounded-lg border border-border bg-surface">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${viewMode === 'list'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-textSecondary hover:bg-surface/10'
+                  }`}
+              >
+                <List size={14} />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1.5 rounded-md text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-2 ${viewMode === 'grid'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-textSecondary hover:bg-surface/10'
+                  }`}
+              >
+                <Grid size={14} />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Orders Content */}
-      <div className="flex-1 overflow-y-auto min-h-[400px]">
-        {activeFilter === 'all' && (
-          <>
-            {/* Ready For Pickup */}
-            {readyOrders.length > 0 && (
-              <div className="mb-6">
-                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
-                  Ready For Pickup
-                </h2>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-                    {readyOrders.map(order => (
-                      <OrderCard key={order.id} order={order} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {readyOrders.map(order => (
-                      <OrderListItem key={order.id} order={order} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+        <div className="w-full">
+          <Tabs
+            variant="pills"
+            size="sm"
+            isDarkMode={isDarkMode}
+            onTabChange={(tabId) => setActiveFilter(tabId)}
+            defaultActiveTab={activeFilter}
+            items={[
+              { id: 'all', name: 'All Orders', content: ordersContent },
+              { id: 'preparing', name: 'Preparing', content: ordersContent },
+              { id: 'ready', name: 'Ready', content: ordersContent },
+              { id: 'served', name: 'Served', content: ordersContent },
+              { id: 'cancelled', name: 'Cancelled', content: ordersContent },
+            ]}
+          />
+        </div>
 
-            {/* In Progress */}
-            {progressOrders.length > 0 && (
-              <div className="mb-6">
-                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
-                  In Progress
-                </h2>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-3 lg:gap-4">
-                    {progressOrders.map(order => (
-                      <OrderCard key={order.id} order={order} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {progressOrders.map(order => (
-                      <OrderListItem key={order.id} order={order} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Served */}
-            {servedOrders.length > 0 && (
-              <div>
-                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
-                  Served
-                </h2>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-                    {servedOrders.map(order => (
-                      <OrderCard key={order.id} order={order} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {servedOrders.map(order => (
-                      <OrderListItem key={order.id} order={order} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {filteredOrders.length === 0 && (
-              <p className={`text-sm text-center py-8 ${theme.text.muted}`}>
-                No matching orders
-              </p>
-            )}
-          </>
-        )}
-
-        {activeFilter !== 'all' && (
-          <>
-            {filteredOrders.length > 0 ? (
-              <div className="mb-6">
-                <h2 className={`text-base sm:text-lg font-bold mb-3 ${theme.text.primary}`}>
-                  {activeFilter === 'ready' && 'Ready For Pickup'}
-                  {activeFilter === 'progress' && 'In Progress'}
-                  {activeFilter === 'served' && 'Served'}
-                </h2>
-                {viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-                    {filteredOrders.map(order => (
-                      <OrderCard key={order.id} order={order} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {filteredOrders.map(order => (
-                      <OrderListItem key={order.id} order={order} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className={`text-sm text-center py-8 ${theme.text.muted}`}>
-                No matching orders
-              </p>
-            )}
-          </>
-        )}
       </div>
     </div>
   );

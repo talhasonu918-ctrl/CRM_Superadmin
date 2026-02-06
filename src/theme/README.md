@@ -1,6 +1,6 @@
 # Theme System Documentation
 
-This directory contains the centralized theme configuration for the entire Nexus CRM application. All colors, fonts, and design tokens are defined here to ensure consistency and easy maintenance.
+This directory contains the centralized theme configuration for the entire Invex Food application. All colors, fonts, and design tokens are defined here to ensure consistency and easy maintenance.
 
 ## 📁 File Structure
 

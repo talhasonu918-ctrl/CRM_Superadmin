@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal } from '../../../../components/Modal';
-import { getThemeColors } from '../../../../theme/colors';
 
 interface Customer {
   id: string;
@@ -21,7 +20,6 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
   onAddCustomer,
   isDarkMode = false
 }) => {
-  const theme = getThemeColors(isDarkMode);
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [errors, setErrors] = useState({ name: '', phone: '' });
@@ -66,8 +64,8 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
     >
       <div className="space-y-3 sm:space-y-4">
         <div>
-          <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.secondary}`}>
-            Customer Name <span className={theme.status.error.main}>*</span>
+          <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-textSecondary">
+            Customer Name <span className="text-error">*</span>
           </label>
           <input
             type="text"
@@ -78,14 +76,14 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
             }}
             placeholder="Enter customer name"
             className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border text-sm transition-all ${errors.name
-              ? `${theme.status.error.border} focus:ring-red-500`
-              : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
-              } ${theme.input.background} ${theme.input.text} ${theme.input.placeholder}`}
+              ? 'border-error focus:ring-error/20'
+              : 'border-border focus:ring-primary/20'
+              } bg-surface text-textPrimary placeholder-textSecondary/50`}
           />
-          {errors.name && <p className={`${theme.status.error.main} text-xs mt-1`}>{errors.name}</p>}
+          {errors.name && <p className="text-error text-xs mt-1">{errors.name}</p>}
         </div>
         <div>
-          <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.secondary}`}>
+          <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-textSecondary">
             Phone Number
           </label>
           <input
@@ -97,22 +95,22 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
             }}
             placeholder="+92 300 1234567"
             className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border text-sm transition-all ${errors.phone
-              ? `${theme.status.error.border} focus:ring-red-500`
-              : `${theme.border.input} ${theme.primary.focus} ${theme.primary.ring}`
-              } ${theme.input.background} ${theme.input.text} ${theme.input.placeholder}`}
+              ? 'border-error focus:ring-error/20'
+              : 'border-border focus:ring-primary/20'
+              } bg-surface text-textPrimary placeholder-textSecondary/50`}
           />
-          {errors.phone && <p className={`${theme.status.error.main} text-xs mt-1`}>{errors.phone}</p>}
+          {errors.phone && <p className="text-error text-xs mt-1">{errors.phone}</p>}
         </div>
         <div className="flex gap-2 sm:gap-3 pt-1 sm:pt-2">
           <button
             onClick={handleClose}
-            className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all font-medium text-sm ${theme.button.secondary}`}
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all font-medium text-sm bg-background border border-border text-textSecondary hover:bg-surface"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
-            className={`flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all font-medium text-sm ${theme.button.primary}`}
+            className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl transition-all font-medium text-sm bg-primary text-white hover:opacity-90"
           >
             Add Customer
           </button>

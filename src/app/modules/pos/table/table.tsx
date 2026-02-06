@@ -3,7 +3,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { Order } from '../types';
 import { Search, Grid, List, Calendar } from 'lucide-react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { getThemeColors } from '../../../../theme/colors';
 import { ColumnToggle } from '../../../../components/ColumnToggle';
 interface OrderQueueTableProps {
   orders: Order[];
@@ -32,7 +31,6 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
   onPrint,
 }) => {
   const { isDarkMode } = useTheme();
-  const theme = getThemeColors(isDarkMode);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
 
@@ -91,11 +89,11 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
   };
 
   return (
-    <div className={`${theme.neutral.card} rounded-lg shadow-lg`}>
+    <div className="bg-surface rounded-lg shadow-lg">
       {/* Header with Title, Search, and View Toggle */}
-      <div className={`p-3 sm:p-4 ${theme.border.main}`}>
+      <div className="p-3 sm:p-4 border-b border-border">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
-          <h1 className={`text-xl sm:text-2xl font-bold whitespace-nowrap ${theme.text.primary}`}>
+          <h1 className="text-xl sm:text-2xl font-bold whitespace-nowrap text-textPrimary">
             Current Order
           </h1>
 
@@ -107,12 +105,12 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                 control={control}
                 render={({ field }) => (
                   <div className="relative">
-                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary}`} size={16} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary" size={16} />
                     <input
                       {...field}
                       type="text"
                       placeholder="Search"
-                      className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none ${theme.input.border} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:ring-2 ${theme.primary.ring} transition-all`}
+                      className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-surface text-textPrimary placeholder-textSecondary/50 focus:ring-2 focus:ring-primary/20 transition-all text-sm outline-none"
                     />
                   </div>
                 )}
@@ -120,12 +118,12 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
             </div>
 
             {/* View Toggle */}
-            <div className={`flex gap-1 p-1 border rounded-lg ${theme.neutral.backgroundSecondary} ${theme.border.secondary} flex-shrink-0`}>
+            <div className={`flex gap-1 p-1 border rounded-lg ${isDarkMode ? 'bg-background' : 'bg-gray-50'} border-border flex-shrink-0`}>
               <button
                 onClick={() => setViewMode('list')}
                 className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'list'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.secondary} ${theme.neutral.hover}`
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-textSecondary hover:bg-surface/10'
                   }`}
               >
                 <List size={16} />
@@ -133,8 +131,8 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               <button
                 onClick={() => setViewMode('grid')}
                 className={`px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${viewMode === 'grid'
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.secondary} ${theme.neutral.hover}`
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'text-textSecondary hover:bg-surface/10'
                   }`}
               >
                 <Grid size={16} />
@@ -155,15 +153,15 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1">
-                  <label className={`text-xs font-medium ${theme.text.secondary}`}>
+                  <label className="text-xs font-medium text-textSecondary">
                     From
                   </label>
                   <div className="relative">
-                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary} pointer-events-none`} size={16} />
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary pointer-events-none" size={16} />
                     <input
                       {...field}
                       type="date"
-                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                      className="w-full pl-10 pr-3 py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-surface text-textPrimary"
                     />
                   </div>
                 </div>
@@ -175,15 +173,15 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               control={control}
               render={({ field }) => (
                 <div className="flex flex-col gap-1">
-                  <label className={`text-xs font-medium ${theme.text.secondary}`}>
+                  <label className="text-xs font-medium text-textSecondary">
                     To
                   </label>
                   <div className="relative">
-                    <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 ${theme.text.secondary} pointer-events-none`} size={16} />
+                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary pointer-events-none" size={16} />
                     <input
                       {...field}
                       type="date"
-                      className={`w-full pl-10 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                      className="w-full pl-10 pr-3 py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-surface text-textPrimary"
                     />
                   </div>
                 </div>
@@ -202,7 +200,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                   {...field}
                   type="text"
                   placeholder="Search Table"
-                  className={`w-full pl-9 pr-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all ${theme.input.background} ${theme.input.border} ${theme.input.text} ${theme.input.placeholder}`}
+                  className="w-full pl-9 pr-3 py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-surface text-textPrimary placeholder-textSecondary/50"
                 />
               </div>
             )}
@@ -216,7 +214,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               <div className="relative flex-1 lg:w-48">
                 <select
                   {...field}
-                  className={`w-full px-3 py-2 rounded-lg border text-sm outline-none focus:ring-2 ${theme.primary.ring} transition-all appearance-none ${theme.input.background} ${theme.input.border} ${theme.input.text}`}
+                  className="w-full px-3 py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none bg-surface text-textPrimary"
                 >
                   <option value="">Select Invoice Type</option>
                   <option value="Dine In">Dine In</option>
@@ -242,8 +240,8 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
       {viewMode === 'list' && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1200px]">
-            <thead className={`sticky top-0 ${theme.neutral.backgroundSecondary}`}>
-              <tr className={`text-left text-xs font-semibold ${theme.text.secondary}`}>
+            <thead className={`sticky top-0 ${isDarkMode ? 'bg-background' : 'bg-gray-50'}`}>
+              <tr className="text-left text-xs font-semibold text-textSecondary">
                 {isColumnVisible('orderNo') && <th className="px-4 py-3">Order No</th>}
                 {isColumnVisible('staff') && <th className="px-4 py-3">Staff</th>}
                 {isColumnVisible('tableNo') && <th className="px-4 py-3">Table No</th>}
@@ -260,12 +258,11 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                 {isColumnVisible('actions') && <th className="px-4 py-3">Actions</th>}
               </tr>
             </thead>
-            <tbody className={`text-sm ${theme.text.secondary}`}>
+            <tbody className="text-sm text-textSecondary">
               {filteredOrders.map((order) => (
                 <tr
                   key={order.id}
-                  className={`border-b ${isDarkMode ? 'border-gray-800 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'
-                    } transition-colors`}
+                  className="border-b border-border hover:bg-surface/5 transition-colors"
                 >
                   {isColumnVisible('orderNo') && (
                     <td className="px-4 py-3">
@@ -296,8 +293,8 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                   {isColumnVisible('status') && (
                     <td className="px-4 py-3">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${order.status === 'ready'
-                        ? `${theme.status.success.bg} ${theme.status.success.text}`
-                        : `${theme.status.warning.bg} ${theme.status.warning.text}`
+                        ? 'bg-success/10 text-success'
+                        : 'bg-warning/10 text-warning'
                         }`}>
                         {order.status === 'ready' ? 'Ready/ForPickup' : 'InProgress'}
                       </span>
@@ -309,19 +306,19 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                         <div className="flex gap-2">
                           <button
                             onClick={() => onPayment(order)}
-                            className={`px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium whitespace-nowrap`}
+                            className="px-3 py-1.5 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors text-xs font-medium whitespace-nowrap"
                           >
                             Payment
                           </button>
                           <button
                             onClick={() => onMarkPaid(order)}
-                            className={`px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium whitespace-nowrap`}
+                            className="px-3 py-1.5 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors text-xs font-medium whitespace-nowrap"
                           >
                             Mark Paid
                           </button>
                           <button
                             onClick={() => onEdit(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
+                            className="px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap bg-background border border-border text-textSecondary hover:bg-surface"
                           >
                             Edit
                           </button>
@@ -329,13 +326,13 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                         <div className="flex gap-2">
                           <button
                             onClick={() => onCancel(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
+                            className="px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap bg-background border border-border text-textSecondary hover:bg-surface"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => onPrint(order)}
-                            className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap ${theme.button.secondary}`}
+                            className="px-3 py-1.5 rounded-md transition-colors text-xs font-medium whitespace-nowrap bg-background border border-border text-textSecondary hover:bg-surface"
                           >
                             Invoice Print
                           </button>
@@ -356,7 +353,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
           {filteredOrders.map((order) => (
             <div
               key={order.id}
-              className={`rounded-lg border p-4 ${theme.neutral.card} ${theme.border.secondary} hover:shadow-lg transition-all`}
+              className="rounded-lg border border-border p-4 bg-surface hover:shadow-lg transition-all"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-3">
@@ -369,8 +366,8 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                   </div>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${order.status === 'ready'
-                  ? `${theme.status.success.bg} ${theme.status.success.text}`
-                  : `${theme.status.warning.bg} ${theme.status.warning.text}`
+                  ? 'bg-success/10 text-success'
+                  : 'bg-warning/10 text-warning'
                   }`}>
                   {order.status === 'ready' ? 'Ready' : 'In Progress'}
                 </span>
@@ -379,34 +376,34 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
               {/* Details Grid */}
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Table</div>
-                  <div className={`font-medium ${theme.text.primary}`}>{order.tableId}</div>
+                  <div className="text-xs text-textSecondary/70">Table</div>
+                  <div className="font-medium text-textPrimary">{order.tableId}</div>
                 </div>
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Floor</div>
-                  <div className={`font-medium ${theme.text.primary}`}>
+                  <div className="text-xs text-textSecondary/70">Floor</div>
+                  <div className="font-medium text-textPrimary">
                     {order.tableId?.startsWith('G') ? 'Ground' : '1st Floor'}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Type</div>
-                  <div className={`font-medium capitalize ${theme.text.primary}`}>
+                  <div className="text-xs text-textSecondary/70">Type</div>
+                  <div className="font-medium capitalize text-textPrimary">
                     {order.type.replace('-', ' ')}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Items</div>
-                  <div className={`font-medium ${theme.text.primary}`}>
+                  <div className="text-xs text-textSecondary/70">Items</div>
+                  <div className="font-medium text-textPrimary">
                     {order.items?.length || 0}
                   </div>
                 </div>
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Net Sale</div>
-                  <div className={`font-bold ${theme.primary.text}`}>₹{order.grandTotal.toFixed(2)}</div>
+                  <div className="text-xs text-textSecondary/70">Net Sale</div>
+                  <div className="font-bold text-primary">₹{order.grandTotal.toFixed(2)}</div>
                 </div>
                 <div>
-                  <div className={`text-xs ${theme.text.muted}`}>Customer</div>
-                  <div className={`font-medium ${theme.text.primary}`}>
+                  <div className="text-xs text-textSecondary/70">Customer</div>
+                  <div className="font-medium text-textPrimary">
                     {order.customerName || '-'}
                   </div>
                 </div>
@@ -417,19 +414,19 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onPayment(order)}
-                    className={`flex-1 px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium`}
+                    className="flex-1 px-3 py-1.5 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors text-xs font-medium"
                   >
                     Payment
                   </button>
                   <button
                     onClick={() => onMarkPaid(order)}
-                    className={`flex-1 px-3 py-1.5 ${theme.secondary.main} text-white rounded-md ${theme.secondary.hover} transition-colors text-xs font-medium`}
+                    className="flex-1 px-3 py-1.5 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors text-xs font-medium"
                   >
                     Mark Paid
                   </button>
                   <button
                     onClick={() => onEdit(order)}
-                    className={`px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
+                    className="px-3 py-1.5 rounded-md transition-colors text-xs font-medium bg-background border border-border text-textSecondary hover:bg-surface"
                   >
                     Edit
                   </button>
@@ -437,13 +434,13 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onCancel(order)}
-                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
+                    className="flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium bg-background border border-border text-textSecondary hover:bg-surface"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => onPrint(order)}
-                    className={`flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium ${theme.button.secondary}`}
+                    className="flex-1 px-3 py-1.5 rounded-md transition-colors text-xs font-medium bg-background border border-border text-textSecondary hover:bg-surface"
                   >
                     Invoice Print
                   </button>
@@ -455,10 +452,10 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
       )}
 
       {/* Footer */}
-      <div className={`mt-4 p-4 border-t text-sm ${theme.border.main} ${theme.text.secondary}`}>
+      <div className="mt-4 p-4 border-t border-border text-sm text-textSecondary">
         <div className="flex justify-between items-center">
           <span>Showing {filteredOrders.length} orders</span>
-          <span className={theme.text.muted}>
+          <span className="text-textSecondary/60">
             Total: {filteredOrders.length} orders
           </span>
         </div>

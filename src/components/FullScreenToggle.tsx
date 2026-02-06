@@ -43,7 +43,7 @@ export const FullScreenToggle: React.FC<FullScreenToggleProps> = ({
     return (
         <button
             onClick={toggleFullscreen}
-            className={`p-2 rounded-lg transition-all duration-200 ${theme.neutral.hoverLight} ${theme.text.secondary} ${className}`}
+            className={`p-2  rounded-lg transition-all duration-200 ${theme.neutral.hoverLight} ${theme.text.secondary} ${className}`}
             title={isFullscreen ? 'Exit Full Screen' : 'Enter Full Screen'}
         >
             {isFullscreen ? (
