@@ -64,7 +64,7 @@ export const ViewUserDetails: React.FC<ViewUserDetailsProps> = ({
           </div>
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
-              Contact
+              Phone No
             </label>
             <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.neutral.backgroundSecondary} ${theme.text.primary}`}>
               {userData.contact || '-'}
@@ -94,6 +94,14 @@ export const ViewUserDetails: React.FC<ViewUserDetailsProps> = ({
             </label>
             <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.neutral.backgroundSecondary} ${theme.text.primary}`}>
               {userData.role || '-'}
+            </p>
+          </div>
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
+              CNIC
+            </label>
+            <p className={`px-4 py-3 border-2 rounded-lg ${theme.border.input} ${theme.neutral.backgroundSecondary} ${theme.text.primary}`}>
+              {userData.cnic || '-'}
             </p>
           </div>
           <div>

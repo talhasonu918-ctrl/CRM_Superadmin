@@ -12,11 +12,11 @@ export default function BranchesSettings() {
 
     return (
         <Layout>
-            <div className="space-y-6">
+            <div className="">
                 {/* Back Button */}
                 <button
                     onClick={() => router.push('/settings')}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors  ${theme.border.main} ${theme.text.muted} hover:${theme.text.primary} hover:border-orange-400`}
+                    className={`flex items-center mt-2 gap-2 mb-2 px-4 py-2 rounded-lg border transition-colors  ${theme.border.main} ${theme.text.muted} hover:${theme.text.primary} hover:border-orange-400`}
                 >
                     <ArrowLeft size={18} />
                     <span className="text-sm font-medium">Back to Settings</span>

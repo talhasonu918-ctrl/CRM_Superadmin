@@ -35,11 +35,10 @@ const generateMockBranches = (count: number, startIndex: number = 0): Branch[] =
       address: `${num} Street, City, State ${String(10000 + num).slice(0, 5)}`,
       city: 'City',
       country: 'Country',
-      lat: 0,
-      lng: 0,
+    
       phone: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
       email: `branch${num}@example.com`,
-      timezone: 'UTC',
+      // timezone: 'UTC',
       managerUserId: `user_${num}`,
       status: statuses[Math.floor(Math.random() * statuses.length)],
       createdAt: new Date().toISOString(),
@@ -103,7 +102,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     return new Promise<Branch[]>((resolve) => {
       // Simulate network delay
       setTimeout(() => {
-        const start = page * pageSize;
+        const start = (page - 1) * pageSize;
         const end = start + pageSize;
         resolve(fullData.slice(start, end));
       }, 500);
@@ -115,18 +114,14 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     isLoading,
     hasNextPage,
     loadMore,
-    setInitialData,
     data: tableData, // Get actual loaded data from hook
   } = useInfiniteTable<Branch>({
     columns,
+    data: fullData.slice(0, pageSize),
     pageSize,
     onLoadMore: handleLoadMore,
   });
 
-  // Keep table synced if fullData changes (e.g. invalidation or search change)
-  useEffect(() => {
-    setInitialData(fullData.slice(0, pageSize));
-  }, [fullData, setInitialData]);
 
 
   // Filter data based on search and status

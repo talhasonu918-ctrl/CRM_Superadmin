@@ -37,25 +37,20 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   const [loadedCount, setLoadedCount] = useState(20);
   const total = 60;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
-    userCode: true,
-    firstName: true,
-    lastName: false,
-    userName: true,
-    email: false,
+    fullName: true,
     contact: true,
-    avatar: false,
-    gender: false,
+    cnic: true,
     active: true,
-    actions: false,
+    actions: true,
   });
 
   const columns = useMemo(
-    () => userColumns({ onEdit: onEditUser, onView: onViewUser, onDelete: onDeleteUser }),
-    [onEditUser, onViewUser, onDeleteUser]
+    () => userColumns({ onEdit: onEditUser, onView: onViewUser, onDelete: onDeleteUser, isDarkMode }),
+    [onEditUser, onViewUser, onDeleteUser, isDarkMode]
   );
 
-  // Initialize table with infinite scroll
-  const initialData = generateMockUsers(20);
+  // Use state for user data so updates are reflected
+  const [users, setUsers] = useState<User[]>(() => generateMockUsers(20));
   const {
     table,
     isLoading,
@@ -63,9 +58,13 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     loadMore,
   } = useInfiniteTable<User>({
     columns,
-    data: initialData,
+    data: users,
     pageSize: 20,
-    onLoadMore: loadMoreUsers,
+    onLoadMore: async (page) => {
+      const more = await loadMoreUsers(page);
+      setUsers(prev => [...prev, ...more]);
+      return more;
+    },
   });
 
   // Custom load more with count tracking
@@ -76,19 +75,22 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
 
   // Filter data based on search and active
   const filteredData = useMemo(() => {
+
     if (!table.getRowModel) return [];
 
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
+      const search = searchTerm.toLowerCase();
       filtered = filtered.filter(row => {
         const user = row.original;
         return (
-          user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.contact.includes(searchTerm)
+          (user.firstName?.toLowerCase().includes(search) ?? false) ||
+          (user.lastName?.toLowerCase().includes(search) ?? false) ||
+          (user.userName?.toLowerCase().includes(search) ?? false) ||
+          (user.email?.toLowerCase().includes(search) ?? false) ||
+          (user.contact?.toLowerCase().includes(search) ?? false) ||
+          (user.cnic?.toLowerCase().includes(search) ?? false)
         );
       });
     }
@@ -147,17 +149,12 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
           className="flex-shrink-0"
           columnVisibility={columnVisibility}
           onToggleColumn={toggleColumn}
-          disabledColumns={['userName', 'userCode', 'firstName', 'contact']}
+          disabledColumns={['fullName', 'contact', 'cnic', 'actions']}
           isDarkMode={isDarkMode}
           columnLabels={{
-            userCode: 'User Code',
-            firstName: 'First Name',
-            lastName: 'Last Name',
-            userName: 'User Name',
-            email: 'Email',
-            contact: 'Contact',
-            avatar: 'Profile',
-            gender: 'Gender',
+            fullName: 'Name',
+            contact: 'Phone No',
+            cnic: 'CNIC',
             active: 'Active',
             actions: 'Actions',
           }}

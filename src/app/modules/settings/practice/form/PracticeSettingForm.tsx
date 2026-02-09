@@ -1,9 +1,9 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
+import { Button, Select } from 'rizzui';
 import { PracticeSetting } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
+import { ChevronDown, X } from 'lucide-react';
 
 interface PracticeSettingFormProps {
   initialData?: Partial<PracticeSetting>;
@@ -44,58 +44,6 @@ const billingCycleOptions = [
   { label: 'Yearly', value: 'yearly' },
 ];
 
-const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.background : theme?.input?.background,
-    border: hasError
-      ? `1px solid ${theme?.status?.error?.border}`
-      : state.isFocused
-        ? `1px solid ${theme?.border?.focus}`
-        : `1px solid ${theme?.border?.input}`,
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: 'none',
-    '&:hover': {
-      borderColor: state.isFocused ? theme?.border?.focus : theme?.border?.input,
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.background : theme?.neutral?.card,
-    border: `1px solid ${theme?.border?.input}`,
-    zIndex: 9999,
-  }),
-  menuPortal: (base: any) => ({
-    ...base,
-    zIndex: 9999,
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? theme?.primary?.main
-      : state.isFocused
-        ? theme?.neutral?.hover
-        : 'transparent',
-    color: state.isSelected ? theme?.text?.onPrimary : theme?.text?.primary,
-    cursor: 'pointer',
-    '&:active': {
-      backgroundColor: theme?.primary?.hover,
-    },
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary,
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary,
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: theme?.text?.tertiary,
-  }),
-});
 
 export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
   initialData,
@@ -223,12 +171,28 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   <Select
                     {...field}
                     options={currencyOptions}
-                    value={currencyOptions.find((opt) => opt.value === field.value)}
-                    onChange={(opt) => field.onChange(opt?.value)}
                     placeholder="Select currency"
                     className="text-sm"
-                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                    styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
+                    inPortal={false}
+                    selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                    optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                    dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                    suffix={
+                      <div className="flex items-center gap-2 pr-1">
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              field.onChange('');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                          </button>
+                        )}
+                        <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                      </div>
+                    }
                   />
                   {fieldState.error && (
                     <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -252,12 +216,28 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   <Select
                     {...field}
                     options={timezoneOptions}
-                    value={timezoneOptions.find((opt) => opt.value === field.value)}
-                    onChange={(opt) => field.onChange(opt?.value)}
                     placeholder="Select timezone"
-                    className="text-sm"
-                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                    styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
+                    className="text-sm w-full max-w-sm"
+                    inPortal={false}
+                    selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                    optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                    dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                    suffix={
+                      <div className="flex items-center gap-2 pr-1">
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              field.onChange('');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                          </button>
+                        )}
+                        <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                      </div>
+                    }
                   />
                   {fieldState.error && (
                     <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -281,12 +261,28 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   <Select
                     {...field}
                     options={localeOptions}
-                    value={localeOptions.find((opt) => opt.value === field.value)}
-                    onChange={(opt) => field.onChange(opt?.value)}
                     placeholder="Select locale (e.g., en-US)"
-                    className="text-sm"
-                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                    styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
+                    className="text-sm w-full max-w-sm"
+                    inPortal={false}
+                    selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                    optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                    dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                    suffix={
+                      <div className="flex items-center gap-2 pr-1">
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              field.onChange('');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                          </button>
+                        )}
+                        <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                      </div>
+                    }
                   />
                   {fieldState.error && (
                     <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -342,12 +338,28 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   <Select
                     {...field}
                     options={billingCycleOptions}
-                    value={billingCycleOptions.find((opt) => opt.value === field.value)}
-                    onChange={(opt) => field.onChange(opt?.value)}
                     placeholder="Select billing cycle"
-                    className="text-sm"
-                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
-                    styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
+                    className="text-sm w-full max-w-sm"
+                    inPortal={false}
+                    selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                    optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                    dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                    suffix={
+                      <div className="flex items-center gap-2 pr-1">
+                        {field.value && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              field.onChange('');
+                            }}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                          </button>
+                        )}
+                        <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                      </div>
+                    }
                   />
                   {fieldState.error && (
                     <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>

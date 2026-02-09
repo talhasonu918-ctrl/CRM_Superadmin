@@ -1,10 +1,11 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
-import { Branch } from '../types';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { Button, Select, ActionIcon } from 'rizzui';
+import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface EditBranchFormProps {
@@ -17,56 +18,12 @@ interface EditBranchFormProps {
 // Define the option type explicitly
 type StatusOption = { label: string; value: Branch['status'] };
 
-const statusOptions: readonly StatusOption[] = [
+const statusOptions: StatusOption[] = [
   { label: 'Active', value: 'Active' },
   { label: 'Inactive', value: 'Inactive' },
   { label: 'Under Maintenance', value: 'Under Maintenance' },
-] as const;
+];
 
-const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.background : 'inherit',
-    border: hasError
-      ? `1px solid ${theme?.status?.error?.border || '#ef4444'}`
-      : state.isFocused
-        ? `1px solid ${theme?.border?.focus || '#f97316'}`
-        : `1px solid ${theme?.border?.input || '#d1d5db'}`,
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: 'none',
-    '&:hover': {
-      borderColor: state.isFocused ? (theme?.border?.focus || '#f97316') : (theme?.border?.input || '#d1d5db'),
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.backgroundSecondary : 'inherit',
-    border: `1px solid ${theme?.border?.input || '#d1d5db'}`,
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? theme?.primary?.main || '#f97316'
-      : state.isFocused
-        ? theme?.primary?.light || '#fed7aa'
-        : 'transparent',
-    color: state.isSelected ? theme?.text?.onPrimary || 'white' : theme?.text?.primary || 'inherit',
-    cursor: 'pointer',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary || 'inherit',
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary || 'inherit',
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: theme?.text?.tertiary || '#94a3b8',
-  }),
-});
 
 export const EditBranchForm: React.FC<EditBranchFormProps> = ({
   initialData,
@@ -76,7 +33,15 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
 }) => {
   const theme = getThemeColors(isDarkMode);
   const { control, handleSubmit, setValue, reset, watch } = useForm<Partial<Branch>>({
-    defaultValues: initialData,
+    defaultValues: {
+      ...initialData,
+      shifts: initialData.shifts || [{ id: '1', name: 'Morning Shift', startTime: '09:00', endTime: '18:00' }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "shifts",
   });
 
   // Map and Autocomplete states
@@ -88,7 +53,10 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
   const autocompleteRef = useRef<any>(null);
 
   useEffect(() => {
-    reset(initialData);
+    reset({
+      ...initialData,
+      shifts: initialData.shifts || [{ id: '1', name: 'Morning Shift', startTime: '09:00', endTime: '18:00' }],
+    });
   }, [initialData, reset]);
 
   // Load Google Maps Script
@@ -134,6 +102,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
       markerRef.current = new google.maps.Marker({
         position: initialLocation,
         map: mapInstance,
+        animation: google.maps.Animation.DROP,
       });
     }
 
@@ -192,13 +161,13 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
   }, [isMapLoaded, map]);
 
   // Handle manual City/Country changes to update map
-  const city = watch('city');
-  const country = watch('country');
+  const cityValue = watch('city');
+  const countryValue = watch('country');
   const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const triggerGeocode = (cityName?: string, countryName?: string) => {
-    const targetCity = cityName || city;
-    const targetCountry = countryName || country;
+    const targetCity = cityName || cityValue;
+    const targetCountry = countryName || countryValue;
 
     if (!isMapLoaded || !targetCity || !targetCountry || !(window as any).google) return;
 
@@ -234,11 +203,13 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
   };
 
   useEffect(() => {
-    triggerGeocode();
+    if (cityValue && countryValue) {
+      triggerGeocode();
+    }
     return () => {
       if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
     };
-  }, [city, country, isMapLoaded, map]);
+  }, [cityValue, countryValue, isMapLoaded, map]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -268,7 +239,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         {/* Branch Name */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Branch Name
+            Branch Name <span className="text-red-500">*</span>
           </label>
           <Controller
             name="name"
@@ -289,10 +260,10 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
           />
         </div>
 
-        {/* Manager User ID */}
+        {/* Manager Name */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Manager ID
+            Manager Name
           </label>
           <Controller
             name="managerUserId"
@@ -302,7 +273,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
               <>
                 <input
                   {...field}
-                  placeholder="Manager user ID"
+                  placeholder="Manager name"
                   className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
@@ -316,7 +287,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         {/* Phone Number */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Phone Number
+            Phone Number <span className="text-red-500">*</span>
           </label>
           <Controller
             name="phone"
@@ -347,52 +318,41 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         {/* Status */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Status
+            Status <span className="text-red-500">*</span>
           </label>
           <Controller
             name="status"
             control={control}
             rules={{ required: 'Status is required' }}
             render={({ field, fieldState }) => (
-              <>
-                <Select<StatusOption>
-                  {...field}
-                  options={statusOptions}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  value={statusOptions.find((opt) => opt.value === field.value)}
-                  classNamePrefix="custom-select"
-                  placeholder="Select status"
-                  className={`w-full text-sm focus:ring-none focus:outline-none ${isDarkMode ? 'dark:text-white' : ''}`}
-                  styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
-                />
-                {fieldState.error && (
-                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
-                )}
-              </>
-            )}
-          />
-        </div>
-
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            City
-          </label>
-          <Controller
-            name="city"
-            control={control}
-            render={({ field }) => (
-              <div className="relative">
-                <input
-                  {...field}
-                  autoComplete="none"
-                  onBlur={() => {
-                    field.onBlur();
-                    triggerGeocode();
-                  }}
-                  placeholder="Enter city"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
-                />
-              </div>
+              <Select
+                {...field}
+                label=""
+                placeholder="Select status"
+                options={statusOptions}
+                error={fieldState.error?.message}
+                className="w-full max-w-xs"
+                inPortal={false}
+                selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                suffix={
+                  <div className="flex items-center gap-2 pr-1">
+                    {field.value && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          field.onChange('');
+                        }}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                      </button>
+                    )}
+                    <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                  </div>
+                }
+              />
             )}
           />
         </div>
@@ -429,10 +389,34 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
           />
         </div>
 
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            City
+          </label>
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter city"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+              </div>
+            )}
+          />
+        </div>
+
         {/* Address Search */}
         <div className="col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Change Address
+            Change Address <span className="text-red-500">*</span>
           </label>
           <Controller
             name="address"
@@ -476,6 +460,107 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         {/* Lat/Lng (Hidden but bound to form) */}
         <Controller name="lat" control={control} render={({ field }) => <input type="hidden" {...field} />} />
         <Controller name="lng" control={control} render={({ field }) => <input type="hidden" {...field} />} />
+
+        {/* Shifts Section */}
+        <div className="col-span-2 mt-4">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className={`text-base font-bold ${theme.text.primary}`}>Branch Shifts</h3>
+              <p className={`text-xs ${theme.text.tertiary}`}>Define working hours for this branch</p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => append({ id: Date.now().toString(), name: '', startTime: '09:00', endTime: '18:00', days: [] })}
+              className={`h-9 gap-2 border-orange-200 text-orange-600 hover:bg-orange-50`}
+            >
+              <Plus size={16} /> Add Shift
+            </Button>
+          </div>
+
+          <div className={`rounded-xl border ${theme.border.input} overflow-hidden shadow-sm`}>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className={`${theme.neutral.backgroundSecondary}`}>
+                  <th className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary} w-1/3`}>Shift Name <span className="text-red-500">*</span></th>
+                  <th className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary}`}>Start Time</th>
+                  <th className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary}`}>End Time</th>
+                  <th className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary} w-10`}></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {fields.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className={`px-4 py-8 text-center text-xs ${theme.text.tertiary} italic`}>
+                      No shifts added. Working hours will be undefined.
+                    </td>
+                  </tr>
+                ) : (
+                  fields.map((field, index) => (
+                    <tr key={field.id} className={`${theme.input.background} hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors`}>
+                      <td className="px-4 py-3">
+                        <Controller
+                          name={`shifts.${index}.name` as const}
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field: inputField }) => (
+                            <input
+                              {...inputField}
+                              placeholder="e.g. Morning Shift"
+                              title={inputField.value}
+                              className={`w-full px-3 py-2 border text-xs rounded-md focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 truncate`}
+                            />
+                          )}
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Controller
+                          name={`shifts.${index}.startTime` as const}
+                          control={control}
+                          render={({ field: inputField }) => (
+                            <div className="relative group">
+                              <input
+                                {...inputField}
+                                type="time"
+                                className={`w-full px-3 py-2 border text-xs rounded-md focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 appearance-none`}
+                              />
+                            </div>
+                          )}
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <Controller
+                          name={`shifts.${index}.endTime` as const}
+                          control={control}
+                          render={({ field: inputField }) => (
+                            <div className="relative group">
+                              <input
+                                {...inputField}
+                                type="time"
+                                className={`w-full px-3 py-2 border text-xs rounded-md focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 appearance-none`}
+                              />
+                            </div>
+                          )}
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <ActionIcon
+                          size="sm"
+                          variant="text"
+                          onClick={() => remove(index)}
+                          className={`text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20`}
+                        >
+                          <Trash2 size={16} />
+                        </ActionIcon>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {/* Action Buttons */}

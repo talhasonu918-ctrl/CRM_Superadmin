@@ -1,16 +1,15 @@
 import React from 'react';
 import { Layout } from '../../components/NavigationLayout';
-import { MobileSettingsView } from '../../app/modules/settings/mobile';
+import { WebSettingsView } from '../../app/modules/settings/mobile/WebSettingsView';
 
-export default function MobileSettings() {
+export default function WebSettings() {
     const isDarkMode = false;
 
     return (
         <Layout>
             <div className="max-w-5xl mx-auto">
-                <MobileSettingsView isDarkMode={isDarkMode} />
+                <WebSettingsView isDarkMode={isDarkMode} />
             </div>
         </Layout>
     );
 }
-// End of file

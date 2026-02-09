@@ -4,6 +4,8 @@ import { DashboardCard } from './components/DashboardCard';
 import { getThemeColors } from '../../../theme/colors';
 import { ReusableModal } from '../../../components/ReusableModal';
 import { OrganizationSettingsForm } from './practice/form/OrganizationSettingsForm';
+import { MobileSettingsForm } from './mobile/form/MobileSettingsForm';
+import { MobileSettings, defaultMobileSettings } from './mobile/types';
 import { PracticeSetting } from './practice/types';
 
 interface SettingsViewProps {
@@ -36,11 +38,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
     setOrganizationModalOpen(false);
   };
 
+  const [mobileModalOpen, setMobileModalOpen] = useState(false);
+  const [mobileSettingsData, setMobileSettingsData] = useState<Partial<MobileSettings> | null>(null);
   const cards = [
     {
       icon: Building2,
       title: 'Organization Settings',
-      onClick: () => setOrganizationModalOpen(true),
+      href: '/settings/organization',
     },
     {
       icon: MapPin,
@@ -54,8 +58,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
     },
     {
       icon: Smartphone,
-      title: 'Mobile & Web Setting',
+      title: 'Mobile Setting',
       href: '/settings/mobile',
+    },
+    {
+      icon: Smartphone,
+      title: 'Web Setting',
+      href: '/settings/web',
     },
   ];
 
@@ -63,7 +72,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
     <div className="p-6">
       {/* Dashboard Cards Grid */}
       <div className="w-full max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-0">
+        <div className=" grid 
+      gap-4 
+      grid-cols-1 
+      sm:grid-cols-2 
+      md:grid-cols-3 
+      lg:grid-cols-4 
+      xl:grid-cols-5">
           {cards.map((card, index) => (
             <DashboardCard
               key={index}
@@ -71,28 +86,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
               title={card.title}
               isDarkMode={isDarkMode}
               href={card.href}
-              onClick={card.onClick}
             />
           ))}
         </div>
       </div>
-
-      {/* Organization Settings Modal */}
-      <ReusableModal
-        isOpen={organizationModalOpen}
-        onClose={() => setOrganizationModalOpen(false)}
-        title="Organization Settings"
-        isDarkMode={isDarkMode}
-        size="lg"
-      >
-        <OrganizationSettingsForm
-          initialData={organizationData || {}}
-          onSubmit={handleSubmit}
-          onCancel={() => setOrganizationModalOpen(false)}
-          isEditMode={!!organizationData}
-          isDarkMode={isDarkMode}
-        />
-      </ReusableModal>
     </div>
   );
 };

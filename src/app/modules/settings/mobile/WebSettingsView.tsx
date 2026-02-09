@@ -1,15 +1,15 @@
 import React from 'react';
-import { MobileSettingsForm } from './form/MobileSettingsForm';
+import { MobileSettingsForm } from './form/MobileSettingsForm'; // We'll refactor this to be generic or create WebSettingsForm
 import { MobileSettings, defaultMobileSettings } from './types';
 import { getThemeColors } from '../../../../theme/colors';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/router';
 
-interface MobileSettingsViewProps {
+interface WebSettingsViewProps {
     isDarkMode?: boolean;
 }
 
-export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
+export const WebSettingsView: React.FC<WebSettingsViewProps> = ({
     isDarkMode = false,
 }) => {
     const router = useRouter();
@@ -18,7 +18,6 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
     const [tenantFont, setTenantFont] = React.useState<string | undefined>(undefined);
 
     React.useEffect(() => {
-        // Load from localStorage if exists
         const saved = localStorage.getItem('mobile_settings');
         if (saved) {
             try {
@@ -27,8 +26,6 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
                 console.error('Failed to load mobile settings', e);
             }
         }
-
-        // Load global tenant font
         const f = localStorage.getItem('tenantFont');
         if (f) setTenantFont(f);
     }, []);
@@ -36,7 +33,7 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
     const handleSubmit = (data: Partial<MobileSettings>) => {
         setSettings(data);
         localStorage.setItem('mobile_settings', JSON.stringify(data));
-        alert('Configuration saved successfully!');
+        alert('Web configuration saved successfully!');
     };
 
     return (
@@ -53,9 +50,9 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h4 className={`text-lg sm:text-xl font-bold tracking-tight ${theme.text.primary}`}>Mobile Settings</h4>
+                    <h4 className={`text-lg sm:text-xl font-bold tracking-tight ${theme.text.primary}`}>Web Settings</h4>
                     <p className={`text-xs sm:text-sm mt-1 ${theme.text.secondary}`}>
-                        Configure your mobile application versions and endpoints
+                        Configure your web application version and endpoints
                     </p>
                 </div>
             </div>
@@ -64,7 +61,7 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
                 initialData={settings}
                 onSubmit={handleSubmit}
                 isDarkMode={isDarkMode}
-                showOnlyMobile={true}
+                showOnlyWeb={true}
             />
         </div>
     );

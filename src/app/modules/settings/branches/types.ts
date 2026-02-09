@@ -1,3 +1,11 @@
+export interface Shift {
+  id: string;
+  name: string;
+  startTime: string; // HH:MM
+  endTime: string;   // HH:MM
+  days: string[];    // ['Mon', 'Tue', ...]
+}
+
 export interface Branch {
   id: string;
   tenantId?: string;
@@ -13,6 +21,7 @@ export interface Branch {
   timezone?: string;
   managerUserId?: string;
   status: 'Active' | 'Inactive' | 'Under Maintenance';
+  shifts?: Shift[];
   createdAt: string;
   updatedAt?: string;
 }

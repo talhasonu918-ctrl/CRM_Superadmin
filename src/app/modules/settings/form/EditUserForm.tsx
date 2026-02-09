@@ -1,9 +1,9 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
+import { Button, Select } from 'rizzui';
 import { User } from '../../../../hooks/useInfiniteTable';
 import { ImageUpload } from '../../../../components/ImageUpload';
+import { ChevronDown, X } from 'lucide-react';
 
 interface EditUserFormProps {
   initialData: Partial<User>;
@@ -19,51 +19,6 @@ const genderOptions = [
 
 
 
-// Dark mode styles for react-select
-const getSelectStyles = (hasError?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: hasError 
-      ? '2px solid #ef4444' 
-      : state.isFocused 
-        ? '2px solid #f97316' 
-        : '2px solid #d1d5db',
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: state.isFocused ? '0 0 0 1px #f97316' : 'none',
-    '&:hover': {
-      borderColor: '#f97316',
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: '1px solid #d1d5db',
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? '#f97316'
-      : state.isFocused
-        ? '#fed7aa'
-        : 'transparent',
-    color: state.isSelected ? 'white' : 'inherit',
-    cursor: 'pointer',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: '#9ca3af',
-  }),
-});
 
 export const EditUserForm: React.FC<EditUserFormProps> = ({
   initialData,
@@ -93,11 +48,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter first name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    fieldState.error
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${fieldState.error
                       ? 'border-red-500'
                       : 'border-gray-300 dark:border-slate-600 focus:border-orange-500'
-                  }`}
+                    }`}
                 />
                 {fieldState.error && (
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{fieldState.error.message}</p>
@@ -119,11 +73,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter last name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    fieldState.error
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${fieldState.error
                       ? 'border-red-500'
                       : 'border-gray-300 dark:border-slate-600 focus:border-orange-500'
-                  }`}
+                    }`}
                 />
                 {fieldState.error && (
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{fieldState.error.message}</p>
@@ -152,11 +105,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="Enter email address"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    fieldState.error
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${fieldState.error
                       ? 'border-red-500'
                       : 'border-gray-300 dark:border-slate-600 focus:border-orange-500'
-                  }`}
+                    }`}
                 />
                 {fieldState.error && (
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{fieldState.error.message}</p>
@@ -178,11 +130,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter contact number"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${
-                    fieldState.error
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors bg-white dark:bg-slate-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 ${fieldState.error
                       ? 'border-red-500'
                       : 'border-gray-300 dark:border-slate-600 focus:border-orange-500'
-                  }`}
+                    }`}
                 />
                 {fieldState.error && (
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{fieldState.error.message}</p>
@@ -204,11 +155,27 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <Select
                   {...field}
                   options={genderOptions}
-                  value={genderOptions.find((opt) => opt.value === field.value)}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  classNamePrefix="custom-select"
                   placeholder="Select gender"
-                  styles={getSelectStyles(!!fieldState.error)}
+                  className="w-full"
+                  selectClassName={`!h-11 !border-2 border-gray-300 dark:border-slate-600 rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                  optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                  suffix={
+                    <div className="flex items-center gap-2 pr-1">
+                      {field.value && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            field.onChange('');
+                          }}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                          <X size={14} className="bg-gray-200 rounded-full p-0.5" />
+                        </button>
+                      )}
+                      <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                    </div>
+                  }
                 />
                 {fieldState.error && (
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{fieldState.error.message}</p>
@@ -218,7 +185,7 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
           />
         </div>
 
-   
+
 
         {/* Profile Picture */}
         <div className="col-span-2">

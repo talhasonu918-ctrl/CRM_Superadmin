@@ -158,7 +158,7 @@ function InfiniteTable<T = any>({
                     return (
                       <Table.Cell
                         key={cell.id}
-                        className="!text-start !py-4"
+                        className="!text-start py-4 px-2 sm:px-4"
                         style={{
                           width: cell.column.getSize(),
                         }}
@@ -209,27 +209,7 @@ function InfiniteTable<T = any>({
           )}
         </Table>
       </div>
-      <div className={`flex items-center justify-between mt-4 ${theme.text.secondary}`}>
-        <div>
-          Showing {table.getRowModel().rows.length} of {total} products
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-2 py-1 border rounded disabled:opacity-50"
-          >
-            {'<'}
-          </button>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-2 py-1 border rounded disabled:opacity-50"
-          >
-            {'>'}
-          </button>
-        </div>
-      </div>
+      {/* Removed bottom pagination controls for infinite scroll tables */}
     </>
   );
 }

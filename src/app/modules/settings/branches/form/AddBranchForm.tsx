@@ -1,10 +1,11 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
-import { Branch } from '../types';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { Button, Select, ActionIcon } from 'rizzui';
+import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
-import { MapPin, Search } from 'lucide-react';
+import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 interface AddBranchFormProps {
@@ -16,56 +17,12 @@ interface AddBranchFormProps {
 // Define the option type explicitly
 type StatusOption = { label: string; value: Branch['status'] };
 
-const statusOptions: readonly StatusOption[] = [
+const statusOptions: StatusOption[] = [
   { label: 'Active', value: 'Active' },
   { label: 'Inactive', value: 'Inactive' },
   { label: 'Under Maintenance', value: 'Under Maintenance' },
-] as const;
+];
 
-const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.background : 'inherit',
-    border: hasError
-      ? `1px solid ${theme?.status?.error?.border || '#ef4444'}`
-      : state.isFocused
-        ? `1px solid ${theme?.border?.focus || '#f97316'}`
-        : `1px solid ${theme?.border?.input || '#d1d5db'}`,
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: 'none',
-    '&:hover': {
-      borderColor: state.isFocused ? (theme?.border?.focus || '#f97316') : (theme?.border?.input || '#d1d5db'),
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.backgroundSecondary : 'inherit',
-    border: `1px solid ${theme?.border?.input || '#d1d5db'}`,
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? theme?.primary?.main || '#f97316'
-      : state.isFocused
-        ? theme?.primary?.light || '#fed7aa'
-        : 'transparent',
-    color: state.isSelected ? theme?.text?.onPrimary || 'white' : theme?.text?.primary || 'inherit',
-    cursor: 'pointer',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary || 'inherit',
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: theme?.text?.primary || 'inherit',
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: theme?.text?.tertiary || '#94a3b8',
-  }),
-});
 
 export const AddBranchForm: React.FC<AddBranchFormProps> = ({
   onSubmit,
@@ -77,7 +34,13 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
     defaultValues: {
       status: 'Active',
       country: 'Pakistan',
+      shifts: [{ id: '1', name: 'Morning Shift', startTime: '09:00', endTime: '18:00' }],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "shifts",
   });
 
   // Map and Autocomplete states
@@ -221,7 +184,9 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
   };
 
   useEffect(() => {
-    triggerGeocode();
+    if (city && country) {
+      triggerGeocode();
+    }
     return () => {
       if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
     };
@@ -255,7 +220,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         {/* Branch Name */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Branch Name
+            Branch Name <span className="text-red-500">*</span>
           </label>
           <Controller
             name="name"
@@ -266,7 +231,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Branch name"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors b ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -279,7 +244,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         {/* Manager User ID */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Manager ID
+            Manager Name
           </label>
           <Controller
             name="managerUserId"
@@ -289,7 +254,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
               <>
                 <input
                   {...field}
-                  placeholder="Manager user ID"
+                  placeholder="Manager name"
                   className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
@@ -303,7 +268,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         {/* Phone Number */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Phone Number
+            Phone Number <span className="text-red-500">*</span>
           </label>
           <Controller
             name="phone"
@@ -334,52 +299,41 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         {/* Status */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Status
+            Status <span className="text-red-500">*</span>
           </label>
           <Controller
             name="status"
             control={control}
             rules={{ required: 'Status is required' }}
             render={({ field, fieldState }) => (
-              <>
-                <Select<StatusOption>
-                  {...field}
-                  options={statusOptions}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  value={statusOptions.find((opt) => opt.value === field.value)}
-                  classNamePrefix="custom-select"
-                  placeholder="Select status"
-                  className={`w-full text-sm focus:ring-none focus:outline-none ${isDarkMode ? 'dark:text-white' : ''}`}
-                  styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
-                />
-                {fieldState.error && (
-                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
-                )}
-              </>
-            )}
-          />
-        </div>
-
-        <div>
-          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            City
-          </label>
-          <Controller
-            name="city"
-            control={control}
-            render={({ field }) => (
-              <div className="relative">
-                <input
-                  {...field}
-                  autoComplete="none"
-                  onBlur={() => {
-                    field.onBlur();
-                    triggerGeocode();
-                  }}
-                  placeholder="Enter city"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
-                />
-              </div>
+              <Select
+                {...field}
+                label=""
+                placeholder="Select status"
+                options={statusOptions}
+                error={fieldState.error?.message}
+                className="w-full max-w-xs"
+                inPortal={false}
+                selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                suffix={
+                  <div className="flex items-center gap-2 pr-1">
+                    {field.value && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          field.onChange('');
+                        }}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                      </button>
+                    )}
+                    <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                  </div>
+                }
+              />
             )}
           />
         </div>
@@ -416,10 +370,34 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           />
         </div>
 
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            City
+          </label>
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter city"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+              </div>
+            )}
+          />
+        </div>
+
         {/* Address Search */}
         <div className="col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Search Address
+            Search Address <span className="text-red-500">*</span>
           </label>
           <Controller
             name="address"
@@ -459,9 +437,6 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             )}
           </div>
         </div>
-
-        {/* City and Country (Read only or auto-filled) */}
-
 
         {/* Lat/Lng (Hidden but bound to form) */}
         <Controller name="lat" control={control} render={({ field }) => <input type="hidden" {...field} />} />

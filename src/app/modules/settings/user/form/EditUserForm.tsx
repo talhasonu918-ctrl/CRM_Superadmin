@@ -1,10 +1,10 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
+import { Button, Select } from 'rizzui';
 import { User } from '../../../../../hooks/useInfiniteTable';
 import { ImageUpload } from '../../../../../components/ImageUpload';
 import { getThemeColors } from '../../../../../theme/colors';
+import { ChevronDown, X } from 'lucide-react';
 
 interface EditUserFormProps {
   initialData: Partial<User>;
@@ -21,51 +21,6 @@ const genderOptions = [
 
 
 
-// Dark mode styles for react-select
-const getSelectStyles = (hasError?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: hasError 
-      ? '2px solid #ef4444' 
-      : state.isFocused 
-        ? '2px solid #f97316' 
-        : '2px solid #d1d5db',
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: state.isFocused ? '0 0 0 1px #f97316' : 'none',
-    '&:hover': {
-      borderColor: '#f97316',
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: '1px solid #d1d5db',
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? '#f97316'
-      : state.isFocused
-        ? '#fed7aa'
-        : 'transparent',
-    color: state.isSelected ? 'white' : 'inherit',
-    cursor: 'pointer',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: '#9ca3af',
-  }),
-});
 
 export const EditUserForm: React.FC<EditUserFormProps> = ({
   initialData,
@@ -97,11 +52,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter first name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -123,11 +77,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter last name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -156,11 +109,10 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="Enter email address"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -170,23 +122,47 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
           />
         </div>
 
-        {/* Contact */}
+        {/* Phone No */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Contact *</label>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Phone No *</label>
           <Controller
             name="contact"
             control={control}
-            rules={{ required: 'Contact is required' }}
+            rules={{ required: 'Phone number is required' }}
             render={({ field, fieldState }) => (
               <>
                 <input
                   {...field}
-                  placeholder="Enter contact number"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  placeholder="Enter phone number"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
+                />
+                {fieldState.error && (
+                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                )}
+              </>
+            )}
+          />
+        </div>
+
+        {/* CNIC */}
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>CNIC *</label>
+          <Controller
+            name="cnic"
+            control={control}
+            rules={{ required: 'CNIC is required' }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  {...field}
+                  placeholder="Enter CNIC"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -206,13 +182,30 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
             render={({ field, fieldState }) => (
               <>
                 <Select
-                  {...field}
                   options={genderOptions}
-                  value={genderOptions.find((opt) => opt.value === field.value)}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  classNamePrefix="custom-select"
                   placeholder="Select gender"
-                  styles={getSelectStyles(!!fieldState.error)}
+                  {...field}
+                  inPortal={false}
+                  className="w-full max-w-xs"
+                  selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                  optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                  dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                  suffix={
+                    <div className="flex items-center gap-2 pr-1">
+                      {field.value && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            field.onChange('');
+                          }}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                        </button>
+                      )}
+                      <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                    </div>
+                  }
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -222,7 +215,7 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
           />
         </div>
 
-   
+
 
         {/* Profile Picture */}
         <div className="col-span-2">
