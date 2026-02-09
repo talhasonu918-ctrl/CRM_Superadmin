@@ -27,9 +27,19 @@ const generateMockSettings = (count: number): PracticeSetting[] => {
     settings.push({
       id: String(num),
       practiceName: `Practice Setting ${num}`,
+      currency: ['USD', 'EUR', 'INR', 'GBP'][Math.floor(Math.random() * 4)],
+      timezone: ['EST', 'CST', 'PST', 'MST'][Math.floor(Math.random() * 4)],
+      locale: ['en-US', 'en-GB', 'en-IN', 'fr-FR'][Math.floor(Math.random() * 4)],
+      planName: ['Premium', 'Enterprise', 'Standard'][Math.floor(Math.random() * 3)],
+      startDate: '2024-01-01',
+      endDate: '2024-12-31',
+      billingCycle: ['monthly', 'quarterly', 'yearly'][Math.floor(Math.random() * 3)] as 'monthly' | 'quarterly' | 'yearly',
+      defaultTaxPercentage: Math.floor(Math.random() * 10) + 5,
+      serviceChargePercentage: Math.floor(Math.random() * 10) + 5,
+      minimumOrderValue: Math.floor(Math.random() * 200) + 50,
+      baseDeliveryCharges: Math.floor(Math.random() * 100) + 20,
       contactEmail: `admin${num}@practice.com`,
       phoneNumber: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-      timezone: ['EST', 'CST', 'PST', 'MST'][Math.floor(Math.random() * 4)] + ' Time',
       address: `${num} Business Street, City, State ${String(10000 + num).slice(0, 5)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -114,9 +124,9 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
         const search = searchTerm.toLowerCase();
         return (
           setting.practiceName.toLowerCase().includes(search) ||
-          setting.contactEmail.toLowerCase().includes(search) ||
-          setting.phoneNumber.includes(search) ||
-          setting.address.toLowerCase().includes(search)
+          (setting.contactEmail?.toLowerCase().includes(search) ?? false) ||
+          (setting.phoneNumber?.includes(search) ?? false) ||
+          (setting.address?.toLowerCase().includes(search) ?? false)
         );
       });
     }

@@ -71,19 +71,14 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   }, [data]);
 
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
-    name: true, // Make name non-hideable
+    name: true,
+    status: true,
     managerUserId: true,
-    phone: true,
-    email: true,
-    address: true,
     city: true,
     country: true,
-    lat: true,
-    lng: true,
-    timezone: true,
-    status: true,
+    phone: true,
     createdAt: true,
-    actions: true, // Make actions non-hideable
+    actions: true,
   });
 
   const { control, watch } = useForm({
@@ -149,7 +144,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
           branch.name.toLowerCase().includes(search) ||
           (branch.managerUserId || '').toLowerCase().includes(search) ||
           (branch.phone || '').includes(search) ||
-          branch.address.toLowerCase().includes(search)
+          (branch.city || '').toLowerCase().includes(search)
         );
       });
     }
@@ -226,16 +221,11 @@ export const BranchTable: React.FC<BranchTableProps> = ({
             disabledColumns={['name', 'actions']}
             columnLabels={{
               name: 'Branch Name',
+              status: 'Status',
               managerUserId: 'Manager',
-              phone: 'Phone',
-              email: 'Email',
-              address: 'Address',
               city: 'City',
               country: 'Country',
-              lat: 'Lat',
-              lng: 'Lng',
-              timezone: 'Timezone',
-              status: 'Status',
+              phone: 'Phone',
               createdAt: 'Created',
               actions: 'Actions',
             }}

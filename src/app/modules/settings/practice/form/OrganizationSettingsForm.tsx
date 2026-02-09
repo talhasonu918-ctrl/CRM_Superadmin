@@ -5,7 +5,7 @@ import Select from 'react-select';
 import { PracticeSetting } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
 
-interface PracticeSettingFormProps {
+interface OrganizationSettingsFormProps {
   initialData?: Partial<PracticeSetting>;
   onSubmit: (data: Partial<PracticeSetting>) => void;
   onCancel?: () => void;
@@ -62,7 +62,7 @@ const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) 
   }),
   menu: (base: any) => ({
     ...base,
-    backgroundColor: isDarkMode ? theme?.neutral?.background : theme?.neutral?.card,
+    backgroundColor: '#ffffff',
     border: `1px solid ${theme?.border?.input}`,
     zIndex: 9999,
   }),
@@ -85,11 +85,11 @@ const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) 
   }),
   singleValue: (base: any) => ({
     ...base,
-    color: theme?.text?.primary,
+    color: '#000000',
   }),
   input: (base: any) => ({
     ...base,
-    color: theme?.text?.primary,
+    color: '#000000',
   }),
   placeholder: (base: any) => ({
     ...base,
@@ -97,7 +97,7 @@ const getSelectStyles = (hasError?: boolean, theme?: any, isDarkMode?: boolean) 
   }),
 });
 
-export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
+export const OrganizationSettingsForm: React.FC<OrganizationSettingsFormProps> = ({
   initialData,
   onSubmit,
   onCancel,
@@ -115,19 +115,30 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
     if (initialData) {
       reset(initialData);
       // Set initial logo preview if exists
-      if (initialData.logo && typeof initialData.logo === 'string') {
-        setLogoPreview(initialData.logo);
+      if (initialData.logo) {
+        if (typeof initialData.logo === 'string') {
+          setLogoPreview(initialData.logo);
+        } else if (initialData.logo instanceof File) {
+          // If it's a File object, create preview URL
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setLogoPreview(reader.result as string);
+          };
+          reader.readAsDataURL(initialData.logo);
+        }
       }
     }
   }, [initialData, reset]);
 
   const handleLogoChange = (file: File | null, onChange: (value: any) => void) => {
     if (file) {
-      onChange(file);
-      // Create preview URL
+      // Create preview URL and save as base64 string for localStorage persistence
       const reader = new FileReader();
       reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
+        const base64String = reader.result as string;
+        setLogoPreview(base64String);
+        // Save base64 string instead of File object so it persists in localStorage
+        onChange(base64String);
       };
       reader.readAsDataURL(file);
     } else {
@@ -136,20 +147,20 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
     }
   };
 
-  const inputClass = (hasError?: boolean) => `w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${hasError ? theme.status.error.border : `${theme.border.input} focus:border-orange-500`
+  const inputClass = (hasError?: boolean) => `w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} text-black placeholder:${theme.text.tertiary} ${hasError ? theme.status.error.border : `${theme.border.input} focus:border-orange-500`
     }`;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
       {/* Basic Information Section */}
       <div>
-        <h3 className={`text-base font-semibold mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
+        <h3 className={`text-sm sm:text-base font-semibold mb-3 sm:mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
           Basic Information
         </h3>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* Organization Name */}
-          <div className="col-span-2">
-            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+          <div className="col-span-1 sm:col-span-2">
+            <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
               Organization Name <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -161,7 +172,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                   <input
                     {...field}
                     placeholder="Enter organization name"
-                    className={inputClass(!!fieldState.error)}
+                    className={`${inputClass(!!fieldState.error)} text-sm sm:text-base`}
                   />
                   {fieldState.error && (
                     <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -172,8 +183,8 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
           </div>
 
           {/* Logo Upload */}
-          <div className="col-span-2">
-            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+          <div className="col-span-1 sm:col-span-2">
+            <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
               Organization Logo
             </label>
             <Controller
@@ -181,8 +192,8 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
               control={control}
               render={({ field: { onChange, value, ...field }, fieldState }) => (
                 <>
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                    <div className="flex-1 w-full">
                       <input
                         {...field}
                         type="file"
@@ -192,7 +203,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                       />
                     </div>
                     {logoPreview && (
-                      <div className={`flex-shrink-0 w-24 h-24 border rounded-lg overflow-hidden ${theme.border.main}`}>
+                      <div className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 border rounded-lg overflow-hidden ${theme.border.main}`}>
                         <img
                           src={logoPreview}
                           alt="Logo preview"
@@ -211,7 +222,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
           {/* Currency */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
               Currency <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -226,7 +237,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
                     value={currencyOptions.find((opt) => opt.value === field.value)}
                     onChange={(opt) => field.onChange(opt?.value)}
                     placeholder="Select currency"
-                    className="text-sm"
+                    className="text-xs sm:text-sm"
                     menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
                     styles={getSelectStyles(!!fieldState.error, theme, isDarkMode)}
                   />
@@ -240,7 +251,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
           {/* Timezone */}
           <div>
-            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
               Timezone <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -268,8 +279,8 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
           </div>
 
           {/* Locale */}
-          <div className="col-span-2">
-            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+          <div className="col-span-1 sm:col-span-2">
+            <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
               Locale <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -300,10 +311,10 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
       {/* Subscription Details Section */}
       <div>
-        <h3 className={`text-base font-semibold mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
+        <h3 className={`text-sm sm:text-base font-semibold mb-3 sm:mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
           Subscription Details
         </h3>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* Plan Name */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
@@ -409,10 +420,10 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
       {/* Business Settings Section */}
       <div>
-        <h3 className={`text-base font-semibold mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
+        <h3 className={`text-sm sm:text-base font-semibold mb-3 sm:mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
           Business Settings
         </h3>
-        <div className="grid grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* Default Tax Percentage */}
           <div>
             <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
@@ -445,7 +456,7 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
 
           {/* Service Charge Percentage */}
           <div>
-            <label className={`block text-xs font-medium mb-2 ${theme.text.tertiary}`}>
+            <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
               Service Charge (%) <span className="text-red-500">*</span>
             </label>
             <Controller
@@ -534,20 +545,20 @@ export const PracticeSettingForm: React.FC<PracticeSettingFormProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-2 border-t" style={{ borderColor: theme.border.main }}>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-2" style={{ borderColor: theme.border.main }}>
         {onCancel && (
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
-            className={`${theme.button.secondary} h-10 rounded-lg px-8`}
+            className={`${theme.button.secondary} h-10 sm:h-10 rounded-lg px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto`}
           >
             Cancel
           </Button>
         )}
         <Button
           type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}
+          className={`${theme.button.primary} h-10 sm:h-10 text-white rounded-lg px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto`}
         >
           {isEditMode ? 'Update Settings' : 'Save Changes'}
         </Button>

@@ -1,69 +1,98 @@
-import React from 'react';
-import {
-  Settings as SettingsIcon, Store, Users, Smartphone
-} from 'lucide-react';
-import { getThemeColors } from '../../../theme/colors';
+import React, { useState, useEffect } from 'react';
+import { Building2, MapPin, Users, Smartphone } from 'lucide-react';
 import { DashboardCard } from './components/DashboardCard';
+import { getThemeColors } from '../../../theme/colors';
+import { ReusableModal } from '../../../components/ReusableModal';
+import { OrganizationSettingsForm } from './practice/form/OrganizationSettingsForm';
+import { PracticeSetting } from './practice/types';
 
-// Re-exports for backward compatibility
-export { UserTable } from './user/table/table';
-export { userColumns } from './user/table/columns';
-export type { User } from '../../../hooks/useInfiniteTable';
-export { useInfiniteTable, loadMoreUsers, generateMockUsers } from '../../../hooks/useInfiniteTable';
+interface SettingsViewProps {
+  isDarkMode: boolean;
+}
 
-export const SettingsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const STORAGE_KEY = 'organization_settings';
+
+export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
   const theme = getThemeColors(isDarkMode);
+  const [organizationModalOpen, setOrganizationModalOpen] = useState(false);
+  const [organizationData, setOrganizationData] = useState<Partial<PracticeSetting> | null>(null);
 
-  const dashboardItems = [
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      try {
+        setOrganizationData(JSON.parse(savedData));
+      } catch (error) {
+        console.error('Error loading organization settings:', error);
+      }
+    }
+  }, []);
+
+  const handleSubmit = (data: Partial<PracticeSetting>) => {
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    setOrganizationData(data);
+    setOrganizationModalOpen(false);
+  };
+
+  const cards = [
     {
-      id: 'practice',
+      icon: Building2,
       title: 'Organization Settings',
-      icon: <SettingsIcon />,
-      href: '/settings/practice',
+      onClick: () => setOrganizationModalOpen(true),
     },
     {
-      id: 'branches',
+      icon: MapPin,
       title: 'Branches',
-      icon: <Store />,
       href: '/settings/branches',
     },
     {
-      id: 'users',
+      icon: Users,
       title: 'Users',
-      icon: <Users />,
       href: '/settings/users',
     },
     {
-      id: 'mobile',
-      title: 'Mobile & Web',
-      icon: <Smartphone />,
+      icon: Smartphone,
+      title: 'Mobile & Web Setting',
       href: '/settings/mobile',
     },
   ];
 
   return (
-    <div className="space-y-8 px-4">
-      {/* Header */}
-      {/* <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-3xl font-semibold tracking-tight ${theme.text.primary}`}>Settings</h1>
-          <p className={`text-sm mt-2 ${theme.text.muted}`}>Manage your practice settings and configurations</p>
+    <div className="p-6">
+      {/* Dashboard Cards Grid */}
+      <div className="w-full max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-4 sm:px-0">
+          {cards.map((card, index) => (
+            <DashboardCard
+              key={index}
+              icon={card.icon}
+              title={card.title}
+              isDarkMode={isDarkMode}
+              href={card.href}
+              onClick={card.onClick}
+            />
+          ))}
         </div>
-      </div> */}
-
-      {/* Dashboard Cards */}
-      <div className="grid grid-cols-1 sm:p-4 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl justify-center items-center">
-        {dashboardItems.map((item) => (
-          <DashboardCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            icon={item.icon}
-            href={item.href}
-            isDarkMode={isDarkMode}
-          />
-        ))}
       </div>
+
+      {/* Organization Settings Modal */}
+      <ReusableModal
+        isOpen={organizationModalOpen}
+        onClose={() => setOrganizationModalOpen(false)}
+        title="Organization Settings"
+        isDarkMode={isDarkMode}
+        size="lg"
+      >
+        <OrganizationSettingsForm
+          initialData={organizationData || {}}
+          onSubmit={handleSubmit}
+          onCancel={() => setOrganizationModalOpen(false)}
+          isEditMode={!!organizationData}
+          isDarkMode={isDarkMode}
+        />
+      </ReusableModal>
     </div>
   );
 };

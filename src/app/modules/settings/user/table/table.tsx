@@ -111,7 +111,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   return (
     <div className={cardStyle}>
       <div className="flex items-center justify-between mb-6">
-        <h4 className={`text-lg tracking-tight ${theme.text.primary}`}>Users</h4>
+        <h4 className={`text-lg font-semibold tracking-tight ${theme.text.primary}`}>Users</h4>
         <Button
           onClick={onAddUser}
           className={`h-10 rounded-lg ${theme.button.primary}`}

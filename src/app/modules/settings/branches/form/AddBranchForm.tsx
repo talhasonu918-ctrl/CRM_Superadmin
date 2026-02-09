@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'rizzui';
 import Select from 'react-select';
 import { Branch } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
+import { MapPin, Search } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface AddBranchFormProps {
   onSubmit: (data: Partial<Branch>) => void;
@@ -71,11 +73,185 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const { control, handleSubmit } = useForm<Partial<Branch>>();
+  const { control, handleSubmit, setValue, watch } = useForm<Partial<Branch>>({
+    defaultValues: {
+      status: 'Active',
+      country: 'Pakistan',
+    },
+  });
+
+  // Map and Autocomplete states
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [map, setMap] = useState<any>(null);
+  const markerRef = useRef<any>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<any>(null);
+
+  // Load Google Maps Script
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      console.error('Google Maps API Key is missing!');
+      return;
+    }
+
+    if ((window as any).google) {
+      setIsMapLoaded(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setIsMapLoaded(true);
+    document.head.appendChild(script);
+  }, []);
+
+  // Initialize Map
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || !(window as any).google) return;
+
+    const google = (window as any).google;
+    const defaultLocation = { lat: 31.5204, lng: 74.3587 }; // Lahore
+
+    const mapInstance = new google.maps.Map(mapRef.current, {
+      center: defaultLocation,
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+
+    setMap(mapInstance);
+  }, [isMapLoaded]);
+
+  // Initialize Autocomplete
+  useEffect(() => {
+    if (!isMapLoaded || !addressInputRef.current || !(window as any).google) return;
+
+    const google = (window as any).google;
+    const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+      componentRestrictions: { country: 'pk' },
+      fields: ['formatted_address', 'geometry', 'address_components', 'name'],
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+
+      const location = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+
+      // Set form values
+      setValue('address', place.formatted_address);
+      setValue('lat', location.lat);
+      setValue('lng', location.lng);
+
+      // Extract city and country
+      let city = '';
+      let country = 'Pakistan';
+      place.address_components?.forEach((comp: any) => {
+        if (comp.types.includes('locality')) city = comp.long_name;
+        if (comp.types.includes('country')) country = comp.long_name;
+      });
+      if (city) setValue('city', city);
+      if (country) setValue('country', country);
+
+      // Update Map
+      if (map) {
+        map.setCenter(location);
+        map.setZoom(16);
+
+        if (markerRef.current) markerRef.current.setMap(null);
+        markerRef.current = new google.maps.Marker({
+          position: location,
+          map: map,
+          animation: google.maps.Animation.DROP,
+        });
+      }
+    });
+
+    autocompleteRef.current = autocomplete;
+  }, [isMapLoaded, map]);
+
+  // Handle manual City/Country changes to update map
+  const city = watch('city');
+  const country = watch('country');
+  const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerGeocode = (cityName?: string, countryName?: string) => {
+    const targetCity = cityName || city;
+    const targetCountry = countryName || country;
+
+    if (!isMapLoaded || !targetCity || !targetCountry || !(window as any).google) return;
+
+    if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
+
+    geocodeTimeoutRef.current = setTimeout(() => {
+      const google = (window as any).google;
+      if (!google || !google.maps || !google.maps.Geocoder) return;
+
+      const geocoder = new google.maps.Geocoder();
+      const addressString = `${targetCity.trim()}, ${targetCountry.trim()}`;
+
+      geocoder.geocode({ address: addressString }, (results: any, status: any) => {
+        if (status === 'OK' && results[0] && map) {
+          const loc = results[0].geometry.location;
+          const location = { lat: loc.lat(), lng: loc.lng() };
+
+          map.panTo(location);
+          map.setZoom(12);
+
+          if (markerRef.current) markerRef.current.setMap(null);
+          markerRef.current = new google.maps.Marker({
+            position: location,
+            map: map,
+            animation: google.maps.Animation.DROP,
+          });
+
+          setValue('lat', location.lat);
+          setValue('lng', location.lng);
+        }
+      });
+    }, 500);
+  };
+
+  useEffect(() => {
+    triggerGeocode();
+    return () => {
+      if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
+    };
+  }, [city, country, isMapLoaded, map]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid grid-cols-2 gap-y-5 gap-x-5">
+      <style jsx global>{`
+        .pac-container {
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          margin-top: 4px;
+          z-index: 9999 !important;
+        }
+        .pac-item {
+          padding: 8px 12px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+        .pac-item:hover {
+          background-color: #f9731610;
+        }
+        .pac-item-query {
+          font-weight: 600;
+          color: #111827;
+        }
+      `}</style>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-5">
         {/* Branch Name */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
@@ -184,32 +360,6 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           />
         </div>
 
-        {/* Address */}
-        <div className="col-span-2">
-          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Address
-          </label>
-          <Controller
-            name="address"
-            control={control}
-            rules={{ required: 'Address is required' }}
-            render={({ field, fieldState }) => (
-              <>
-                <textarea
-                  {...field}
-                  placeholder="Enter full address"
-                  rows={3}
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} resize-none ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
-                />
-                {fieldState.error && (
-                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
-                )}
-              </>
-            )}
-          />
-        </div>
-
-        {/* City */}
         <div>
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             City
@@ -218,126 +368,120 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             name="city"
             control={control}
             render={({ field }) => (
-              <input
-                {...field}
-                placeholder="City"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter city"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+              </div>
             )}
           />
         </div>
 
-        {/* Country */}
         <div>
-          <label className={`block text-sm  font-medium mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Country
           </label>
           <Controller
             name="country"
             control={control}
             render={({ field }) => (
-              <input
-                {...field}
-                placeholder="Country"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter country"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+                <button
+                  type="button"
+                  onClick={() => triggerGeocode()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600 transition-colors"
+                  title="Sync map with city/country"
+                >
+                  <MapPin size={16} />
+                </button>
+              </div>
             )}
           />
         </div>
 
-        {/* Email */}
-        <div>
-          <label className={`block text-sm  font-medium mb-2 ${theme.text.tertiary}`}>
-            Email
-          </label>
-          <Controller
-            name="email"
-            control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="email"
-                placeholder="email@example.com"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
-            )}
-          />
-        </div>
-
-        {/* Timezone */}
-        <div>
-          <label className={`block text-sm  font-medium mb-2 ${theme.text.tertiary}`}>
-            Timezone
-          </label>
-          <Controller
-            name="timezone"
-            control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                placeholder="Timezone (e.g. America/New_York)"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
-            )}
-          />
-        </div>
-
-        {/* Lat */}
-        <div>
-          <label className={`block text-sm  font-medium mb-2 ${theme.text.tertiary}`}>
-            Lat
-          </label>
-          <Controller
-            name="lat"
-            control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="number"
-                step="any"
-                placeholder="Latitude"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
-            )}
-          />
-        </div>
-
-        {/* Lng */}
-        <div>
+        {/* Address Search */}
+        <div className="col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
-            Lng
+            Search Address
           </label>
           <Controller
-            name="lng"
+            name="address"
             control={control}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="number"
-                step="any"
-                placeholder="Longitude"
-                className={`w-full px-4 py-3 border  text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-              />
+            rules={{ required: 'Address is required' }}
+            render={({ field, fieldState }) => (
+              <div className="relative group">
+                <input
+                  {...field}
+                  ref={(e) => {
+                    field.ref(e);
+                    (addressInputRef as any).current = e;
+                  }}
+                  placeholder="Search for branch location..."
+                  className={`w-full pl-11 pr-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                />
+                <Search size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme.text.tertiary} group-focus-within:text-orange-500 transition-colors`} />
+                {fieldState.error && (
+                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
+                )}
+              </div>
             )}
           />
         </div>
+
+        {/* Map Display */}
+        <div className="col-span-2">
+          <div
+            ref={mapRef}
+            className={`w-full h-48 rounded-lg border ${theme.border.input} overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center`}
+          >
+            {!isMapLoaded && (
+              <div className="text-xs font-semibold text-slate-400 flex flex-col items-center gap-2">
+                <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                Loading Map...
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* City and Country (Read only or auto-filled) */}
+
+
+        {/* Lat/Lng (Hidden but bound to form) */}
+        <Controller name="lat" control={control} render={({ field }) => <input type="hidden" {...field} />} />
+        <Controller name="lng" control={control} render={({ field }) => <input type="hidden" {...field} />} />
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-2">
-
+      <div className="flex items-center justify-end gap-3 pt-4 border-t mt-4">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`${theme.button.secondary} h-10 rounded-lg px-8`}
+          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold`}
         >
           Cancel
         </Button>
 
         <Button
           type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}
+          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all`}
         >
           Add Branch
         </Button>
