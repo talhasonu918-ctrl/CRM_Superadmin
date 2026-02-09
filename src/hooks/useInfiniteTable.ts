@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -28,23 +28,27 @@ export interface User {
 
 interface UseInfiniteTableOptions<T> {
   columns: ColumnDef<T>[];
-  initialData?: T[];
+  data?: T[];
   pageSize?: number;
   onLoadMore?: (page: number) => Promise<T[]>;
 }
 
 export function useInfiniteTable<T extends { id: string }>({
   columns,
-  initialData = [],
+  data: propData = [],
   pageSize = 20,
   onLoadMore,
 }: UseInfiniteTableOptions<T>) {
-  const [data, setData] = useState<T[]>(initialData);
+  const [data, setData] = useState<T[]>(propData);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    setData(propData);
+  }, [propData]);
 
   const loadMore = useCallback(async () => {
     if (!onLoadMore || isLoading || !hasNextPage) return;

@@ -2,7 +2,7 @@
 
 ## 🎉 Implementation Complete!
 
-I've successfully created a **centralized color and theme configuration system** for your Nexus CRM application. This system eliminates hardcoded colors throughout your codebase and provides a single source of truth for all visual styling.
+I've successfully created a **centralized color and theme configuration system** for your Invex Food application. This system eliminates hardcoded colors throughout your codebase and provides a single source of truth for all visual styling.
 
 ---
 

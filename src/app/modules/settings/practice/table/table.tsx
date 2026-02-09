@@ -101,7 +101,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
     loadMore,
   } = useInfiniteTable<PracticeSetting>({
     columns,
-    initialData,
+    data: initialData,
     pageSize: 20,
     onLoadMore: loadMoreSettings,
   });

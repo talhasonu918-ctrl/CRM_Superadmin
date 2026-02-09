@@ -20,11 +20,11 @@ interface LayoutProps {
   toggleTheme: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ 
-  children, currentView, onViewChange, onLogout, isDarkMode, toggleTheme 
+export const Layout: React.FC<LayoutProps> = ({
+  children, currentView, onViewChange, onLogout, isDarkMode, toggleTheme
 }) => {
   const theme = getThemeColors(isDarkMode);
-  
+
   const menuItems: { id: ViewType; icon: any; label: string; badge?: number }[] = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { id: 'pos', icon: ShoppingBag, label: 'POS' },
@@ -44,29 +44,28 @@ export const Layout: React.FC<LayoutProps> = ({
   ];
 
   return (
-    <div className={`flex min-h-screen ${theme.neutral.background} ${theme.text.primary} transition-colors duration-300 font-sans antialiased`}>
+    <div className="flex min-h-screen bg-background text-textPrimary transition-colors duration-300 antialiased">
       {/* Sidebar */}
-      <aside className={`w-64 bg-[#2C3E50] hidden lg:flex flex-col sticky top-0 h-screen z-40 transition-all shadow-sm`}>
-        <div className={`h-20 flex items-center justify-center border-b ${theme.border.secondary}`}>
+      <aside className="w-64 bg-surface hidden lg:flex flex-col sticky top-0 h-screen z-40 transition-all shadow-sm">
+        <div className="h-20 flex items-center justify-center border-b border-border">
           <div className="flex items-center gap-1">
-            <div className="w-8 h-0.5 bg-white"></div>
-            <span className="font-bold text-xl text-white tracking-[0.3em]">VINC</span>
-            <div className="w-8 h-0.5 bg-white"></div>
+            <div className="w-8 h-0.5 bg-textPrimary/20"></div>
+            <span className="font-bold text-xl text-textPrimary tracking-[0.3em]">VINC</span>
+            <div className="w-8 h-0.5 bg-textPrimary/20"></div>
           </div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-0.5 mt-4 overflow-y-auto pb-4 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-slate-800/50 hover:scrollbar-thumb-slate-500">
+        <nav className="flex-1 px-4 space-y-0.5 mt-4 overflow-y-auto pb-4 custom-scrollbar">
           {menuItems.map((item) => {
             const isActive = currentView === item.id;
             return (
               <button
                 key={`${item.id}-${item.label}`}
                 onClick={() => onViewChange(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-2.5 transition-all duration-200 group ${
-                  isActive 
-                    ? 'bg-white/10 text-white' 
-                    : `${theme.text.tertiary} hover:text-white hover:bg-white/5`
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 transition-all duration-200 group ${isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-textSecondary hover:text-textPrimary hover:bg-surface/10'
+                  }`}
               >
                 <item.icon size={18} className="flex-shrink-0" />
                 <span className="font-normal text-sm">
@@ -78,9 +77,9 @@ export const Layout: React.FC<LayoutProps> = ({
         </nav>
 
         <div className="p-4">
-          <button 
+          <button
             onClick={onLogout}
-            className={`w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg transition-all text-sm font-medium ${theme.button.primary}`}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3.5 rounded-lg transition-all text-sm font-medium bg-primary text-white hover:opacity-90 shadow-md"
           >
             <LogOut size={18} />
             <span>Logout</span>
@@ -90,52 +89,52 @@ export const Layout: React.FC<LayoutProps> = ({
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0">
-        <header className={`h-20 border-b ${theme.border.main} ${theme.neutral.backgroundSecondary} flex items-center justify-between px-10 sticky top-0 z-30 backdrop-blur-md`}>
+        <header className="h-20 border-b border-border bg-surface/80 flex items-center justify-between px-10 sticky top-0 z-30 backdrop-blur-md">
           <div className="flex items-center gap-4">
-            <button className={`lg:hidden p-2 ${theme.text.tertiary} ${theme.neutral.hover} transition-colors`}>
+            <button className="lg:hidden p-2 text-textSecondary hover:bg-surface/10 transition-colors">
               <Menu size={20} />
             </button>
             <div className="relative w-72 hidden md:block">
-              <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${theme.text.tertiary}`} />
-              <input 
-                type="text" 
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-textSecondary" />
+              <input
+                type="text"
                 placeholder="Search orders, menu..."
-                className={`w-full pl-10 pr-4 py-2 rounded-xl text-xs font-medium border-transparent transition-all outline-none ${theme.input.background} ${theme.input.backgroundFocus}`}
+                className="w-full pl-10 pr-4 py-2 rounded-xl text-xs font-medium border border-border bg-surface focus:border-primary outline-none transition-all"
               />
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={toggleTheme}
-                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${theme.neutral.card} ${theme.neutral.hover}`}
+                className="w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-surface hover:bg-surface/10 border border-border"
               >
-                {isDarkMode ? <Sun size={18} className={theme.primary.darkText} /> : <Moon size={18} className={theme.text.tertiary} />}
+                {isDarkMode ? <Sun size={18} className="text-warning" /> : <Moon size={18} className="text-textSecondary" />}
               </button>
-              <button className={`w-10 h-10 rounded-xl flex items-center justify-center relative transition-all ${theme.neutral.card} ${theme.neutral.hover}`}>
-                <Bell size={18} className={theme.text.tertiary} />
-                <span className={`absolute top-2.5 right-2.5 w-2 h-2 ${theme.primary.main} rounded-full ring-2 ${theme.neutral.background}`}></span>
+              <button className="w-10 h-10 rounded-xl flex items-center justify-center relative transition-all bg-surface hover:bg-surface/10 border border-border">
+                <Bell size={18} className="text-textSecondary" />
+                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full ring-2 ring-surface"></span>
               </button>
             </div>
 
-            <div className={`h-6 w-[1px] ${theme.border.main} mx-2`}></div>
+            <div className="h-6 w-[1px] bg-border mx-2"></div>
 
             <div className="flex items-center gap-3 cursor-pointer group">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold leading-none">Orlando Laurentius</p>
-                <p className={`text-[10px] ${theme.text.tertiary} font-bold uppercase tracking-wider mt-1`}>Super Admin</p>
+                <p className="text-[10px] text-textSecondary font-bold uppercase tracking-wider mt-1">Super Admin</p>
               </div>
-              <img 
-                src="https://ui-avatars.com/api/?name=Orlando+L&background=FF6B35&color=fff" 
-                alt="Profile" 
-                className={`w-9 h-9 rounded-xl object-cover ring-2 ${theme.border.secondary} group-hover:ring-orange-500/50 transition-all`}
+              <img
+                src="https://ui-avatars.com/api/?name=Orlando+L&background=FF6B35&color=fff"
+                alt="Profile"
+                className="w-9 h-9 rounded-xl object-cover ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all"
               />
             </div>
           </div>
         </header>
 
-        <div className="p-8 flex-1 overflow-y-auto custom-scrollbar">
+        <div className="p-8 flex-1 overflow-y-auto custom-scrollbar bg-background">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentView}

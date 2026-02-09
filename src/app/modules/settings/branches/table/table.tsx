@@ -119,7 +119,6 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     data: tableData, // Get actual loaded data from hook
   } = useInfiniteTable<Branch>({
     columns,
-    initialData: fullData.slice(0, pageSize),
     pageSize,
     onLoadMore: handleLoadMore,
   });

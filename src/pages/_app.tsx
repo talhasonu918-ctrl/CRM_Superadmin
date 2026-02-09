@@ -4,8 +4,11 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { BrandingProvider } from '../contexts/BrandingContext';
 import toast, { Toaster } from 'react-hot-toast';
-import '../../styles/global.css';
+import '../styles/globals.css';
+
+import { tenantConfig } from '../config/tenant-color';
 
 // Component that handles authentication routing
 interface AppContentProps {
@@ -55,37 +58,62 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Nexus CRM - SuperAdmin</title>
+        <title>Invex Food - SuperAdmin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.tailwindcss.com"></script>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            tailwind.config = {
+              theme: {
+                extend: {
+                  colors: {
+                    primary: 'var(--color-primary)',
+                    secondary: 'var(--color-secondary)',
+                    accent: 'var(--color-accent)',
+                    background: 'var(--color-background)',
+                    surface: 'var(--color-surface)',
+                    textPrimary: 'var(--color-text-primary)',
+                    textSecondary: 'var(--color-text-secondary)',
+                    border: 'var(--color-border)',
+                    success: 'var(--color-success)',
+                    warning: 'var(--color-warning)',
+                    error: 'var(--color-error)',
+                  }
+                }
+              }
+            }
+          `
+        }} />
       </Head>
       <AuthProvider>
         <ThemeProvider>
-          <Toaster 
-            position="top-right"
-            toastOptions={{
-              duration: 3000,
-              style: {
-                background: '#363636',
-                color: '#fff',
-              },
-              success: {
+          <BrandingProvider>
+            <Toaster
+              position="top-right"
+              toastOptions={{
                 duration: 3000,
-                iconTheme: {
-                  primary: '#f97316',
-                  secondary: '#fff',
+                style: {
+                  background: '#363636',
+                  color: '#fff',
                 },
-              },
-              error: {
-                duration: 4000,
-                iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#fff',
+                success: {
+                  duration: 3000,
+                  iconTheme: {
+                    primary: 'var(--color-primary)',
+                    secondary: '#fff',
+                  },
                 },
-              },
-            }}
-          />
-          <AppContent Component={Component} pageProps={pageProps} />
+                error: {
+                  duration: 4000,
+                  iconTheme: {
+                    primary: 'var(--color-error)',
+                    secondary: '#fff',
+                  },
+                },
+              }}
+            />
+            <AppContent Component={Component} pageProps={pageProps} />
+          </BrandingProvider>
         </ThemeProvider>
       </AuthProvider>
     </>

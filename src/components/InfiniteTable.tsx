@@ -22,6 +22,8 @@ export interface InfiniteTableProps<T = any> {
   columnVisibility?: Record<string, boolean>;
   rows?: Row<T>[];
   isDarkMode?: boolean;
+  total?: number;
+  noDataMessage?: string;
 }
 
 function InfiniteTable<T = any>({
@@ -35,6 +37,8 @@ function InfiniteTable<T = any>({
   columnVisibility,
   rows,
   isDarkMode = false,
+  total,
+  noDataMessage,
 }: InfiniteTableProps<T>) {
   const theme = getThemeColors(isDarkMode);
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -81,120 +85,152 @@ function InfiniteTable<T = any>({
       <div className="text-center">
         <div className={`text-4xl mb-4 ${theme.text.muted}`}>📋</div>
         <h3 className={`text-lg font-medium mb-2 ${theme.text.primary}`}>No data found</h3>
-        <p className={theme.text.tertiary}>There are no items to display at the moment.</p>
+        <p className={theme.text.tertiary}>{noDataMessage || 'There are no items to display at the moment.'}</p>
       </div>
     </div>
   );
 
   return (
-    <div
-      ref={tableContainerRef}
-      onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
-      className={`w-full overflow-x-auto overflow-y-auto custom-scrollbar max-h-96 ${className}`}
-    >
-      <Table
-        className="!shadow-none !border-0"
+    <>
+      <div
+        ref={tableContainerRef}
+        onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
+        className={`w-full overflow-x-auto overflow-y-auto custom-scrollbar max-h-[600px] ${className}`}
       >
-        <Table.Header className={`!border-y-0 ${theme.neutral.backgroundSecondary}`}>
-          {table.getHeaderGroups().map((headerGroup: any) => {
-            return (
-              <Table.Row key={headerGroup.id}>
-                {headerGroup.headers.map((header: any) => {
-                  // Check column visibility
-                  if (columnVisibility && columnVisibility[header.column.id] === false) {
-                    return null;
-                  }
-                  return (
-                    <Table.Head
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className={`!text-start !font-semibold !py-2 sm:!py-3 !px-2 sm:!px-4 ${theme.text.primary}`}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </Table.Head>
-                  );
-                })}
-              </Table.Row>
-            );
-          })}
-        </Table.Header>
-        <Table.Body>
-          {(rows || table.getRowModel().rows).length === 0 && !isLoading ? (
-            <Table.Row>
-              <Table.Cell
-                colSpan={table.getAllColumns().length}
-                className="!text-center !py-12"
-              >
-                {emptyComponent || defaultEmptyComponent}
-              </Table.Cell>
-            </Table.Row>
-          ) : (
-            (rows || table.getRowModel().rows).map((row: any) => (
-              <Table.Row
-                key={row.id}
-                className={`transition-colors ${theme.neutral.card} `}
-              >
-                {row.getVisibleCells().map((cell: any) => {
-                  // Check column visibility
-                  if (columnVisibility && columnVisibility[cell.column.id] === false) {
-                    return null;
-                  }
-                  return (
-                    <Table.Cell
-                      key={cell.id}
-                      className="!text-start !py-1 sm:!py-4 !px-1 sm:!px-4"
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Table.Cell>
-                  );
-                })}
-              </Table.Row>
-            ))
-          )}
-        </Table.Body>
-
-        {isLoading && (
-          <Table.Body>
-            <Table.Row>
-              <Table.Cell
-                colSpan={table.getAllColumns().length}
-                className="!text-center !py-4"
-              >
-                {loadingComponent || defaultLoadingComponent}
-              </Table.Cell>
-            </Table.Row>
-          </Table.Body>
-        )}
-
-        {footers.length > 0 && (
-          <Table.Footer>
-            {table.getFooterGroups().map((footerGroup: any) => (
-              <Table.Row key={footerGroup.id}>
-                {footerGroup.headers.map((footer: any) => {
-                  return (
-                    <Table.Cell key={footer.id} className="!py-4">
-                      {footer.isPlaceholder ? null : (
-                        <>
-                          {flexRender(
-                            footer.column.columnDef.footer,
-                            footer.getContext()
+        <Table
+          className="!shadow-none !border-0"
+          style={{
+            width: table.getTotalSize(),
+          }}
+        >
+          <Table.Header className={`!border-y-0 ${theme.neutral.backgroundSecondary}`}>
+            {table.getHeaderGroups().map((headerGroup: any) => {
+              return (
+                <Table.Row key={headerGroup.id}>
+                  {headerGroup.headers.map((header: any) => {
+                    // Check column visibility
+                    if (columnVisibility && columnVisibility[header.column.id] === false) {
+                      return null;
+                    }
+                    return (
+                      <Table.Head
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        style={{
+                          width: header.getSize(),
+                        }}
+                        className={`!text-start !font-semibold ${theme.text.primary}`}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
                           )}
-                        </>
-                      )}
-                    </Table.Cell>
-                  );
-                })}
+                      </Table.Head>
+                    );
+                  })}
+                </Table.Row>
+              );
+            })}
+          </Table.Header>
+          <Table.Body>
+            {(rows || table.getRowModel().rows).length === 0 && !isLoading ? (
+              <Table.Row>
+                <Table.Cell
+                  colSpan={table.getAllColumns().length}
+                  className="!text-center !py-12"
+                >
+                  {emptyComponent || defaultEmptyComponent}
+                </Table.Cell>
               </Table.Row>
-            ))}
-          </Table.Footer>
-        )}
-      </Table>
-    </div>
+            ) : (
+              (rows || table.getRowModel().rows).map((row: any) => (
+                <Table.Row
+                  key={row.id}
+                  className={`transition-colors ${theme.neutral.hoverLight}`}
+                >
+                  {row.getVisibleCells().map((cell: any) => {
+                    // Check column visibility
+                    if (columnVisibility && columnVisibility[cell.column.id] === false) {
+                      return null;
+                    }
+                    return (
+                      <Table.Cell
+                        key={cell.id}
+                        className="!text-start !py-4"
+                        style={{
+                          width: cell.column.getSize(),
+                        }}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+              ))
+            )}
+          </Table.Body>
+
+          {isLoading && (
+            <Table.Body>
+              <Table.Row>
+                <Table.Cell
+                  colSpan={table.getAllColumns().length}
+                  className="!text-center !py-4"
+                >
+                  {loadingComponent || defaultLoadingComponent}
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          )}
+
+          {footers.length > 0 && (
+            <Table.Footer>
+              {table.getFooterGroups().map((footerGroup: any) => (
+                <Table.Row key={footerGroup.id}>
+                  {footerGroup.headers.map((footer: any) => {
+                    return (
+                      <Table.Cell key={footer.id} className="!py-4">
+                        {footer.isPlaceholder ? null : (
+                          <>
+                            {flexRender(
+                              footer.column.columnDef.footer,
+                              footer.getContext()
+                            )}
+                          </>
+                        )}
+                      </Table.Cell>
+                    );
+                  })}
+                </Table.Row>
+              ))}
+            </Table.Footer>
+          )}
+        </Table>
+      </div>
+      <div className={`flex items-center justify-between mt-4 ${theme.text.secondary}`}>
+        <div>
+          Showing {table.getRowModel().rows.length} of {total} products
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-2 py-1 border rounded disabled:opacity-50"
+          >
+            {'<'}
+          </button>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-2 py-1 border rounded disabled:opacity-50"
+          >
+            {'>'}
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
 

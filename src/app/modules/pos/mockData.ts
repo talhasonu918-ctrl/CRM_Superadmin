@@ -1,6 +1,6 @@
 // Mock Data for POS Module
 
-import { Product, Table, TakeawayOrder, Order } from './types';
+import { Product, Table, TakeawayOrder, Order, Rider } from './types';
 
 export const mockProducts: Product[] = [
   // Deals
@@ -9,7 +9,7 @@ export const mockProducts: Product[] = [
   { id: 'deal-3', name: 'STUDENT DEAL', price: 850.00, category: 'Deals', image: '/products/burger-deal.png', available: true },
   { id: 'deal-4', name: 'HNY DEAL', price: 1800.00, category: 'Deals', image: '/products/wings-deal.png', available: true },
   { id: 'deal-5', name: 'MIX PLATTER', price: 1400.00, category: 'Deals', image: '/products/mix-platter.png', available: true },
-  
+
   // Pizzas
   { id: 'pizza-1', name: 'CHICKEN TIKKA', price: 0.00, category: 'Pizza', image: '/products/chicken-tikka.png', available: true },
   { id: 'pizza-2', name: 'CHICKEN EURO', price: 0.00, category: 'Pizza', image: '/products/chicken-euro.png', available: true },
@@ -20,20 +20,20 @@ export const mockProducts: Product[] = [
   { id: 'pizza-7', name: 'YUM CROWN PIZZA', price: 0.00, category: 'Pizza', image: '/products/yum-crown.png', available: true },
   { id: 'pizza-8', name: 'BEHARI PIZZA', price: 0.00, category: 'Pizza', image: '/products/behari-pizza.png', available: true },
   { id: 'pizza-9', name: 'CHICKEN & CHEESE STUFFER', price: 0.00, category: 'Pizza', image: '/products/cheese-stuffer.png', available: true },
-  
+
   // Burgers
   { id: 'burger-1', name: 'KABAB STUFFER', price: 460.00, category: 'Burger', image: '/products/kabab-stuffer.png', available: true },
   { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: '/products/crunch-craze.png', available: true },
   { id: 'burger-3', name: 'SPICY PATTY BURGER', price: 370.00, category: 'Burger', image: '/products/spicy-patty.png', available: true },
   { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '/products/chicken-patty.png', available: true },
   { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '/products/fillet-burger.png', available: true },
-  
+
   // Wings
   { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/peri-peri.png', available: true },
   { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/hot-wings.png', available: true },
   { id: 'wings-3', name: 'BBQ WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/bbq-wings.png', available: true },
   { id: 'wings-4', name: 'SWEET CHILLI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/sweet-chilli.png', available: true },
-  
+
   // Fries & Nuggets
   { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: '/products/nuggets.png', available: true },
   { id: 'fries-2', name: 'PLAIN FRIES', price: 0.00, category: 'Fries & Nuggets', image: '/products/plain-fries.png', available: true },
@@ -44,7 +44,7 @@ export const mockProducts: Product[] = [
   { id: 'fries-7', name: 'HALF BROAST', price: 1230.00, category: 'Fries & Nuggets', image: '/products/half-broast.png', available: true },
   { id: 'fries-8', name: 'FULL BROAST', price: 2290.00, category: 'Fries & Nuggets', image: '/products/full-broast.png', available: true },
   { id: 'fries-9', name: 'MELLOW WRAP', price: 580.00, category: 'Fries & Nuggets', image: '/products/wrap.png', available: true },
-  
+
   // Rolls & Sandwiches
   { id: 'roll-1', name: 'CHILLI FLAME', price: 580.00, category: 'Roll & Sandwich', image: '/products/chilli-flame.png', available: true },
   { id: 'roll-2', name: 'HNY SPECIAL ROLL', price: 590.00, category: 'Roll & Sandwich', image: '/products/special-roll.png', available: true },
@@ -56,7 +56,7 @@ export const mockProducts: Product[] = [
   { id: 'roll-8', name: 'CLUB SANDWICH', price: 520.00, category: 'Roll & Sandwich', image: '/products/club-sandwich.png', available: true },
   { id: 'roll-9', name: 'ZINGER ROLL', price: 480.00, category: 'Roll & Sandwich', image: '/products/zinger-roll.png', available: true },
   { id: 'roll-10', name: 'BBQ CHICKEN SANDWICH', price: 500.00, category: 'Roll & Sandwich', image: '/products/bbq-sandwich.png', available: true },
-  
+
   // Broast
   { id: 'broast-1', name: 'QUARTER BROAST', price: 720.00, category: 'Broast', image: '/products/quarter-broast.png', available: true },
   { id: 'broast-2', name: 'HALF BROAST', price: 1230.00, category: 'Broast', image: '/products/half-broast.png', available: true },
@@ -66,7 +66,7 @@ export const mockProducts: Product[] = [
   { id: 'broast-6', name: 'SPICY BROAST', price: 780.00, category: 'Broast', image: '/products/spicy-broast.png', available: true },
   { id: 'broast-7', name: 'FAMILY BROAST COMBO', price: 2650.00, category: 'Broast', image: '/products/family-broast.png', available: true },
   { id: 'broast-8', name: 'GARLIC BROAST', price: 850.00, category: 'Broast', image: '/products/garlic-broast.png', available: true },
-  
+
   // Drinks
   { id: 'drink-1', name: 'MINERAL WATER (SMALL)', price: 60.00, category: 'Drinks', image: '/products/water-small.png', available: true },
   { id: 'drink-2', name: 'MINERAL WATER (LARGE)', price: 100.00, category: 'Drinks', image: '/products/water-large.png', available: true },
@@ -74,7 +74,7 @@ export const mockProducts: Product[] = [
   { id: 'drink-4', name: 'DRINK (1LTR)', price: 150.00, category: 'Drinks', image: '/products/drink-1ltr.png', available: true },
   { id: 'drink-5', name: 'PAK DRINK (1.5LTR)', price: 220.00, category: 'Drinks', image: '/products/pak-drink-1.5.png', available: true },
   { id: 'drink-6', name: 'PAK DRINK TIN', price: 200.00, category: 'Drinks', image: '/products/pak-tin.png', available: true },
-  
+
   // Pasta
   { id: 'pasta-1', name: 'CRUNCHY PASTA', price: 0.00, category: 'Pasta', image: '/products/crunchy-pasta.png', available: true },
   { id: 'pasta-2', name: 'FLAMING PASTA', price: 0.00, category: 'Pasta', image: '/products/flaming-pasta.png', available: true },
@@ -111,7 +111,7 @@ export const mockTables: Table[] = [
   { id: 'g23', number: 'G23', floor: 'ground', capacity: 2, status: 'available' },
   { id: 'g24', number: 'G24', floor: 'ground', capacity: 4, status: 'occupied' },
   { id: 'g25', number: 'G25', floor: 'ground', capacity: 2, status: 'available' },
-  
+
   // First Floor
   { id: 'f01', number: 'F1', floor: 'first', capacity: 4, status: 'available' },
   { id: 'f02', number: 'F2', floor: 'first', capacity: 4, status: 'available' },
@@ -320,10 +320,10 @@ export const mockTakeawayOrders: TakeawayOrder[] = [
     createdAt: new Date(Date.now() - 9 * 60 * 1000).toISOString(),
     pickupTime: '9 minutes ago'
   },
- 
+
   // Additional orders for testing
-  
-  
+
+
   {
     id: 'order-10',
     orderNumber: 'Order # 10',
@@ -345,28 +345,352 @@ export const mockTakeawayOrders: TakeawayOrder[] = [
     createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
     pickupTime: '7 hours ago'
   },
-  
+
 ];
 
 // Mock Queue Orders
 export const mockQueueOrders: Order[] = [
-  { id: '1', orderNumber: '1/30/2026-562', total: 2395.00, discount: 0, tax: 0, grandTotal: 2395.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 9:09 PM', tableId: 'G6', items: [] },
-  { id: '2', orderNumber: '1/30/2026-563', total: 8400.00, discount: 0, tax: 0, grandTotal: 8400.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 8:13 PM', tableId: 'G3', items: [] },
-  { id: '3', orderNumber: '1/30/2026-564', total: 3360.00, discount: 0, tax: 0, grandTotal: 3360.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 8:08 PM', tableId: 'F14', items: [] },
-  { id: '4', orderNumber: '1/30/2026-565', total: 2290.00, discount: 0, tax: 0, grandTotal: 2290.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 9:13 PM', tableId: 'G5', items: [] },
-  { id: '5', orderNumber: '1/30/2026-566', total: 1900.00, discount: 0, tax: 0, grandTotal: 1900.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 8:13 PM', tableId: 'Ground', items: [] },
-  { id: '6', orderNumber: '1/30/2026-567', total: 1900.00, discount: 0, tax: 0, grandTotal: 1900.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'dine-in', createdAt: '30-01-2026 8:01 PM', tableId: 'Ground', items: [] },
-  { id: '7', orderNumber: '1/30/2026-568', total: 1900.00, discount: 0, tax: 0, grandTotal: 1900.00, paymentMode: 'cash', cashBack: 0, status: 'ready', type: 'takeaway', createdAt: '30-01-2026 9:01 PM', tableId: 'F8', items: [] },
-  { id: '8', orderNumber: '1/30/2026-569', total: 1980.00, discount: 0, tax: 0, grandTotal: 1980.00, paymentMode: 'cash', cashBack: 0, status: 'ready', type: 'takeaway', createdAt: '30-01-2026 8:09 PM', tableId: 'F10', items: [] },
-  { id: '9', orderNumber: '1/30/2026-570', total: 1380.00, discount: 0, tax: 0, grandTotal: 1380.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 8:02 PM', tableId: 'F19', items: [] },
+  {
+    id: '1',
+    orderNumber: '1/30/2026-562',
+    total: 2395.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 2395.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'pending',
+    type: 'dine-in',
+    createdAt: '30-01-2026 9:09 PM',
+    tableId: 'G6',
+    waiterName: 'Ahmed Khan',
+    items: [
+      { product: { id: 'deal-1', name: 'ECONOMY DEAL', price: 1500.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+      { product: { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-4', name: 'DRINK (1LTR)', price: 150.00, category: 'Drinks', image: '', available: true }, quantity: 2 },
+      { product: { id: 'fries-4', name: 'LOADED FRIES', price: 550.00, category: 'Fries & Nuggets', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '2',
+    orderNumber: '1/30/2026-563',
+    total: 8400.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 8400.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'pending',
+    type: 'dine-in',
+    createdAt: '30-01-2026 8:13 PM',
+    tableId: 'G3',
+    waiterName: 'Bilal Hussain',
+    items: [
+      { product: { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: '', available: true }, quantity: 2 },
+      { product: { id: 'broast-3', name: 'FULL BROAST', price: 2290.00, category: 'Broast', image: '', available: true }, quantity: 1 },
+      { product: { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '', available: true }, quantity: 3 },
+    ]
+  },
+  {
+    id: '3',
+    orderNumber: '1/30/2026-564',
+    total: 3360.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 3360.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'preparing',
+    type: 'dine-in',
+    createdAt: '30-01-2026 8:08 PM',
+    tableId: 'F14',
+    waiterName: 'Sohail Malik',
+    items: [
+      { product: { id: 'deal-4', name: 'HNY DEAL', price: 1800.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+      { product: { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+      { product: { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-3', name: 'PAK DRINK (300ML)', price: 100.00, category: 'Drinks', image: '', available: true }, quantity: 2 },
+    ]
+  },
+  {
+    id: '4',
+    orderNumber: '1/30/2026-565',
+    total: 2290.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 2290.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'ready',
+    type: 'dine-in',
+    createdAt: '30-01-2026 9:13 PM',
+    tableId: 'G5',
+    waiterName: 'Ahmed Khan',
+    items: [
+      { product: { id: 'broast-3', name: 'FULL BROAST', price: 2290.00, category: 'Broast', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '5',
+    orderNumber: '1/30/2026-566',
+    total: 1900.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 1900.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'served',
+    type: 'dine-in',
+    createdAt: '30-01-2026 8:13 PM',
+    tableId: 'G2',
+    waiterName: 'Bilal Hussain',
+    items: [
+      { product: { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '6',
+    orderNumber: '1/30/2026-567',
+    total: 1900.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 1900.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'cancelled',
+    type: 'dine-in',
+    createdAt: '30-01-2026 8:01 PM',
+    tableId: 'F3',
+    waiterName: 'Sohail Malik',
+    items: [
+      { product: { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '7',
+    orderNumber: '1/30/2026-568',
+    total: 1900.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 1900.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'ready',
+    type: 'takeaway',
+    createdAt: '30-01-2026 9:01 PM',
+    customerName: 'Rahul Verma',
+    customerPhone: '+91 98765 43210',
+    items: [
+      { product: { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '8',
+    orderNumber: '1/30/2026-569',
+    total: 1980.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 1980.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'preparing',
+    type: 'takeaway',
+    createdAt: '30-01-2026 8:09 PM',
+    customerName: 'Priya Sharma',
+    customerPhone: '+91 99887 76654',
+    items: [
+      { product: { id: 'burger-1', name: 'KABAB STUFFER', price: 460.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+      { product: { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: '', available: true }, quantity: 1 },
+      { product: { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-6', name: 'PAK DRINK TIN', price: 200.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '9',
+    orderNumber: '1/30/2026-570',
+    total: 1380.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 1380.00,
+    paymentMode: 'online',
+    cashBack: 0,
+    status: 'pending',
+    type: 'delivery',
+    createdAt: '30-01-2026 8:02 PM',
+    customerName: 'Amit Patel',
+    customerPhone: '+91 97654 32198',
+    riderName: 'Zeeshan Khan',
+    riderPhone: '+92 300 1111111',
+    deliveryAddress: 'House #42, Street 12, Block A, Gulshan-e-Iqbal, Karachi',
+    items: [
+      { product: { id: 'deal-3', name: 'STUDENT DEAL', price: 850.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+      { product: { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-5', name: 'PAK DRINK (1.5LTR)', price: 220.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '10',
+    orderNumber: '1/30/2026-571',
+    total: 3610.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 3610.00,
+    paymentMode: 'online',
+    cashBack: 0,
+    status: 'preparing',
+    type: 'delivery',
+    createdAt: '30-01-2026 7:45 PM',
+    customerName: 'Sneha Desai',
+    customerPhone: '+91 96543 21987',
+    riderName: 'Bilal Ahmed',
+    riderPhone: '+92 321 2222222',
+    deliveryAddress: 'Apartment 5B, Tower 3, DHA Phase 6, Karachi',
+    items: [
+      { product: { id: 'deal-4', name: 'HNY DEAL', price: 1800.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+      { product: { id: 'broast-2', name: 'HALF BROAST', price: 1230.00, category: 'Broast', image: '', available: true }, quantity: 1 },
+      { product: { id: 'wings-3', name: 'BBQ WINGS (10PCS)', price: 580.00, category: 'Wings', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: '11',
+    orderNumber: '1/30/2026-572',
+    total: 2450.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 2450.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'ready',
+    type: 'delivery',
+    createdAt: '30-01-2026 7:30 PM',
+    customerName: 'Vikram Singh',
+    customerPhone: '+91 95432 19876',
+    riderName: 'Danish Ali',
+    riderPhone: '+92 345 4444444',
+    deliveryAddress: 'Plot #88, Sector C, Bahria Town, Lahore',
+    items: [
+      { product: { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+      { product: { id: 'wings-4', name: 'SWEET CHILLI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '', available: true }, quantity: 1 },
+      { product: { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: '', available: true }, quantity: 1 },
+      { product: { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-6', name: 'PAK DRINK TIN', price: 200.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+    ]
+  },
 ];
 
 export const mockOnlineOrders: Order[] = [
-  { id: 'online-1', orderNumber: 'ONLINE-001', total: 1890.00, discount: 100, tax: 0, grandTotal: 1790.00, paymentMode: 'online', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 10:15 AM', customerName: 'John Doe', items: [] },
-  { id: 'online-2', orderNumber: 'ONLINE-002', total: 2450.00, discount: 0, tax: 0, grandTotal: 2450.00, paymentMode: 'card', cashBack: 0, status: 'preparing', type: 'delivery', createdAt: '30-01-2026 10:30 AM', customerName: 'Jane Smith', items: [] },
-  { id: 'online-3', orderNumber: 'ONLINE-003', total: 1200.00, discount: 50, tax: 0, grandTotal: 1150.00, paymentMode: 'online', cashBack: 0, status: 'ready', type: 'delivery', createdAt: '30-01-2026 10:45 AM', customerName: 'Mike Johnson', items: [] },
-  { id: 'online-4', orderNumber: 'ONLINE-004', total: 3200.00, discount: 200, tax: 0, grandTotal: 3000.00, paymentMode: 'cash', cashBack: 0, status: 'pending', type: 'delivery', createdAt: '30-01-2026 11:00 AM', customerName: 'Sarah Wilson', items: [] },
-  { id: 'online-5', orderNumber: 'ONLINE-005', total: 950.00, discount: 0, tax: 0, grandTotal: 950.00, paymentMode: 'online', cashBack: 0, status: 'preparing', type: 'delivery', createdAt: '30-01-2026 11:15 AM', customerName: 'David Brown', items: [] },
+  {
+    id: 'online-1',
+    orderNumber: 'ONLINE-001',
+    total: 1890.00,
+    discount: 100,
+    tax: 0,
+    grandTotal: 1790.00,
+    paymentMode: 'online',
+    cashBack: 0,
+    status: 'pending',
+    type: 'delivery',
+    createdAt: '30-01-2026 10:15 AM',
+    customerName: 'John Doe',
+    customerPhone: '+91 99887 76654',
+    deliveryAddress: 'House #12, Street 3, Block B, North Nazimabad, Karachi',
+    riderName: 'Asad Ali',
+    riderPhone: '+92 333 1234567',
+    items: [
+      { product: { id: 'deal-1', name: 'ECONOMY DEAL', price: 1500.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-4', name: 'DRINK (1LTR)', price: 150.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+      { product: { id: 'fries-3', name: 'MASALA FRIES', price: 240.00, category: 'Fries & Nuggets', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: 'online-2',
+    orderNumber: 'ONLINE-002',
+    total: 2450.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 2450.00,
+    paymentMode: 'card',
+    cashBack: 0,
+    status: 'preparing',
+    type: 'delivery',
+    createdAt: '30-01-2026 10:30 AM',
+    customerName: 'Jane Smith',
+    customerPhone: '+91 98765 43210',
+    deliveryAddress: 'Flat 402, Al-Azam Tower, Gulshan-e-Iqbal, Karachi',
+    riderName: 'Kashif Mehmood',
+    riderPhone: '+92 300 9876543',
+    items: [
+      { product: { id: 'pizza-5', name: 'HNY SPECIAL PIZZA', price: 1850.00, category: 'Pizza', image: '', available: true }, quantity: 1 },
+      { product: { id: 'roll-6', name: 'CHICKEN CHEESE STICK', price: 600.00, category: 'Roll & Sandwich', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: 'online-3',
+    orderNumber: 'ONLINE-003',
+    total: 1200.00,
+    discount: 50,
+    tax: 0,
+    grandTotal: 1150.00,
+    paymentMode: 'online',
+    cashBack: 0,
+    status: 'ready',
+    type: 'delivery',
+    createdAt: '30-01-2026 10:45 AM',
+    customerName: 'Mike Johnson',
+    customerPhone: '+91 91234 56789',
+    deliveryAddress: 'Shop #5, Market Area, Phase 4, DHA, Karachi',
+    riderName: 'Sajid Khan',
+    riderPhone: '+92 321 5556667',
+    items: [
+      { product: { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+      { product: { id: 'fries-4', name: 'LOADED FRIES', price: 460.00, category: 'Fries & Nuggets', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: 'online-4',
+    orderNumber: 'ONLINE-004',
+    total: 3200.00,
+    discount: 200,
+    tax: 0,
+    grandTotal: 3000.00,
+    paymentMode: 'cash',
+    cashBack: 0,
+    status: 'pending',
+    type: 'delivery',
+    createdAt: '30-01-2026 11:00 AM',
+    customerName: 'Sarah Wilson',
+    customerPhone: '+91 92345 67890',
+    deliveryAddress: 'House 7-A, Street 5, Lalazar Colony, Lahore',
+    riderName: 'Farhan Sheikh',
+    riderPhone: '+92 345 1112223',
+    items: [
+      { product: { id: 'broast-3', name: 'FULL BROAST', price: 2290.00, category: 'Broast', image: '', available: true }, quantity: 1 },
+      { product: { id: 'roll-1', name: 'CHILLI FLAME', price: 580.00, category: 'Roll & Sandwich', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-5', name: 'PAK DRINK (1.5LTR)', price: 330.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+    ]
+  },
+  {
+    id: 'online-5',
+    orderNumber: 'ONLINE-005',
+    total: 950.00,
+    discount: 0,
+    tax: 0,
+    grandTotal: 950.00,
+    paymentMode: 'online',
+    cashBack: 0,
+    status: 'preparing',
+    type: 'delivery',
+    createdAt: '30-01-2026 11:15 AM',
+    customerName: 'David Brown',
+    customerPhone: '+91 93456 78901',
+    deliveryAddress: 'Office 12, Corporate Hub, Gulberg, Lahore',
+    riderName: 'Usman Ghani',
+    riderPhone: '+92 311 9998887',
+    items: [
+      { product: { id: 'roll-4', name: 'BEHARI ROLL', price: 620.00, category: 'Roll & Sandwich', image: '', available: true }, quantity: 1 },
+      { product: { id: 'drink-3', name: 'PAK DRINK (300ML)', price: 330.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+    ]
+  },
 ];
 
 export const categories = [
@@ -381,4 +705,257 @@ export const categories = [
   'Drinks',
   'Sauces',
   'Wraps',
+];
+
+export const mockRiders: Rider[] = [
+  {
+    id: 'R-001',
+    name: 'Zeeshan Khan',
+    phone: '+92 300 1111111',
+    cnic: '42101-1234567-1',
+    avatar: 'https://i.pravatar.cc/150?u=r1',
+    vehicleType: 'bike',
+    vehicleNumber: 'ABC-1234',
+    cityArea: 'Gulshan-e-Iqbal, Karachi',
+    joiningDate: '2023-01-15',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-5721',
+      itemsCount: 3,
+      totalAmount: 1850.00,
+      paymentStatus: 'pending',
+      items: [
+        { product: { id: 'p1', name: 'Crunch Craze Zinger', price: 370.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+        { product: { id: 'p2', name: 'Loaded Fries', price: 550.00, category: 'Fries', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p3', name: 'Drink (1LTR)', price: 150.00, category: 'Drinks', image: '', available: true }, quantity: 2 }
+      ]
+    },
+    rating: 4.8,
+    performance: {
+      avgDeliveryTime: '25 min',
+      completedOrders: 1240,
+      completedToday: 12,
+      cancelledOrders: 12,
+      complaints: 2
+    },
+    earnings: {
+      total: 45000,
+      perOrderRate: 60,
+      tips: 3500,
+      bonus: 2000,
+      penalty: 0,
+      cashCollected: 15400,
+      netPayable: 50500
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-002',
+    name: 'Bilal Ahmed',
+    phone: '+92 321 2222222',
+    cnic: '42101-7654321-2',
+    avatar: 'https://i.pravatar.cc/150?u=r2',
+    vehicleType: 'bike',
+    vehicleNumber: 'KHI-5678',
+    cityArea: 'DHA Phase 6, Karachi',
+    joiningDate: '2023-05-20',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 2,
+    rating: 4.5,
+    performance: {
+      avgDeliveryTime: '32 min',
+      completedOrders: 850,
+      completedToday: 8,
+      cancelledOrders: 24,
+      complaints: 5
+    },
+    earnings: {
+      total: 32000,
+      perOrderRate: 60,
+      tips: 1200,
+      bonus: 1000,
+      penalty: 500,
+      cashCollected: 8900,
+      netPayable: 33700
+    },
+    attendance: {
+      shiftStart: '10:00 AM',
+      shiftEnd: '07:00 PM',
+      totalHours: 9,
+      lateCheckIn: true,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-003',
+    name: 'Kamran Akmal',
+    phone: '+92 333 3333333',
+    cnic: '42101-9999999-3',
+    avatar: 'https://i.pravatar.cc/150?u=r3',
+    vehicleType: 'cycle',
+    vehicleNumber: 'N/A',
+    cityArea: 'North Nazimabad, Karachi',
+    joiningDate: '2023-08-10',
+    status: 'available',
+    accountStatus: 'active',
+    currentOrders: 0,
+    rating: 4.2,
+    performance: {
+      avgDeliveryTime: '45 min',
+      completedOrders: 420,
+      completedToday: 5,
+      cancelledOrders: 5,
+      complaints: 1
+    },
+    earnings: {
+      total: 15000,
+      perOrderRate: 40,
+      tips: 800,
+      bonus: 500,
+      penalty: 0,
+      cashCollected: 3200,
+      netPayable: 16300
+    },
+    attendance: {
+      shiftStart: '11:00 AM',
+      shiftEnd: '08:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-004',
+    name: 'Danish Ali',
+    phone: '+92 345 4444444',
+    cnic: '42101-1111111-4',
+    avatar: 'https://i.pravatar.cc/150?u=r4',
+    vehicleType: 'bike',
+    vehicleNumber: 'LE-1122',
+    cityArea: 'Bahria Town, Lahore',
+    joiningDate: '2023-03-05',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-8922',
+      itemsCount: 5,
+      totalAmount: 3450.00,
+      paymentStatus: 'received',
+      items: [
+        { product: { id: 'p4', name: 'Economy Deal', price: 1500.00, category: 'Deals', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p5', name: 'Full Broast', price: 1200.00, category: 'Broast', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p6', name: 'Pasta (Family)', price: 750.00, category: 'Pasta', image: '', available: true }, quantity: 1 }
+      ]
+    },
+    rating: 4.9,
+    performance: {
+      avgDeliveryTime: '22 min',
+      completedOrders: 1560,
+      completedToday: 15,
+      cancelledOrders: 8,
+      complaints: 0
+    },
+    earnings: {
+      total: 58000,
+      perOrderRate: 65,
+      tips: 5200,
+      bonus: 4000,
+      penalty: 0,
+      cashCollected: 21000,
+      netPayable: 67200
+    },
+    attendance: {
+      shiftStart: '08:00 AM',
+      shiftEnd: '05:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-005',
+    name: 'Farhan Saeed',
+    phone: '+92 312 5555555',
+    cnic: '42101-5555555-5',
+    avatar: 'https://i.pravatar.cc/150?u=r5',
+    vehicleType: 'bike',
+    vehicleNumber: 'RN-5555',
+    cityArea: 'Saddar, Karachi',
+    joiningDate: '2023-11-12',
+    status: 'offline',
+    accountStatus: 'blocked',
+    currentOrders: 0,
+    rating: 3.6,
+    performance: {
+      avgDeliveryTime: '40 min',
+      completedOrders: 120,
+      completedToday: 0,
+      cancelledOrders: 45,
+      complaints: 15
+    },
+    earnings: {
+      total: 5000,
+      perOrderRate: 50,
+      tips: 100,
+      bonus: 0,
+      penalty: 2000,
+      cashCollected: 1200,
+      netPayable: 3100
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 0,
+      lateCheckIn: false,
+      isPresent: false
+    }
+  },
+  {
+    id: 'R-006',
+    name: 'Hassan Nisar',
+    phone: '+92 301 6666666',
+    cnic: '42101-6666666-6',
+    avatar: 'https://i.pravatar.cc/150?u=r6',
+    vehicleType: 'others',
+    vehicleNumber: 'APP-666',
+    cityArea: 'Model Town, Lahore',
+    joiningDate: '2023-02-14',
+    status: 'on-break',
+    accountStatus: 'active',
+    currentOrders: 0,
+    rating: 4.7,
+    performance: {
+      avgDeliveryTime: '28 min',
+      completedOrders: 980,
+      completedToday: 7,
+      cancelledOrders: 10,
+      complaints: 3
+    },
+    earnings: {
+      total: 38000,
+      perOrderRate: 60,
+      tips: 2100,
+      bonus: 1500,
+      penalty: 0,
+      cashCollected: 11200,
+      netPayable: 41600
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  }
 ];
