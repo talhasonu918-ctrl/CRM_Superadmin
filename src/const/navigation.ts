@@ -107,8 +107,9 @@ export const navigationItems: NavigationItem[] = [
   },
   {
     name: 'Menu',
-    baseHref: BASE_ROUTES.PRODUCT_CATEGORIES,
-    getHref: (company: string) => ROUTES.PRODUCT_CATEGORIES(company),
+    // baseHref: BASE_ROUTES.PRODUCT_CATEGORIES,
+    baseHref: BASE_ROUTES.MENU,
+    getHref: (company: string) => ROUTES.MENU(company),
     icon: UtensilsCrossed,
     description: 'Menu management and items'
   },

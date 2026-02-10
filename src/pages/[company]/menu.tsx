@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuManagementView } from '@/src/app/modules/MenuManagement';
+import { MenuModule } from '@/src/app/modules/menu';
 import { Layout } from '@/src/components/NavigationLayout';
 import { useTheme } from '@/src/contexts/ThemeContext';
 
@@ -8,7 +8,7 @@ export default function Menu() {
 
   return (
     <Layout>
-      <MenuManagementView isDarkMode={isDarkMode} />
+      <MenuModule isDarkMode={isDarkMode} />
     </Layout>
   );
 }
