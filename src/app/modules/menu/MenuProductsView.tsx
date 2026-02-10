@@ -147,7 +147,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className={`text-lg md:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Menu Products
           </h1>
           <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -155,24 +155,27 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-1.5 md:ml-0 ">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 rounded-lg border ${isDarkMode
-                ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-                : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-                } focus:outline-none focus:ring-2 focus:ring-orange-500 w-64`}
-            />
+        <input
+    type="text"
+    placeholder="Search products..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+      ${isDarkMode
+        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+      }
+      w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
+    `}
+  />
           </div>
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 md:px-4 md:py-2 text-[12px] md:text-sm rounded-lg font-medium flex items-center gap-2 transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Product
@@ -181,7 +184,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-2 md:p-0">
         {filteredProducts.map((product) => (
           <div
             key={product.id}
@@ -309,15 +312,64 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
 
           <div>
             <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-              Image URL
+              Product Image
             </label>
-            <input
-              type="text"
-              value={currentProduct.image}
-              onChange={(e) => setCurrentProduct({ ...currentProduct, image: e.target.value })}
-              className={inputClass}
-              placeholder="https://example.com/image.jpg"
-            />
+            <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
+              ? 'border-slate-700 hover:border-orange-500 bg-slate-800'
+              : 'border-slate-300 hover:border-orange-500 bg-slate-50'
+              }`}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (file.size > 5 * 1024 * 1024) {
+                      alert('File size exceeds 5MB limit');
+                      return;
+                    }
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                      const base64String = reader.result as string;
+                      setCurrentProduct({ ...currentProduct, image: base64String });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+                className="hidden"
+                id="product-image-upload"
+              />
+              <label htmlFor="product-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
+                {currentProduct.image ? (
+                  <div className="relative w-full h-32">
+                    <img
+                      src={currentProduct.image}
+                      alt="Product Preview"
+                      className="w-full h-full object-contain rounded-md"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
+                      <span className="text-white text-xs">Click to change</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-6">
+                    <Package className={`mx-auto mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} size={24} />
+                    <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Click to upload product image
+                    </span>
+                  </div>
+                )}
+              </label>
+            </div>
+            {currentProduct.image && (
+              <button
+                type="button"
+                onClick={() => setCurrentProduct({ ...currentProduct, image: '' })}
+                className="mt-2 text-xs text-red-500 hover:text-red-600 underline"
+              >
+                Remove Image
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-3 gap-4">
@@ -364,15 +416,15 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`px-4 py-2 rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
+              className={`px-2 py-1 md:px-4 md:py-2 rounded-lg text-sm md:text-md font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
+              className="px-2 py-1 md:px-4 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm md:text-md font-medium"
             >
-              {editingId ? 'Update Product' : 'Add Product'}
+              Save Variant
             </button>
           </div>
         </div>

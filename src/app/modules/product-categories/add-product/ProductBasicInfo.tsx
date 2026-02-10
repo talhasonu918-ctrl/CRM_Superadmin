@@ -33,7 +33,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
       onNext();
     }
   };
- const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -50,7 +50,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
       reader.readAsDataURL(file);
     }
   };
- const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
+  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
     ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500'
     : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500'
     }`;
@@ -204,7 +204,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               className={inputClass}
             />
           </div>
-          {/* Product Type  at drop down on it  */} 
+          {/* Product Type  at drop down on it  */}
           <div>
             <label className={labelClass} >Product Type</label>
             <select
@@ -220,7 +220,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Assigned Branches */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Assigned Branches</label>
             <input
               type="text"
@@ -229,7 +229,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ assignedBranches: e.target.value.split(',').map(b => b.trim()) })}
               className={inputClass}
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Checkboxes */}
@@ -303,7 +303,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           )}
         </div>
       </div>
-{/* Mobile / Web Configuration */}
+      {/* Mobile / Web Configuration */}
       <div className={`rounded-xl border p-6 ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-200'}`}>
         <h3 className={`text-lg font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           Mobile / Web Configuration
@@ -356,79 +356,6 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
                 Show in Web App
               </span>
             </label>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}>Select Mobile Image</label>
-              <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
-                ? 'border-slate-700 hover:border-purple-500 bg-slate-800'
-                : 'border-slate-300 hover:border-purple-500 bg-slate-50'
-                }`}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'mobileImage')}
-                  className="hidden"
-                  id="mobile-image-upload"
-                />
-                <label htmlFor="mobile-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
-                  {formData.mobileImage ? (
-                    <div className="relative w-full h-32">
-                      <img
-                        src={formData.mobileImage}
-                        alt="Mobile Preview"
-                        className="w-full h-full object-contain rounded-md"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
-                        <span className="text-white text-xs">Click to change</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="py-6">
-                      <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Upload mobile image
-                      </span>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
-            <div>
-              <label className={labelClass}>Select Web Image</label>
-              <div className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${isDarkMode
-                ? 'border-slate-700 hover:border-purple-500 bg-slate-800'
-                : 'border-slate-300 hover:border-purple-500 bg-slate-50'
-                }`}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'webImage')}
-                  className="hidden"
-                  id="web-image-upload"
-                />
-                <label htmlFor="web-image-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center gap-2">
-                  {formData.webImage ? (
-                    <div className="relative w-full h-32">
-                      <img
-                        src={formData.webImage}
-                        alt="Web Preview"
-                        className="w-full h-full object-contain rounded-md"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity rounded-md">
-                        <span className="text-white text-xs">Click to change</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="py-6">
-                      <span className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Upload web image
-                      </span>
-                    </div>
-                  )}
-                </label>
-              </div>
-            </div>
           </div>
         </div>
       </div>

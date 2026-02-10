@@ -218,7 +218,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
         isOpen={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         title="Category Details"
-        size="md"
+        size="lg"
       >
         <ViewCategoryDetails
           category={selectedCategory}

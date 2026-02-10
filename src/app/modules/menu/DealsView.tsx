@@ -147,10 +147,10 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className={`text-lg md:text-2xl p-1 md:p-0 font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Deals & Offers
           </h1>
-          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-sm p-1 md:p-0 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
             Manage promotional offers and discounts
           </p>
         </div>
@@ -158,21 +158,24 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
         <div className="flex items-center gap-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search deals..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 rounded-lg border ${isDarkMode
-                ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-                : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-                } focus:outline-none focus:ring-2 focus:ring-orange-500 w-64`}
-            />
+          <input
+    type="text"
+    placeholder="Search deals..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+      ${isDarkMode
+        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+      }
+      w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
+    `}
+  />
           </div>
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white  px-2 py-1.5 md:px-4 md:py-2 text-[12px] md:text-sm rounded-lg font-medium flex items-center gap-2 transition-colors"
           >
             <Plus className="w-4 h-4" />
             Create Deal
@@ -181,7 +184,7 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
       </div>
 
       {/* Deals Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2 md:p-0">
         {filteredDeals.map((deal) => (
           <div
             key={deal.id}
@@ -207,9 +210,9 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleEdit(deal)}
-                  className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-2 hover:bg-orange-400 rounded-lg transition-colors"
                 >
-                  <Edit3 className="w-4 h-4 text-slate-400" />
+                  <Edit3 className="w-4 h-4 text-black dark:text-white" />
                 </button>
                 <button
                   onClick={() => handleDelete(deal.id)}
@@ -355,13 +358,13 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`px-4 py-2 rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
+              className={`px-2 py-1.5 md:px-4 md:py-2 text-[12px] md:text-md rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
+              className="px-2 py-1.5 md:px-4 md:py-2 text-[12px] md:text-md bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
             >
               {editingId ? 'Update Deal' : 'Create Deal'}
             </button>

@@ -76,7 +76,6 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
   const filteredAddOns = addOns.filter(addon =>
     addon.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -90,24 +89,27 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-2 md:ml-0">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search add-ons..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 rounded-lg border ${isDarkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-                  : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-                } focus:outline-none focus:ring-2 focus:ring-orange-500 w-64`}
-            />
+         <input
+    type="text"
+    placeholder="Search addons..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+      ${isDarkMode
+        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+      }
+      w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
+    `}
+  />
           </div>
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            className="bg-orange-500  hover:bg-orange-600 text-[12px] md:text-md text-white px-2 py-1 md:px-4 md:py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Add-On
@@ -254,13 +256,13 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`px-4 py-2 rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
+              className={`px-2 py-1 md:px-4 md:py-2 text-[12px] md:text-md rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
+              className="px-3 py-1 md:px-6 md:py-2 text-[12px] md:text-md bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
             >
               Save Add-On
             </button>

@@ -188,14 +188,14 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b" style={{ borderColor: isDarkMode ? '#1e293b' : '#e2e8f0' }}>
+      <div className="flex gap-1 border-b " style={{ borderColor: isDarkMode ? '#1e293b' : '#e2e8f0' }}>
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === tab.id
+              className={`flex items-center gap-2 px-2 py-2.5 text-sm font-medium transition-all ${activeTab === tab.id
                 ? isDarkMode
                   ? 'text-orange-400 border-b-2 border-orange-400'
                   : 'text-orange-600 border-b-2 border-orange-600'

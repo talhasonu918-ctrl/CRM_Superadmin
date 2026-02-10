@@ -144,17 +144,17 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-md md:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className={`text-md p-1 md:p-0 md:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Product Variants
           </h1>
-          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-[12px]  p-1 md:p-0 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
             Manage product variations and options
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <div className="flex items-center gap-3 ml-2 md:ml-0">
+          {/* <div className="relative border-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 md:w-4 md:h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search variants..."
@@ -165,11 +165,28 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
                   : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
                 } focus:outline-none focus:ring-2 focus:ring-orange-500 w-64`}
             />
-          </div>
+          </div> */}
+          <div className="relative">
+  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 md:w-4 md:h-4 text-slate-400" />
+  <input
+    type="text"
+    placeholder="Search variants..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+      ${isDarkMode
+        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+      }
+      w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
+    `}
+  />
+</div>
+
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white  px-2 py-1 md:px-4 md:py-2 text-[12px] md:text-sm rounded-lg textfont-medium flex items-center gap-2 transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Variant
@@ -204,9 +221,9 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => handleEdit(variant)}
-                  className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-2 hover:bg-orange-400  rounded-lg transition-colors"
                 >
-                  <Edit3 className="w-4 h-4 text-slate-400" />
+                  <Edit3 className="w-4 h-4 text-black" />
                 </button>
                 <button
                   onClick={() => handleDelete(variant.id)}
@@ -326,13 +343,13 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`px-4 py-2 rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
+              className={`px-2 py-1 md:px-4 md:py-2 rounded-lg text-sm md:text-md font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
+              className="px-2 py-1 md:px-4 md:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm md:text-md font-medium"
             >
               Save Variant
             </button>
