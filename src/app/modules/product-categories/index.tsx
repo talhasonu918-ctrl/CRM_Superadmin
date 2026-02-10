@@ -170,7 +170,15 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
 
             {/* Add Category */}
             <button
-              onClick={() => router.push('/product-categories/add')}
+              onClick={() => {
+                // Go to /[company]/product-categories/add if company param exists, else /product-categories/add
+                const company = router.query.company as string | undefined;
+                if (company) {
+                  router.push(`/${company}/product-categories/add`);
+                } else {
+                  router.push('/product-categories/add');
+                }
+              }}
               className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40"
             >
               <Plus size={18} />
