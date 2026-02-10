@@ -153,9 +153,9 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
   };
 
   const tabs = [
-    { id: 0, label: 'Basic Info', icon: Info },
+    { id: 0, label: 'Info', icon: Info },
     { id: 1, label: 'Details', icon: Package },
-    { id: 2, label: 'Codes & Supplier', icon: Barcode },
+    { id: 2, label: 'Supplier', icon: Barcode },
     { id: 3, label: 'Settings', icon: Settings },
   ];
 
@@ -258,7 +258,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === tab.id
+              className={`flex items-center gap-2 px-2 py-2.5 text-[12px] whitespace-nowrap font-medium transition-all ${activeTab === tab.id
                 ? isDarkMode
                   ? 'text-orange-400 border-b-2 border-orange-400'
                   : 'text-orange-600 border-b-2 border-orange-600'
@@ -459,8 +459,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
                 <CheckboxField name="isAutoReady" label="Auto Ready" />
               </div>
             </div>
-
-            <div className={`p-4 rounded-lg border-2 ${isDarkMode ? 'bg-orange-900/10 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+          <div className={`p-4 rounded-lg border-2 ${isDarkMode ? 'bg-orange-900/10 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
               <p className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
                 <strong>Note:</strong> Variant pricing, branch pricing, variants, and add-ons cannot be edited here.
                 Please use the dedicated product management section for advanced configurations.
@@ -475,7 +474,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-colors ${isDarkMode
+          className={`flex-1 px-3 py-2 rounded-lg font-semibold transition-colors ${isDarkMode
             ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
             : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
