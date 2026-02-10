@@ -20,14 +20,12 @@ export const mockProducts: Product[] = [
   { id: 'pizza-7', name: 'YUM CROWN PIZZA', price: 0.00, category: 'Pizza', image: '/products/yum-crown.png', available: true },
   { id: 'pizza-8', name: 'BEHARI PIZZA', price: 0.00, category: 'Pizza', image: '/products/behari-pizza.png', available: true },
   { id: 'pizza-9', name: 'CHICKEN & CHEESE STUFFER', price: 0.00, category: 'Pizza', image: '/products/cheese-stuffer.png', available: true },
-
   // Burgers
   { id: 'burger-1', name: 'KABAB STUFFER', price: 460.00, category: 'Burger', image: '/products/kabab-stuffer.png', available: true },
   { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: '/products/crunch-craze.png', available: true },
   { id: 'burger-3', name: 'SPICY PATTY BURGER', price: 370.00, category: 'Burger', image: '/products/spicy-patty.png', available: true },
   { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '/products/chicken-patty.png', available: true },
   { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '/products/fillet-burger.png', available: true },
-
   // Wings
   { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/peri-peri.png', available: true },
   { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/hot-wings.png', available: true },

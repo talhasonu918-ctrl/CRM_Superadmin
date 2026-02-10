@@ -149,7 +149,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
       {(productDetails.productImage || productDetails.mobileImage || productDetails.webImage) && (
         <div className={`rounded-lg overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'} p-4`}>
           <SectionTitle icon={ImageIcon}>Product Images</SectionTitle>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {productDetails.productImage && (
               <div>
                 <p className={`text-xs mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Product Image</p>
@@ -196,12 +196,12 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium transition-all ${activeTab === tab.id
-                  ? isDarkMode
-                    ? 'text-orange-400 border-b-2 border-orange-400'
-                    : 'text-orange-600 border-b-2 border-orange-600'
-                  : isDarkMode
-                    ? 'text-slate-400 hover:text-slate-300'
-                    : 'text-slate-600 hover:text-slate-900'
+                ? isDarkMode
+                  ? 'text-orange-400 border-b-2 border-orange-400'
+                  : 'text-orange-600 border-b-2 border-orange-600'
+                : isDarkMode
+                  ? 'text-slate-400 hover:text-slate-300'
+                  : 'text-slate-600 hover:text-slate-900'
                 }`}
             >
               <Icon size={16} />
@@ -219,7 +219,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
             {/* Basic Information */}
             <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle icon={Info}>Basic Information</SectionTitle>
-              <div className="grid grid-cols-2 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                 <DetailRow label="Product ID" value={productDetails.id} />
                 <DetailRow label="Product Name" value={productDetails.name} />
                 <DetailRow label="Category" value={productDetails.category} />
@@ -249,7 +249,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
             {/* Supplier Information */}
             <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle icon={Package}>Supplier & Storage</SectionTitle>
-              <div className="grid grid-cols-2 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                 <DetailRow label="Manufacturer" value={productDetails.manufacturer} />
                 <DetailRow label="Supplier" value={productDetails.supplier} />
                 <DetailRow label="Rack Location" value={productDetails.racks} />
@@ -282,7 +282,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
             {/* Timestamps */}
             <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle icon={Calendar}>Timestamps</SectionTitle>
-              <div className="grid grid-cols-2 gap-x-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4">
                 <DetailRow label="Created At" value={productDetails.createdAt} />
                 <DetailRow label="Updated At" value={productDetails.updatedAt} />
               </div>
@@ -309,7 +309,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
                           {variant.variantName}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                         <div>
                           <span className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>Cost Price:</span>
                           <span className={`ml-2 font-medium ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
@@ -346,7 +346,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
                         </span>
                         <Badge>ID: {branch.branchId}</Badge>
                       </div>
-                      <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                         <div>
                           <span className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>Cost Price:</span>
                           <span className={`ml-2 font-medium ${isDarkMode ? 'text-slate-200' : 'text-slate-900'}`}>
@@ -383,7 +383,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
                             {branch.salesTax}% ({branch.salesTaxType})
                           </span>
                         </div>
-                        <div className="col-span-2">
+                        <div className="col-span-1 sm:col-span-2">
                           <span className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>Gross Margin:</span>
                           <span className={`ml-2 font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                             {branch.grossMargin}%

@@ -9,7 +9,6 @@ interface ProductBasicInfoProps {
   onBack: () => void;
   isDarkMode: boolean;
 }
-
 export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
   formData,
   onUpdateFormData,
@@ -34,8 +33,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
       onNext();
     }
   };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
+ const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
@@ -52,8 +50,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
       reader.readAsDataURL(file);
     }
   };
-
-  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
+ const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
     ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500'
     : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500'
     }`;

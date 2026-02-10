@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 
 export default function Staff() {
   const { isDarkMode } = useTheme();
-  
+
   return (
     <Layout>
       <StaffManagementView isDarkMode={isDarkMode} />

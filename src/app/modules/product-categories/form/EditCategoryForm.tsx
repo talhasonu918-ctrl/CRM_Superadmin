@@ -286,7 +286,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
               required
             />
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 name="category"
                 label="Category"
@@ -404,7 +404,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
         {/* Codes & Supplier Tab */}
         {activeTab === 2 && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 name="barCode"
                 label="Barcode"
