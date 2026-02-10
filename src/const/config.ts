@@ -12,7 +12,7 @@ export interface RouteConfig {
 export const routeConfigs: Record<string, RouteConfig> = {
   [ROUTES.HOME]: {
     path: ROUTES.HOME,
-    title: 'Dashboard - Nexus CRM',
+    title: 'Dashboard - Invex Food',
     description: 'CRM Dashboard Overview',
     requiresAuth: false,
     component: 'Dashboard',
@@ -20,7 +20,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.DASHBOARD]: {
     path: ROUTES.DASHBOARD,
-    title: 'Dashboard - Nexus CRM',
+    title: 'Dashboard - Invex Food',
     description: 'CRM Dashboard and Analytics',
     requiresAuth: false,
     component: 'Dashboard',
@@ -28,7 +28,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.POS]: {
     path: ROUTES.POS,
-    title: 'POS - Nexus CRM',
+    title: 'POS - Invex Food',
     description: 'Point of Sale System',
     requiresAuth: false,
     component: 'POS',
@@ -36,7 +36,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.ORDER_HISTORY]: {
     path: ROUTES.ORDER_HISTORY,
-    title: 'Order History - Nexus CRM',
+    title: 'Order History - Invex Food',
     description: 'Past Orders and History',
     requiresAuth: false,
     component: 'OrderHistory',
@@ -44,7 +44,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.ONLINE_ORDERS]: {
     path: ROUTES.ONLINE_ORDERS,
-    title: 'Online Orders - Nexus CRM',
+    title: 'Online Orders - Invex Food',
     description: 'Online Order Management',
     requiresAuth: false,
     component: 'OnlineOrders',
@@ -52,7 +52,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.RECIPE]: {
     path: ROUTES.RECIPE,
-    title: 'Recipe - Nexus CRM',
+    title: 'Recipe - Invex Food',
     description: 'Recipe Management',
     requiresAuth: false,
     component: 'Recipe',
@@ -60,7 +60,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.EXPENSES]: {
     path: ROUTES.EXPENSES,
-    title: 'Expenses - Nexus CRM',
+    title: 'Expenses - Invex Food',
     description: 'Expense Tracking',
     requiresAuth: false,
     component: 'Expenses',
@@ -68,7 +68,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.KITCHEN_DISPLAY]: {
     path: ROUTES.KITCHEN_DISPLAY,
-    title: 'Kitchen Display - Nexus CRM',
+    title: 'Kitchen Display - Invex Food',
     description: 'Kitchen Display System',
     requiresAuth: false,
     component: 'KitchenDisplay',
@@ -76,7 +76,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.DISPATCH]: {
     path: ROUTES.DISPATCH,
-    title: 'Dispatch - Nexus CRM',
+    title: 'Dispatch - Invex Food',
     description: 'Dispatch Management',
     requiresAuth: false,
     component: 'Dispatch',
@@ -84,7 +84,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.RIDER_MANAGEMENT]: {
     path: ROUTES.RIDER_MANAGEMENT,
-    title: 'Rider Management - Nexus CRM',
+    title: 'Rider Management - Invex Food',
     description: 'Delivery Rider Management',
     requiresAuth: false,
     component: 'RiderManagement',
@@ -92,7 +92,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.CRM]: {
     path: ROUTES.CRM,
-    title: 'CRM - Nexus CRM',
+    title: 'CRM - Invex Food',
     description: 'Customer Relationship Management',
     requiresAuth: false,
     component: 'CustomerCRM',
@@ -100,7 +100,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.PREFERENCES]: {
     path: ROUTES.PREFERENCES,
-    title: 'Preferences - Nexus CRM',
+    title: 'Preferences - Invex Food',
     description: 'User Preferences',
     requiresAuth: false,
     component: 'Preferences',
@@ -108,7 +108,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.ORDERS]: {
     path: ROUTES.ORDERS,
-    title: 'Orders - Nexus CRM',
+    title: 'Orders - Invex Food',
     description: 'Order Management System',
     requiresAuth: false,
     component: 'Orders',
@@ -116,7 +116,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.MENU]: {
     path: ROUTES.MENU,
-    title: 'Menu Management - Nexus CRM',
+    title: 'Menu Management - Invex Food',
     description: 'Menu Items and Categories',
     requiresAuth: false,
     component: 'MenuManagement',
@@ -124,7 +124,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.CUSTOMERS]: {
     path: ROUTES.CUSTOMERS,
-    title: 'Customers - Nexus CRM',
+    title: 'Customers - Invex Food',
     description: 'Customer Relationship Management',
     requiresAuth: false,
     component: 'CustomerCRM',
@@ -132,7 +132,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.PAYMENTS]: {
     path: ROUTES.PAYMENTS,
-    title: 'Payments - Nexus CRM',
+    title: 'Payments - Invex Food',
     description: 'Payment Processing and History',
     requiresAuth: false,
     component: 'Payments',
@@ -140,7 +140,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.DELIVERY]: {
     path: ROUTES.DELIVERY,
-    title: 'Delivery - Nexus CRM',
+    title: 'Delivery - Invex Food',
     description: 'Delivery Management System',
     requiresAuth: false,
     component: 'Delivery',
@@ -148,7 +148,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.INVENTORY]: {
     path: ROUTES.INVENTORY,
-    title: 'Inventory - Nexus CRM',
+    title: 'Inventory - Invex Food',
     description: 'Inventory and Stock Management',
     requiresAuth: false,
     component: 'InventoryManagement',
@@ -156,7 +156,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.STAFF]: {
     path: ROUTES.STAFF,
-    title: 'Staff Management - Nexus CRM',
+    title: 'Staff Management - Invex Food',
     description: 'Staff and Employee Management',
     requiresAuth: false,
     component: 'StaffManagement',
@@ -164,7 +164,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.REVIEWS]: {
     path: ROUTES.REVIEWS,
-    title: 'Reviews - Nexus CRM',
+    title: 'Reviews - Invex Food',
     description: 'Customer Reviews and Ratings',
     requiresAuth: false,
     component: 'Reviews',
@@ -172,7 +172,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.REPORTS]: {
     path: ROUTES.REPORTS,
-    title: 'Reports - Nexus CRM',
+    title: 'Reports - Invex Food',
     description: 'Analytics and Business Reports',
     requiresAuth: false,
     component: 'Reports',
@@ -180,7 +180,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.SETTINGS]: {
     path: ROUTES.SETTINGS,
-    title: 'Settings - Nexus CRM',
+    title: 'Settings - Invex Food',
     description: 'System Configuration and Settings',
     requiresAuth: false,
     component: 'Settings',
@@ -188,7 +188,7 @@ export const routeConfigs: Record<string, RouteConfig> = {
   },
   [ROUTES.AUTH]: {
     path: ROUTES.AUTH,
-    title: 'Authentication - Nexus CRM',
+    title: 'Authentication - Invex Food',
     description: 'Login and Registration',
     requiresAuth: false,
     component: 'Auth',

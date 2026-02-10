@@ -27,9 +27,19 @@ const generateMockSettings = (count: number): PracticeSetting[] => {
     settings.push({
       id: String(num),
       practiceName: `Practice Setting ${num}`,
+      currency: ['USD', 'EUR', 'INR', 'GBP'][Math.floor(Math.random() * 4)],
+      timezone: ['EST', 'CST', 'PST', 'MST'][Math.floor(Math.random() * 4)],
+      locale: ['en-US', 'en-GB', 'en-IN', 'fr-FR'][Math.floor(Math.random() * 4)],
+      planName: ['Premium', 'Enterprise', 'Standard'][Math.floor(Math.random() * 3)],
+      startDate: '2024-01-01',
+      endDate: '2024-12-31',
+      billingCycle: ['monthly', 'quarterly', 'yearly'][Math.floor(Math.random() * 3)] as 'monthly' | 'quarterly' | 'yearly',
+      defaultTaxPercentage: Math.floor(Math.random() * 10) + 5,
+      serviceChargePercentage: Math.floor(Math.random() * 10) + 5,
+      minimumOrderValue: Math.floor(Math.random() * 200) + 50,
+      baseDeliveryCharges: Math.floor(Math.random() * 100) + 20,
       contactEmail: `admin${num}@practice.com`,
       phoneNumber: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
-      timezone: ['EST', 'CST', 'PST', 'MST'][Math.floor(Math.random() * 4)] + ' Time',
       address: `${num} Business Street, City, State ${String(10000 + num).slice(0, 5)}`,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -54,8 +64,8 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
   onDeleteSetting
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl border shadow-sm p-8 ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100'}`;
-  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
+  const cardStyle = `rounded-xl border shadow-sm p-4 sm:p-8 ${theme.neutral.background} ${theme.border.main}`;
+  const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
     }`;
 
   const [loadedCount, setLoadedCount] = useState(20);
@@ -114,9 +124,9 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
         const search = searchTerm.toLowerCase();
         return (
           setting.practiceName.toLowerCase().includes(search) ||
-          setting.contactEmail.toLowerCase().includes(search) ||
-          setting.phoneNumber.includes(search) ||
-          setting.address.toLowerCase().includes(search)
+          (setting.contactEmail?.toLowerCase().includes(search) ?? false) ||
+          (setting.phoneNumber?.includes(search) ?? false) ||
+          (setting.address?.toLowerCase().includes(search) ?? false)
         );
       });
     }
@@ -133,7 +143,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
 
   return (
     <div className={cardStyle}>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h4 className={`text-lg font-bold tracking-tight ${theme.text.primary}`}>General Settings</h4>
           <p className={`text-sm mt-1 ${theme.text.secondary}`}>
@@ -142,7 +152,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
         </div>
         <Button
           onClick={onAddSetting}
-          className={`h-10 text-white rounded-lg hover:opacity-90 ${theme.button.primary}`}
+          className={`${theme.button.primary} w-full sm:w-auto h-10 text-white whitespace-nowrap rounded-lg`}
           size="lg"
         >
           + Add Setting
@@ -150,27 +160,31 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
       </div>
 
       {/* Search and Column Toggle Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <SearchInput
-          control={control}
-          placeholder="Search settings..."
-          inputStyle={inputStyle}
-        />
+      <div className="flex flex-col sm:flex-row justify-between gap-4 mb-6">
+        <div className="w-full sm:w-[350px]">
+          <SearchInput
+            control={control}
+            placeholder="Search settings..."
+            inputStyle={`${inputStyle} w-full`}
+          />
+        </div>
 
-        <ColumnToggle
-          className="flex-shrink-0"
-          columnVisibility={columnVisibility}
-          onToggleColumn={toggleColumn}
-          disabledColumns={['practiceName', 'actions']}
-          columnLabels={{
-            practiceName: 'Practice Name',
-            contactEmail: 'Contact Email',
-            phoneNumber: 'Phone Number',
-            timezone: 'Timezone',
-            address: 'Address',
-            actions: 'Actions',
-          }}
-        />
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <ColumnToggle
+            className="flex-shrink-0"
+            columnVisibility={columnVisibility}
+            onToggleColumn={toggleColumn}
+            disabledColumns={['practiceName', 'actions']}
+            columnLabels={{
+              practiceName: 'Practice Name',
+              contactEmail: 'Contact Email',
+              phoneNumber: 'Phone Number',
+              timezone: 'Timezone',
+              address: 'Address',
+              actions: 'Actions',
+            }}
+          />
+        </div>
       </div>
 
       <InfiniteTable

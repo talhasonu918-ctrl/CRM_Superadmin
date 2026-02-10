@@ -8,6 +8,7 @@ interface SearchInputProps {
   placeholder?: string;
   inputStyle: string;
   isDarkMode?: boolean;
+  
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -15,6 +16,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   placeholder = 'Search...',
   inputStyle,
   isDarkMode = false,
+  
 }) => {
   const theme = getThemeColors(isDarkMode);
   return (

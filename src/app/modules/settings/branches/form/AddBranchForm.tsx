@@ -1,9 +1,12 @@
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
-import { Branch } from '../types';
+"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { Button, Select, ActionIcon } from 'rizzui';
+import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
+import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface AddBranchFormProps {
   onSubmit: (data: Partial<Branch>) => void;
@@ -11,56 +14,15 @@ interface AddBranchFormProps {
   isDarkMode?: boolean;
 }
 
-const statusOptions = [
+// Define the option type explicitly
+type StatusOption = { label: string; value: Branch['status'] };
+
+const statusOptions: StatusOption[] = [
   { label: 'Active', value: 'Active' },
   { label: 'Inactive', value: 'Inactive' },
   { label: 'Under Maintenance', value: 'Under Maintenance' },
 ];
 
-const getSelectStyles = (hasError?: boolean) => ({
-  control: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: hasError 
-      ? '2px solid #ef4444' 
-      : state.isFocused 
-        ? '2px solid #f97316' 
-        : '2px solid #d1d5db',
-    borderRadius: '0.5rem',
-    padding: '0.25rem',
-    boxShadow: state.isFocused ? '0 0 0 1px #f97316' : 'none',
-    '&:hover': {
-      borderColor: '#f97316',
-    },
-  }),
-  menu: (base: any) => ({
-    ...base,
-    backgroundColor: 'inherit',
-    border: '1px solid #d1d5db',
-  }),
-  option: (base: any, state: any) => ({
-    ...base,
-    backgroundColor: state.isSelected
-      ? '#f97316'
-      : state.isFocused
-        ? '#fed7aa'
-        : 'transparent',
-    color: state.isSelected ? 'white' : 'inherit',
-    cursor: 'pointer',
-  }),
-  singleValue: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  input: (base: any) => ({
-    ...base,
-    color: 'inherit',
-  }),
-  placeholder: (base: any) => ({
-    ...base,
-    color: '#9ca3af',
-  }),
-});
 
 export const AddBranchForm: React.FC<AddBranchFormProps> = ({
   onSubmit,
@@ -68,30 +30,208 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const { control, handleSubmit } = useForm<Partial<Branch>>();
+  const { control, handleSubmit, setValue, watch } = useForm<Partial<Branch>>({
+    defaultValues: {
+      status: 'Active',
+      country: 'Pakistan',
+      shifts: [{ id: '1', name: 'Morning Shift', startTime: '09:00', endTime: '18:00' }],
+    },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "shifts",
+  });
+
+  // Map and Autocomplete states
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [map, setMap] = useState<any>(null);
+  const markerRef = useRef<any>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+  const autocompleteRef = useRef<any>(null);
+
+  // Load Google Maps Script
+  useEffect(() => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) {
+      console.error('Google Maps API Key is missing!');
+      return;
+    }
+
+    if ((window as any).google) {
+      setIsMapLoaded(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => setIsMapLoaded(true);
+    document.head.appendChild(script);
+  }, []);
+
+  // Initialize Map
+  useEffect(() => {
+    if (!isMapLoaded || !mapRef.current || !(window as any).google) return;
+
+    const google = (window as any).google;
+    const defaultLocation = { lat: 31.5204, lng: 74.3587 }; // Lahore
+
+    const mapInstance = new google.maps.Map(mapRef.current, {
+      center: defaultLocation,
+      zoom: 12,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+    });
+
+    setMap(mapInstance);
+  }, [isMapLoaded]);
+
+  // Initialize Autocomplete
+  useEffect(() => {
+    if (!isMapLoaded || !addressInputRef.current || !(window as any).google) return;
+
+    const google = (window as any).google;
+    const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+      componentRestrictions: { country: 'pk' },
+      fields: ['formatted_address', 'geometry', 'address_components', 'name'],
+    });
+
+    autocomplete.addListener('place_changed', () => {
+      const place = autocomplete.getPlace();
+      if (!place.geometry) return;
+
+      const location = {
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+
+      // Set form values
+      setValue('address', place.formatted_address);
+      setValue('lat', location.lat);
+      setValue('lng', location.lng);
+
+      // Extract city and country
+      let city = '';
+      let country = 'Pakistan';
+      place.address_components?.forEach((comp: any) => {
+        if (comp.types.includes('locality')) city = comp.long_name;
+        if (comp.types.includes('country')) country = comp.long_name;
+      });
+      if (city) setValue('city', city);
+      if (country) setValue('country', country);
+
+      // Update Map
+      if (map) {
+        map.setCenter(location);
+        map.setZoom(16);
+
+        if (markerRef.current) markerRef.current.setMap(null);
+        markerRef.current = new google.maps.Marker({
+          position: location,
+          map: map,
+          animation: google.maps.Animation.DROP,
+        });
+      }
+    });
+
+    autocompleteRef.current = autocomplete;
+  }, [isMapLoaded, map]);
+
+  // Handle manual City/Country changes to update map
+  const city = watch('city');
+  const country = watch('country');
+  const geocodeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const triggerGeocode = (cityName?: string, countryName?: string) => {
+    const targetCity = cityName || city;
+    const targetCountry = countryName || country;
+
+    if (!isMapLoaded || !targetCity || !targetCountry || !(window as any).google) return;
+
+    if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
+
+    geocodeTimeoutRef.current = setTimeout(() => {
+      const google = (window as any).google;
+      if (!google || !google.maps || !google.maps.Geocoder) return;
+
+      const geocoder = new google.maps.Geocoder();
+      const addressString = `${targetCity.trim()}, ${targetCountry.trim()}`;
+
+      geocoder.geocode({ address: addressString }, (results: any, status: any) => {
+        if (status === 'OK' && results[0] && map) {
+          const loc = results[0].geometry.location;
+          const location = { lat: loc.lat(), lng: loc.lng() };
+
+          map.panTo(location);
+          map.setZoom(12);
+
+          if (markerRef.current) markerRef.current.setMap(null);
+          markerRef.current = new google.maps.Marker({
+            position: location,
+            map: map,
+            animation: google.maps.Animation.DROP,
+          });
+
+          setValue('lat', location.lat);
+          setValue('lng', location.lng);
+        }
+      });
+    }, 500);
+  };
+
+  useEffect(() => {
+    if (city && country) {
+      triggerGeocode();
+    }
+    return () => {
+      if (geocodeTimeoutRef.current) clearTimeout(geocodeTimeoutRef.current);
+    };
+  }, [city, country, isMapLoaded, map]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid grid-cols-2 gap-y-5 gap-x-5">
+      <style jsx global>{`
+        .pac-container {
+          border-radius: 8px;
+          border: 1px solid #e5e7eb;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          margin-top: 4px;
+          z-index: 9999 !important;
+        }
+        .pac-item {
+          padding: 8px 12px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+        .pac-item:hover {
+          background-color: #f9731610;
+        }
+        .pac-item-query {
+          font-weight: 600;
+          color: #111827;
+        }
+      `}</style>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-y-5 gap-x-5">
         {/* Branch Name */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
-            Branch Name
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            Branch Name <span className="text-red-500">*</span>
           </label>
           <Controller
-            name="branchName"
+            name="name"
             control={control}
             rules={{ required: 'Branch name is required' }}
             render={({ field, fieldState }) => (
               <>
                 <input
                   {...field}
-                  placeholder="Enter branch name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  placeholder="Branch name"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors b ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -101,25 +241,21 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           />
         </div>
 
-        {/* Manager Name */}
+        {/* Manager User ID */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Manager Name
           </label>
           <Controller
-            name="managerName"
+            name="managerUserId"
             control={control}
-            rules={{ required: 'Manager name is required' }}
+            rules={{}}
             render={({ field, fieldState }) => (
               <>
                 <input
                   {...field}
-                  placeholder="Enter manager name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  placeholder="Manager name"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -131,13 +267,13 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
         {/* Phone Number */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
-            Phone Number
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            Phone Number <span className="text-red-500">*</span>
           </label>
           <Controller
-            name="phoneNumber"
+            name="phone"
             control={control}
-            rules={{ 
+            rules={{
               required: 'Phone number is required',
               pattern: {
                 value: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
@@ -149,12 +285,8 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  placeholder="Phone number"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -166,78 +298,167 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
 
         {/* Status */}
         <div>
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
-            Status
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            Status <span className="text-red-500">*</span>
           </label>
           <Controller
             name="status"
             control={control}
             rules={{ required: 'Status is required' }}
             render={({ field, fieldState }) => (
-              <>
-                <Select
-                  {...field}
-                  options={statusOptions}
-                  value={statusOptions.find((opt) => opt.value === field.value)}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  classNamePrefix="custom-select"
-                  placeholder="Select status"
-                  className="dark:text-white"
-                  styles={getSelectStyles(!!fieldState.error)}
-                />
-                {fieldState.error && (
-                  <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
-                )}
-              </>
+              <Select
+                {...field}
+                label=""
+                placeholder="Select status"
+                options={statusOptions}
+                error={fieldState.error?.message}
+                className="w-full max-w-xs"
+                inPortal={false}
+                selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                suffix={
+                  <div className="flex items-center gap-2 pr-1">
+                    {field.value && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          field.onChange('');
+                        }}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                      </button>
+                    )}
+                    <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                  </div>
+                }
+              />
             )}
           />
         </div>
 
-        {/* Address */}
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            Country
+          </label>
+          <Controller
+            name="country"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter country"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+                <button
+                  type="button"
+                  onClick={() => triggerGeocode()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600 transition-colors"
+                  title="Sync map with city/country"
+                >
+                  <MapPin size={16} />
+                </button>
+              </div>
+            )}
+          />
+        </div>
+
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            City
+          </label>
+          <Controller
+            name="city"
+            control={control}
+            render={({ field }) => (
+              <div className="relative">
+                <input
+                  {...field}
+                  autoComplete="none"
+                  onBlur={() => {
+                    field.onBlur();
+                    triggerGeocode();
+                  }}
+                  placeholder="Enter city"
+                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                />
+              </div>
+            )}
+          />
+        </div>
+
+        {/* Address Search */}
         <div className="col-span-2">
-          <label className={`block text-[10px] font-extrabold uppercase tracking-widest mb-2 ${theme.text.tertiary}`}>
-            Address
+          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+            Search Address <span className="text-red-500">*</span>
           </label>
           <Controller
             name="address"
             control={control}
             rules={{ required: 'Address is required' }}
             render={({ field, fieldState }) => (
-              <>
-                <textarea
+              <div className="relative group">
+                <input
                   {...field}
-                  placeholder="Enter full address"
-                  rows={3}
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} resize-none ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  ref={(e) => {
+                    field.ref(e);
+                    (addressInputRef as any).current = e;
+                  }}
+                  placeholder="Search for branch location..."
+                  className={`w-full pl-11 pr-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
+                <Search size={18} className={`absolute left-4 top-1/2 -translate-y-1/2 ${theme.text.tertiary} group-focus-within:text-orange-500 transition-colors`} />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
                 )}
-              </>
+              </div>
             )}
           />
         </div>
+
+        {/* Map Display */}
+        <div className="col-span-2">
+          <div
+            ref={mapRef}
+            className={`w-full h-48 rounded-lg border ${theme.border.input} overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center`}
+          >
+            {!isMapLoaded && (
+              <div className="text-xs font-semibold text-slate-400 flex flex-col items-center gap-2">
+                <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                Loading Map...
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Lat/Lng (Hidden but bound to form) */}
+        <Controller name="lat" control={control} render={({ field }) => <input type="hidden" {...field} />} />
+        <Controller name="lng" control={control} render={({ field }) => <input type="hidden" {...field} />} />
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-start gap-3 pt-2">
-        <Button
-          type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8`}
-        >
-          Add Branch
-        </Button>
+      <div className="flex items-center justify-end gap-3 pt-4 border-t mt-4">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`${theme.button.secondary} h-10 rounded-lg px-8`}
+          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold`}
         >
           Cancel
+        </Button>
+
+        <Button
+          type="submit"
+          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all`}
+        >
+          Add Branch
         </Button>
       </div>
     </form>

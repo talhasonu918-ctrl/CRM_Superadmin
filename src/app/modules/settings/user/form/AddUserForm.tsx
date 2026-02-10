@@ -1,10 +1,10 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button } from 'rizzui';
-import Select from 'react-select';
+import { Button, Select } from 'rizzui';
 import { User } from '../../../../../hooks/useInfiniteTable';
 import { ImageUpload } from '../../../../../components/ImageUpload';
 import { getThemeColors } from '../../../../../theme/colors';
+import { ChevronDown, X } from 'lucide-react';
 
 interface AddUserFormProps {
   onSubmit: (data: Partial<User>) => void;
@@ -43,11 +43,10 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter first name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -69,11 +68,10 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter last name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -102,11 +100,10 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="Enter email address"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -116,23 +113,47 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
           />
         </div>
 
-        {/* Contact */}
+        {/* Phone No */}
         <div>
-          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Contact *</label>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Phone No *</label>
           <Controller
             name="contact"
             control={control}
-            rules={{ required: 'Contact is required' }}
+            rules={{ required: 'Phone number is required' }}
             render={({ field, fieldState }) => (
               <>
                 <input
                   {...field}
-                  placeholder="Enter contact number"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${
-                    fieldState.error
-                      ? theme.status.error.border
-                      : `${theme.border.input} focus:border-orange-500`
-                  }`}
+                  placeholder="Enter phone number"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
+                />
+                {fieldState.error && (
+                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                )}
+              </>
+            )}
+          />
+        </div>
+
+        {/* CNIC */}
+        <div>
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>CNIC *</label>
+          <Controller
+            name="cnic"
+            control={control}
+            rules={{ required: 'CNIC is required' }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  {...field}
+                  placeholder="Enter CNIC"
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -152,34 +173,30 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
             render={({ field, fieldState }) => (
               <>
                 <Select
-                  {...field}
                   options={genderOptions}
-                  value={genderOptions.find((opt) => opt.value === field.value)}
-                  onChange={(opt) => field.onChange(opt?.value)}
-                  classNamePrefix="custom-select"
                   placeholder="Select gender"
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      border: fieldState.error ? '2px solid #ef4444' : '2px solid #d1d5db',
-                      borderRadius: '0.5rem',
-                      padding: '0.25rem',
-                      '&:hover': { borderColor: '#f97316' },
-                      '&:focus-within': {
-                        borderColor: '#f97316',
-                        boxShadow: '0 0 0 1px #f97316',
-                      },
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? '#f97316'
-                        : state.isFocused
-                        ? '#fed7aa'
-                        : 'white',
-                      color: state.isSelected ? 'white' : 'black',
-                    }),
-                  }}
+                  {...field}
+                  inPortal={false}
+                  className="w-full max-w-xs"
+                  selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                  optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                  dropdownClassName="!w-full !h-auto !max-h-[260px]"
+                  suffix={
+                    <div className="flex items-center gap-2 pr-1">
+                      {field.value && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            field.onChange('');
+                          }}
+                          className="text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                        </button>
+                      )}
+                      <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
+                    </div>
+                  }
                 />
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
@@ -189,9 +206,9 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
           />
         </div>
 
-       
 
-       
+
+
 
         {/* Profile Picture */}
         <div className="col-span-2">

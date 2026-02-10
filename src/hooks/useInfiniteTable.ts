@@ -17,6 +17,7 @@ export interface User {
   userName: string;
   email: string;
   contact: string;
+  cnic: string;
   avatar?: string;
   gender: 'Male' | 'Female' | 'Other';
   active: boolean;
@@ -45,7 +46,14 @@ export function useInfiniteTable<T extends { id: string }>({
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    setData(propData);
+    // Only update if data is actually different
+    if (
+      propData.length !== data.length ||
+      (propData.length > 0 && data.length > 0 && propData[0].id !== data[0].id)
+    ) {
+      setData(propData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [propData]);
 
   const loadMore = useCallback(async () => {
@@ -129,6 +137,7 @@ export function generateMockUsers(count: number, startIndex = 0): User[] {
       userName: `${firstName.toLowerCase()}.${lastName.toLowerCase()}`,
       email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@nexus-food.com`,
       contact: `+1 (${String(Math.floor(Math.random() * 900) + 100)}) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
+      cnic: `${String(Math.floor(Math.random() * 90000) + 10000)}-${String(Math.floor(Math.random() * 9000000) + 1000000)}-${String(Math.floor(Math.random() * 9) + 1)}`,
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${firstName}${lastName}`,
       gender: genders[actualIndex % genders.length],
       active: Math.random() > 0.5, // 50% chance of being active

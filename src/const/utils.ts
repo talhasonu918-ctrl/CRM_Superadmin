@@ -47,7 +47,7 @@ export function useAppRouter() {
  */
 export function getRouteTitle(path: string): string {
   const config = getRouteConfig(path);
-  return config?.title || 'Nexus CRM - SuperAdmin';
+  return config?.title || 'Invex Food - SuperAdmin';
 }
 
 /**
