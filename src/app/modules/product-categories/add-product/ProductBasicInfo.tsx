@@ -194,8 +194,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               className={inputClass}
             />
           </div> */}
-
-          {/* Manufacturer */}
+      {/* Manufacturer */}
           <div>
             <label className={labelClass}>Manufacturer</label>
             <input
