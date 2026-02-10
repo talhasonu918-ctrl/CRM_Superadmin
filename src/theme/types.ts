@@ -12,6 +12,9 @@ export interface BrandColors {
     error: string;
 }
 export interface TenantBranding {
+    id: string;
+    name: string;
+    logo?: string;
     light: BrandColors;
     dark: BrandColors;
 }

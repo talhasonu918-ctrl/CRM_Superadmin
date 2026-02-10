@@ -11,7 +11,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
-  output: 'standalone',
+  // output: 'standalone',
   experimental: {
     optimizePackageImports: ['lucide-react', '@heroicons/react', 'recharts', 'framer-motion'],
   },

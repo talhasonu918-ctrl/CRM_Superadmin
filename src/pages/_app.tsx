@@ -2,13 +2,14 @@ import React from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import { ThemeProvider } from '../contexts/ThemeContext';
-import { BrandingProvider } from '../contexts/BrandingContext';
+import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
+import { ThemeProvider } from '@/src/contexts/ThemeContext';
+import { BrandingProvider } from '@/src/contexts/BrandingContext';
+import { CompanyProvider } from '@/src/contexts/CompanyContext';
 import toast, { Toaster } from 'react-hot-toast';
 import '../styles/globals.css';
 
-import { tenantConfig } from '../config/tenant-color';
+import { tenantConfig } from '@/src/config/tenant-color';
 
 // Component that handles authentication routing
 interface AppContentProps {
@@ -46,7 +47,8 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   // Redirect to dashboard if authenticated and trying to access auth page
   if (currentRouter.pathname === '/auth' && isAuthenticated) {
     if (typeof window !== 'undefined') {
-      currentRouter.push('/dashboard');
+      const lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
+      currentRouter.push(`/${lastCompany}/dashboard`);
     }
     return null;
   }
@@ -58,7 +60,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Invex Food - SuperAdmin</title>
+        <title>{tenantConfig.name} - SuperAdmin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.tailwindcss.com"></script>
         <script dangerouslySetInnerHTML={{
@@ -88,31 +90,33 @@ function MyApp({ Component, pageProps }: AppProps) {
       <AuthProvider>
         <ThemeProvider>
           <BrandingProvider>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 3000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-                success: {
+            <CompanyProvider>
+              <Toaster
+                position="top-right"
+                toastOptions={{
                   duration: 3000,
-                  iconTheme: {
-                    primary: 'var(--color-primary)',
-                    secondary: '#fff',
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
                   },
-                },
-                error: {
-                  duration: 4000,
-                  iconTheme: {
-                    primary: 'var(--color-error)',
-                    secondary: '#fff',
+                  success: {
+                    duration: 3000,
+                    iconTheme: {
+                      primary: 'var(--color-primary)',
+                      secondary: '#fff',
+                    },
                   },
-                },
-              }}
-            />
-            <AppContent Component={Component} pageProps={pageProps} />
+                  error: {
+                    duration: 4000,
+                    iconTheme: {
+                      primary: 'var(--color-error)',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+              <AppContent Component={Component} pageProps={pageProps} />
+            </CompanyProvider>
           </BrandingProvider>
         </ThemeProvider>
       </AuthProvider>

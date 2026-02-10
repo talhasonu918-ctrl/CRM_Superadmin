@@ -24,7 +24,6 @@ const booleanOptions = [
     { label: 'Disabled', value: 'Disabled' },
 ];
 
-
 export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
     initialData,
     onSubmit,
@@ -51,7 +50,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                     {!showOnlyWeb && (
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                App Version
+                                App Version <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="appVersion"
@@ -65,7 +64,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                     {!showOnlyMobile && (
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Web Version
+                                Web Version <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="webVersion"
@@ -78,7 +77,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                     )}
                     <div className="sm:col-span-2">
                         <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            API Endpoint
+                            API Endpoint <span className="text-red-500">*</span>
                         </label>
                         <Controller
                             name="apiEndpoint"
@@ -100,7 +99,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Maintenance Mode
+                                Maintenance Mode <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="maintenanceMode"
@@ -137,7 +136,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Push Notifications
+                                Push Notifications <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="pushNotifications"
@@ -174,7 +173,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Auto Updates
+                                Auto Updates <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="autoUpdates"
@@ -222,7 +221,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Android Store URL
+                                Android Store URL <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="androidStoreUrl"
@@ -234,7 +233,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                iOS Store URL
+                                iOS Store URL <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="iosStoreUrl"
@@ -246,7 +245,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div className="sm:col-span-2">
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Support Email
+                                Support Email <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="supportEmail"
@@ -258,7 +257,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Privacy Policy URL
+                                Privacy Policy URL <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="privacyPolicyUrl"
@@ -270,7 +269,7 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                         </div>
                         <div>
                             <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                                Terms of Service URL
+                                Terms of Service URL <span className="text-red-500">*</span>
                             </label>
                             <Controller
                                 name="termsOfServiceUrl"

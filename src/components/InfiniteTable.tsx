@@ -98,7 +98,7 @@ function InfiniteTable<T = any>({
         className={`w-full overflow-x-auto overflow-y-auto custom-scrollbar max-h-[600px] ${className}`}
       >
         <Table
-          className="!shadow-none !border-0"
+          className="!shadow-none hover:!bg-transparent !border-0 [&_tbody_tr]:hover:!bg-transparent"
           style={{
             width: table.getTotalSize(),
           }}
@@ -119,7 +119,7 @@ function InfiniteTable<T = any>({
                         style={{
                           width: header.getSize(),
                         }}
-                        className={`!text-start !font-semibold ${theme.text.primary}`}
+                        className={`!text-start !font-semibold ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -161,6 +161,7 @@ function InfiniteTable<T = any>({
                         className="!text-start py-4 px-2 sm:px-4"
                         style={{
                           width: cell.column.getSize(),
+                          color: isDarkMode ? '#f1f5f9' : '#0f172a',
                         }}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

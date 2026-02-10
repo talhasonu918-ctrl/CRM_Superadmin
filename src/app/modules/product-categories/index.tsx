@@ -7,6 +7,8 @@ import { CategoryTable } from './table/table';
 import { AddCategoryForm, EditCategoryForm, ViewCategoryDetails } from './form';
 import { Category } from './types';
 import { showToast } from './utils/toastUtils';
+import { useCompany } from '../../../contexts/CompanyContext';
+import { ROUTES } from '../../../const/constants';
 
 interface ProductCategoriesViewProps {
   isDarkMode: boolean;
@@ -14,6 +16,7 @@ interface ProductCategoriesViewProps {
 
 export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ isDarkMode }) => {
   const router = useRouter();
+  const { company } = useCompany();
   const [searchTerm, setSearchTerm] = useState('');
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -134,7 +137,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
             Sort Categories {isSortedByNewest ? '(Newest First)' : ''}
           </button>
           <button
-            onClick={() => router.push('/product-categories/add')}
+            onClick={() => company && router.push(ROUTES.PRODUCT_CATEGORIES(company) + '/add')}
             className={`px-4 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2 transition-all ${isDarkMode
               ? 'bg-orange-500 text-white hover:bg-orange-700'
               : 'bg-orange-500 text-white hover:bg-orange-700'

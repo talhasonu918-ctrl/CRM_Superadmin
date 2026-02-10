@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { ROUTES, RouteKey } from './constants';
 import { routeConfigs, getRouteConfig } from './config';
+import { tenantConfig } from '../config/tenant-color';
 
 /**
  * Custom hook for route navigation
@@ -47,7 +48,8 @@ export function useAppRouter() {
  */
 export function getRouteTitle(path: string): string {
   const config = getRouteConfig(path);
-  return config?.title || 'Invex Food - SuperAdmin';
+  const baseTitle = config?.title || 'SuperAdmin';
+  return `${baseTitle} - ${tenantConfig.name}`;
 }
 
 /**

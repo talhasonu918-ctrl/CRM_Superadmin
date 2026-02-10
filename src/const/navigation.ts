@@ -3,11 +3,12 @@ import {
   CreditCard, Truck, Package, Star, BarChart3, Settings,
   History, MonitorPlay, Receipt, DollarSign, Bike, Grid3x3
 } from 'lucide-react';
-import { ROUTES } from './constants';
+import { ROUTES, BASE_ROUTES } from './constants';
 
 export interface NavigationItem {
   name: string;
-  href: string;
+  baseHref: string;
+  getHref: (company: string) => string;
   icon: any;
   description?: string;
 }
@@ -15,91 +16,106 @@ export interface NavigationItem {
 export const navigationItems: NavigationItem[] = [
   {
     name: 'Dashboard',
-    href: ROUTES.DASHBOARD,
+    baseHref: BASE_ROUTES.DASHBOARD,
+    getHref: (company: string) => ROUTES.DASHBOARD(company),
     icon: LayoutDashboard,
     description: 'Overview and analytics'
   },
   {
     name: 'POS',
-    href: ROUTES.POS,
+    baseHref: BASE_ROUTES.POS,
+    getHref: (company: string) => ROUTES.POS(company),
     icon: ShoppingBag,
     description: 'Point of Sale system'
   },
   {
     name: 'Order History',
-    href: ROUTES.ORDER_HISTORY,
+    baseHref: BASE_ROUTES.ORDER_HISTORY,
+    getHref: (company: string) => ROUTES.ORDER_HISTORY(company),
     icon: History,
     description: 'Past orders and history'
   },
   {
     name: 'Online Orders',
-    href: ROUTES.ONLINE_ORDERS,
+    baseHref: BASE_ROUTES.ONLINE_ORDERS,
+    getHref: (company: string) => ROUTES.ONLINE_ORDERS(company),
     icon: Truck,
     description: 'Online order management'
   },
   {
     name: 'Inventory',
-    href: ROUTES.INVENTORY,
+    baseHref: BASE_ROUTES.INVENTORY,
+    getHref: (company: string) => ROUTES.INVENTORY(company),
     icon: Package,
     description: 'Stock and inventory control'
   },
   {
     name: 'Recipe',
-    href: ROUTES.RECIPE,
+    baseHref: BASE_ROUTES.RECIPE,
+    getHref: (company: string) => ROUTES.RECIPE(company),
     icon: Receipt,
     description: 'Recipe management'
   },
   {
     name: 'Expenses',
-    href: ROUTES.EXPENSES,
+    baseHref: BASE_ROUTES.EXPENSES,
+    getHref: (company: string) => ROUTES.EXPENSES(company),
     icon: DollarSign,
     description: 'Expense tracking'
   },
   {
     name: 'Reports',
-    href: ROUTES.REPORTS,
+    baseHref: BASE_ROUTES.REPORTS,
+    getHref: (company: string) => ROUTES.REPORTS(company),
     icon: BarChart3,
     description: 'Analytics and reporting'
   },
   {
     name: 'Kitchen Display',
-    href: ROUTES.KITCHEN_DISPLAY,
+    baseHref: BASE_ROUTES.KITCHEN_DISPLAY,
+    getHref: (company: string) => ROUTES.KITCHEN_DISPLAY(company),
     icon: MonitorPlay,
     description: 'Kitchen display system'
   },
   {
     name: 'Dispatch',
-    href: ROUTES.DISPATCH,
+    baseHref: BASE_ROUTES.DISPATCH,
+    getHref: (company: string) => ROUTES.DISPATCH(company),
     icon: Truck,
     description: 'Dispatch management'
   },
   {
     name: 'Rider Management',
-    href: ROUTES.RIDER_MANAGEMENT,
+    baseHref: BASE_ROUTES.RIDER_MANAGEMENT,
+    getHref: (company: string) => ROUTES.RIDER_MANAGEMENT(company),
     icon: Bike,
     description: 'Delivery rider management'
   },
   {
     name: 'CRM',
-    href: ROUTES.CRM,
+    baseHref: BASE_ROUTES.CRM,
+    getHref: (company: string) => ROUTES.CRM(company),
     icon: Users,
     description: 'Customer relationship management'
   },
   {
     name: 'Preferences',
-    href: ROUTES.PREFERENCES,
+    baseHref: BASE_ROUTES.PREFERENCES,
+    getHref: (company: string) => ROUTES.PREFERENCES(company),
     icon: Grid3x3,
     description: 'User preferences'
   },
   {
     name: 'Menu',
-    href: ROUTES.PRODUCT_CATEGORIES,
+    baseHref: BASE_ROUTES.PRODUCT_CATEGORIES,
+    getHref: (company: string) => ROUTES.PRODUCT_CATEGORIES(company),
     icon: UtensilsCrossed,
     description: 'Menu management and items'
   },
   {
     name: 'Settings',
-    href: ROUTES.SETTINGS,
+    baseHref: BASE_ROUTES.SETTINGS,
+    getHref: (company: string) => ROUTES.SETTINGS(company),
     icon: Settings,
     description: 'System configuration'
   },
@@ -108,7 +124,8 @@ export const navigationItems: NavigationItem[] = [
 export const authNavigation: NavigationItem[] = [
   {
     name: 'Login/Register',
-    href: ROUTES.AUTH,
+    baseHref: '/auth',
+    getHref: () => ROUTES.AUTH,
     icon: Users,
     description: 'Authentication'
   },

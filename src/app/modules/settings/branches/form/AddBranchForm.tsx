@@ -6,7 +6,7 @@ import { Button, Select, ActionIcon } from 'rizzui';
 import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
 import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+// import toast from 'react-hot-toast';
 
 interface AddBranchFormProps {
   onSubmit: (data: Partial<Branch>) => void;
@@ -88,6 +88,29 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
     });
 
     setMap(mapInstance);
+
+    // Map click: place marker and reverse-geocode to update form fields
+    mapInstance.addListener('click', (e: any) => {
+      const lat = e.latLng.lat();
+      const lng = e.latLng.lng();
+
+      if (markerRef.current) markerRef.current.setMap(null);
+      markerRef.current = new google.maps.Marker({
+        position: { lat, lng },
+        map: mapInstance,
+        draggable: true,
+        animation: google.maps.Animation.DROP,
+      });
+
+      // When marker dragged, update address as well
+      markerRef.current.addListener('dragend', (ev: any) => {
+        const newLat = ev.latLng.lat();
+        const newLng = ev.latLng.lng();
+        reverseGeocode({ lat: newLat, lng: newLng }, google);
+      });
+
+      reverseGeocode({ lat, lng }, google);
+    });
   }, [isMapLoaded]);
 
   // Initialize Autocomplete
@@ -133,13 +156,60 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         markerRef.current = new google.maps.Marker({
           position: location,
           map: map,
+          draggable: true,
           animation: google.maps.Animation.DROP,
+        });
+
+        // allow user to drag marker to adjust location and then reverse-geocode
+        markerRef.current.addListener('dragend', (ev: any) => {
+          const newLat = ev.latLng.lat();
+          const newLng = ev.latLng.lng();
+          reverseGeocode({ lat: newLat, lng: newLng }, google);
         });
       }
     });
 
     autocompleteRef.current = autocomplete;
   }, [isMapLoaded, map]);
+
+  // Reverse geocode helper: given a lat/lng, populate address/city/country and lat/lng fields
+  const reverseGeocode = (location: { lat: number; lng: number }, google: any) => {
+    if (!isMapLoaded || !(window as any).google) return;
+    const geocoder = new google.maps.Geocoder();
+    const latlng = { lat: location.lat, lng: location.lng };
+
+    geocoder.geocode({ location: latlng }, (results: any, status: any) => {
+      if (status === 'OK' && results[0]) {
+        const place = results[0];
+        const formatted = place.formatted_address;
+
+        setValue('address', formatted);
+        setValue('lat', location.lat);
+        setValue('lng', location.lng);
+
+        let city = '';
+        let country = '';
+        place.address_components?.forEach((comp: any) => {
+          if (comp.types.includes('locality') || comp.types.includes('sublocality') || comp.types.includes('postal_town')) {
+            if (!city) city = comp.long_name;
+          }
+          if (comp.types.includes('country')) country = comp.long_name;
+        });
+
+        // fallback: try to pick administrative_area_level_1 or 2 if locality not present
+        if (!city) {
+          place.address_components?.forEach((comp: any) => {
+            if (comp.types.includes('administrative_area_level_2') || comp.types.includes('administrative_area_level_1')) {
+              if (!city) city = comp.long_name;
+            }
+          });
+        }
+
+        if (city) setValue('city', city);
+        if (country) setValue('country', country);
+      }
+    });
+  };
 
   // Handle manual City/Country changes to update map
   const city = watch('city');
@@ -231,7 +301,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Branch name"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors b ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -255,7 +325,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Manager name"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -286,7 +356,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                   {...field}
                   type="tel"
                   placeholder="Phone number"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -312,9 +382,9 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 placeholder="Select status"
                 options={statusOptions}
                 error={fieldState.error?.message}
-                className="w-full max-w-xs"
+                className="w-full"
                 inPortal={false}
-                selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
+                selectClassName={`!h-10 md:!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
                 optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
                 dropdownClassName="!w-full !h-auto !max-h-[260px]"
                 suffix={
@@ -327,7 +397,9 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                           field.onChange('');
                         }}
                         className="text-gray-400 hover:text-gray-600 transition-colors"
+                        aria-label="Clear status"
                       >
+                        <X size={14} />
                       </button>
                     )}
                     <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
@@ -338,7 +410,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           />
         </div>
 
-        <div>
+        <div className="col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Country
           </label>
@@ -349,28 +421,21 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
               <div className="relative">
                 <input
                   {...field}
+                  disabled
                   autoComplete="none"
                   onBlur={() => {
                     field.onBlur();
                     triggerGeocode();
                   }}
                   placeholder="Enter country"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none disabled:opacity-90 disabled:cursor-not-allowed disabled:bg-slate-50`}
                 />
-                <button
-                  type="button"
-                  onClick={() => triggerGeocode()}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-orange-500 hover:text-orange-600 transition-colors"
-                  title="Sync map with city/country"
-                >
-                  <MapPin size={16} />
-                </button>
               </div>
             )}
           />
         </div>
 
-        <div>
+        <div className="col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             City
           </label>
@@ -381,13 +446,14 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
               <div className="relative">
                 <input
                   {...field}
+                  disabled
                   autoComplete="none"
                   onBlur={() => {
                     field.onBlur();
                     triggerGeocode();
                   }}
                   placeholder="Enter city"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none disabled:opacity-90 disabled:cursor-not-allowed disabled:bg-slate-50`}
                 />
               </div>
             )}
@@ -395,7 +461,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         </div>
 
         {/* Address Search */}
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Search Address <span className="text-red-500">*</span>
           </label>
@@ -424,7 +490,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
         </div>
 
         {/* Map Display */}
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <div
             ref={mapRef}
             className={`w-full h-48 rounded-lg border ${theme.border.input} overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center`}
@@ -444,19 +510,19 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t mt-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t mt-4">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold`}
+          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
         >
           Cancel
         </Button>
 
         <Button
           type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all`}
+          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all w-full sm:w-auto`}
         >
           Add Branch
         </Button>

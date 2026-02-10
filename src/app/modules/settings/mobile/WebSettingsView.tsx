@@ -4,6 +4,8 @@ import { MobileSettings, defaultMobileSettings } from './types';
 import { getThemeColors } from '../../../../theme/colors';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { useCompany } from '../../../../contexts/CompanyContext';
+import { ROUTES } from '../../../../const/constants';
 
 interface WebSettingsViewProps {
     isDarkMode?: boolean;
@@ -13,6 +15,7 @@ export const WebSettingsView: React.FC<WebSettingsViewProps> = ({
     isDarkMode = false,
 }) => {
     const router = useRouter();
+    const { company } = useCompany();
     const theme = getThemeColors(isDarkMode);
     const [settings, setSettings] = React.useState<Partial<MobileSettings>>(defaultMobileSettings);
     const [tenantFont, setTenantFont] = React.useState<string | undefined>(undefined);
@@ -43,7 +46,7 @@ export const WebSettingsView: React.FC<WebSettingsViewProps> = ({
         >
             <div className="flex items-center gap-4 mb-6 sm:mb-8">
                 <button
-                    onClick={() => router.push('/settings')}
+                    onClick={() => company && router.push(ROUTES.SETTINGS(company))}
                     className={`p-2 rounded-lg border ${theme.border.main} ${theme.neutral.backgroundSecondary} ${theme.text.primary} hover:border-primary transition-all`}
                     title="Back to Settings"
                 >

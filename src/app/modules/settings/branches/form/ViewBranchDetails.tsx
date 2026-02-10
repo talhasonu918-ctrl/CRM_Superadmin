@@ -72,9 +72,9 @@ export const ViewBranchDetails: React.FC<ViewBranchDetailsProps> = ({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="w-full">
-            <div className="flex justify-between items-center w-full gap-4">
-              <h3 className={`text-xl font-bold ${theme.text.primary}`}>{branchData.name || '-'}</h3>
-              <div className="flex items-center justify-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center w-full gap-2 sm:gap-4">
+              <h3 className={`text-lg sm:text-xl font-bold ${theme.text.primary}`}>{branchData.name || '-'}</h3>
+              <div className="flex items-center justify-start sm:justify-center">
                 <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge((branchData.status as string) || '', isDarkMode)}`}>
                   {branchData.status || '-'}
                 </span>
@@ -91,7 +91,7 @@ export const ViewBranchDetails: React.FC<ViewBranchDetailsProps> = ({
           <div ref={mapRef} className="w-full h-full" />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
               Manager
@@ -111,7 +111,7 @@ export const ViewBranchDetails: React.FC<ViewBranchDetailsProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
               City
@@ -130,7 +130,7 @@ export const ViewBranchDetails: React.FC<ViewBranchDetailsProps> = ({
             </p>
           </div>
 
-          <div className="col-span-2">
+          <div className="col-span-1">
             <label className={`block text-sm font-medium mb-1 ${theme.text.tertiary}`}>
               Address
             </label>

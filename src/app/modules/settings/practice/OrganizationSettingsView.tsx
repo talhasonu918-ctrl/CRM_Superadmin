@@ -4,6 +4,8 @@ import { ArrowLeft } from 'lucide-react';
 import { OrganizationSettingsForm } from './form/OrganizationSettingsForm';
 import { PracticeSetting } from './types';
 import { getThemeColors } from '../../../../theme/colors';
+import { useCompany } from '../../../../contexts/CompanyContext';
+import { ROUTES } from '../../../../const/constants';
 
 interface OrganizationSettingsViewProps {
     isDarkMode: boolean;
@@ -13,6 +15,7 @@ const STORAGE_KEY = 'organization_settings';
 
 export const OrganizationSettingsView: React.FC<OrganizationSettingsViewProps> = ({ isDarkMode }) => {
     const router = useRouter();
+    const { company } = useCompany();
     const theme = getThemeColors(isDarkMode);
     const [organizationData, setOrganizationData] = useState<Partial<PracticeSetting> | null>(null);
     const [tenantFont, setTenantFont] = useState<string | undefined>(undefined);
@@ -47,7 +50,7 @@ export const OrganizationSettingsView: React.FC<OrganizationSettingsViewProps> =
         >
             <div className="flex items-center gap-4 mb-6 sm:mb-8">
                 <button
-                    onClick={() => router.push('/settings')}
+                    onClick={() => company && router.push(ROUTES.SETTINGS(company))}
                     className={`p-2 rounded-lg border ${theme.border.main} ${theme.neutral.backgroundSecondary} ${theme.text.primary} hover:border-orange-500 transition-all`}
                     title="Back to Settings"
                 >

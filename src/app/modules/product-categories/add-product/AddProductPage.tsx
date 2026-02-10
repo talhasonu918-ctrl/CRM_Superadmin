@@ -10,6 +10,8 @@ import {
   ProductSummary
 } from './index';
 import { showToast } from '../utils/toastUtils';
+import { useCompany } from '@/src/contexts/CompanyContext';
+import { ROUTES } from '@/src/const/constants';
 
 interface AddProductPageProps {
   isDarkMode: boolean;
@@ -27,6 +29,7 @@ const tabs = [
 
 export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) => {
   const router = useRouter();
+  const { company } = useCompany();
   const [currentTab, setCurrentTab] = useState(0);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',
@@ -117,7 +120,7 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
     if (currentTab > 0) {
       setCurrentTab(currentTab - 1);
     } else {
-      router.push('/product-categories');
+      router.push(company ? ROUTES.PRODUCT_CATEGORIES(company) : '/product-categories');
     }
   };
 
@@ -158,7 +161,7 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
 
     // Small delay before redirect to ensure event fires
     setTimeout(() => {
-      router.push('/product-categories');
+      router.push(company ? ROUTES.PRODUCT_CATEGORIES(company) : '/product-categories');
     }, 100);
   };
 
@@ -198,12 +201,12 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
                 key={tab.id}
                 onClick={() => setCurrentTab(index)}
                 className={`px-6 py-3 text-sm font-semibold whitespace-nowrap transition-all relative ${currentTab === index
-                    ? isDarkMode
-                      ? 'text-orange-400'
-                      : 'text-orange-500'
-                    : isDarkMode
-                      ? 'text-slate-400 hover:text-slate-300'
-                      : 'text-slate-500 hover:text-slate-700'
+                  ? isDarkMode
+                    ? 'text-orange-400'
+                    : 'text-orange-500'
+                  : isDarkMode
+                    ? 'text-slate-400 hover:text-slate-300'
+                    : 'text-slate-500 hover:text-slate-700'
                   }`}
               >
                 <div className="flex items-center gap-2">

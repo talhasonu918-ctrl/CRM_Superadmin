@@ -2,7 +2,7 @@ import React from 'react';
 import { Filter } from 'lucide-react';
 import Select from 'react-select';
 import { Controller, Control } from 'react-hook-form';
-import { getThemeColors } from '../theme/colors';
+import { getThemeColors, darkModeColors, lightModeColors, primaryColors } from '../theme/colors';
 
 interface FilterDropdownProps {
   control: Control<any>;
@@ -22,16 +22,16 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const primaryColor = isDarkMode ? '#fb923c' : '#f97316';
-  const bgColor = isDarkMode ? '#1e293b' : '#f8fafc';
-  const focusBgColor = isDarkMode ? '#0f172a' : '#fff';
-  const borderColor = isDarkMode ? '#334155' : '#f1f5f9';
-  const menuBgColor = isDarkMode ? '#1e293b' : '#f8fafc';
-  const menuBorderColor = isDarkMode ? '#334155' : '#e2e8f0';
-  const optionSelectedBg = isDarkMode ? '#334155' : '#e2e8f0';
-  const optionHoverBg = isDarkMode ? '#475569' : '#f1f5f9';
-  const textColor = isDarkMode ? '#e2e8f0' : '#222';
-  
+  const primaryColor = isDarkMode ? primaryColors[400] : primaryColors[500];
+  const bgColor = isDarkMode ? darkModeColors.background.secondary : lightModeColors.background.primary;
+  const focusBgColor = isDarkMode ? darkModeColors.background.tertiary : lightModeColors.background.primary;
+  const borderColor = isDarkMode ? darkModeColors.border.primary : lightModeColors.border.primary;
+  const menuBgColor = isDarkMode ? darkModeColors.background.secondary : lightModeColors.background.primary;
+  const menuBorderColor = isDarkMode ? darkModeColors.border.primary : lightModeColors.border.secondary;
+  const optionSelectedBg = isDarkMode ? darkModeColors.border.primary : lightModeColors.background.tertiary;
+  const optionHoverBg = isDarkMode ? darkModeColors.border.secondary : lightModeColors.background.secondary;
+  const textColor = isDarkMode ? darkModeColors.text.primary : lightModeColors.text.primary;
+
   return (
     <div className="relative">
 
@@ -58,8 +58,8 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
                   paddingLeft: 36,
                   fontSize: 15,
                   outline: 'none',
-                  boxShadow:'none'
-                  
+                  boxShadow: 'none'
+
                 }),
                 valueContainer: (base: any) => ({ ...base, padding: '0 8px' }),
                 input: (base: any) => ({ ...base, margin: 0, padding: 0 }),
@@ -72,8 +72,8 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
                   backgroundColor: state.isSelected
                     ? optionSelectedBg
                     : state.isFocused
-                    ? optionHoverBg
-                    : menuBgColor,
+                      ? optionHoverBg
+                      : menuBgColor,
                   color: textColor,
                   fontWeight: state.isSelected ? 600 : 400,
                   cursor: 'pointer',

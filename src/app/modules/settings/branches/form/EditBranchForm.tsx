@@ -250,7 +250,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Branch name"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -274,7 +274,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                 <input
                   {...field}
                   placeholder="Manager name"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -305,7 +305,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                   {...field}
                   type="tel"
                   placeholder="Phone number"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
                 />
                 {fieldState.error && (
                   <p className={`${theme.status.error.text} text-sm mt-1`}>{fieldState.error.message}</p>
@@ -331,7 +331,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                 placeholder="Select status"
                 options={statusOptions}
                 error={fieldState.error?.message}
-                className="w-full max-w-xs"
+                className="w-full"
                 inPortal={false}
                 selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
                 optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
@@ -357,7 +357,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
           />
         </div>
 
-        <div>
+        <div className="col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Country
           </label>
@@ -374,7 +374,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                     triggerGeocode();
                   }}
                   placeholder="Enter country"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
                 />
                 <button
                   type="button"
@@ -389,7 +389,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
           />
         </div>
 
-        <div>
+        <div className="col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             City
           </label>
@@ -406,7 +406,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
                     triggerGeocode();
                   }}
                   placeholder="Enter city"
-                  className={`w-full px-4 py-3 border text-sm rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
+                  className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500 outline-none`}
                 />
               </div>
             )}
@@ -414,7 +414,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         </div>
 
         {/* Address Search */}
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Change Address <span className="text-red-500">*</span>
           </label>
@@ -443,7 +443,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         </div>
 
         {/* Map Display */}
-        <div className="col-span-2">
+        <div className="col-span-1 md:col-span-2">
           <div
             ref={mapRef}
             className={`w-full h-48 rounded-lg border ${theme.border.input} overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center`}
@@ -462,7 +462,7 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
         <Controller name="lng" control={control} render={({ field }) => <input type="hidden" {...field} />} />
 
         {/* Shifts Section */}
-        <div className="col-span-2 mt-4">
+        {/* <div className="col-span-1 md:col-span-2 mt-4">
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className={`text-base font-bold ${theme.text.primary}`}>Branch Shifts</h3>
@@ -560,23 +560,23 @@ export const EditBranchForm: React.FC<EditBranchFormProps> = ({
               </tbody>
             </table>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-4 border-t mt-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t mt-4">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold`}
+          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
         >
           Cancel
         </Button>
 
         <Button
           type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all`}
+          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all w-full sm:w-auto`}
         >
           Update Branch
         </Button>

@@ -7,6 +7,8 @@ import { OrganizationSettingsForm } from './practice/form/OrganizationSettingsFo
 import { MobileSettingsForm } from './mobile/form/MobileSettingsForm';
 import { MobileSettings, defaultMobileSettings } from './mobile/types';
 import { PracticeSetting } from './practice/types';
+import { useCompany } from '../../../contexts/CompanyContext';
+import { ROUTES } from '../../../const/constants';
 
 interface SettingsViewProps {
   isDarkMode: boolean;
@@ -15,6 +17,7 @@ interface SettingsViewProps {
 const STORAGE_KEY = 'organization_settings';
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
+  const { company } = useCompany();
   const theme = getThemeColors(isDarkMode);
   const [organizationModalOpen, setOrganizationModalOpen] = useState(false);
   const [organizationData, setOrganizationData] = useState<Partial<PracticeSetting> | null>(null);
@@ -44,27 +47,27 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
     {
       icon: Building2,
       title: 'Organization Settings',
-      href: '/settings/organization',
+      href: company ? ROUTES.SETTINGS(company) + '/organization' : '#',
     },
     {
       icon: MapPin,
       title: 'Branches',
-      href: '/settings/branches',
+      href: company ? ROUTES.SETTINGS(company) + '/branches' : '#',
     },
     {
       icon: Users,
       title: 'Users',
-      href: '/settings/users',
+      href: company ? ROUTES.SETTINGS(company) + '/users' : '#',
     },
     {
       icon: Smartphone,
       title: 'Mobile Setting',
-      href: '/settings/mobile',
+      href: company ? ROUTES.SETTINGS(company) + '/mobile' : '#',
     },
     {
       icon: Smartphone,
       title: 'Web Setting',
-      href: '/settings/web',
+      href: company ? ROUTES.SETTINGS(company) + '/web' : '#',
     },
   ];
 
