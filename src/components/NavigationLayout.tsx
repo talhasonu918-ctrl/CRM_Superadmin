@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, ChevronDown, Search, MessageSquare, ShoppingCart, Maximize, Minimize } from 'lucide-react';
 import { LuMaximize, LuMinimize } from "react-icons/lu";
+import { CgMaximizeAlt } from "react-icons/cg";
 import { navigationItems } from '../const';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -84,7 +85,7 @@ export function Layout({ children }: LayoutProps) {
         </div>
 
         {/* Right Section - White background */}
-        <div className={`flex-1 h-16 flex items-center justify-between px-4 lg:px-6 bg-white dark:bg-surface border-b border-border shadow-sm`}>
+        <div className={`flex-1 h-16 flex items-center  justify-between px-4 lg:px-6 bg-white dark:bg-surface border-b border-border shadow-sm`}>
           {/* Left Section - Logo/Menu and Search */}
           <div className="flex items-center gap-4">
             {/* Mobile Menu Button */}
@@ -117,16 +118,15 @@ export function Layout({ children }: LayoutProps) {
               />
             </div> */}
           </div>
-
           {/* Right Section - Notifications, Messages, Cart, Branch Selector, Profile */}
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-2 md:gap-5">
             {/* Fullscreen Toggle */}
             <button
               onClick={toggleFullscreen}
               className="w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center  dark:bg-slate-800  transition-colors  text-slate-600 dark:text-slate-300"
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
             >
-              {isFullscreen ? <LuMinimize className="w-5 h-5 text-orange-500 " /> : <LuMaximize className="w-5 h-5 text-orange-500" />}
+              {isFullscreen ? <LuMinimize className="w-6 h-6 text-orange-500 " /> : <LuMaximize className="w-6 h-6 text-orange-500" />}
             </button>
 
             {/* Notification Bell */}
