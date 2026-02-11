@@ -6,6 +6,7 @@ import { Button, Select, ActionIcon } from 'rizzui';
 import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
 import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
+import DatePicker from 'react-datepicker';
 // import toast from 'react-hot-toast';
 
 interface AddBranchFormProps {
@@ -34,7 +35,10 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
     defaultValues: {
       status: 'Active',
       country: 'Pakistan',
-      shifts: [{ id: '1', name: 'Morning Shift', startTime: '09:00', endTime: '18:00' }],
+      shifts: [
+        { id: '1', name: 'Shift 1', startTime: '09:00', endTime: '18:00', days: [] },
+        { id: '2', name: 'Shift 2', startTime: '', endTime: '', days: [] }
+      ],
     },
   });
 
@@ -399,7 +403,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                         className="text-gray-400 hover:text-gray-600 transition-colors"
                         aria-label="Clear status"
                       >
-                        <X size={14} />
+
                       </button>
                     )}
                     <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
@@ -408,6 +412,106 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
               />
             )}
           />
+        </div>
+
+        {/* Shift 1 & Shift 2 */}
+        <div className="col-span-1 md:col-span-2 space-y-4">
+          <label className={`block text-sm font-medium ${theme.text.tertiary}`}>
+            Shift Timings
+          </label>
+
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+            {fields.map((field, index) => {
+              const isRequired = index === 0;
+              const label = index === 0 ? "Shift 1" : "Shift 2";
+
+              return (
+                <div key={field.id} className={`p-4 rounded-lg border ${theme.border.input} bg-slate-50/50`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-sm font-semibold ${theme.text.primary}`}>{label} {isRequired && <span className="text-red-500">*</span>}</span>
+                    {/* <span className="text-xs text-gray-400">{isRequired ? 'Required' : 'Optional'}</span> */}
+                  </div>
+
+                  <div className="flex gap-3 flex-col md:flex-row w-full">
+                    <div className="flex flex-col w-full md:w-1/2">
+                      <label className="text-xs font-semibold text-gray-500 mb-1 block">Start Time</label>
+                      <Controller
+                        control={control}
+                        name={`shifts.${index}.startTime`}
+                        rules={{ required: isRequired ? 'Start time required' : false }}
+                        render={({ field: { onChange, value }, fieldState }) => (
+                          <div>
+                            <DatePicker
+                              selected={value ? new Date(`2000-01-01T${value}`) : null}
+                              onChange={(date: Date | null) => {
+                                if (date) {
+                                  const hours = date.getHours().toString().padStart(2, '0');
+                                  const minutes = date.getMinutes().toString().padStart(2, '0');
+                                  onChange(`${hours}:${minutes}`);
+                                } else {
+                                  onChange('');
+                                }
+                              }}
+                              showTimeSelect
+                              showTimeSelectOnly
+                              timeIntervals={15}
+                              timeCaption="Time"
+                              dateFormat="h:mm aa"
+                              placeholderText="Start"
+                              wrapperClassName="w-full"
+                              className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                            />
+                            {fieldState.error && <p className="text-xs text-red-500 mt-1">{fieldState.error.message}</p>}
+                          </div>
+                        )}
+                      />
+                    </div>
+
+                    <div className="flex flex-col w-full md:w-1/2">
+                      <label className="text-xs font-semibold text-gray-500 mb-1 block">End Time</label>
+                      <Controller
+                        control={control}
+                        name={`shifts.${index}.endTime`}
+                        rules={{ required: isRequired ? 'End time required' : false }}
+                        render={({ field: { onChange, value }, fieldState }) => (
+                          <div>
+                            <DatePicker
+                              selected={value ? new Date(`2000-01-01T${value}`) : null}
+                              onChange={(date: Date | null) => {
+                                if (date) {
+                                  const hours = date.getHours().toString().padStart(2, '0');
+                                  const minutes = date.getMinutes().toString().padStart(2, '0');
+                                  onChange(`${hours}:${minutes}`);
+                                } else {
+                                  onChange('');
+                                }
+                              }}
+                              showTimeSelect
+                              showTimeSelectOnly
+                              timeIntervals={15}
+                              timeCaption="Time"
+                              dateFormat="h:mm aa"
+                              placeholderText="End"
+                              wrapperClassName="w-full"
+                              className={`w-full px-3 py-2 md:px-4 md:py-3 text-sm md:text-base border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error ? theme.status.error.border : theme.border.input} focus:border-orange-500`}
+                            />
+                            {fieldState.error && <p className="text-xs text-red-500 mt-1">{fieldState.error.message}</p>}
+                          </div>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  {/* Hidden Name Field */}
+                  <Controller
+                    control={control}
+                    name={`shifts.${index}.name`}
+                    defaultValue={label}
+                    render={({ field }) => <input type="hidden" {...field} />}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="col-span-1">
@@ -515,7 +619,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
+          className={`h-10 rounded-lg px-8 border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
         >
           Cancel
         </Button>
@@ -527,6 +631,6 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           Add Branch
         </Button>
       </div>
-    </form>
+    </form >
   );
 };
