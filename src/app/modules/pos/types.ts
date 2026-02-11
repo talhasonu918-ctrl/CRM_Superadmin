@@ -62,6 +62,7 @@ export interface ActiveTask {
   totalAmount: number;
   paymentStatus: 'pending' | 'received';
   items?: CartItem[];
+  customerAddress?: string;
 }
 
 export interface Rider {

@@ -1,3 +1,90 @@
+export const mockNotifications = [
+  {
+    id: 1,
+    title: 'New Order #1234',
+    message: 'Order received from John Doe',
+    time: '2 min ago',
+    unread: true,
+    type: 'order',
+    orderDetails: {
+      orderId: '#1234',
+      customerName: 'John Doe',
+      phoneNumber: '+92 300 1234567',
+      address: '123 Main Street, Block A, Gulberg Town, Lahore, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '10:30 AM',
+      totalAmount: 1250.0,
+      items: [
+        { name: 'Chicken Pizza Large', quantity: 2, price: 500 },
+        { name: 'Garlic Bread', quantity: 1, price: 150 },
+        { name: 'Cold Drink 1.5L', quantity: 1, price: 100 },
+      ],
+    },
+  },
+  {
+    id: 2,
+    title: 'Low Stock Alert',
+    message: 'Pizza dough running low',
+    time: '15 min ago',
+    unread: true,
+    type: 'alert',
+    orderDetails: {
+      orderId: '#ALERT-002',
+      customerName: 'Inventory System',
+      phoneNumber: 'N/A',
+      address: 'Main Branch - Stock Room',
+      orderDate: '2026-02-11',
+      orderTime: '10:15 AM',
+      totalAmount: 0,
+      items: [
+        { name: 'Pizza Dough', quantity: 5, price: 0, status: 'Low Stock - Reorder Required' },
+      ],
+    },
+  },
+  {
+    id: 3,
+    title: 'New Review',
+    message: '5-star review from customer',
+    time: '1 hour ago',
+    unread: false,
+    type: 'review',
+    orderDetails: {
+      orderId: '#5678',
+      customerName: 'Sarah Ahmed',
+      phoneNumber: '+92 321 9876543',
+      address: '45 Park Avenue, DHA Phase 5, Karachi, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '09:00 AM',
+      totalAmount: 850.0,
+      items: [
+        { name: 'Beef Burger Combo', quantity: 1, price: 450 },
+        { name: 'French Fries', quantity: 2, price: 200 },
+        { name: 'Milkshake', quantity: 1, price: 200 },
+      ],
+    },
+  },
+  {
+    id: 4,
+    title: 'Payment Received',
+    message: 'Payment of PKR 1500 confirmed',
+    time: '2 hours ago',
+    unread: false,
+    type: 'payment',
+    orderDetails: {
+      orderId: '#9012',
+      customerName: 'Ali Hassan',
+      phoneNumber: '+92 333 4567890',
+      address: '78 Mall Road, Gulberg, Lahore, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '08:30 AM',
+      totalAmount: 1500.0,
+      items: [
+        { name: 'Family Deal - 2 Large Pizzas', quantity: 1, price: 1200 },
+        { name: 'Garlic Bread', quantity: 2, price: 300 },
+      ],
+    },
+  },
+];
 // Mock Data for POS Module
 
 import { Product, Table, TakeawayOrder, Order, Rider } from './types';
@@ -27,13 +114,11 @@ export const mockProducts: Product[] = [
   { id: 'burger-3', name: 'SPICY PATTY BURGER', price: 370.00, category: 'Burger', image: '/products/spicy-patty.png', available: true },
   { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '/products/chicken-patty.png', available: true },
   { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '/products/fillet-burger.png', available: true },
-
   // Wings
   { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/peri-peri.png', available: true },
   { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/hot-wings.png', available: true },
   { id: 'wings-3', name: 'BBQ WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/bbq-wings.png', available: true },
   { id: 'wings-4', name: 'SWEET CHILLI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/sweet-chilli.png', available: true },
-
   // Fries & Nuggets
   { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: '/products/nuggets.png', available: true },
   { id: 'fries-2', name: 'PLAIN FRIES', price: 0.00, category: 'Fries & Nuggets', image: '/products/plain-fries.png', available: true },
@@ -44,7 +129,6 @@ export const mockProducts: Product[] = [
   { id: 'fries-7', name: 'HALF BROAST', price: 1230.00, category: 'Fries & Nuggets', image: '/products/half-broast.png', available: true },
   { id: 'fries-8', name: 'FULL BROAST', price: 2290.00, category: 'Fries & Nuggets', image: '/products/full-broast.png', available: true },
   { id: 'fries-9', name: 'MELLOW WRAP', price: 580.00, category: 'Fries & Nuggets', image: '/products/wrap.png', available: true },
-
   // Rolls & Sandwiches
   { id: 'roll-1', name: 'CHILLI FLAME', price: 580.00, category: 'Roll & Sandwich', image: '/products/chilli-flame.png', available: true },
   { id: 'roll-2', name: 'HNY SPECIAL ROLL', price: 590.00, category: 'Roll & Sandwich', image: '/products/special-roll.png', available: true },
@@ -730,7 +814,8 @@ export const mockRiders: Rider[] = [
         { product: { id: 'p1', name: 'Crunch Craze Zinger', price: 370.00, category: 'Burger', image: '', available: true }, quantity: 2 },
         { product: { id: 'p2', name: 'Loaded Fries', price: 550.00, category: 'Fries', image: '', available: true }, quantity: 1 },
         { product: { id: 'p3', name: 'Drink (1LTR)', price: 150.00, category: 'Drinks', image: '', available: true }, quantity: 2 }
-      ]
+      ],
+      customerAddress: 'House 123, Street 4, Sector G-11, Islamabad'
     },
     rating: 4.8,
     performance: {
@@ -855,7 +940,8 @@ export const mockRiders: Rider[] = [
         { product: { id: 'p4', name: 'Economy Deal', price: 1500.00, category: 'Deals', image: '', available: true }, quantity: 1 },
         { product: { id: 'p5', name: 'Full Broast', price: 1200.00, category: 'Broast', image: '', available: true }, quantity: 1 },
         { product: { id: 'p6', name: 'Pasta (Family)', price: 750.00, category: 'Pasta', image: '', available: true }, quantity: 1 }
-      ]
+      ],
+      customerAddress: 'Flat 402, Block 5, Gulshan-e-Iqbal, Karachi'
     },
     rating: 4.9,
     performance: {
@@ -949,6 +1035,105 @@ export const mockRiders: Rider[] = [
       penalty: 0,
       cashCollected: 11200,
       netPayable: 41600
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-007',
+    name: 'Asif Ali',
+    phone: '+92 300 7777777',
+    cnic: '42101-7777777-7',
+    avatar: 'https://i.pravatar.cc/150?u=r7',
+    vehicleType: 'bike',
+    vehicleNumber: 'KHI-7777',
+    cityArea: 'Gulberg, Lahore',
+    joiningDate: '2024-01-01',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-1234',
+      itemsCount: 2,
+      totalAmount: 920.00,
+      paymentStatus: 'pending',
+      items: [
+        { product: { id: 'p7', name: 'Zinger Burger', price: 460.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+        { product: { id: 'p8', name: 'Regular Fries', price: 250.00, category: 'Sides', image: '', available: true }, quantity: 1 }
+      ],
+      customerAddress: 'House 55, Street 2, Gulberg III, Lahore'
+    },
+    rating: 4.6,
+    performance: {
+      avgDeliveryTime: '30 min',
+      completedOrders: 50,
+      completedToday: 3,
+      cancelledOrders: 1,
+      complaints: 0
+    },
+    earnings: {
+      total: 3000,
+      perOrderRate: 60,
+      tips: 200,
+      bonus: 0,
+      penalty: 0,
+      cashCollected: 1200,
+      netPayable: 3200
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-008',
+    name: 'Salman Ahmed',
+    phone: '+92 344 8888888',
+    cnic: '42101-8888888-8',
+    avatar: 'https://i.pravatar.cc/150?u=r8',
+    vehicleType: 'bike',
+    vehicleNumber: 'LHR-8888',
+    cityArea: 'Johar Town, Lahore',
+    joiningDate: '2024-02-01',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-5678',
+      itemsCount: 3,
+      totalAmount: 1250.00,
+      paymentStatus: 'pending',
+      items: [
+        { product: { id: 'p9', name: 'Chicken Pizza Medium', price: 850.00, category: 'Pizza', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p10', name: 'Cold Drink 1.5L', price: 200.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p11', name: 'Garlic Bread', price: 200.00, category: 'Sides', image: '', available: true }, quantity: 1 }
+      ],
+      customerAddress: 'Apartment 12B, Block R, Johar Town, Lahore'
+    },
+    rating: 4.7,
+    performance: {
+      avgDeliveryTime: '28 min',
+      completedOrders: 10,
+      completedToday: 2,
+      cancelledOrders: 0,
+      complaints: 0
+    },
+    earnings: {
+      total: 1000,
+      perOrderRate: 60,
+      tips: 150,
+      bonus: 0,
+      penalty: 0,
+      cashCollected: 500,
+      netPayable: 1150
     },
     attendance: {
       shiftStart: '09:00 AM',

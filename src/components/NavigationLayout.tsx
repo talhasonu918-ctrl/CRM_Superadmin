@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, ChevronDown, Search, MessageSquare, ShoppingCart, Maximize, Minimize } from 'lucide-react';
+import { Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, ChevronDown, Search, MessageSquare, ShoppingCart, Maximize, Minimize, Package, User, Phone, Home } from 'lucide-react';
 import { LuMaximize, LuMinimize } from "react-icons/lu";
 import { navigationItems } from '../const';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { ReusableModal } from './ReusableModal';
+import { mockNotifications } from '../app/modules/pos/mockData';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,6 +22,8 @@ export function Layout({ children }: LayoutProps) {
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState('Main Branch');
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   // Mock data for branches
   const branches = [
@@ -29,13 +33,8 @@ export function Layout({ children }: LayoutProps) {
     { id: 4, name: 'Islamabad Branch', location: 'Sector 3 ISlamabad' },
   ];
 
-  // Mock data for notifications
-  const notifications = [
-    { id: 1, title: 'New Order #1234', message: 'Order received from John Doe', time: '2 min ago', unread: true },
-    { id: 2, title: 'Low Stock Alert', message: 'Pizza dough running low', time: '15 min ago', unread: true },
-    { id: 3, title: 'New Review', message: '5-star review from customer', time: '1 hour ago', unread: false },
-    { id: 4, title: 'Payment Received', message: 'Payment of $150 confirmed', time: '2 hours ago', unread: false },
-  ];
+  // Use mock notifications from mockData
+  const notifications = mockNotifications;
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
@@ -53,6 +52,14 @@ export function Layout({ children }: LayoutProps) {
     setIsBranchDropdownOpen(false);
   };
 
+  const handleNotificationClick = (notif: any) => {
+    if (notif.orderDetails) {
+      setSelectedOrder({ ...notif.orderDetails, notifType: notif.type });
+      setIsOrderModalOpen(true);
+      setIsNotificationOpen(false);
+    }
+  };
+
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const toggleFullscreen = () => {
@@ -66,7 +73,6 @@ export function Layout({ children }: LayoutProps) {
       }
     }
   };
-
   return (
     <div className={`min-h-screen transition-colors duration-300 overflow-x-hidden bg-background text-textPrimary`}>
       {/* Top Header - Integrated with sidebar */}
@@ -159,15 +165,36 @@ export function Layout({ children }: LayoutProps) {
                       {notifications.map((notif) => (
                         <div
                           key={notif.id}
-                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${notif.unread ? 'bg-pink-50/50 dark:bg-pink-500/5' : ''
+                          onClick={() => handleNotificationClick(notif)}
+                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${
+                            notif.unread ? 'bg-orange-50/50 dark:bg-orange-500/5' : ''
                             }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 rounded-full mt-2 ${notif.unread ? 'bg-pink-500' : 'bg-slate-300'}`} />
-                            <div className="flex-1">
-                              <h4 className="font-medium text-sm text-slate-800 dark:text-white">{notif.title}</h4>
+                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.unread ? 'bg-orange-500' : 'bg-slate-300'}`} />
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-sm text-slate-800 dark:text-white">{notif.title}</h4>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notif.message}</p>
-                              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{notif.time}</p>
+                              
+                              {/* Order Details Preview */}
+                              {notif.orderDetails && (
+                                <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1.5">
+                                  <div className="flex items-center gap-1.5 text-xs">
+                                    <User className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                                    <span className="text-slate-700 dark:text-slate-300 font-medium truncate">{notif.orderDetails.customerName}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5 text-xs">
+                                    <Phone className="w-3 h-3 text-slate-400 flex-shrink-0" />
+                                    <span className="text-slate-600 dark:text-slate-400 truncate">{notif.orderDetails.phoneNumber}</span>
+                                  </div>
+                                  <div className="flex items-start gap-1.5 text-xs">
+                                    <Home className="w-3 h-3 text-slate-400 flex-shrink-0 mt-0.5" />
+                                    <span className="text-slate-600 dark:text-slate-400 line-clamp-2">{notif.orderDetails.address}</span>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              <p className="text-xs text-orange-500 dark:text-orange-400 mt-2 font-medium">{notif.time}</p>
                             </div>
                           </div>
                         </div>
@@ -330,6 +357,110 @@ export function Layout({ children }: LayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Order Details Modal */}
+      <ReusableModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        title="Order Details"
+        size="lg"
+        isDarkMode={isDarkMode}
+      >
+        {selectedOrder && (
+          <div className="space-y-6">
+            {/* Order Header */}
+            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-border">
+              <div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Order ID</p>
+                <p className="text-lg font-bold text-primary">{selectedOrder.orderId}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Order Date & Time</p>
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{selectedOrder.orderDate}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{selectedOrder.orderTime}</p>
+              </div>
+            </div>
+
+            {/* Customer Details */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <User className="w-4 h-4 text-primary" />
+                Customer Information
+              </h3>
+              
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 space-y-3">
+                <div className="flex items-start gap-3">
+                  <User className="w-4 h-4 text-slate-500 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Name</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">{selectedOrder.customerName}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Phone className="w-4 h-4 text-slate-500 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Phone Number</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">{selectedOrder.phoneNumber}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Home className="w-4 h-4 text-slate-500 mt-0.5" />
+                  <div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Delivery Address</p>
+                    <p className="text-sm font-semibold text-slate-800 dark:text-white">{selectedOrder.address}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                <Package className="w-4 h-4 text-primary" />
+                Order Items
+              </h3>
+              
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
+                <div className="space-y-3">
+                  {selectedOrder.items?.map((item: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0">
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-slate-800 dark:text-white">{item.name}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">Qty: {item.quantity}</p>
+                      </div>
+                      <p className="text-sm font-semibold text-slate-800 dark:text-white">PKR {item.price.toFixed(2)}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 pt-4 border-t-2 border-slate-300 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <p className="text-base font-bold text-slate-800 dark:text-white">Total Amount</p>
+                    <p className="text-lg font-bold text-primary">PKR {selectedOrder.totalAmount.toFixed(2)}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={() => setIsOrderModalOpen(false)}
+                className="flex-1 px-4 py-2.5 rounded-lg font-medium transition-colors bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200"
+              >
+                Close
+              </button>
+              <button
+                className="flex-1 px-4 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+              >
+                View Full Order
+              </button>
+            </div>
+          </div>
+        )}
+      </ReusableModal>
     </div>
   );
 }

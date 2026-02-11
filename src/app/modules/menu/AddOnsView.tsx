@@ -1,270 +1,362 @@
-import React, { useState } from 'react';
-import { Search, Plus, Edit3, Trash2, DollarSign } from 'lucide-react';
+
+import React, { useState, useMemo } from 'react';
+import { Search, Plus, Edit3, Trash2 } from 'lucide-react';
 import { ReusableModal } from '../../../components/ReusableModal';
 
 interface AddOnsViewProps {
   isDarkMode: boolean;
 }
 
+type StatusType = 'active' | 'inactive';
+
 interface AddOn {
   id: string;
   name: string;
   price: number;
-  category: string;
-  available: boolean;
+  status: StatusType;
 }
+
+interface AddOnGroup {
+  id: string;
+  name: string;
+  isRequired: boolean;
+  minimumSelection: number;
+  maximumSelection: number;
+  status: StatusType;
+  addOns: AddOn[];
+}
+
+const generateId = () => crypto.randomUUID();
+
+// Default data for groups and add-ons
+const defaultGroups: AddOnGroup[] = [
+  {
+    id: 'g1',
+    name: 'Toppings',
+    isRequired: false,
+    minimumSelection: 0,
+    maximumSelection: 3,
+    status: 'active',
+    addOns: [
+      { id: '1', name: 'Extra Cheese', price: 2.5, status: 'active' },
+      { id: '2', name: 'Bacon', price: 3.0, status: 'active' },
+      { id: '3', name: 'Jalapeños', price: 1.5, status: 'active' },
+    ],
+  },
+  {
+    id: 'g2',
+    name: 'Vegetables',
+    isRequired: false,
+    minimumSelection: 0,
+    maximumSelection: 2,
+    status: 'active',
+    addOns: [
+      { id: '4', name: 'Mushrooms', price: 2.0, status: 'active' },
+      { id: '5', name: 'Olives', price: 1.5, status: 'active' },
+    ],
+  },
+  {
+    id: 'g3',
+    name: 'Sauces',
+    isRequired: false,
+    minimumSelection: 0,
+    maximumSelection: 1,
+    status: 'active',
+    addOns: [
+      { id: '6', name: 'Extra Sauce', price: 1.0, status: 'inactive' },
+    ],
+  },
+];
 
 export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [groups, setGroups] = useState<AddOnGroup[]>(defaultGroups);
 
-  // Sample data
-  const [addOns, setAddOns] = useState<AddOn[]>([
-    { id: '1', name: 'Extra Cheese', price: 2.5, category: 'Toppings', available: true },
-    { id: '2', name: 'Bacon', price: 3.0, category: 'Toppings', available: true },
-    { id: '3', name: 'Mushrooms', price: 2.0, category: 'Vegetables', available: true },
-    { id: '4', name: 'Olives', price: 1.5, category: 'Vegetables', available: true },
-    { id: '5', name: 'Extra Sauce', price: 1.0, category: 'Sauces', available: false },
-    { id: '6', name: 'Jalapeños', price: 1.5, category: 'Vegetables', available: true },
-  ]);
-
-  const [currentAddon, setCurrentAddon] = useState<AddOn>({
+  const emptyGroup: AddOnGroup = {
     id: '',
     name: '',
-    price: 0,
-    category: '',
-    available: true,
-  });
+    isRequired: false,
+    minimumSelection: 0,
+    maximumSelection: 1,
+    status: 'active',
+    addOns: [],
+  };
 
-  const inputClass = `w-full px-4 py-2 rounded-lg border ${isDarkMode
-      ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-      : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-    } focus:outline-none focus:ring-2 focus:ring-orange-500`;
+  const [currentGroup, setCurrentGroup] = useState<AddOnGroup>(emptyGroup);
+
+  const inputClass = `w-full px-4 py-2 rounded-lg border ${
+    isDarkMode
+      ? 'bg-slate-800 border-slate-700 text-white'
+      : 'bg-white border-slate-200 text-slate-900'
+  } focus:outline-none focus:ring-2 focus:ring-orange-500`;
+
+  const isValid = useMemo(() => {
+    if (!currentGroup.name.trim()) return false;
+    if (currentGroup.addOns.length === 0) return false;
+    if (currentGroup.addOns.some(a => !a.name.trim())) return false;
+    if (currentGroup.minimumSelection > currentGroup.maximumSelection)
+      return false;
+    return true;
+  }, [currentGroup]);
 
   const handleAdd = () => {
     setEditingId(null);
-    setCurrentAddon({
-      id: Date.now().toString(),
-      name: '',
-      price: 0,
-      category: '',
-      available: true,
-    });
+    setCurrentGroup({ ...emptyGroup, id: generateId() });
     setIsModalOpen(true);
   };
 
-  const handleEdit = (addon: AddOn) => {
-    setEditingId(addon.id);
-    setCurrentAddon({ ...addon });
+  const handleEdit = (group: AddOnGroup) => {
+    setEditingId(group.id);
+    setCurrentGroup(group);
     setIsModalOpen(true);
   };
 
   const handleDelete = (id: string) => {
-    setAddOns(addOns.filter(a => a.id !== id));
+    if (window.confirm('Are you sure?')) {
+      setGroups(prev => prev.filter(g => g.id !== id));
+    }
   };
 
   const handleSave = () => {
+    if (!isValid) return;
+
     if (editingId) {
-      setAddOns(addOns.map(a => a.id === editingId ? currentAddon : a));
+      setGroups(prev =>
+        prev.map(g => (g.id === editingId ? currentGroup : g))
+      );
     } else {
-      setAddOns([...addOns, { ...currentAddon, id: Date.now().toString() }]);
+      setGroups(prev => [...prev, currentGroup]);
     }
+
     setIsModalOpen(false);
   };
 
-  const filteredAddOns = addOns.filter(addon =>
-    addon.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // ======================
+  // ADDON HANDLERS
+  // ======================
+  const addAddOn = () => {
+    setCurrentGroup(prev => ({
+      ...prev,
+      addOns: [
+        ...prev.addOns,
+        { id: generateId(), name: '', price: 0, status: 'active' }
+      ]
+    }));
+  };
+
+  const removeAddOn = (id: string) => {
+    setCurrentGroup(prev => ({
+      ...prev,
+      addOns: prev.addOns.filter(a => a.id !== id)
+    }));
+  };
+
+  const updateAddOn = (
+    id: string,
+    field: keyof AddOn,
+    value: any
+  ) => {
+    setCurrentGroup(prev => ({
+      ...prev,
+      addOns: prev.addOns.map(a =>
+        a.id === id ? { ...a, [field]: value } : a
+      )
+    }));
+  };
+
+  const filteredGroups = groups.filter(g =>
+    g.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   return (
     <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h1 className={`text-lg md:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-            Product Add-Ons
-          </h1>
-          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Manage additional items and extras
-          </p>
-        </div>
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-bold">Add-On Groups</h1>
 
-        <div className="flex items-center gap-3 ml-2 md:ml-0">
+        <div className="flex gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-         <input
-    type="text"
-    placeholder="Search addons..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
-      ${isDarkMode
-        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-      }
-      w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
-    `}
-  />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className={`${inputClass} pl-10 w-60`}
+            />
           </div>
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500  hover:bg-orange-600 text-[12px] md:text-md text-white px-2 py-1 md:px-4 md:py-2 rounded-lg font-medium flex items-center gap-2 transition-colors"
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
-            <Plus className="w-4 h-4" />
-            Add Add-On
+            <Plus size={16} />
+            Add Group
           </button>
         </div>
       </div>
 
-      {/* Add-Ons Table */}
-      <div className={`rounded-xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} overflow-hidden`}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className={isDarkMode ? 'bg-slate-900' : 'bg-slate-50'}>
-              <tr>
-                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Name
-                </th>
-                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Category
-                </th>
-                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Price
-                </th>
-                <th className={`px-6 py-4 text-left text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Status
-                </th>
-                <th className={`px-6 py-4 text-right text-xs font-medium uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${isDarkMode ? 'divide-slate-700' : 'divide-slate-200'}`}>
-              {filteredAddOns.map((addOn) => (
-                <tr key={addOn.id} className={isDarkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-50'}>
-                  <td className={`px-6 py-4 whitespace-nowrap font-medium ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-                    {addOn.name}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                    {addOn.category}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-4 h-4" />
-                      {addOn.price.toFixed(2)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${addOn.available
-                          ? 'bg-green-500/10 text-green-500'
-                          : 'bg-red-500/10 text-red-500'
-                        }`}
-                    >
-                      {addOn.available ? 'Available' : 'Unavailable'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button
-                        onClick={() => handleEdit(addOn)}
-                        className="p-2 hover:bg-slate-700 rounded-lg transition-colors"
-                      >
-                        <Edit3 className="w-4 h-4 text-slate-400" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(addOn.id)}
-                        className="p-2 hover:bg-red-500/10 rounded-lg transition-colors"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+      {/* GROUP LIST */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredGroups.map(group => (
+          <div
+            key={group.id}
+            className="p-5 border rounded-xl bg-white shadow-sm"
+          >
+            <div className="flex justify-between mb-3">
+              <div>
+                <h3 className="font-semibold">{group.name}</h3>
+                <p className="text-xs text-gray-500">
+                  {group.isRequired ? 'Required' : 'Optional'} •
+                  Min {group.minimumSelection} / Max{' '}
+                  {group.maximumSelection}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={() => handleEdit(group)}>
+                  <Edit3 size={16} />
+                </button>
+                <button onClick={() => handleDelete(group.id)}>
+                  <Trash2 size={16} className="text-red-500" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {group.addOns.map(a => (
+                <span
+                  key={a.id}
+                  className="px-2 py-1 bg-gray-100 text-xs rounded-full"
+                >
+                  {a.name} (+{a.price})
+                </span>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* MODAL */}
       <ReusableModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingId ? "Edit Add-On" : "Add New Add-On"}
-        size="md"
+        title={editingId ? 'Edit Group' : 'Add Group'}
+        size="lg"
         isDarkMode={isDarkMode}
       >
         <div className="space-y-4">
-          <div>
-            <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-              Name
-            </label>
-            <input
-              type="text"
-              value={currentAddon.name}
-              onChange={(e) => setCurrentAddon({ ...currentAddon, name: e.target.value })}
-              className={inputClass}
-              placeholder="e.g. Extra Cheese"
-            />
-          </div>
+          <input
+            placeholder="Group Name (e.g. Toppings)"
+            value={currentGroup.name}
+            onChange={e =>
+              setCurrentGroup({
+                ...currentGroup,
+                name: e.target.value
+              })
+            }
+            className={inputClass}
+          />
 
-          <div>
-            <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-              Category
-            </label>
+          <div className="flex items-center gap-2">
             <input
-              type="text"
-              value={currentAddon.category}
-              onChange={(e) => setCurrentAddon({ ...currentAddon, category: e.target.value })}
-              className={inputClass}
-              placeholder="e.g. Toppings"
+              type="checkbox"
+              checked={currentGroup.isRequired}
+              onChange={e =>
+                setCurrentGroup({
+                  ...currentGroup,
+                  isRequired: e.target.checked,
+                  minimumSelection: e.target.checked ? 1 : 0
+                })
+              }
             />
+            Required Selection
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                Price
-              </label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <input
+              type="number"
+              value={currentGroup.minimumSelection}
+              onChange={e =>
+                setCurrentGroup({
+                  ...currentGroup,
+                  minimumSelection: Number(e.target.value)
+                })
+              }
+              placeholder="Min"
+              className={inputClass}
+            />
+            <input
+              type="number"
+              value={currentGroup.maximumSelection}
+              onChange={e =>
+                setCurrentGroup({
+                  ...currentGroup,
+                  maximumSelection: Number(e.target.value)
+                })
+              }
+              placeholder="Max"
+              className={inputClass}
+            />
+          </div>
+
+          {/* ADDONS */}
+          <div>
+            <div className="flex justify-between mb-2">
+              <span className="font-medium">Add-Ons</span>
+              <button
+                onClick={addAddOn}
+                className="text-orange-500 text-sm"
+              >
+                + Add Add-On
+              </button>
+            </div>
+
+            {currentGroup.addOns.map(a => (
+              <div key={a.id} className="flex gap-2 mb-2">
+                <input
+                  placeholder="Name"
+                  value={a.name}
+                  onChange={e =>
+                    updateAddOn(a.id, 'name', e.target.value)
+                  }
+                  className={inputClass}
+                />
                 <input
                   type="number"
-                  step="0.01"
-                  value={currentAddon.price}
-                  onChange={(e) => setCurrentAddon({ ...currentAddon, price: parseFloat(e.target.value) || 0 })}
-                  className={`${inputClass} pl-10`}
+                  placeholder="Price"
+                  value={a.price}
+                  onChange={e =>
+                    updateAddOn(a.id, 'price', Number(e.target.value))
+                  }
+                  className={`${inputClass} w-28`}
                 />
+                <button
+                  onClick={() => removeAddOn(a.id)}
+                  className="text-red-500"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
-            </div>
-            <div>
-              <label className={`block text-sm font-medium mb-1 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                Status
-              </label>
-              <select
-                value={currentAddon.available ? 'true' : 'false'}
-                onChange={(e) => setCurrentAddon({ ...currentAddon, available: e.target.value === 'true' })}
-                className={inputClass}
-              >
-                <option value="true">Available</option>
-                <option value="false">Unavailable</option>
-              </select>
-            </div>
+            ))}
           </div>
 
           <div className="flex justify-end gap-3 pt-4">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className={`px-2 py-1 md:px-4 md:py-2 text-[12px] md:text-md rounded-lg font-medium ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-100'}`}
-            >
+            <button onClick={() => setIsModalOpen(false)}>
               Cancel
             </button>
             <button
+              disabled={!isValid}
               onClick={handleSave}
-              className="px-3 py-1 md:px-6 md:py-2 text-[12px] md:text-md bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium"
+              className={`px-4 py-2 rounded-lg text-white ${
+                isValid
+                  ? 'bg-orange-500 hover:bg-orange-600'
+                  : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
-              Save Add-On
+              Save Group
             </button>
           </div>
         </div>

@@ -35,6 +35,42 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
 
   const filters = watch();
 
+  // First filter by order type only (for badge counts)
+  const orderTypeFiltered = mockQueueOrders.filter(order => 
+    orderTypeFilter === 'all' || order.type === orderTypeFilter
+  );
+
+  // Calculate counts for each status (not affected by search or active filter)
+  const allOrdersCount = orderTypeFiltered.length;
+  const pendingOrdersCount = orderTypeFiltered.filter(order => order.status === 'pending').length;
+  const preparingOrdersCount = orderTypeFiltered.filter(order => order.status === 'preparing').length;
+  const readyOrdersCount = orderTypeFiltered.filter(order => order.status === 'ready').length;
+  const servedOrdersCount = orderTypeFiltered.filter(order => order.status === 'served').length;
+  const cancelledOrdersCount = orderTypeFiltered.filter(order => order.status === 'cancelled').length;
+
+  // Calculate total amounts for each status
+  const calculateTotalAmount = (orders: typeof mockQueueOrders) => 
+    orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
+
+  const allOrdersAmount = calculateTotalAmount(orderTypeFiltered);
+  const pendingOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'pending'));
+  const preparingOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'preparing'));
+  const readyOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'ready'));
+  const servedOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'served'));
+  const cancelledOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'cancelled'));
+
+  // Get current status amount
+  const getCurrentStatusAmount = () => {
+    switch (activeFilter) {
+      case 'pending': return pendingOrdersAmount;
+      case 'preparing': return preparingOrdersAmount;
+      case 'ready': return readyOrdersAmount;
+      case 'served': return servedOrdersAmount;
+      case 'cancelled': return cancelledOrdersAmount;
+      default: return allOrdersAmount;
+    }
+  };
+
   const filteredOrders = mockQueueOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
@@ -51,7 +87,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
     return matchesSearch && matchesStatus && matchesOrderType;
   });
 
-  // Group orders by status for "All" view
+  // Group orders by status for "All" view (from filtered results)
   const pendingOrders = filteredOrders.filter(order => order.status === 'pending');
   const preparingOrders = filteredOrders.filter(order => order.status === 'preparing');
   const readyOrders = filteredOrders.filter(order => order.status === 'ready');
@@ -458,10 +494,36 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
       {/* Header Box */}
       <div className="p-4 sm:p-5 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4 lg:mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row  items-start sm:items-center gap-3 sm:gap-9 w-full lg:w-auto">
             <h1 className="text-xl sm:text-xl font-bold whitespace-nowrap text-textPrimary">
               Current Orders
             </h1>
+            {/* Total Amount Badge */}
+            {/* <div className="flex items-center border-8 gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-orange-600 shadow-lg">
+              <ShoppingBag className="w-5 h-5 text-white" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
+                <span className="text-lg font-bold text-white">₹{getCurrentStatusAmount().toFixed(2)}</span>
+              </div>
+            </div> */}
+
+
+            <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
+                 bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
+                border border-white/20 
+                shadow-md">
+  <ShoppingBag className="w-4 h-4 text-white" />
+  
+  <div className="flex flex-col leading-tight">
+    <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+      Total
+    </span>
+    <span className="text-sm font-semibold text-white">
+      ₹{getCurrentStatusAmount().toFixed(2)}
+    </span>
+  </div>
+</div>
+
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
@@ -563,12 +625,12 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               </div>
             }
             items={[
-              { id: 'all', name: 'All Status', content: ordersContent },
-              { id: 'pending', name: 'Pending', content: ordersContent },
-              { id: 'preparing', name: 'Preparing', content: ordersContent },
-              { id: 'ready', name: 'Ready', content: ordersContent },
-              { id: 'served', name: 'Served', content: ordersContent },
-              { id: 'cancelled', name: 'Cancelled', content: ordersContent },
+              { id: 'all', name: 'All Status', badge: allOrdersCount, content: ordersContent },
+              { id: 'pending', name: 'Pending', badge: pendingOrdersCount, content: ordersContent },
+              { id: 'preparing', name: 'Preparing', badge: preparingOrdersCount, content: ordersContent },
+              { id: 'ready', name: 'Ready', badge: readyOrdersCount, content: ordersContent },
+              { id: 'served', name: 'Served', badge: servedOrdersCount, content: ordersContent },
+              { id: 'cancelled', name: 'Cancelled', badge: cancelledOrdersCount, content: ordersContent },
             ]}
           />
         </div>

@@ -366,6 +366,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
         name: item.product.name,
         quantity: item.quantity,
         completed: false,
+        addedAt: Date.now(),
       })),
     });
 

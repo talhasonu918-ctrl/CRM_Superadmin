@@ -22,12 +22,28 @@ interface RiderManagementViewProps {
 export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDarkMode = false, initialRiderId, onConsumeInitialRiderId }) => {
 
     // State
+    const [riders, setRiders] = useState<Rider[]>(mockRiders);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'available' | 'busy'>('all');
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [expandedRiderId, setExpandedRiderId] = useState<string | null>(null);
     const [isMapModalOpen, setIsMapModalOpen] = useState(false);
     const [selectedRiderForMap, setSelectedRiderForMap] = useState<Rider | null>(null);
+
+    const handleUpdateTaskStatus = (riderId: string, newStatus: 'pending' | 'received') => {
+        setRiders(prev => prev.map(rider => {
+            if (rider.id === riderId && rider.activeTask) {
+                return {
+                    ...rider,
+                    activeTask: {
+                        ...rider.activeTask,
+                        paymentStatus: newStatus
+                    }
+                };
+            }
+            return rider;
+        }));
+    };
 
     const toggleRiderExpansion = (riderId: string) => {
         setExpandedRiderId(expandedRiderId === riderId ? null : riderId);
@@ -38,7 +54,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
 
     // Filtered Data
     const filteredRiders = useMemo(() => {
-        return mockRiders.filter(rider => {
+        return riders.filter(rider => {
             const matchesSearch =
                 rider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 rider.phone.includes(searchQuery) ||
@@ -46,14 +62,14 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
             const matchesStatus = statusFilter === 'all' || rider.status === statusFilter;
             return matchesSearch && matchesStatus;
         });
-    }, [searchQuery, statusFilter]);
+    }, [searchQuery, statusFilter, riders]);
 
     // Statistics
     const stats = useMemo(() => ({
-        all: mockRiders.length,
-        available: mockRiders.filter(r => r.status === 'available').length,
-        busy: mockRiders.filter(r => r.status === 'busy').length,
-    }), []);
+        all: riders.length,
+        available: riders.filter(r => r.status === 'available').length,
+        busy: riders.filter(r => r.status === 'busy').length,
+    }), [riders]);
 
     // Handlers
 
@@ -114,9 +130,19 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                     <span className="text-[9px] font-black uppercase tracking-tighter text-primary opacity-70">Active Task</span>
                                     {expandedRiderId === rider.id ? <ChevronUp size={10} className="text-primary" /> : <ChevronDown size={10} className="text-primary" />}
                                 </div>
-                                <Badge size="sm" variant="flat" className={rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success text-[8px]' : 'bg-primary/10 text-primary text-[8px]'}>
-                                    {rider.activeTask.paymentStatus.toUpperCase()}
-                                </Badge>
+                                <DropdownMenu
+                                    isDarkMode={isDarkMode}
+                                    trigger={
+                                        <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
+                                            <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
+                                            <ChevronDown size={8} />
+                                        </Badge>
+                                    }
+                                    items={[
+                                        { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
+                                        { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
+                                    ]}
+                                />
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex flex-col">
@@ -182,10 +208,9 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                     <tr className="bg-background/50 border-b border-border">
                         <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Rider Info</th>
                         <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Orders</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Vehicle</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Active Task / Items</th>
+                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">InProgress</th>
+                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Order Tasks</th>
                         <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Status</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-border/10">
@@ -209,8 +234,24 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                 </Badge>
                             </td>
                             <td className="px-4 py-3">
-                                <div className="text-sm text-textPrimary">{rider.vehicleNumber}</div>
-                                <div className="text-xs font-medium opacity-50 text-textSecondary">{rider.cityArea}</div>
+                                <div className="flex items-center justify-between gap-4">
+                                    <div className="flex flex-col min-w-0">
+                                        <div className="text-sm font-bold text-textPrimary truncate">
+                                            {rider.activeTask?.orderNumber || rider.vehicleNumber || 'N/A'}
+                                        </div>
+                                        <div className="text-[10px] font-medium text-textSecondary opacity-70 truncate max-w-[150px]">
+                                            {rider.activeTask?.customerAddress || rider.cityArea}
+                                        </div>
+                                    </div>
+                                    <ActionIcon
+                                        variant="flat"
+                                        size="sm"
+                                        onClick={() => handleOpenMap(rider)}
+                                        className="rounded-lg bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
+                                    >
+                                        <MapPin size={14} />
+                                    </ActionIcon>
+                                </div>
                             </td>
                             <td className="px-4 py-3">
                                 {rider.status === 'busy' && rider.activeTask ? (
@@ -220,30 +261,44 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                     >
                                         <div className="flex items-center gap-2 mb-1">
                                             <span className="text-xs font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
-                                            <Badge size="sm" variant="flat" className={rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success text-[8px]' : 'bg-primary/10 text-primary text-[8px]'}>
-                                                {rider.activeTask.paymentStatus.toUpperCase()}
-                                            </Badge>
+                                            <DropdownMenu
+                                                isDarkMode={isDarkMode}
+                                                trigger={
+                                                    <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
+                                                        <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
+                                                        <ChevronDown size={8} />
+                                                    </Badge>
+                                                }
+                                                items={[
+                                                    { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
+                                                    { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
+                                                ]}
+                                            />
                                             {expandedRiderId === rider.id ? <ChevronUp size={12} className="text-primary" /> : <ChevronDown size={12} className="text-primary" />}
                                         </div>
 
-                                        {/* Itemized List - Same logic as Order List */}
-                                        <div className="flex flex-col gap-1 mt-1">
-                                            {(expandedRiderId === rider.id ? rider.activeTask.items : rider.activeTask.items?.slice(0, 2))?.map((item, idx) => (
-                                                <div key={idx} className="grid grid-cols-5 gap-2 text-[10px]">
-                                                    <span className="col-span-3 truncate font-medium text-textSecondary">
+                                        {/* Itemized List - Refined for better visibility */}
+                                        <div className="flex flex-col gap-1.5 mt-2">
+                                            {(expandedRiderId === rider.id ? rider.activeTask.items : rider.activeTask.items?.slice(0, 1))?.map((item, idx) => (
+                                                <div key={idx} className="grid grid-cols-5 gap-2 text-[11px] animate-in fade-in duration-300">
+                                                    <span className="col-span-3 truncate font-bold text-textPrimary">
                                                         {item.product.name}
                                                     </span>
-                                                    <span className="col-span-1 text-center font-bold text-textPrimary">
+                                                    <span className="col-span-1 text-center font-black text-textPrimary">
                                                         x{item.quantity}
                                                     </span>
                                                     <span className="col-span-1 text-right font-black text-primary">
-                                                        ₹{item.product.price}
+                                                        ₹{item.product.price.toLocaleString()}
                                                     </span>
                                                 </div>
                                             ))}
-                                            {rider.activeTask.items && rider.activeTask.items.length > 2 && (
-                                                <div className="text-[9px] font-bold text-primary mt-0.5">
-                                                    {expandedRiderId === rider.id ? 'Show less' : `+${rider.activeTask.items.length - 2} more items`}
+                                            {rider.activeTask.items && rider.activeTask.items.length > (expandedRiderId === rider.id ? 0 : 1) && (
+                                                <div className="text-[10px] font-black text-orange-500 mt-1 flex items-center gap-1 group-hover:text-orange-600">
+                                                    {expandedRiderId === rider.id ? (
+                                                        <span className="flex items-center gap-1 opacity-60">Show less <ChevronUp size={10} /></span>
+                                                    ) : (
+                                                        <span className="flex items-center gap-1">+{rider.activeTask.items.length - 1} more items <ChevronDown size={10} /></span>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -260,16 +315,6 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                     }`}>
                                     {rider.status}
                                 </Badge>
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                                <ActionIcon
-                                    variant="flat"
-                                    size="sm"
-                                    onClick={() => handleOpenMap(rider)}
-                                    className="rounded-lg bg-primary/10 text-primary hover:bg-primary/20"
-                                >
-                                    <MapPin size={16} />
-                                </ActionIcon>
                             </td>
                         </tr>
                     ))}
@@ -288,7 +333,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                             Rider Management
                         </h1>
                         <p className="text-[10px] sm:text-xs text-textSecondary">
-                            Fleet Status • {mockRiders.length} riders
+                            Fleet Status • {riders.length} riders
                         </p>
                     </div>
 
