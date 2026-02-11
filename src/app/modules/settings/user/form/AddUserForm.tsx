@@ -30,9 +30,9 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-      <div className="grid grid-cols-2 gap-y-5 gap-x-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-5">
         {/* First Name */}
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>First Name *</label>
           <Controller
             name="firstName"
@@ -43,7 +43,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter first name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -57,7 +57,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
         </div>
 
         {/* Last Name */}
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Last Name *</label>
           <Controller
             name="lastName"
@@ -68,7 +68,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter last name"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -100,7 +100,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                   {...field}
                   type="email"
                   placeholder="Enter email address"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -114,7 +114,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
         </div>
 
         {/* Phone No */}
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Phone No *</label>
           <Controller
             name="contact"
@@ -125,7 +125,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter phone number"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -139,7 +139,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
         </div>
 
         {/* CNIC */}
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>CNIC *</label>
           <Controller
             name="cnic"
@@ -150,7 +150,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter CNIC"
-                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border  rounded-lg focus:outline-none transition-colors ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -164,7 +164,7 @@ export const AddUserForm: React.FC<AddUserFormProps> = ({
         </div>
 
         {/* Gender */}
-        <div>
+        <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Gender *</label>
           <Controller
             name="gender"
