@@ -160,16 +160,23 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Sub Category */}
-          <div>
-            <label className={labelClass}>Sub Category</label>
-            <input
-              type="text"
-              placeholder="SPECIAL"
-              value={formData.subCategory || ''}
-              onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
-              className={inputClass}
-            />
-          </div>
+         <div>
+           <label className={labelClass}>Sub Category</label>
+           <select
+             value={formData.subCategory || ''}
+             onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
+             className={
+               `${inputClass} ${!formData.subCategory ? 'text-gray-400' : 'text-slate-900'}`
+             }
+           >
+             <option value="" className="text-gray-400">Select Sub Category</option>
+             <option value="Best Seller">Best Seller</option>
+             <option value="Combo">Combo</option>
+             <option value="New Arrival">New Arrival</option>
+             <option value="Recommended">Recommended</option>
+           </select>
+         </div>
+
 
           {/* Racks */}
           {/* <div>

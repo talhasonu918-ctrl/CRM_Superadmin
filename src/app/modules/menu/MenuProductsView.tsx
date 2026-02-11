@@ -158,19 +158,19 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
         <div className="flex items-center gap-3 ml-1.5 md:ml-0 ">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input
-    type="text"
-    placeholder="Search products..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
       ${isDarkMode
-        ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-        : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-      }
+                  ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+                  : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+                }
       w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500
     `}
-  />
+            />
           </div>
 
           <button

@@ -224,8 +224,8 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
                 <DetailRow label="Product Name" value={productDetails.name} />
                 <DetailRow label="Category" value={productDetails.category} />
                 <DetailRow label="Sub Category" value={productDetails.subCategory} />
-                <DetailRow label="Generic Name" value={productDetails.genericName} />
-                <DetailRow label="Product Type" value={productDetails.productType} />
+                {/* <DetailRow label="Generic Name" value={productDetails.genericName} /> */}
+                {/* <DetailRow label="Product Type" value={productDetails.productType} /> */}
               </div>
             </div>
 
@@ -238,13 +238,13 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
             </div>
 
             {/* Codes & Identifiers */}
-            <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
+            {/* <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
               <SectionTitle icon={Barcode}>Codes & Identifiers</SectionTitle>
               <div className="grid grid-cols-2 gap-x-4">
                 <DetailRow label="Barcode" value={productDetails.barCode} />
                 <DetailRow label="PCT Code" value={productDetails.pctCode} />
               </div>
-            </div>
+            </div> */}
 
             {/* Supplier Information */}
             <div className={`rounded-lg p-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-50'}`}>
@@ -252,7 +252,7 @@ export const ViewCategoryDetails: React.FC<ViewCategoryDetailsProps> = ({
               <div className="grid grid-cols-2 gap-x-4">
                 <DetailRow label="Manufacturer" value={productDetails.manufacturer} />
                 <DetailRow label="Supplier" value={productDetails.supplier} />
-                <DetailRow label="Rack Location" value={productDetails.racks} />
+                {/* <DetailRow label="Rack Location" value={productDetails.racks} /> */}
               </div>
             </div>
 

@@ -152,7 +152,7 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
                   className={inputClass}
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Display Name
                 </label>
@@ -163,7 +163,7 @@ export const ProductVariants: React.FC<ProductVariantsProps> = ({
                   onChange={(e) => setCurrentVariant({ ...currentVariant, displayName: e.target.value })}
                   className={inputClass}
                 />
-              </div>
+              </div> */}
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Instructions

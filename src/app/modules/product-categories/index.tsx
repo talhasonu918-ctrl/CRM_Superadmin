@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { ReusableModal } from '../../../components/ReusableModal';
 import { DeleteConfirmModal } from '../../../components/DeleteConfirmModal';
 import { CategoryTable } from './table/table';
-import { AddCategoryForm, EditCategoryForm, ViewCategoryDetails } from './form';
+import { AddCategoryForm, EditCategoryForm, ViewCategoryDetails, BulkDiscountForm } from './form';
 import { Category } from './types';
 import { showToast } from './utils/toastUtils';
 
@@ -19,11 +19,75 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [bulkDiscountModalOpen, setBulkDiscountModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Partial<Category>>({});
   const [isSortedByNewest, setIsSortedByNewest] = useState(false);
 
   const handleAddCategory = (data: Partial<Category>) => {
     console.log('Add category:', data);
+    
+    // Generate unique ID
+    const newCategory = {
+      id: Date.now().toString(),
+      categoryName: data.categoryName || '',
+      subCategories: data.subCategories || '',
+      createdAt: new Date().toLocaleString('en-US', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      }),
+      productImage: data.productImage || 'https://via.placeholder.com/40',
+      preparationTime: (data as any).preparationTime || '',
+      branches: (data as any).branches || '',
+      hsCode: (data as any).hsCode || '',
+      showOnMobile: (data as any).showOnMobile || false,
+      showOnWeb: (data as any).showOnWeb || false,
+      showOnPOS: (data as any).showOnPOS || false,
+    };
+
+    // Get existing products from localStorage
+    const productsStr = localStorage.getItem('products_list');
+    let products = [];
+    
+    if (productsStr) {
+      try {
+        products = JSON.parse(productsStr);
+      } catch (error) {
+        console.error('Failed to parse products:', error);
+        products = [];
+      }
+    }
+
+    // Add new category to the beginning of the array
+    products.unshift({
+      id: newCategory.id,
+      name: newCategory.categoryName,
+      category: newCategory.categoryName,
+      subCategory: newCategory.subCategories,
+      createdAt: newCategory.createdAt,
+      productImage: newCategory.productImage,
+      mobileImage: newCategory.productImage,
+      webImage: newCategory.productImage,
+      preparationTime: newCategory.preparationTime,
+      branches: newCategory.branches,
+      hsCode: newCategory.hsCode,
+      showOnMobile: newCategory.showOnMobile,
+      showOnWeb: newCategory.showOnWeb,
+      showOnPOS: newCategory.showOnPOS,
+    });
+
+    // Save to localStorage
+    localStorage.setItem('products_list', JSON.stringify(products));
+
+    // Trigger refresh event for table
+    window.dispatchEvent(new Event('refreshCategories'));
+
+    // Show success toast
+    showToast(`"${newCategory.categoryName}" added successfully!`, '✅');
+
     setAddModalOpen(false);
   };
   const handleEditCategory = (data: Partial<Category>) => {
@@ -65,7 +129,40 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
   };
 
   const handleBulkDiscount = () => {
-    showToast('Bulk Discount feature is coming soon!', '🏷️');
+    setBulkDiscountModalOpen(true);
+  };
+
+  const handleApplyBulkDiscount = (selectedProducts: string[], discount: number) => {
+    // Get products from localStorage
+    const productsStr = localStorage.getItem('products_list');
+    
+    if (productsStr) {
+      try {
+        const products = JSON.parse(productsStr);
+        
+        // Apply discount to selected products
+        const updatedProducts = products.map((product: any) => {
+          if (selectedProducts.includes(product.id)) {
+            return { ...product, discount };
+          }
+          return product;
+        });
+        
+        // Save back to localStorage
+        localStorage.setItem('products_list', JSON.stringify(updatedProducts));
+        
+        // Trigger refresh event for table
+        window.dispatchEvent(new Event('refreshCategories'));
+        
+        // Show success toast
+        showToast(`Discount of ${discount}% applied to ${selectedProducts.length} product(s)!`, '🏷️');
+      } catch (error) {
+        console.error('Failed to apply discount:', error);
+        showToast('Failed to apply discount', '❌');
+      }
+    }
+    
+    setBulkDiscountModalOpen(false);
   };
 
   const handleSortCategories = () => {
@@ -170,15 +267,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
 
             {/* Add Category */}
             <button
-              onClick={() => {
-                // Go to /[company]/product-categories/add if company param exists, else /product-categories/add
-                const company = router.query.company as string | undefined;
-                if (company) {
-                  router.push(`/${company}/product-categories/add`);
-                } else {
-                  router.push('/product-categories/add');
-                }
-              }}
+              onClick={() => setAddModalOpen(true)}
               className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40"
             >
               <Plus size={18} />
@@ -204,8 +293,8 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
       <ReusableModal
         isOpen={addModalOpen}
         onClose={() => setAddModalOpen(false)}
-        title="Add New Category"
-        size="md"
+        title="Category"
+        size="xl"
       >
         <AddCategoryForm
           onSubmit={handleAddCategory}
@@ -251,6 +340,20 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
         title="Delete Category"
         message={`Are you sure you want to delete "${selectedCategory.categoryName}"? This action cannot be undone.`}
       />
+
+      {/* Bulk Discount Modal */}
+      <ReusableModal
+        isOpen={bulkDiscountModalOpen}
+        onClose={() => setBulkDiscountModalOpen(false)}
+        title="Bulk Discount"
+        size="xl"
+      >
+        <BulkDiscountForm
+          onSubmit={handleApplyBulkDiscount}
+          onCancel={() => setBulkDiscountModalOpen(false)}
+          isDarkMode={isDarkMode}
+        />
+      </ReusableModal>
     </div>
   );
 };
