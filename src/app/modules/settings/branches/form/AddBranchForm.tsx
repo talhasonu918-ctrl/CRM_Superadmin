@@ -619,7 +619,7 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`h-10 rounded-lg px-8 border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
+          className={`h-10 rounded-lg px-8 border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
         >
           Cancel
         </Button>
