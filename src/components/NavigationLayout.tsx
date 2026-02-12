@@ -25,6 +25,14 @@ export function Layout({ children }: LayoutProps) {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
+  // Load branch from localStorage on mount
+  React.useEffect(() => {
+    const savedBranch = localStorage.getItem('activeBranch');
+    if (savedBranch) {
+      setSelectedBranch(savedBranch);
+    }
+  }, []);
+
   // Mock data for branches
   const branches = [
     { id: 1, name: 'Main Branch', location: 'M.A Jinnah road Okara' },
@@ -49,6 +57,7 @@ export function Layout({ children }: LayoutProps) {
 
   const handleBranchSelect = (branchName: string) => {
     setSelectedBranch(branchName);
+    localStorage.setItem('activeBranch', branchName);
     setIsBranchDropdownOpen(false);
   };
 
@@ -166,8 +175,7 @@ export function Layout({ children }: LayoutProps) {
                         <div
                           key={notif.id}
                           onClick={() => handleNotificationClick(notif)}
-                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${
-                            notif.unread ? 'bg-orange-50/50 dark:bg-orange-500/5' : ''
+                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${notif.unread ? 'bg-orange-50/50 dark:bg-orange-500/5' : ''
                             }`}
                         >
                           <div className="flex items-start gap-3">
@@ -175,7 +183,7 @@ export function Layout({ children }: LayoutProps) {
                             <div className="flex-1 min-w-0">
                               <h4 className="font-semibold text-sm text-slate-800 dark:text-white">{notif.title}</h4>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notif.message}</p>
-                              
+
                               {/* Order Details Preview */}
                               {notif.orderDetails && (
                                 <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1.5">
@@ -193,7 +201,7 @@ export function Layout({ children }: LayoutProps) {
                                   </div>
                                 </div>
                               )}
-                              
+
                               <p className="text-xs text-orange-500 dark:text-orange-400 mt-2 font-medium">{notif.time}</p>
                             </div>
                           </div>
@@ -387,7 +395,7 @@ export function Layout({ children }: LayoutProps) {
                 <User className="w-4 h-4 text-primary" />
                 Customer Information
               </h3>
-              
+
               <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4 space-y-3">
                 <div className="flex items-start gap-3">
                   <User className="w-4 h-4 text-slate-500 mt-0.5" />
@@ -421,7 +429,7 @@ export function Layout({ children }: LayoutProps) {
                 <Package className="w-4 h-4 text-primary" />
                 Order Items
               </h3>
-              
+
               <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
                 <div className="space-y-3">
                   {selectedOrder.items?.map((item: any, index: number) => (

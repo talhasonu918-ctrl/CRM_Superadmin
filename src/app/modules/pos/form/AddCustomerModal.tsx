@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from '../../../../components/Modal';
+import { ReusableModal } from '../../../../components/ReusableModal';
 
 interface Customer {
   id: string;
@@ -13,7 +13,6 @@ interface AddCustomerModalProps {
   onAddCustomer: (customer: Omit<Customer, 'id'>) => void;
   isDarkMode?: boolean;
 }
-
 export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
   isOpen,
   onClose,
@@ -31,7 +30,6 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
     if (!customerName.trim()) {
       newErrors.name = 'Customer name is required';
     }
-
     if (customerPhone.trim() && !/^\+?[0-9\s-]{10,}$/.test(customerPhone)) {
       newErrors.phone = 'Please enter a valid phone number';
     }
@@ -56,11 +54,12 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
   };
 
   return (
-    <Modal
+    <ReusableModal
       isOpen={isOpen}
       onClose={handleClose}
       title="Add New Customer"
       isDarkMode={isDarkMode}
+      size="lg"
     >
       <div className="space-y-3 sm:space-y-4">
         <div>
@@ -116,6 +115,6 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
           </button>
         </div>
       </div>
-    </Modal>
+    </ReusableModal>
   );
 };

@@ -1,9 +1,39 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Plus, Edit3, Trash2, Tag, Calendar, User, ChevronDown, ChevronUp, PlusCircle, MinusCircle, X as XMarkIcon } from 'lucide-react';
+import { Search, Plus, Edit3, Trash2, Tag, Calendar, User, ChevronDown, ChevronUp, PlusCircle, MinusCircle, X as XMarkIcon, Eye, Package } from 'lucide-react';
 import { ReusableModal } from '../../../components/ReusableModal';
 import InfiniteTable from '../../../components/InfiniteTable';
 import { useInfiniteTable } from '../../../hooks/useInfiniteTable';
 import { ColumnDef } from '@tanstack/react-table';
+import { CustomSelect, CustomSelectOption } from '../../../components/CustomSelect';
+
+const statusOptions: CustomSelectOption[] = [
+  { value: 'Active', label: 'Active' },
+  { value: 'Inactive', label: 'Inactive' },
+];
+
+const posOnlyOptions: CustomSelectOption[] = [
+  { value: 'Yes', label: 'Yes' },
+  { value: 'No', label: 'No' },
+];
+
+const categoryOptions: CustomSelectOption[] = [
+  { value: 'Deals', label: 'Deals' },
+  { value: 'Combo', label: 'Combo' },
+  { value: 'Specials', label: 'Specials' },
+];
+
+const subCategoryOptions: CustomSelectOption[] = [
+  { value: 'Fast Food', label: 'Fast Food' },
+  { value: 'Chinese', label: 'Chinese' },
+  { value: 'Beverages', label: 'Beverages' },
+];
+
+const mainBranchOptions: CustomSelectOption[] = [
+  { value: 'Main Branch', label: 'Main Branch' },
+  { value: 'Lahore Branch', label: 'Lahore Branch' },
+  { value: 'Multan Brnach', label: 'Multan Brnach' },
+  { value: 'Islamabad Branch', label: 'Islamabad Branch' },
+];
 
 interface DealsViewProps {
   isDarkMode: boolean;
@@ -88,8 +118,22 @@ const initialDeals: Deal[] = [
 export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [deals, setDeals] = useState<Deal[]>([]);
+  const [deals, setDeals] = useState<Deal[]>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          return Array.isArray(parsed) ? (parsed.length > 0 ? parsed : initialDeals) : initialDeals;
+        } catch (e) {
+          console.error('Error parsing localStorage:', e);
+        }
+      }
+    }
+    return initialDeals;
+  });
   const [currentDeal, setCurrentDeal] = useState<Deal>({
     id: '',
     name: '',
@@ -109,36 +153,9 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
     selectionSections: [],
   });
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setDeals(parsed);
-          console.log('Loaded deals from localStorage:', parsed.length, 'deals');
-        } else {
-          console.log('Invalid data structure in localStorage, starting fresh');
-          setDeals([]);
-        }
-      } catch (e) {
-        console.error('Error parsing localStorage data:', e);
-        setDeals([]);
-      }
-    } else {
-      console.log('No data in localStorage, starting fresh');
-      setDeals([]);
-    }
-  }, []);
-
   // Save to localStorage whenever deals change
   useEffect(() => {
-    // Only save if deals array has been initialized (not the initial empty state)
-    if (deals.length >= 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(deals));
-      console.log('Auto-saved deals to localStorage:', deals.length, 'deals');
-    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(deals));
   }, [deals]);
 
   const inputClass = `w-full px-4 py-2 rounded-lg border ${isDarkMode
@@ -177,6 +194,11 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
     setIsModalOpen(true);
   };
 
+  const handleView = (deal: Deal) => {
+    setCurrentDeal({ ...deal });
+    setIsViewModalOpen(true);
+  };
+
   const handleDelete = (id: string) => {
     setDeals(deals.filter(d => d.id !== id));
   };
@@ -211,18 +233,10 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
       console.log('Adding new deal:', dealToSave);
     }
 
-    // Update state first
+    // Update state
     setDeals(updatedDeals);
     console.log('Updated deals array:', updatedDeals);
-    
-    // Save to localStorage
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDeals));
-      console.log('Successfully saved to localStorage');
-    } catch (error) {
-      console.error('Error saving to localStorage:', error);
-    }
-    
+
     // Close modal and reset form
     setIsModalOpen(false);
     setCurrentDeal({
@@ -259,8 +273,8 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-orange-500/10">
             {row.original.image ? (
-              <img 
-                src={row.original.image} 
+              <img
+                src={row.original.image}
                 alt={row.original.name}
                 className="w-full h-full object-cover"
               />
@@ -305,16 +319,19 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
       header: 'Actions',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <button onClick={() => handleEdit(row.original)} className="p-1.5 hover:bg-orange-500/10 rounded transition-colors">
+          <button onClick={() => handleView(row.original)} className="p-1.5 hover:bg-orange-500/10 rounded transition-colors" title="View Details">
+            <Eye className="w-4 h-4 text-orange-500" />
+          </button>
+          <button onClick={() => handleEdit(row.original)} className="p-1.5 hover:bg-orange-500/10 rounded transition-colors" title="Edit Deal">
             <Edit3 className="w-4 h-4 text-orange-500" />
           </button>
-          <button onClick={() => handleDelete(row.original.id)} className="p-1.5 hover:bg-red-500/10 rounded transition-colors">
+          <button onClick={() => handleDelete(row.original.id)} className="p-1.5 hover:bg-red-500/10 rounded transition-colors" title="Delete Deal">
             <Trash2 className="w-4 h-4 text-red-500" />
           </button>
         </div>
       ),
     },
-  ], [isDarkMode, handleEdit, handleDelete]);
+  ], [isDarkMode, handleEdit, handleDelete, handleView]);
 
   const filteredDeals = useMemo(() => deals.filter(deal =>
     deal.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -385,7 +402,7 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
         size="xl"
         isDarkMode={isDarkMode}
       >
-        <div className="space-y-8 animate-in fade-in zoom-in duration-300">
+        <div className="space-y-8 animate-in fade-in zoom-in duration-300 max-h-[80vh] overflow-y-auto scrollbar-hidden">
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="md:col-span-1">
@@ -406,29 +423,53 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Category</label>
-              <input type="text" value={currentDeal.category} onChange={e => setCurrentDeal({ ...currentDeal, category: e.target.value })} className={inputClass} />
+              <CustomSelect
+                options={categoryOptions}
+                value={categoryOptions.find(opt => opt.value === currentDeal.category)}
+                onChange={(option) => setCurrentDeal({ ...currentDeal, category: option?.value as any })}
+                isDarkMode={isDarkMode}
+                placeholder="Select Category"
+              />
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sub Category</label>
-              <input type="text" value={currentDeal.subCategory} onChange={e => setCurrentDeal({ ...currentDeal, subCategory: e.target.value })} className={inputClass} />
+              <CustomSelect
+                options={subCategoryOptions}
+                value={subCategoryOptions.find(opt => opt.value === currentDeal.subCategory)}
+                onChange={(option) => setCurrentDeal({ ...currentDeal, subCategory: option?.value as any })}
+                isDarkMode={isDarkMode}
+                placeholder="Select Sub Category"
+              />
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Main Branch</label>
-              <input type="text" value={currentDeal.mainBranch} onChange={e => setCurrentDeal({ ...currentDeal, mainBranch: e.target.value })} className={inputClass} />
+              <CustomSelect
+                options={mainBranchOptions}
+                value={mainBranchOptions.find(opt => opt.value === currentDeal.mainBranch)}
+                onChange={(option) => setCurrentDeal({ ...currentDeal, mainBranch: option?.value as any })}
+                isDarkMode={isDarkMode}
+                placeholder="Select Branch"
+              />
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Status</label>
-              <select value={currentDeal.status} onChange={e => setCurrentDeal({ ...currentDeal, status: e.target.value as any })} className={inputClass}>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-              </select>
+              <CustomSelect
+                options={statusOptions}
+                value={statusOptions.find(opt => opt.value === currentDeal.status)}
+                onChange={(option) => setCurrentDeal({ ...currentDeal, status: option?.value as any })}
+                isDarkMode={isDarkMode}
+                placeholder="Select Status"
+              />
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Show In POS Only</label>
-              <select value={currentDeal.showInPOSOnly ? 'Yes' : 'No'} onChange={e => setCurrentDeal({ ...currentDeal, showInPOSOnly: e.target.value === 'Yes' })} className={inputClass}>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-              </select>
+              <CustomSelect
+                options={posOnlyOptions}
+                value={posOnlyOptions.find(opt => opt.value === (currentDeal.showInPOSOnly ? 'Yes' : 'No'))}
+                onChange={(option) => setCurrentDeal({ ...currentDeal, showInPOSOnly: option?.value === 'Yes' })}
+                isDarkMode={isDarkMode}
+                placeholder="Select POS Option"
+              />
             </div>
             <div className="md:col-span-1">
               <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Select Order Types</label>
@@ -451,9 +492,9 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
             </label>
             <div className="flex items-center gap-2">
               <label htmlFor="dealImage" className="cursor-pointer">
-                <input 
+                <input
                   id="dealImage"
-                  type="file" 
+                  type="file"
                   accept="image/*"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
@@ -465,7 +506,7 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
                       reader.readAsDataURL(file);
                     }
                   }}
-                  className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100" 
+                  className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
                 />
               </label>
               {currentDeal.image && (
@@ -536,7 +577,6 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
           </div>
 
           <hr className={isDarkMode ? 'border-slate-700' : 'border-slate-200'} />
-
           {/* Selection Sections */}
           <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-700 sticky bottom-0 bg-white dark:bg-slate-900 pb-2">
             <button
@@ -550,6 +590,127 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
               className="px-8 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-black uppercase text-xs tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all"
             >
               Save
+            </button>
+          </div>
+        </div>
+      </ReusableModal>
+
+      {/* View Deal Modal */}
+      <ReusableModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        title="Deal Details"
+        size="lg"
+        isDarkMode={isDarkMode}
+      >
+        <div className="space-y-6 animate-in fade-in zoom-in duration-300 max-h-[80vh] overflow-y-auto scrollbar-hidden pr-2">
+          {/* Header Info */}
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-48 h-48 rounded-2xl overflow-hidden bg-orange-500/10 border-2 border-orange-500/20 flex-shrink-0 group relative">
+              {currentDeal.image ? (
+                <img src={currentDeal.image} alt={currentDeal.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-orange-500/40">
+                  <Tag size={48} />
+                  <span className="text-[10px] mt-2 font-black uppercase tracking-tighter">No Image</span>
+                </div>
+              )}
+              <div className="absolute top-2 right-2">
+                <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${currentDeal.status === 'Active' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                  {currentDeal.status}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-4">
+              <div>
+                <h2 className={`text-2xl font-black uppercase tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{currentDeal.name}</h2>
+                <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{currentDeal.displayName}</p>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${isDarkMode ? 'border-slate-700 bg-slate-800 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
+                  {currentDeal.category}
+                </span>
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${isDarkMode ? 'border-slate-700 bg-slate-800 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
+                  {currentDeal.subCategory}
+                </span>
+                <span className={`px-3 py-1 rounded-lg text-xs font-bold border ${isDarkMode ? 'border-slate-700 bg-slate-800 text-slate-300' : 'border-slate-200 bg-slate-50 text-slate-600'}`}>
+                  {currentDeal.mainBranch}
+                </span>
+              </div>
+
+              <div className="inline-flex items-center gap-2 bg-orange-500/10 px-4 py-2 rounded-xl">
+                <span className="text-xl font-black text-orange-500 tracking-tighter">₹{(currentDeal.price ?? 0).toLocaleString()}</span>
+                <span className="text-[10px] uppercase font-black text-orange-500/60 leading-none">Price</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Description */}
+            <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50/50 border-slate-200'}`}>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">Description</h4>
+              <p className={`text-sm leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>{currentDeal.description || 'No description provided.'}</p>
+            </div>
+
+            {/* Visibility Settings */}
+            <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50/50 border-slate-200'}`}>
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3">Availability</h4>
+              <div className="space-y-2">
+                {[
+                  { label: 'POS System', value: currentDeal.showInPOSOnly },
+                  { label: 'Mobile App', value: currentDeal.showOnMobile },
+                  { label: 'Web Platform', value: currentDeal.showOnWeb },
+                  { label: 'Time Specific', value: currentDeal.isTimeSpecific }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between text-xs font-bold">
+                    <span className={isDarkMode ? 'text-slate-400' : 'text-slate-500'}>{item.label}</span>
+                    <span className={item.value ? 'text-green-500' : 'text-red-400'}>{item.value ? 'YES' : 'NO'}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Products List */}
+          <div className={`p-5 rounded-3xl border ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} shadow-sm`}>
+            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-orange-500 mb-4 flex items-center gap-2">
+              <Package size={14} /> Included Products
+            </h4>
+            <div className="space-y-3">
+              {currentDeal.products.length > 0 ? (
+                currentDeal.products.map((p, idx) => (
+                  <div key={idx} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all hover:translate-x-1 ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-slate-50/50 border-slate-100 hover:border-slate-200'}`}>
+                    <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center text-xs font-black text-orange-500 flex-shrink-0">
+                      {p.sequence}
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-black uppercase tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{p.name}</p>
+                      <p className="text-[10px] font-bold text-slate-400">Price Contribution: ₹{p.priceContribution}</p>
+                    </div>
+                    {p.allowAddOns && (
+                      <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 bg-green-500/10 text-green-500 rounded-lg">
+                        Add-ons Enabled
+                      </span>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-6">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">No products included in this deal</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex justify-end pt-4">
+            <button
+              onClick={() => setIsViewModalOpen(false)}
+              className="px-8 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-800 active:scale-95 transition-all shadow-lg shadow-slate-900/10"
+            >
+              Close View
             </button>
           </div>
         </div>

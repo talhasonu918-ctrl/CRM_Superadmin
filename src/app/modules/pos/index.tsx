@@ -104,7 +104,11 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
   ];
 
   return (
-    <div id="pos-module-container" className="bg-background text-textPrimary h-full w-full overflow-auto scrollbar-hidden">
+    <div
+      id="pos-module-container"
+      className="bg-background text-textPrimary h-full w-full overflow-auto scrollbar-hidden"
+      style={{ WebkitOverflowScrolling: 'touch', overflowX: 'auto', overflowY: 'auto' }}
+    >
       <Tabs
         className="h-full"
         items={tabs}
@@ -117,7 +121,7 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-2 rounded-lg hover:bg-surface/10 text-textSecondary transition-all duration-200`}
+              className={`relative p-2  rounded-lg hover:bg-surface/10 text-textSecondary transition-all duration-200`}
               title="Notifications"
             >
               <Bell size={18} />

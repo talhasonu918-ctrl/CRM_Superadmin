@@ -87,7 +87,7 @@ const Tabs: React.FC<TabsProps> = ({
     <div className={`w-full ${fullHeight ? 'h-full flex flex-col' : ''} ${className}`}>
       {/* Tab List */}
       <div className={`flex flex-col md:flex-row md:items-center justify-between gap-4 ${variant === 'underline' ? "border-b border-border" : ""} ${variant === 'pills' ? "bg-background p-1 rounded-xl" : ""} flex-shrink-0`}>
-        <div className="w-full  md:w-auto flex items-center whitespace-nowrap gap-1 overflow-x-auto pb-1 md:pb-0">
+        <div className="w-full  md:w-auto overflow-auto scrollbar-hidden flex items-center whitespace-nowrap gap-1 overflow-x-auto pb-1 md:pb-0">
           {items.map((item) => {
             const isActive = activeTab === item.id;
             return (
