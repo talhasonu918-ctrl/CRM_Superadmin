@@ -10,11 +10,14 @@ export interface BrandColors {
     success: string;
     warning: string;
     error: string;
+    fontFamily?: string;
 }
 export interface TenantBranding {
     id: string;
     name: string;
     logo?: string;
+    favicon?: string;
+    fontFamily?: string;
     light: BrandColors;
     dark: BrandColors;
 }

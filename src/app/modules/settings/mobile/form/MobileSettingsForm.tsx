@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFormContext } from 'react-hook-form';
 import { Button, Select } from 'rizzui';
 import { MobileSettings, defaultMobileSettings } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
@@ -7,10 +7,11 @@ import { ChevronDown, X } from 'lucide-react';
 
 interface MobileSettingsFormProps {
     initialData?: Partial<MobileSettings>;
-    onSubmit: (data: Partial<MobileSettings>) => void;
+    onSubmit?: (data: Partial<MobileSettings>) => void;
     isDarkMode?: boolean;
     showOnlyWeb?: boolean;
     showOnlyMobile?: boolean;
+    hideSubmitButton?: boolean;
 }
 
 const maintenanceOptions = [
@@ -30,17 +31,30 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
     isDarkMode = false,
     showOnlyWeb = false,
     showOnlyMobile = false,
+    hideSubmitButton = false,
 }) => {
     const theme = getThemeColors(isDarkMode);
-    const { control, handleSubmit } = useForm<Partial<MobileSettings>>({
+
+    // Check if we are running inside a FormProvider
+    const contextMethods = useFormContext<any>();
+    const isContext = !!contextMethods;
+
+    // Use context methods if available, otherwise initialize useForm
+    const { control, handleSubmit } = isContext ? contextMethods : useForm<any>({
         defaultValues: initialData || defaultMobileSettings,
     });
 
     const inputClass = (hasError?: boolean) => `w-full px-4 py-3 border text-sm rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} placeholder:${theme.text.tertiary} ${hasError ? theme.status.error.border : `${theme.border.input} focus:border-primary`
         }`;
 
+    const FormWrapper = isContext ? 'div' : 'form';
+    const formProps = isContext
+        ? { className: "space-y-6 sm:space-y-8" }
+        : { onSubmit: handleSubmit(onSubmit!), className: "space-y-6 sm:space-y-8" };
+
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 sm:space-y-8">
+        // @ts-ignore
+        <FormWrapper {...formProps}>
             {/* Version Control Section */}
             <div>
                 <h3 className={`text-sm sm:text-base font-semibold mb-3 sm:mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
@@ -284,14 +298,16 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-2">
-                <Button
-                    type="submit"
-                    className={`${theme.button.primary} h-10 sm:h-10 text-white rounded-lg px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto`}
-                >
-                    Save Configuration
-                </Button>
-            </div>
-        </form>
+            {!hideSubmitButton && (
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 pt-3 sm:pt-2">
+                    <Button
+                        type="submit"
+                        className={`${theme.button.primary} h-10 sm:h-10 text-white rounded-lg px-6 sm:px-8 text-sm sm:text-base w-full sm:w-auto`}
+                    >
+                        Save Configuration
+                    </Button>
+                </div>
+            )}
+        </FormWrapper>
     );
 };
