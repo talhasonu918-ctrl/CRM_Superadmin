@@ -69,3 +69,68 @@ body,
     /* Chrome, Safari and Opera */
   }
 }
+
+@media print {
+
+  /* Hide everything except the invoice container */
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice-content,
+  #invoice-content * {
+    visibility: visible;
+  }
+
+  #invoice-content {
+    position: absolute !important;
+    left: 50% !important;
+    top: 0 !important;
+    transform: translateX(-50%) !important;
+    width: 80mm !important;
+    /* Standard Thermal Receipt Width */
+    max-width: 80mm !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+    /* Pic 3 Jagged Top Edge */
+    clip-path: polygon(0% 2%, 2.5% 0%, 5% 2%, 7.5% 0%, 10% 2%, 12.5% 0%, 15% 2%, 17.5% 0%, 20% 2%, 22.5% 0%, 25% 2%, 27.5% 0%, 30% 2%, 32.5% 0%, 35% 2%, 37.5% 0%, 40% 2%, 42.5% 0%, 45% 2%, 47.5% 0%, 50% 2%, 52.5% 0%, 55% 2%, 57.5% 0%, 60% 2%, 62.5% 0%, 65% 2%, 67.5% 0%, 70% 2%, 72.5% 0%, 75% 2%, 77.5% 0%, 80% 2%, 82.5% 0%, 85% 2%, 87.5% 0%, 90% 2%, 92.5% 0%, 95% 2%, 97.5% 0%, 100% 2%,
+        100% 100%, 0% 100%) !important;
+  }
+
+  /* Force colors and backgrounds */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    font-family: 'Courier New', Courier, monospace !important;
+    /* Receipt fonts often look better in mono on thermal */
+  }
+
+  /* Specific tweaks for receipt look */
+  .bg-primary {
+    background-color: transparent !important;
+    color: black !important;
+    border: 1px solid black !important;
+  }
+
+  .text-primary {
+    color: black !important;
+    font-weight: 900 !important;
+  }
+
+  /* Hide print/save and kitchen buttons */
+  .no-print,
+  button,
+  .p-6.bg-background\/80.border-t.border-border {
+    display: none !important;
+  }
+
+  /* Page setup for thermal printers */
+  @page {
+    margin: 0;
+    size: auto;
+  }
+}

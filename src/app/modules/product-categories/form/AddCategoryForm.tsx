@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Trash2 } from 'lucide-react';
 import { Category } from '../types';
+import { getThemeColors } from '../../../../theme/colors';
+import { CustomSelect, CustomSelectOption } from '../../../../components/CustomSelect';
 
 // Extend Category type for form fields
 type CategoryFormFields = Partial<Category> & {
@@ -11,7 +13,13 @@ type CategoryFormFields = Partial<Category> & {
   preparationTime?: string;
   branches?: string;
 };
-import { getThemeColors } from '../../../../theme/colors';
+
+const branchOptions: CustomSelectOption[] = [
+  { value: 'Main Branch', label: 'Main Branch' },
+  { value: 'Lahore Branch', label: 'Lahore Branch' },
+  { value: 'Multan Brnach', label: 'Multan Brnach' },
+  { value: 'Islamabad Branch', label: 'Islamabad Branch' },
+];
 
 interface AddCategoryFormProps {
   onSubmit: (data: Partial<Category>) => void;
@@ -25,9 +33,17 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const { control, handleSubmit, register } = useForm<CategoryFormFields>();
-  const [subCategories, setSubCategories] = useState<string[]>(['', '', '', '', '']);
+  const { control, handleSubmit, register, setValue } = useForm<CategoryFormFields>();
+  const [subCategories, setSubCategories] = useState<string[]>(['', '', '']);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  // Synchronize with activeBranch from localStorage
+  React.useEffect(() => {
+    const activeBranch = localStorage.getItem('activeBranch');
+    if (activeBranch) {
+      setValue('branches', activeBranch);
+    }
+  }, [setValue]);
 
   const handleAddSubCategory = () => {
     setSubCategories([...subCategories, '']);
@@ -52,14 +68,14 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
   const onFormSubmit = (data: Partial<Category>) => {
     // Filter out empty subcategories
     const filteredSubCategories = subCategories.filter(sub => sub.trim() !== '');
-    
+
     // Combine form data with subcategories
     const formData = {
       ...data,
       subCategories: filteredSubCategories.join(', '),
       productImage: selectedFile ? URL.createObjectURL(selectedFile) : undefined,
     };
-    
+
     onSubmit(formData);
   };
 
@@ -70,7 +86,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         <h3 className={`text-sm font-semibold mb-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
           Category
         </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Category Name */}
           <div>
             <Controller
@@ -82,13 +98,11 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                   <input
                     {...field}
                     placeholder="Category Name"
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all text-sm ${
-                      isDarkMode 
-                        ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500' 
-                        : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
-                    } ${
-                      fieldState.error ? 'border-red-500' : ''
-                    }`}
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+                      ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
+                      : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
+                      } ${fieldState.error ? 'border-red-500' : ''
+                      }`}
                   />
                   {fieldState.error && (
                     <p className="text-red-500 text-xs mt-1">{fieldState.error.message}</p>
@@ -103,28 +117,28 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
             <input
               {...register('preparationTime')}
               placeholder="Preparation Time"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all text-sm ${
-                isDarkMode 
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500' 
-                  : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
+                : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
+                }`}
             />
           </div>
 
-          {/* Select Branches */}
-          <div>
-            <select
-              {...register('branches')}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all text-sm ${
-                isDarkMode 
-                  ? 'bg-slate-800 border-slate-700 text-slate-400' 
-                  : 'bg-white border-slate-300 text-slate-400'
-              }`}
-            >
-              <option value="">Select Branches</option>
-              <option value="main">Main Branch</option>
-              <option value="branch2">Branch 2</option>
-            </select>
+          {/* Select Branches - Searchable Dropdown */}
+          <div className="text-sm">
+            <Controller
+              name="branches"
+              control={control}
+              render={({ field }) => (
+                <CustomSelect
+                  options={branchOptions}
+                  value={branchOptions.find(opt => opt.value === field.value)}
+                  onChange={(option) => field.onChange(option?.value)}
+                  placeholder="Select Branches"
+                  isDarkMode={isDarkMode}
+                />
+              )}
+            />
           </div>
 
           {/* HS Code */}
@@ -149,7 +163,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               type="checkbox"
               id="showOnMobile"
               {...register('showOnMobile' as const)}
-              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             />
             <label htmlFor="showOnMobile" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
               Show On Mobile App
@@ -162,7 +176,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               type="checkbox"
               id="showOnWeb"
               {...register('showOnWeb' as const)}
-              className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
             />
             <label htmlFor="showOnWeb" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
               Show On Web App
@@ -171,13 +185,12 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
 
           {/* File Upload */}
           <div className="flex items-center gap-2">
-            <label 
-              htmlFor="fileUpload" 
-              className={`px-4 py-2 border rounded-md cursor-pointer text-sm transition-colors ${
-                isDarkMode 
-                  ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' 
-                  : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
-              }`}
+            <label
+              htmlFor="fileUpload"
+              className={`px-4 py-2 border rounded-md cursor-pointer text-sm transition-colors ${isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+                : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+                }`}
             >
               Choose file
             </label>
@@ -201,7 +214,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
             id="showOnPOS"
             {...register('showOnPOS' as const)}
             defaultChecked
-            className="w-4 h-4 text-purple-600 rounded focus:ring-purple-500"
+            className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
           />
           <label htmlFor="showOnPOS" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
             Show On POS
@@ -214,7 +227,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         <h3 className={`text-sm font-semibold mb-4 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
           Sub Category
         </h3>
-        
+
         <div className="space-y-3">
           {subCategories.map((subCat, index) => (
             <div key={index} className="flex items-center gap-2">
@@ -223,20 +236,18 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                 value={subCat}
                 onChange={(e) => handleSubCategoryChange(index, e.target.value)}
                 placeholder="SubCategory Name"
-                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all text-sm ${
-                  isDarkMode 
-                    ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500' 
-                    : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
-                }`}
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+                  ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
+                  : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
+                  }`}
               />
               <button
                 type="button"
                 onClick={() => handleRemoveSubCategory(index)}
-                className={`p-2 rounded-md transition-colors ${
-                  isDarkMode 
-                    ? 'hover:bg-slate-700 text-red-600 hover:text-red-400' 
-                    : 'hover:bg-slate-100 text-red-600 hover:text-red-500'
-                }`}
+                className={`p-2 rounded-md transition-colors ${isDarkMode
+                  ? 'hover:bg-slate-700 text-red-600 hover:text-red-400'
+                  : 'hover:bg-slate-100 text-red-600 hover:text-red-500'
+                  }`}
               >
                 <Trash2 size={18} />
               </button>
@@ -247,11 +258,10 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         <button
           type="button"
           onClick={handleAddSubCategory}
-          className={`mt-3 px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
-            isDarkMode 
-              ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' 
-              : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
-          }`}
+          className={`mt-3 px-4 py-2 border rounded-md text-sm font-medium transition-colors ${isDarkMode
+            ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'
+            : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'
+            }`}
         >
           Add SubCategory
         </button>
@@ -262,17 +272,16 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         <button
           type="button"
           onClick={onCancel}
-          className={`px-6 py-2 rounded-md font-medium transition-colors text-sm ${
-            isDarkMode 
-              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700' 
-              : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
-          }`}
+          className={`px-6 py-2 rounded-md font-medium transition-colors text-sm ${isDarkMode
+            ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+            : 'bg-white text-slate-700 hover:bg-slate-50 border border-slate-300'
+            }`}
         >
           Back
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-orange-500 text-white rounded-md font-medium hover:bg-purple-700 transition-colors text-sm"
+          className="px-6 py-2 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition-colors text-sm"
         >
           Save Category
         </button>
