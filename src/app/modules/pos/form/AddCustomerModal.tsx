@@ -5,6 +5,7 @@ interface Customer {
   id: string;
   name: string;
   phone: string;
+  address?: string;
 }
 
 interface AddCustomerModalProps {
@@ -21,11 +22,12 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
 }) => {
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
-  const [errors, setErrors] = useState({ name: '', phone: '' });
+  const [customerAddress, setCustomerAddress] = useState('');
+  const [errors, setErrors] = useState({ name: '', phone: '', address: '' });
 
   const handleSubmit = () => {
     // Validate inputs
-    const newErrors = { name: '', phone: '' };
+    const newErrors = { name: '', phone: '', address: '' };
 
     if (!customerName.trim()) {
       newErrors.name = 'Customer name is required';
@@ -37,10 +39,11 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
     setErrors(newErrors);
 
     // Only proceed if no errors
-    if (!newErrors.name && !newErrors.phone) {
+    if (!newErrors.name && !newErrors.phone && !newErrors.address) {
       onAddCustomer({
         name: customerName,
         phone: customerPhone,
+        address: customerAddress,
       });
       handleClose();
     }
@@ -49,7 +52,8 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
   const handleClose = () => {
     setCustomerName('');
     setCustomerPhone('');
-    setErrors({ name: '', phone: '' });
+    setCustomerAddress('');
+    setErrors({ name: '', phone: '', address: '' });
     onClose();
   };
 
@@ -99,6 +103,25 @@ export const AddCustomerModal: React.FC<AddCustomerModalProps> = ({
               } bg-surface text-textPrimary placeholder-textSecondary/50`}
           />
           {errors.phone && <p className="text-error text-xs mt-1">{errors.phone}</p>}
+        </div>
+        <div>
+          <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-textSecondary">
+            Delivery Address
+          </label>
+          <textarea
+            value={customerAddress}
+            onChange={(e) => {
+              setCustomerAddress(e.target.value);
+              if (errors.address) setErrors({ ...errors, address: '' });
+            }}
+            placeholder="House 123, Street 5, Model Town, Okara"
+            rows={2}
+            className={`w-full px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl border text-sm transition-all resize-none ${errors.address
+              ? 'border-error focus:ring-error/20'
+              : 'border-border focus:ring-primary/20'
+              } bg-surface text-textPrimary placeholder-textSecondary/50`}
+          />
+          {errors.address && <p className="text-error text-xs mt-1">{errors.address}</p>}
         </div>
         <div className="flex gap-2 sm:gap-3 pt-1 sm:pt-2">
           <button

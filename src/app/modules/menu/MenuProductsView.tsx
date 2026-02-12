@@ -276,11 +276,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
         header: 'Status',
         cell: (info) => (
           <span
-            className={`px-2 py-1 rounded-full text-xs font-medium ${
-              info.getValue()
-                ? 'bg-green-500/10 text-green-500'
-                : 'bg-red-500/10 text-red-500'
-            }`}
+            className={`px-2 py-1 rounded-full text-xs font-medium ${info.getValue()
+              ? 'bg-green-500/10 text-green-500'
+              : 'bg-red-500/10 text-red-500'
+              }`}
           >
             {info.getValue() ? 'Available' : 'Out of Stock'}
           </span>
@@ -294,11 +293,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleEdit(info.row.original)}
-              className={`p-2 rounded-lg transition-colors ${
-                isDarkMode
-                  ? 'hover:bg-slate-700 text-slate-300'
-                  : 'hover:bg-slate-100 text-slate-600'
-              }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode
+                ? 'hover:bg-slate-700 text-slate-300'
+                : 'hover:bg-slate-100 text-slate-600'
+                }`}
               title="Edit"
             >
               <Edit3 className="w-4 h-4" />
@@ -332,11 +330,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const inputClass = `w-full px-3 py-2.5 rounded-lg border text-sm ${
-    isDarkMode
-      ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-orange-500'
-      : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-orange-500'
-  } focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all`;
+  const inputClass = `w-full px-3 py-2.5 rounded-lg border text-sm ${isDarkMode
+    ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-orange-500'
+    : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-orange-500'
+    } focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all`;
 
   const handleAdd = () => {
     setEditingId(null);
@@ -401,7 +398,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
       alert('Product name is required');
       return;
     }
-    
+
     if (editingId) {
       setProducts(products.map(p => p.id === editingId ? currentProduct : p));
     } else {
@@ -409,7 +406,6 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
     }
     setIsModalOpen(false);
   };
-
   return (
     <div className="space-y-6 p-4 md:p-6">
       {/* Header Section */}
@@ -431,11 +427,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2.5 rounded-lg border text-sm ${
-                isDarkMode
-                  ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
-                  : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
-              } w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-orange-500`}
+              className={`pl-10 pr-4 py-2.5 rounded-lg border text-sm ${isDarkMode
+                ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400'
+                : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400'
+                } w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-orange-500`}
             />
           </div>
 
@@ -450,9 +445,8 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
       </div>
 
       {/* Table Section */}
-      <div className={`rounded-xl border shadow-sm overflow-hidden ${
-        isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
-      }`}>
+      <div className={`rounded-xl border shadow-sm overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+        }`}>
         <InfiniteTable
           table={table}
           isDarkMode={isDarkMode}
@@ -477,7 +471,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                 Product Basic Information
               </h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -491,7 +485,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                   placeholder="e.g., BBQ Beef Brisket Pizza"
                 />
               </div>
-              
+
               {/* <div>
                 <label className={`block text-sm font-medium mb-1.5 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Bar Code
@@ -755,11 +749,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
               </h3>
             </div>
 
-            <div className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-              isDarkMode
-                ? 'border-slate-700 hover:border-orange-500 bg-slate-800/50'
-                : 'border-slate-300 hover:border-orange-500 bg-slate-50'
-            }`}>
+            <div className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${isDarkMode
+              ? 'border-slate-700 hover:border-orange-500 bg-slate-800/50'
+              : 'border-slate-300 hover:border-orange-500 bg-slate-50'
+              }`}>
               <input
                 type="file"
                 accept="image/*"
@@ -798,9 +791,8 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                 ) : (
                   <>
                     <div className="relative">
-                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
-                        isDarkMode ? 'bg-slate-700' : 'bg-slate-200'
-                      }`}>
+                      <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'
+                        }`}>
                         <Upload className={`w-8 h-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} />
                       </div>
                     </div>
@@ -929,11 +921,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                             newVariants[index].name = e.target.value;
                             setCurrentProduct({ ...currentProduct, variants: newVariants });
                           }}
-                          className={`w-full px-3 py-2 rounded-lg border text-sm ${
-                            isDarkMode
-                              ? 'bg-slate-800 border-slate-700 text-white'
-                              : 'bg-white border-slate-200 text-slate-900'
-                          }`}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm ${isDarkMode
+                            ? 'bg-slate-800 border-slate-700 text-white'
+                            : 'bg-white border-slate-200 text-slate-900'
+                            }`}
                           placeholder="e.g., PIZZA"
                         />
                       </div>
@@ -949,11 +940,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                             newVariants[index].display = e.target.value;
                             setCurrentProduct({ ...currentProduct, variants: newVariants });
                           }}
-                          className={`w-full px-3 py-2 rounded-lg border text-sm ${
-                            isDarkMode
-                              ? 'bg-slate-800 border-slate-700 text-white'
-                              : 'bg-white border-slate-200 text-slate-900'
-                          }`}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm ${isDarkMode
+                            ? 'bg-slate-800 border-slate-700 text-white'
+                            : 'bg-white border-slate-200 text-slate-900'
+                            }`}
                           placeholder="e.g., Select Size"
                         />
                       </div>
@@ -984,11 +974,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                         newVariants[index].instructions = e.target.value;
                         setCurrentProduct({ ...currentProduct, variants: newVariants });
                       }}
-                      className={`w-full px-3 py-2 rounded-lg border text-sm ${
-                        isDarkMode
-                          ? 'bg-slate-800 border-slate-700 text-white'
-                          : 'bg-white border-slate-200 text-slate-900'
-                      }`}
+                      className={`w-full px-3 py-2 rounded-lg border text-sm ${isDarkMode
+                        ? 'bg-slate-800 border-slate-700 text-white'
+                        : 'bg-white border-slate-200 text-slate-900'
+                        }`}
                       placeholder="Special instructions"
                     />
                   </div>
@@ -1008,13 +997,12 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                             newVariants[index].options[sizeKey] = !newVariants[index].options[sizeKey];
                             setCurrentProduct({ ...currentProduct, variants: newVariants });
                           }}
-                          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                            variant.options[size.toLowerCase() as 'small' | 'medium' | 'large']
-                              ? 'bg-orange-500 text-white'
-                              : isDarkMode
-                                ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                                : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                          }`}
+                          className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${variant.options[size.toLowerCase() as 'small' | 'medium' | 'large']
+                            ? 'bg-orange-500 text-white'
+                            : isDarkMode
+                              ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                              : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                            }`}
                         >
                           {size}
                         </button>
@@ -1041,11 +1029,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                     ]
                   });
                 }}
-                className={`w-full px-4 py-2.5 rounded-lg border-2 border-dashed text-sm font-medium transition-colors ${
-                  isDarkMode
-                    ? 'border-slate-700 hover:border-orange-500 text-slate-400 hover:text-orange-500'
-                    : 'border-slate-300 hover:border-orange-500 text-slate-600 hover:text-orange-500'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-lg border-2 border-dashed text-sm font-medium transition-colors ${isDarkMode
+                  ? 'border-slate-700 hover:border-orange-500 text-slate-400 hover:text-orange-500'
+                  : 'border-slate-300 hover:border-orange-500 text-slate-600 hover:text-orange-500'
+                  }`}
               >
                 + Add Variant
               </button>
@@ -1072,11 +1059,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                         newAddOns[index].name = e.target.value;
                         setCurrentProduct({ ...currentProduct, addOns: newAddOns });
                       }}
-                      className={`px-3 py-2 rounded-lg border text-sm ${
-                        isDarkMode
-                          ? 'bg-slate-800 border-slate-700 text-white'
-                          : 'bg-white border-slate-200 text-slate-900'
-                      }`}
+                      className={`px-3 py-2 rounded-lg border text-sm ${isDarkMode
+                        ? 'bg-slate-800 border-slate-700 text-white'
+                        : 'bg-white border-slate-200 text-slate-900'
+                        }`}
                       placeholder="Add-on name"
                     />
                     <input
@@ -1088,11 +1074,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                         newAddOns[index].price = parseFloat(e.target.value) || 0;
                         setCurrentProduct({ ...currentProduct, addOns: newAddOns });
                       }}
-                      className={`px-3 py-2 rounded-lg border text-sm ${
-                        isDarkMode
-                          ? 'bg-slate-800 border-slate-700 text-white'
-                          : 'bg-white border-slate-200 text-slate-900'
-                      }`}
+                      className={`px-3 py-2 rounded-lg border text-sm ${isDarkMode
+                        ? 'bg-slate-800 border-slate-700 text-white'
+                        : 'bg-white border-slate-200 text-slate-900'
+                        }`}
                       placeholder="Price"
                     />
                   </div>
@@ -1126,11 +1111,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
                     ]
                   });
                 }}
-                className={`w-full px-4 py-2.5 rounded-lg border-2 border-dashed text-sm font-medium transition-colors ${
-                  isDarkMode
-                    ? 'border-slate-700 hover:border-orange-500 text-slate-400 hover:text-orange-500'
-                    : 'border-slate-300 hover:border-orange-500 text-slate-600 hover:text-orange-500'
-                }`}
+                className={`w-full px-4 py-2.5 rounded-lg border-2 border-dashed text-sm font-medium transition-colors ${isDarkMode
+                  ? 'border-slate-700 hover:border-orange-500 text-slate-400 hover:text-orange-500'
+                  : 'border-slate-300 hover:border-orange-500 text-slate-600 hover:text-orange-500'
+                  }`}
               >
                 + Add Add-On
               </button>
@@ -1141,11 +1125,10 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
           <div className="flex justify-end gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors ${
-                isDarkMode
-                  ? 'bg-slate-700 hover:bg-slate-600 text-white'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              }`}
+              className={`px-6 py-2.5 rounded-lg font-medium text-sm transition-colors ${isDarkMode
+                ? 'bg-slate-700 hover:bg-slate-600 text-white'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
             >
               Cancel
             </button>

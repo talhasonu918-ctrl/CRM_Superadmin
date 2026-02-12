@@ -35,10 +35,10 @@ export function Layout({ children }: LayoutProps) {
 
   // Mock data for branches
   const branches = [
-    { id: 1, name: 'Main Branch', location: 'M.A Jinnah road Okara' },
-    { id: 2, name: 'Lahore Branch', location: 'Gulberg town Lahore ' },
-    { id: 3, name: 'Multan Brnach', location: 'Kot Town Multan' },
-    { id: 4, name: 'Islamabad Branch', location: 'Sector 3 ISlamabad' },
+    { id: 1, name: 'Main Branch', location: 'M.A Jinnah road Okara', phone: '+92 300 1234567' },
+    { id: 2, name: 'Lahore Branch', location: 'Gulberg town Lahore', phone: '+92 321 7654321' },
+    { id: 3, name: 'Multan Brnach', location: 'Kot Town Multan', phone: '+92 333 9876543' },
+    { id: 4, name: 'Islamabad Branch', location: 'Sector 3 ISlamabad', phone: '+92 345 5432109' },
   ];
 
   // Use mock notifications from mockData

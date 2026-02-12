@@ -159,7 +159,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                 <div key={index} className="grid grid-cols-12 gap-2 text-xs text-textSecondary">
                   <div className="col-span-6 truncate font-medium">{item.product.name}</div>
                   <div className="col-span-2 text-center font-bold">{item.quantity}</div>
-                  <div className="col-span-4 text-right font-bold">₹{(item.product.price * item.quantity).toFixed(2)}</div>
+                  <div className="col-span-4 text-right font-bold">PKR {(item.product.price * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
               {order.items.length > 3 && (
@@ -336,7 +336,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                         {item.quantity}
                       </span>
                       <span className="col-span-2 sm:col-span-1 text-right font-medium text-textSecondary">
-                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                        PKR {(item.product.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -432,7 +432,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
             <div className="flex flex-col sm:block">
               <span className="sm:hidden text-[10px] font-bold uppercase tracking-wider text-textSecondary mb-0.5">Total Amount</span>
               <div className="text-lg font-black text-primary">
-                ₹{order.grandTotal.toFixed(2)}
+                PKR {order.grandTotal.toFixed(2)}
               </div>
             </div>
             <OrderActionsDropdown
@@ -532,7 +532,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               <ShoppingBag className="w-5 h-5 text-white" />
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
-                <span className="text-lg font-bold text-white">₹{getCurrentStatusAmount().toFixed(2)}</span>
+                <span className="text-lg font-bold text-white">PKR {getCurrentStatusAmount().toFixed(2)}</span>
               </div>
             </div> */}
 
@@ -548,7 +548,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                   Total
                 </span>
                 <span className="text-sm font-semibold text-white">
-                  ₹{getCurrentStatusAmount().toFixed(2)}
+                  PKR {getCurrentStatusAmount().toFixed(2)}
                 </span>
               </div>
             </div>

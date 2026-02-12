@@ -42,7 +42,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
   const cancelledOrdersCount = mockOnlineOrders.filter(o => o.status === 'cancelled').length;
 
   // Calculate total amounts for each status
-  const calculateTotalAmount = (orders: typeof mockOnlineOrders) => 
+  const calculateTotalAmount = (orders: typeof mockOnlineOrders) =>
     orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
 
   const allOrdersAmount = calculateTotalAmount(mockOnlineOrders);
@@ -150,7 +150,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
                 <div key={index} className="grid grid-cols-12 gap-2 text-xs text-textSecondary">
                   <div className="col-span-6 truncate font-medium">{item.product.name}</div>
                   <div className="col-span-2 text-center font-bold">{item.quantity}</div>
-                  <div className="col-span-4 text-right font-bold">₹{(item.product.price * item.quantity).toFixed(2)}</div>
+                  <div className="col-span-4 text-right font-bold">PKR {(item.product.price * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
               {order.items.length > 3 && (
@@ -219,7 +219,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           <div className="text-right">
             <span className="text-[9px] font-bold uppercase text-textSecondary block mb-0.5">Total</span>
             <div className="text-lg font-black text-primary">
-              ₹{order.grandTotal.toFixed(2)}
+              PKR {order.grandTotal.toFixed(2)}
             </div>
           </div>
         </div>
@@ -269,7 +269,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
                         {item.quantity}
                       </span>
                       <span className="col-span-1 text-right font-medium text-textSecondary">
-                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                        PKR {(item.product.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -324,7 +324,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           {/* Total Amount & Actions */}
           <div className="col-span-2 flex items-center justify-between pl-2">
             <div className="text-lg font-bold text-primary whitespace-nowrap">
-              ₹{order.grandTotal.toFixed(2)}
+              PKR {order.grandTotal.toFixed(2)}
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
@@ -413,23 +413,23 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
               <ShoppingBag className="w-5 h-5 text-white" />
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
-                <span className="text-lg font-bold text-white">₹{getCurrentStatusAmount().toFixed(2)}</span>
+                <span className="text-lg font-bold text-white">PKR {getCurrentStatusAmount().toFixed(2)}</span>
               </div>
             </div> */}
 
 
-                        <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
+            <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
                             bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
                             border border-white/20 
                             shadow-md">
               <ShoppingBag className="w-4 h-4 text-white" />
-              
+
               <div className="flex flex-col leading-tight">
                 <span className="text-[9px] font-medium text-white uppercase tracking-wide">
                   Total
                 </span>
                 <span className="text-sm font-semibold text-white">
-                  ₹{getCurrentStatusAmount().toFixed(2)}
+                  PKR {getCurrentStatusAmount().toFixed(2)}
                 </span>
               </div>
             </div>

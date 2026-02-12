@@ -11,6 +11,7 @@ import { tableStateManager } from '../../../../utils/tableStateManager';
 import { AddCustomerModal } from './AddCustomerModal';
 import { sendToKitchen } from '../../../../utils/kitchenDisplay';
 import toast, { Toaster } from 'react-hot-toast';
+import { InvoiceView } from './InvoiceView';
 
 interface POSViewProps {
   isDarkMode?: boolean;
@@ -23,6 +24,7 @@ interface Customer {
   id: string;
   name: string;
   phone: string;
+  address?: string;
 }
 
 interface Waiter {
@@ -68,6 +70,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
   const [cashback, setCashback] = useState(0);
   const [kotNote, setKotNote] = useState('');
 
+  // Invoice Display State
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoiceType, setInvoiceType] = useState<'KOT' | 'KDS'>('KOT');
+
   // Sound for "Send to Kitchen"
   const [playBeep] = useSound('/sounds/soap.wav');
 
@@ -108,16 +114,16 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
   ]);
 
   const [customers, setCustomers] = useState<Customer[]>([
-    { id: 'c1', name: 'Walk-in Customer', phone: 'No phone number' },
-    { id: 'c2', name: 'John Doe', phone: '+92 300 1234567' },
-    { id: 'c3', name: 'Ali Ahmed', phone: '+92 321 9876543' },
-    { id: 'c4', name: 'Sarah Wilson', phone: '+44 7700 900000' },
-    { id: 'c5', name: 'Michael Chen', phone: '+1 202 555 0101' },
-    { id: 'c6', name: 'Fatima Zahra', phone: '+971 50 123 4567' },
-    { id: 'c7', name: 'Robert Brown', phone: '+61 412 345 678' },
-    { id: 'c8', name: 'Yuki Tanaka', phone: '+81 90 1234 5678' },
-    { id: 'c9', name: 'David Smith', phone: '+27 82 123 4567' },
-    { id: 'c10', name: 'Elena Rossi', phone: '+39 333 123 4567' },
+    { id: 'c1', name: 'Walk-in Customer', phone: 'No phone number', address: '' },
+    { id: 'c2', name: 'John Doe', phone: '+92 300 1234567', address: 'House 123, Street 5, Model Town, Okara' },
+    { id: 'c3', name: 'Ali Ahmed', phone: '+92 321 9876543', address: 'Flat 45, Block A, Garden Town, Lahore' },
+    { id: 'c4', name: 'Sarah Wilson', phone: '+44 7700 900000', address: '12 Baker Street, London, UK' },
+    { id: 'c5', name: 'Michael Chen', phone: '+1 202 555 0101', address: '789 Oak Avenue, New York, USA' },
+    { id: 'c6', name: 'Fatima Zahra', phone: '+971 50 123 4567', address: 'Villa 88, Palm Jumeirah, Dubai, UAE' },
+    { id: 'c7', name: 'Robert Brown', phone: '+61 412 345 678', address: '456 Queen Street, Sydney, Australia' },
+    { id: 'c8', name: 'Yuki Tanaka', phone: '+81 90 1234 5678', address: '3-2-1 Shibuya, Tokyo, Japan' },
+    { id: 'c9', name: 'David Smith', phone: '+27 82 123 4567', address: '22 Nelson Mandela Road, Cape Town, SA' },
+    { id: 'c10', name: 'Elena Rossi', phone: '+39 333 123 4567', address: 'Via Roma 15, Milan, Italy' },
   ]);
 
   // Table Sync Logic
@@ -266,11 +272,12 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
     { value: 'Bank Transfer', label: 'Bank', icon: <DollarSign size={14} className="text-primary" /> }
   ];
 
-  const handleAddCustomer = (customerData: { name: string; phone: string }) => {
+  const handleAddCustomer = (customerData: { name: string; phone: string; address?: string }) => {
     const newCustomer: Customer = {
       id: `c${customers.length + 1}`,
       name: customerData.name,
       phone: customerData.phone,
+      address: customerData.address,
     };
     setCustomers([...customers, newCustomer]);
     setSelectedCustomer({
@@ -354,6 +361,25 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
       ? selectedTableData.number
       : `${orderType === 'TakeAway' ? 'TKA' : 'DEL'}-${Math.floor(Math.random() * 900 + 100)}`;
 
+    const kitchenItems = cart
+      .filter(item => !item.product.dealItems)
+      .map((item, index) => ({
+        id: `${Date.now()}-${index}`,
+        name: item.product.name,
+        quantity: item.quantity,
+        completed: false,
+        addedAt: Date.now(),
+      }));
+
+    const kitchenDeals = cart
+      .filter(item => item.product.dealItems && item.product.dealItems.length > 0)
+      .map((item, index) => ({
+        id: `${Date.now()}-deal-${index}`,
+        name: item.product.name,
+        items: item.product.dealItems || [],
+        completed: false
+      }));
+
     sendToKitchen({
       orderNumber,
       tableNumber,
@@ -361,15 +387,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
       waiterName: selectedWaiterData?.name || 'POS System',
       customerName: selectedCustomerData?.name,
       customerPhone: selectedCustomerData?.phone,
-      items: cart.map((item, index) => ({
-        id: `${Date.now()}-${index}`,
-        name: item.product.name,
-        quantity: item.quantity,
-        completed: false,
-        addedAt: Date.now(),
-      })),
+      customerAddress: orderType === 'Delivery' ? selectedCustomerData?.address : undefined,
+      items: kitchenItems,
+      deals: kitchenDeals,
     });
-
     // Play beep sound
     playBeep();
 
@@ -389,6 +410,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
     setSelectedTable(null);
     setSelectedWaiter(null);
     setKotNote('');
+    setShowInvoice(false);
     localStorage.removeItem('nexus_pos_selected_table');
   };
 
@@ -411,6 +433,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
     setSelectedTable(null);
     setSelectedWaiter(null);
     setKotNote('');
+    setShowInvoice(false);
     localStorage.removeItem('nexus_pos_selected_table');
   };
 
@@ -458,14 +481,28 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
                   onClick={() => addToCart(product)}
                   className="p-2 lg:p-3 rounded-lg border border-border bg-surface transition-all hover:shadow-lg hover:border-primary"
                 >
-                  <div className="aspect-square md:h-24 md:w-full rounded-lg mb-2 flex items-center justify-center bg-background">
-                    <ShoppingCart className="text-textSecondary" size={24} />
+                  <div className="aspect-square md:h-24 md:w-full rounded-lg mb-2 flex items-center justify-center bg-background overflow-hidden">
+                    {product.image ? (
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.parentElement?.querySelector('.fallback-icon')?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div className={`fallback-icon ${product.image ? 'hidden' : ''}`}>
+                      <ShoppingCart className="text-textSecondary" size={24} />
+                    </div>
                   </div>
                   <h3 className="text-xs font-semibold mb-1 line-clamp-2 text-textPrimary">
                     {product.name}
                   </h3>
                   <p className="font-bold text-xs text-primary">
-                    {product.price > 0 ? `₹${product.price.toFixed(2)}` : '₹0.00'}
+                    {product.price > 0 ? `PKR ${product.price.toFixed(2)}` : 'PKR 0.00'}
                   </p>
                 </button>
               ))}
@@ -475,342 +512,371 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
 
         {/* Right Section - Cart */}
         <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border border-border rounded-md ${isFullscreen ? 'h-full' : 'h-[600px] lg:h-[500px]'} bg-surface overflow-y-auto custom-scrollbar scrollbar-thin`}>
-          <div className="p-3 lg:p-4 flex flex-col h-full ">
-            <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 text-textPrimary">
-              <ShoppingCart size={20} className="text-primary lg:w-6 lg:h-6" />
-              {orderType === 'DineIn' ? 'DINE IN' : orderType === 'TakeAway' ? 'TAKE AWAY' : 'DELIVERY'}
-            </h2>
+          {showInvoice ? (
+            <InvoiceView
+              type={invoiceType}
+              cart={cart}
+              orderType={orderType}
+              selectedTable={selectedTable}
+              selectedWaiter={selectedWaiter}
+              selectedRider={selectedRider}
+              selectedCustomer={selectedCustomer}
+              totals={calculateTotals()}
+              orderNumber={`#${Math.floor(Math.random() * 900) + 100}`}
+              onBack={() => setShowInvoice(false)}
+              onSendToKitchen={handleSendToKitchen}
+              isDarkMode={isDarkMode}
+            />
+          ) : (
+            <div className="p-3 lg:p-4 flex flex-col h-full ">
+              <h2 className="text-lg lg:text-xl font-bold mb-3 lg:mb-4 flex items-center gap-2 flex-shrink-0 text-textPrimary">
+                <ShoppingCart size={20} className="text-primary lg:w-6 lg:h-6" />
+                {orderType === 'DineIn' ? 'DINE IN' : orderType === 'TakeAway' ? 'TAKE AWAY' : 'DELIVERY'}
+              </h2>
 
-            {/* Order Type Selector */}
-            <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0 ">
-              <button
-                onClick={() => setOrderType('DineIn')}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface text-textSecondary hover:bg-primary/5'
-                  }`}
-              >
-                Dine In
-              </button>
-              <button
-                onClick={() => setOrderType('TakeAway')}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface text-textSecondary hover:bg-primary/5'
-                  }`}
-              >
-                Take Away
-              </button>
-              <button
-                onClick={() => setOrderType('Delivery')}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
-                  ? 'bg-primary text-white'
-                  : 'bg-surface text-textSecondary hover:bg-primary/5'
-                  }`}
-              >
-                Delivery
-              </button>
-            </div>
+              {/* Order Type Selector */}
+              <div className="grid grid-cols-3 gap-2 mb-3 flex-shrink-0 ">
+                <button
+                  onClick={() => setOrderType('DineIn')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'DineIn'
+                    ? 'bg-primary text-white'
+                    : 'bg-surface text-textSecondary hover:bg-primary/5'
+                    }`}
+                >
+                  Dine In
+                </button>
+                <button
+                  onClick={() => setOrderType('TakeAway')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'TakeAway'
+                    ? 'bg-primary text-white'
+                    : 'bg-surface text-textSecondary hover:bg-primary/5'
+                    }`}
+                >
+                  Take Away
+                </button>
+                <button
+                  onClick={() => setOrderType('Delivery')}
+                  className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${orderType === 'Delivery'
+                    ? 'bg-primary text-white'
+                    : 'bg-surface text-textSecondary hover:bg-primary/5'
+                    }`}
+                >
+                  Delivery
+                </button>
+              </div>
 
-            {/* Select Dropdowns */}
-            <div className="space-y-2 lg:space-y-3 mb-3 lg:mb-4 flex-shrink-0">
-              {orderType === 'DineIn' && (
-                <CustomSelect
-                  label="Table"
-                  value={selectedTable}
-                  onChange={setSelectedTable}
-                  options={tableOptions}
-                  placeholder="Select Table"
-                  isDarkMode={isDarkMode}
-                />
-              )}
-              <div className="grid grid-cols-2 gap-2 lg:gap-3">
-                {orderType === 'Delivery' ? (
-                  <div className="flex items-end gap-2">
-                    <div className="flex-1">
-                      <CustomSelect
-                        label="Rider"
-                        value={selectedRider}
-                        onChange={setSelectedRider}
-                        options={riderOptions}
-                        placeholder="Select Rider"
-                        isDarkMode={isDarkMode}
-                      />
-                    </div>
-                    <button
-                      onClick={() => selectedRider && onViewRiderDetail?.(String(selectedRider.value))}
-                      disabled={!selectedRider}
-                      className={`h-10 w-10 flex items-center justify-center rounded-lg border border-border transition-all ${selectedRider
-                        ? 'bg-surface hover:bg-primary hover:text-white hover:border-transparent text-textSecondary'
-                        : 'bg-background opacity-50 cursor-not-allowed text-textSecondary'
-                        }`}
-                      title="View Rider Details"
-                    >
-                      <Eye size={18} />
-                    </button>
-                  </div>
-                ) : (
+              {/* Select Dropdowns */}
+              <div className="space-y-2 lg:space-y-3 mb-3 lg:mb-4 flex-shrink-0">
+                {orderType === 'DineIn' && (
                   <CustomSelect
-                    label="Waiter"
-                    value={selectedWaiter}
-                    onChange={setSelectedWaiter}
-                    options={waiterOptions}
-                    placeholder="Select Waiter"
+                    label="Table"
+                    value={selectedTable}
+                    onChange={setSelectedTable}
+                    options={tableOptions}
+                    placeholder="Select Table"
                     isDarkMode={isDarkMode}
                   />
                 )}
-                <div>
-
-                  <div className="relative">
+                <div className="grid grid-cols-2 gap-2 lg:gap-3">
+                  {orderType === 'Delivery' ? (
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <CustomSelect
+                          label="Rider"
+                          value={selectedRider}
+                          onChange={setSelectedRider}
+                          options={riderOptions}
+                          placeholder="Select Rider"
+                          isDarkMode={isDarkMode}
+                        />
+                      </div>
+                      {/* <button
+                        onClick={() => selectedRider && onViewRiderDetail?.(String(selectedRider.value))}
+                        disabled={!selectedRider}
+                        className={`h-10 w-10 flex items-center justify-center rounded-lg border border-border transition-all ${selectedRider
+                          ? 'bg-surface hover:bg-primary hover:text-white hover:border-transparent text-textSecondary'
+                          : 'bg-background opacity-50 cursor-not-allowed text-textSecondary'
+                          }`}
+                        title="View Rider Details"
+                      >
+                        <Eye size={18} />
+                      </button> */}
+                    </div>
+                  ) : (
                     <CustomSelect
-                      label="Customer"
-                      value={selectedCustomer}
-                      onChange={setSelectedCustomer}
-                      options={customerOptions}
-                      placeholder="Customer"
+                      label="Waiter"
+                      value={selectedWaiter}
+                      onChange={setSelectedWaiter}
+                      options={waiterOptions}
+                      placeholder="Select Waiter"
                       isDarkMode={isDarkMode}
                     />
-                    <button
-                      onClick={() => setShowCustomerModal(true)}
-                      className="absolute right-1 top-[calc(50%+10px)] -translate-y-1/2 p-1 rounded bg-primary text-white hover:opacity-90 transition-colors z-10"
-                      title="Add Customer"
-                    >
-                      <UserPlus size={14} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  )}
+                  <div>
 
-            {/* Customer Modal */}
-            <AddCustomerModal
-              isOpen={showCustomerModal}
-              onClose={() => setShowCustomerModal(false)}
-              onAddCustomer={handleAddCustomer}
-              isDarkMode={isDarkMode}
-            />
-
-            {/* Cart Header */}
-            <div className="grid grid-cols-2 gap-1 lg:gap-2 pb-2 border-b border-border mb-2 text-[10px] lg:text-xs font-semibold flex-shrink-0">
-              <div className="text-textSecondary">Items</div>
-              <div className="flex justify-between">
-                <div className="text-center text-textSecondary">Quantity</div>
-                <div className="text-right text-textSecondary">Price</div>
-              </div>
-            </div>
-
-            {/* Cart Items */}
-            <div className="flex-1 overflow-y-auto mb-3 lg:mb-4 scrollbar-hidden min-h-[100px]">
-              {cart.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-textSecondary/50">
-                  <ShoppingCart size={36} className="lg:w-12 lg:h-12 mb-2 opacity-50" />
-                  <p className="text-xs lg:text-sm">No Products in Cart</p>
-                </div>
-              ) : (
-                cart.map(item => (
-                  <div key={item.product.id} className="grid grid-cols-2 gap-1 lg:gap-2 py-2 lg:py-3 border-b border-border items-center">
-                    <div className="flex items-center gap-1">
-                      <div className={`text-[10px] lg:text-xs text-textPrimary break-words line-clamp-2 max-w-[120px] lg:max-w-none`} title={item.product.name}>
-                        {item.product.name.length > 50 ? `${item.product.name.substring(0, 47)}...` : item.product.name}
-                      </div>
-                    </div>
-                    <div className="flex justify-between">
-                      <div className="flex items-center justify-center gap-0.5 lg:gap-1">
-                        <button onClick={() => updateQuantity(item.product.id, -1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? 'bg-surface' : 'bg-background'} hover:bg-primary hover:text-white transition-colors`}>
-                          <Minus size={10} className="lg:w-3 lg:h-3" />
-                        </button>
-                        <span className="w-6 lg:w-8 text-center text-xs lg:text-sm font-medium text-textPrimary">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.product.id, 1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? 'bg-surface' : 'bg-background'} hover:bg-primary hover:text-white transition-colors`}>
-                          <Plus size={10} className="lg:w-3 lg:h-3" />
-                        </button>
-                      </div>
-                      <div className="text-right text-xs lg:text-sm font-semibold text-textPrimary">
-                        {(item.product.price * item.quantity).toFixed(2)}
-                      </div>
+                    <div className="relative">
+                      <CustomSelect
+                        label="Customer"
+                        value={selectedCustomer}
+                        onChange={setSelectedCustomer}
+                        options={customerOptions}
+                        placeholder="Customer"
+                        isDarkMode={isDarkMode}
+                      />
+                      <button
+                        onClick={() => setShowCustomerModal(true)}
+                        className="absolute right-1 top-[calc(50%+10px)] -translate-y-1/2 p-1 rounded bg-primary text-white hover:opacity-90 transition-colors z-10"
+                        title="Add Customer"
+                      >
+                        <UserPlus size={14} />
+                      </button>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-
-            {/* Totals */}
-            <div className="space-y-2 pb-3 lg:pb-4 border-t border-border pt-3 lg:pt-4 flex-shrink-0">
-              <div className="flex justify-between text-xs lg:text-sm">
-                <span className="text-textSecondary">Items Count: {totals.itemsCount}</span>
-                <span className="font-semibold text-textPrimary">Subtotal: ₹{totals.subtotal.toFixed(2)}</span>
-              </div>
-
-              {/* Service Charge */}
-              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-                <div>
-                  <label className="text-textSecondary block mb-1">Sr Ch %</label>
-                  <input
-                    type="number"
-                    value={serviceChargePercent}
-                    onChange={(e) => setServiceChargePercent(e.target.value)}
-                    className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="text-textSecondary block mb-1">Sr Ch Amount</label>
-                  <input
-                    type="number"
-                    value={serviceChargeAmount}
-                    disabled
-                    className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0.00"
-                  />
                 </div>
               </div>
 
-              {/* Tax */}
-              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-                <div>
-                  <label className="text-textSecondary block mb-1">Tax %</label>
-                  <input
-                    type="number"
-                    value={taxPercent}
-                    onChange={(e) => setTaxPercent(e.target.value)}
-                    className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="16"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="text-textSecondary block mb-1">Tax Amount</label>
-                  <input
-                    type="number"
-                    value={taxAmount}
-                    disabled
-                    className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* Discount */}
-              <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
-                <div>
-                  <label className="text-textSecondary block mb-1">Dis %</label>
-                  <input
-                    type="number"
-                    value={discountPercent}
-                    onChange={(e) => setDiscountPercent(e.target.value)}
-                    className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="text-textSecondary block mb-1">Dis Amount</label>
-                  <input
-                    type="number"
-                    value={discountAmount}
-                    disabled
-                    className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0.00"
-                  />
-                </div>
-              </div>
-
-              {/* Calculated Values Display */}
-              <div className={`text-xs space-y-1 pt-2 border-t border-border`}>
-                <div className="flex justify-between">
-                  <span className="text-textSecondary">Service Charge:</span>
-                  <span className="text-textPrimary">₹{totals.serviceCharge.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-textSecondary">Tax:</span>
-                  <span className="text-textPrimary">₹{totals.tax.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-textSecondary">Discount:</span>
-                  <span className="text-textPrimary">-₹{totals.discount.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Grand Total */}
-            <div className="bg-primary text-white p-3 lg:p-4 rounded-lg mb-3 lg:mb-4 flex justify-between items-center flex-shrink-0 shadow-lg">
-              <span className="text-sm lg:text-base font-semibold">Grand Total</span>
-              <span className="text-xl lg:text-2xl font-bold">PKR {totals.total.toFixed(2)}</span>
-            </div>
-
-            {/* Payment */}
-            <div className="grid grid-cols-1 gap-3 mb-3 lg:mb-4 text-xs lg:text-sm flex-shrink-0">
-              <CustomSelect
-                label="Payment Mode"
-                value={paymentModeOptions.find(option => option.value === paymentMode)}
-                onChange={(option: CustomSelectOption | null) => setPaymentMode(option ? String(option.value) : 'Cash')}
-                options={paymentModeOptions}
-                placeholder="Select Payment Mode"
+              {/* Customer Modal */}
+              <AddCustomerModal
+                isOpen={showCustomerModal}
+                onClose={() => setShowCustomerModal(false)}
+                onAddCustomer={handleAddCustomer}
                 isDarkMode={isDarkMode}
               />
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium mb-1 text-textSecondary">Payment Amount</label>
-                  <input
-                    type="number"
-                    value={paymentAmount}
-                    onChange={(e) => setPaymentAmount(e.target.value)}
-                    className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-surface text-textPrimary placeholder-textSecondary/50"
-                    placeholder="0.00"
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1 text-textSecondary">Cashback</label>
-                  <input
-                    type="number"
-                    value={totals.cashback.toFixed(2)}
-                    readOnly
-                    className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border text-sm outline-none bg-background text-textPrimary"
-                    placeholder="0.00"
-                  />
+
+              {/* Cart Header */}
+              <div className="grid grid-cols-2 gap-1 lg:gap-2 pb-2 border-b border-border mb-2 text-[10px] lg:text-xs font-semibold flex-shrink-0">
+                <div className="text-textSecondary">Items</div>
+                <div className="flex justify-between">
+                  <div className="text-center text-textSecondary">Quantity</div>
+                  <div className="text-right text-textSecondary">Price</div>
                 </div>
               </div>
-            </div>
 
-            {/* KOT Note */}
-            <div className="flex-shrink-0">
-              <label className="block text-xs font-medium mb-1 text-textSecondary">KOT Note</label>
-              <textarea
-                value={kotNote}
-                onChange={(e) => setKotNote(e.target.value)}
-                placeholder="KOT Note"
-                className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border bg-surface text-textPrimary text-xs lg:text-sm flex-shrink-0 outline-none focus:ring-2 focus:ring-primary/20 transition-all"
-                rows={2}
-              />
-            </div>
+              {/* Cart Items */}
+              <div className="flex-1 overflow-y-auto mb-3 lg:mb-4 scrollbar-hidden min-h-[100px]">
+                {cart.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-textSecondary/50">
+                    <ShoppingCart size={36} className="lg:w-12 lg:h-12 mb-2 opacity-50" />
+                    <p className="text-xs lg:text-sm">No Products in Cart</p>
+                  </div>
+                ) : (
+                  cart.map(item => (
+                    <div key={item.product.id} className="grid grid-cols-2 gap-1 lg:gap-2 py-2 lg:py-3 border-b border-border items-center">
+                      <div className="flex items-center gap-1">
+                        <div className={`text-[10px] lg:text-xs text-textPrimary break-words line-clamp-2 max-w-[120px] lg:max-w-none`} title={item.product.name}>
+                          {item.product.name.length > 50 ? `${item.product.name.substring(0, 47)}...` : item.product.name}
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <div className="flex items-center justify-center gap-0.5 lg:gap-1">
+                          <button onClick={() => updateQuantity(item.product.id, -1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? 'bg-surface' : 'bg-background'} hover:bg-primary hover:text-white transition-colors`}>
+                            <Minus size={10} className="lg:w-3 lg:h-3" />
+                          </button>
+                          <span className="w-6 lg:w-8 text-center text-xs lg:text-sm font-medium text-textPrimary">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.product.id, 1)} className={`w-5 h-5 lg:w-6 lg:h-6 flex items-center justify-center rounded ${isDarkMode ? 'bg-surface' : 'bg-background'} hover:bg-primary hover:text-white transition-colors`}>
+                            <Plus size={10} className="lg:w-3 lg:h-3" />
+                          </button>
+                        </div>
+                        <div className="text-right text-xs lg:text-sm font-semibold text-textPrimary">
+                          {(item.product.price * item.quantity).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
 
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
-              <button
-                onClick={handleSendToKitchen}
-                className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-secondary text-white hover:opacity-90"
-              >
-                Send To Kitchen
-              </button>
-              <button
-                onClick={handleSaveOrder}
-                className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium bg-primary text-white hover:opacity-90"
-              >
-                Save
-              </button>
-              <button className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-background border border-border text-textSecondary hover:bg-surface">
-                KOT Print
-              </button>
-              <button className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-background border border-border text-textSecondary hover:bg-surface">
-                KDS Print
-              </button>
+              {/* Totals */}
+              <div className="space-y-2 pb-3 lg:pb-4 border-t border-border pt-3 lg:pt-4 flex-shrink-0">
+                <div className="flex justify-between text-xs lg:text-sm">
+                  <span className="text-textSecondary">Items Count: {totals.itemsCount}</span>
+                  <span className="font-semibold text-textPrimary">Subtotal: PKR {totals.subtotal.toFixed(2)}</span>
+                </div>
+
+                {/* Service Charge */}
+                <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                  <div>
+                    <label className="text-textSecondary block mb-1">Sr Ch %</label>
+                    <input
+                      type="number"
+                      value={serviceChargePercent}
+                      onChange={(e) => setServiceChargePercent(e.target.value)}
+                      className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-textSecondary block mb-1">Sr Ch Amount</label>
+                    <input
+                      type="number"
+                      value={serviceChargeAmount}
+                      disabled
+                      className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Tax */}
+                <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                  <div>
+                    <label className="text-textSecondary block mb-1">Tax %</label>
+                    <input
+                      type="number"
+                      value={taxPercent}
+                      onChange={(e) => setTaxPercent(e.target.value)}
+                      className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="16"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-textSecondary block mb-1">Tax Amount</label>
+                    <input
+                      type="number"
+                      value={taxAmount}
+                      disabled
+                      className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Discount */}
+                <div className="grid grid-cols-2 gap-2 text-[10px] lg:text-xs">
+                  <div>
+                    <label className="text-textSecondary block mb-1">Dis %</label>
+                    <input
+                      type="number"
+                      value={discountPercent}
+                      onChange={(e) => setDiscountPercent(e.target.value)}
+                      className="w-full px-2 py-1 rounded border border-border text-xs bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-textSecondary block mb-1">Dis Amount</label>
+                    <input
+                      type="number"
+                      value={discountAmount}
+                      disabled
+                      className="w-full px-2 py-1 rounded border border-border text-xs cursor-not-allowed opacity-75 bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+
+                {/* Calculated Values Display */}
+                <div className={`text-xs space-y-1 pt-2 border-t border-border`}>
+                  <div className="flex justify-between">
+                    <span className="text-textSecondary">Service Charge:</span>
+                    <span className="text-textPrimary">PKR {totals.serviceCharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-textSecondary">Tax:</span>
+                    <span className="text-textPrimary">PKR {totals.tax.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-textSecondary">Discount:</span>
+                    <span className="text-textPrimary">-PKR {totals.discount.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grand Total */}
+              <div className="bg-primary text-white p-3 lg:p-4 rounded-lg mb-3 lg:mb-4 flex justify-between items-center flex-shrink-0 shadow-lg">
+                <span className="text-sm lg:text-base font-semibold">Grand Total</span>
+                <span className="text-xl lg:text-2xl font-bold">PKR {totals.total.toFixed(2)}</span>
+              </div>
+
+              {/* Payment */}
+              <div className="grid grid-cols-1 gap-3 mb-3 lg:mb-4 text-xs lg:text-sm flex-shrink-0">
+                <CustomSelect
+                  label="Payment Mode"
+                  value={paymentModeOptions.find(option => option.value === paymentMode)}
+                  onChange={(option: CustomSelectOption | null) => setPaymentMode(option ? String(option.value) : 'Cash')}
+                  options={paymentModeOptions}
+                  placeholder="Select Payment Mode"
+                  isDarkMode={isDarkMode}
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs font-medium mb-1 text-textSecondary">Payment Amount</label>
+                    <input
+                      type="number"
+                      value={paymentAmount}
+                      onChange={(e) => setPaymentAmount(e.target.value)}
+                      className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all bg-surface text-textPrimary placeholder-textSecondary/50"
+                      placeholder="0.00"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium mb-1 text-textSecondary">Cashback</label>
+                    <input
+                      type="number"
+                      value={totals.cashback.toFixed(2)}
+                      readOnly
+                      className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border text-sm outline-none bg-background text-textPrimary"
+                      placeholder="0.00"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* KOT Note */}
+              <div className="flex-shrink-0">
+                <label className="block text-xs font-medium mb-1 text-textSecondary">KOT Note</label>
+                <textarea
+                  value={kotNote}
+                  onChange={(e) => setKotNote(e.target.value)}
+                  placeholder="KOT Note"
+                  className="w-full px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg border border-border bg-surface text-textPrimary text-xs lg:text-sm flex-shrink-0 outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                  rows={2}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-1.5 lg:gap-2 flex-shrink-0">
+                <button
+                  onClick={handleSendToKitchen}
+                  className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-secondary text-white hover:opacity-90"
+                >
+                  Send To Kitchen
+                </button>
+                <button
+                  onClick={handleSaveOrder}
+                  className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium bg-primary text-white hover:opacity-90"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setInvoiceType('KOT');
+                    setShowInvoice(true);
+                  }}
+                  className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-background border border-border text-textSecondary hover:bg-surface"
+                >
+                  KOT Print
+                </button>
+                <button
+                  onClick={() => {
+                    setInvoiceType('KDS');
+                    setShowInvoice(true);
+                  }}
+                  className="px-2 lg:px-3 py-1.5 lg:py-2 rounded-lg transition-colors text-[10px] lg:text-sm font-medium truncate bg-background border border-border text-textSecondary hover:bg-surface"
+                >
+                  KDS Print
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div >
       <Toaster />

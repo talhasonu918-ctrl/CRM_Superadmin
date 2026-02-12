@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   image: string;
   available: boolean;
+  dealItems?: string[];
 }
 
 export interface CartItem {

@@ -12,6 +12,7 @@ export const sendToKitchen = (order: Partial<KitchenOrder>) => {
     status: 'preparing',
     customerName: order.customerName,
     customerPhone: order.customerPhone,
+    customerAddress: order.customerAddress,
     timestamp: Date.now(),
   };
 

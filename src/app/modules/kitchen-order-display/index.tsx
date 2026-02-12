@@ -11,8 +11,10 @@ interface OrderItem {
 }
 
 interface Deal {
+  id: string;
   name: string;
   items: string[];
+  completed: boolean;
 }
 
 export interface KitchenOrder {
@@ -27,6 +29,7 @@ export interface KitchenOrder {
   status: 'preparing' | 'ready' | 'served';
   customerName?: string;
   customerPhone?: string;
+  customerAddress?: string;
   timestamp?: number;
 }
 
@@ -52,8 +55,10 @@ const initialMockOrders: KitchenOrder[] = [
     ],
     deals: [
       {
+        id: 'd1',
         name: 'Family Deal',
-        items: ['2x Pizza', '1x Pasta', '4x Drinks']
+        items: ['2x Pizza', '1x Pasta', '4x Drinks'],
+        completed: false
       }
     ]
   },
@@ -102,8 +107,10 @@ const initialMockOrders: KitchenOrder[] = [
     ],
     deals: [
       {
+        id: 'd2',
         name: 'Snack Combo',
-        items: ['2x Zinger Burger', '1x Nuggets', '2x Pepsi']
+        items: ['2x Zinger Burger', '1x Nuggets', '2x Pepsi'],
+        completed: true
       }
     ]
   },
@@ -124,8 +131,10 @@ const initialMockOrders: KitchenOrder[] = [
     ],
     deals: [
       {
+        id: 'd3',
         name: 'Weekend Special',
-        items: ['1x BBQ Pizza Large', '2x Garlic Bread', '1x Mint Margarita']
+        items: ['1x BBQ Pizza Large', '2x Garlic Bread', '1x Mint Margarita'],
+        completed: false
       }
     ]
   },
@@ -148,10 +157,11 @@ const initialMockOrders: KitchenOrder[] = [
 
 ];
 
-const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onReady: (order: KitchenOrder) => void }> = ({ order, isDarkMode, onReady }) => {
+const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onReady: (order: KitchenOrder) => void; onPrint: (order: KitchenOrder) => void }> = ({ order, isDarkMode, onReady, onPrint }) => {
   const theme = getThemeColors(isDarkMode);
   const [itemStates, setItemStates] = useState(order.items);
-  const [dealsExpanded, setDealsExpanded] = useState(false);
+  const [dealStates, setDealStates] = useState(order.deals || []);
+  const [dealsExpanded, setDealsExpanded] = useState(true);
 
   // Base budget of 25 minutes
   const totalBudgetSecs = 25 * 60;
@@ -184,9 +194,17 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
     ));
   };
 
+  const toggleDealComplete = (dealId: string) => {
+    setDealStates(prev => prev.map(deal =>
+      deal.id === dealId ? { ...deal, completed: !deal.completed } : deal
+    ));
+  };
+
   const completedItems = itemStates.filter(item => item.completed).length;
   const totalItems = itemStates.length;
-  const isAllCompleted = completedItems === totalItems;
+  const completedDeals = dealStates.filter(deal => deal.completed).length;
+  const totalDeals = dealStates.length;
+  const isAllCompleted = completedItems === totalItems && completedDeals === totalDeals;
 
   const getBadgeColor = () => {
     switch (order.orderType) {
@@ -295,14 +313,39 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
             </button>
             {dealsExpanded && (
               <div className="space-y-2">
-                {order.deals.map((deal, idx) => (
-                  <div key={idx} className={`rounded-lg p-2.5 ${isDarkMode ? 'bg-yellow-400/10 border border-yellow-400/20' : 'bg-yellow-50 border border-yellow-200'}`}>
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <span className="text-[9px] font-black bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded">DEAL</span>
-                      <span className={`text-xs font-bold ${theme.text.primary}`}>{deal.name}</span>
+                {dealStates.map((deal, idx) => (
+                  <button
+                    key={deal.id || idx}
+                    onClick={() => toggleDealComplete(deal.id)}
+                    className={`w-full text-left rounded-xl p-3 border-l-4 transition-all ${deal.completed
+                      ? `border-green-500 ${isDarkMode ? 'bg-green-500/5 opacity-70' : 'bg-green-50/50'}`
+                      : `border-yellow-400 ${isDarkMode ? 'bg-yellow-400/5' : 'bg-yellow-50/50'}`
+                      }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tight ${deal.completed ? 'bg-green-500 text-white' : 'bg-yellow-400 text-yellow-950'
+                          }`}>
+                          DEAL
+                        </span>
+                        <span className={`text-[13px] font-black ${theme.text.primary} ${deal.completed ? 'line-through text-gray-400 font-normal' : ''}`}>
+                          {deal.name}
+                        </span>
+                      </div>
+                      <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center flex-shrink-0 ${deal.completed ? 'bg-green-500 border-green-500' : `${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`
+                        }`}>
+                        {deal.completed && <CheckCircle size={10} className="text-white" />}
+                      </div>
                     </div>
-                    <div className={`text-[10px] ${theme.text.tertiary} pl-1`}>{deal.items.join(' • ')}</div>
-                  </div>
+                    <div className={`text-[11px] font-bold pl-1 flex flex-wrap gap-x-2 gap-y-1 ${deal.completed ? 'text-gray-400/60' : theme.text.tertiary}`}>
+                      {deal.items.map((it, i) => (
+                        <span key={i} className="flex items-center gap-1">
+                          {i > 0 && <span>•</span>}
+                          {it}
+                        </span>
+                      ))}
+                    </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -311,7 +354,9 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
       </div>
 
       <div className="relative z-10 grid grid-cols-2 gap-2 mt-auto pt-3">
-        <button className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border-2 transition-all font-bold text-xs ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary}`}>
+        <button
+          onClick={() => onPrint(order)}
+          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border-2 transition-all font-bold text-xs ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary}`}>
           <Printer size={14} /> Print
         </button>
         <button
@@ -342,6 +387,37 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
   const [filterStatus, setFilterStatus] = useState<'all' | 'preparing' | 'ready' | 'served'>('all');
   const [filterType, setFilterType] = useState<'all' | 'DineIn' | 'TakeAway' | 'Delivery'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [printOrder, setPrintOrder] = useState<KitchenOrder | null>(null);
+  const [shouldPrint, setShouldPrint] = useState(false);
+
+  const branches = [
+    { id: 1, name: 'Main Branch', location: 'M.A Jinnah road Okara', phone: '+92 300 1234567' },
+    { id: 2, name: 'Lahore Branch', location: 'Gulberg town Lahore', phone: '+92 321 7654321' },
+    { id: 3, name: 'Multan Branch', location: 'Kot Town Multan', phone: '+92 333 9876543' },
+    { id: 4, name: 'Islamabad Branch', location: 'Sector 3 Islamabad', phone: '+92 345 5432109' },
+  ];
+
+  const [branchInfo, setBranchInfo] = useState({ name: 'Main Branch', phone: '+92 300 1234567' });
+
+  useEffect(() => {
+    const savedBranch = localStorage.getItem('activeBranch') || 'Main Branch';
+    const foundBranch = branches.find((b: { id: number; name: string; location: string; phone: string }) => b.name === savedBranch);
+    if (foundBranch) {
+      setBranchInfo({ name: foundBranch.name, phone: foundBranch.phone });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (shouldPrint && printOrder) {
+      setShouldPrint(false);
+      // Use requestAnimationFrame to ensure DOM is painted
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      });
+    }
+  }, [shouldPrint, printOrder]);
 
   useEffect(() => {
     const handleNewOrder = (event: CustomEvent<KitchenOrder>) => {
@@ -372,6 +448,11 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
     window.dispatchEvent(new CustomEvent('orderReady', { detail: updatedOrder }));
   };
 
+  const handlePrint = (order: KitchenOrder) => {
+    setPrintOrder(order);
+    setShouldPrint(true);
+  };
+
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
       const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
@@ -391,109 +472,343 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
     served: orders.filter(o => o.status === 'served').length,
   }), [orders]);
 
+  const date = new Date().toLocaleDateString();
+  const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
   return (
-    <div className={`min-h-[calc(100vh-8rem)] flex flex-col ${isDarkMode ? 'bg-[#0F1115]' : 'bg-gradient-to-br from-gray-50 to-gray-100'}`}>
-      <div className={`px-4 sm:px-6 pt-6 pb-4 border-b ${theme.border.main} ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-sm sticky top-0 z-20`}>
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className={`text-2xl sm:text-3xl font-bold ${theme.text.primary}`}>Kitchen Display System</h1>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('kitchenOrders');
-                  localStorage.removeItem('dispatchOrders');
-                  window.location.reload();
-                }}
-                className="text-[10px] font-bold px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors uppercase tracking-wider"
-              >
-                Reset System Data
-              </button>
+    <>
+      <style>{`
+        @media print {
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
+          body, html {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 80mm !important;
+            height: auto !important;
+          }
+          body * {
+            visibility: hidden;
+          }
+          #kitchen-print-content, #kitchen-print-content * {
+            visibility: visible;
+          }
+          #kitchen-print-content {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            display: block !important;
+            width: 80mm !important;
+            max-width: 80mm !important;
+            padding: 4mm !important;
+            color: #000 !important;
+            background: #fff !important;
+            font-family: 'Courier New', Courier, monospace !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-only {
+            display: block !important;
+          }
+          .thermal-header {
+            text-align: center;
+            margin-bottom: 8px;
+          }
+          .thermal-brand {
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+          }
+          .thermal-branch {
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+          }
+          .thermal-location {
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+          }
+          .thermal-divider {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+          }
+          .thermal-info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            line-height: 1.5;
+          }
+          .thermal-info-label {
+            width: 45%;
+            text-align: left;
+          }
+          .thermal-info-value {
+            width: 55%;
+            text-align: right;
+          }
+          .thermal-table-header {
+            display: grid;
+            grid-template-columns: 1fr 15% 25%;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+            margin-bottom: 4px;
+          }
+          .thermal-table-row {
+            display: grid;
+            grid-template-columns: 1fr 15% 25%;
+            font-size: 11px;
+            line-height: 1.6;
+          }
+          .thermal-item-name {
+            text-align: left;
+            word-wrap: break-word;
+          }
+          .thermal-qty {
+            text-align: center;
+          }
+          .thermal-deal-section {
+            margin-top: 8px;
+            padding: 4px 0;
+          }
+          .thermal-deal-title {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 4px;
+          }
+          .thermal-deal-item {
+            font-size: 10px;
+            margin-left: 8px;
+            line-height: 1.4;
+          }
+          .thermal-footer {
+            text-align: center;
+            font-size: 11px;
+            margin-top: 8px;
+          }
+        }
+        .print-only {
+          display: none;
+        }
+      `}</style>
+
+      <div className={`min-h-[calc(100vh-8rem)] flex flex-col ${isDarkMode ? 'bg-[#0F1115]' : 'bg-gradient-to-br from-gray-50 to-gray-100'} no-print`}>
+        <div className={`px-4 sm:px-6 pt-6 pb-4 border-b ${theme.border.main} ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-sm sticky top-0 z-20`}>
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h1 className={`text-2xl sm:text-3xl font-bold ${theme.text.primary}`}>Kitchen Display System</h1>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem('kitchenOrders');
+                    localStorage.removeItem('dispatchOrders');
+                    window.location.reload();
+                  }}
+                  className="text-[10px] font-bold px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors uppercase tracking-wider"
+                >
+                  Reset System Data
+                </button>
+              </div>
+              <p className={`text-sm ${theme.text.tertiary}`}>Live order tracking • {filteredOrders.length} active orders</p>
             </div>
-            <p className={`text-sm ${theme.text.tertiary}`}>Live order tracking • {filteredOrders.length} active orders</p>
-          </div>
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary}`} size={18} />
-              <input
-                type="text"
-                placeholder="Search invoice and order..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${theme.border.main} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm`}
-              />
+            <div className="flex-1 max-w-md">
+              <div className="relative">
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary}`} size={18} />
+                <input
+                  type="text"
+                  placeholder="Search invoice and order..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${theme.border.main} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm`}
+                />
+              </div>
             </div>
-          </div>
-          <div className="flex flex-wrap gap-2 sm:gap-3">
-            <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                <div>
-                  <div className={`text-xs ${theme.text.tertiary}`}>Preparing</div>
-                  <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.preparing}</div>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
+              <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                  <div>
+                    <div className={`text-xs ${theme.text.tertiary}`}>Preparing</div>
+                    <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.preparing}</div>
+                  </div>
+                </div>
+              </div>
+              <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <div>
+                    <div className={`text-xs ${theme.text.tertiary}`}>Ready</div>
+                    <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.ready}</div>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <div>
-                  <div className={`text-xs ${theme.text.tertiary}`}>Ready</div>
-                  <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.ready}</div>
-                </div>
-              </div>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <div className={`flex gap-1 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
+              {['all', 'preparing', 'ready'].map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setFilterStatus(key as any)}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-2 ${filterStatus === key
+                    ? `${theme.primary.main} text-white shadow-sm`
+                    : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                    }`}
+                >
+                  {key === 'all' ? 'All Orders' : key.charAt(0).toUpperCase() + key.slice(1)}
+                  <span className={`px-1.5 sm:px-2 py-0.5 rounded-md text-xs font-semibold ${filterStatus === key ? 'bg-white text-orange-600' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
+                    {statusCounts[key as keyof typeof statusCounts]}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <div className={`flex gap-1 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
+              {['all', 'DineIn', 'TakeAway', 'Delivery'].map((key) => (
+                <button
+                  key={key}
+                  onClick={() => setFilterType(key as any)}
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${filterType === key
+                    ? isDarkMode ? 'bg-gray-700 text-white shadow-sm' : 'bg-gray-200 text-gray-900 shadow-sm'
+                    : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
+                    }`}
+                >
+                  {key === 'all' ? 'All Types' : key.replace(/([A-Z])/g, ' $1').trim()}
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <div className={`flex gap-1 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
-            {['all', 'preparing', 'ready'].map((key) => (
-              <button
-                key={key}
-                onClick={() => setFilterStatus(key as any)}
-                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center gap-2 ${filterStatus === key
-                  ? `${theme.primary.main} text-white shadow-sm`
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                  }`}
-              >
-                {key === 'all' ? 'All Orders' : key.charAt(0).toUpperCase() + key.slice(1)}
-                <span className={`px-1.5 sm:px-2 py-0.5 rounded-md text-xs font-semibold ${filterStatus === key ? 'bg-white text-orange-600' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200 text-gray-700'}`}>
-                  {statusCounts[key as keyof typeof statusCounts]}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div className={`flex gap-1 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
-            {['all', 'DineIn', 'TakeAway', 'Delivery'].map((key) => (
-              <button
-                key={key}
-                onClick={() => setFilterType(key as any)}
-                className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${filterType === key
-                  ? isDarkMode ? 'bg-gray-700 text-white shadow-sm' : 'bg-gray-200 text-gray-900 shadow-sm'
-                  : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                  }`}
-              >
-                {key === 'all' ? 'All Types' : key.replace(/([A-Z])/g, ' $1').trim()}
-              </button>
-            ))}
-          </div>
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+          {filteredOrders.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+              {filteredOrders.map(order => <KitchenOrderCard key={order.id} order={order} isDarkMode={isDarkMode} onReady={handleReady} onPrint={handlePrint} />)}
+            </div>
+          ) : (
+            <div className={`text-center py-20 ${theme.text.muted}`}>
+              <ShoppingBag size={64} className="mx-auto mb-4 opacity-30" />
+              <p className="text-xl font-medium">No orders found</p>
+              <p className="text-sm mt-2">Try adjusting your filters</p>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-        {filteredOrders.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-            {filteredOrders.map(order => <KitchenOrderCard key={order.id} order={order} isDarkMode={isDarkMode} onReady={handleReady} />)}
+      {/* Print Section - Hidden on Screen, Visible on Print */}
+      {printOrder && (
+        <div id="kitchen-print-content" className="print-only">
+          <div className="thermal-header">
+            <div className="thermal-brand">INVEX FOOD</div>
+            <div className="thermal-branch">{branchInfo.name.toUpperCase()}</div>
+            <div className="thermal-location">{branches.find((b: { id: number; name: string; location: string; phone: string }) => b.name === branchInfo.name)?.location}</div>
+            <div className="thermal-branch">KITCHEN ORDER</div>
           </div>
-        ) : (
-          <div className={`text-center py-20 ${theme.text.muted}`}>
-            <ShoppingBag size={64} className="mx-auto mb-4 opacity-30" />
-            <p className="text-xl font-medium">No orders found</p>
-            <p className="text-sm mt-2">Try adjusting your filters</p>
+
+          <div className="thermal-divider"></div>
+
+          <div className="thermal-info-row">
+            <div className="thermal-info-label"></div>
+            <div className="thermal-info-value">{date} {time}</div>
           </div>
-        )}
-      </div>
-    </div>
+
+          <div className="thermal-info-row">
+            <div className="thermal-info-label">ORDER NO</div>
+            <div className="thermal-info-value">{printOrder.orderNumber}</div>
+          </div>
+
+          <div className="thermal-info-row">
+            <div className="thermal-info-label">TABLE NO</div>
+            <div className="thermal-info-value">{printOrder.tableNumber}</div>
+          </div>
+
+          <div className="thermal-info-row">
+            <div className="thermal-info-label">ORDER TYPE</div>
+            <div className="thermal-info-value">{printOrder.orderType.replace(/([A-Z])/g, ' $1').trim()}</div>
+          </div>
+
+          <div className="thermal-info-row">
+            <div className="thermal-info-label">WAITER</div>
+            <div className="thermal-info-value">{printOrder.waiterName}</div>
+          </div>
+
+          {printOrder.customerName && (
+            <div className="thermal-info-row">
+              <div className="thermal-info-label">CUSTOMER</div>
+              <div className="thermal-info-value">{printOrder.customerName}</div>
+            </div>
+          )}
+
+          {printOrder.customerPhone && (
+            <div className="thermal-info-row">
+              <div className="thermal-info-label"></div>
+              <div className="thermal-info-value" style={{ fontSize: '10px' }}>{printOrder.customerPhone}</div>
+            </div>
+          )}
+
+          {printOrder.orderType === 'Delivery' && printOrder.customerAddress && (
+            <div className="thermal-info-row">
+              <div className="thermal-info-label">ADDRESS</div>
+              <div className="thermal-info-value" style={{ fontSize: '10px' }}>{printOrder.customerAddress}</div>
+            </div>
+          )}
+
+          <div className="thermal-divider"></div>
+
+          <div className="thermal-table-header">
+            <div className="thermal-item-name">Item</div>
+            <div className="thermal-qty">Qty</div>
+            <div className="thermal-item-name">Status</div>
+          </div>
+
+          {printOrder.items.map((item, idx) => (
+            <div key={idx} className="thermal-table-row">
+              <div className="thermal-item-name">{item.name}</div>
+              <div className="thermal-qty">{item.quantity}</div>
+              <div className="thermal-item-name">{item.completed ? '✓ Done' : 'Pending'}</div>
+            </div>
+          ))}
+
+          {printOrder.deals && printOrder.deals.length > 0 && (
+            <>
+              <div className="thermal-divider"></div>
+              <div className="thermal-deal-section">
+                <div className="thermal-deal-title">DEALS:</div>
+                {printOrder.deals.map((deal, idx) => (
+                  <div key={idx}>
+                    <div className="thermal-deal-title">• {deal.name} {deal.completed ? '✓' : ''}</div>
+                    {deal.items.map((item, itemIdx) => (
+                      <div key={itemIdx} className="thermal-deal-item">- {item}</div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="thermal-divider"></div>
+
+          <div className="thermal-info-row" style={{ fontWeight: 'bold', fontSize: '12px', marginTop: '6px' }}>
+            <div className="thermal-info-label">STATUS</div>
+            <div className="thermal-info-value">{printOrder.status.toUpperCase()}</div>
+          </div>
+
+          <div className="thermal-footer">
+            <div style={{ marginTop: '8px', fontWeight: 'bold' }}>KITCHEN COPY</div>
+            <div style={{ marginTop: '4px', fontSize: '10px' }}>Printed: {date} {time}</div>
+          </div>
+
+          <div className="thermal-divider" style={{ marginTop: '8px' }}></div>
+        </div>
+      )}
+    </>
   );
 };
 

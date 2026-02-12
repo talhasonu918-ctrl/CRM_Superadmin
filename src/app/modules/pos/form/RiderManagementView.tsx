@@ -149,7 +149,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                     <span className="text-[11px] font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
                                     <span className="text-[9px] font-medium text-textSecondary opacity-60">{rider.activeTask.itemsCount} Items</span>
                                 </div>
-                                <span className="text-xs font-black text-primary">₹{rider.activeTask.totalAmount.toLocaleString()}</span>
+                                <span className="text-xs font-black text-primary">PKR {rider.activeTask.totalAmount.toLocaleString()}</span>
                             </div>
 
                             {/* Expanded Items List in Grid */}
@@ -164,7 +164,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                         <div key={idx} className="grid grid-cols-10 gap-1 text-[10px] items-center">
                                             <div className="col-span-6 font-bold truncate text-textPrimary">{item.product.name}</div>
                                             <div className="col-span-1 text-center font-black text-textPrimary">{item.quantity}</div>
-                                            <div className="col-span-3 text-right font-black text-primary">₹{item.product.price.toLocaleString()}</div>
+                                            <div className="col-span-3 text-right font-black text-primary">PKR {item.product.price.toLocaleString()}</div>
                                         </div>
                                     ))}
                                 </div>
@@ -193,7 +193,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                         </div>
                         <div className="flex flex-col items-end">
                             <span className="text-[9px] uppercase font-bold opacity-30 text-textSecondary">Earnings</span>
-                            <span className="text-xs font-bold text-primary">₹{rider.earnings.netPayable}</span>
+                            <span className="text-xs font-bold text-primary">PKR {rider.earnings.netPayable}</span>
                         </div>
                     </div>
                 </div>
@@ -288,7 +288,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                                         x{item.quantity}
                                                     </span>
                                                     <span className="col-span-1 text-right font-black text-primary">
-                                                        ₹{item.product.price.toLocaleString()}
+                                                        PKR {item.product.price.toLocaleString()}
                                                     </span>
                                                 </div>
                                             ))}

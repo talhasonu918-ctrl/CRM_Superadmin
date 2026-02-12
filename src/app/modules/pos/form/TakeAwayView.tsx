@@ -41,7 +41,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
   const cancelledOrdersCount = mockTakeawayOrders.filter(order => order.status === 'cancelled').length;
 
   // Calculate total amounts for each status
-  const calculateTotalAmount = (orders: typeof mockTakeawayOrders) => 
+  const calculateTotalAmount = (orders: typeof mockTakeawayOrders) =>
     orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
 
   const allOrdersAmount = calculateTotalAmount(mockTakeawayOrders);
@@ -140,7 +140,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
               <div key={index} className="grid grid-cols-4 gap-2 text-[11px] text-textSecondary">
                 <div className="col-span-2 truncate">{item.product.name}</div>
                 <div className="text-center font-medium">{item.quantity}</div>
-                <div className="text-right font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</div>
+                <div className="text-right font-medium">PKR {(item.product.price * item.quantity).toFixed(2)}</div>
               </div>
             ))}
           </div>
@@ -164,7 +164,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           <div className="text-right">
             <span className="text-[10px] font-bold uppercase mb-0.5 text-textSecondary">Total</span>
             <div className="text-sm font-black text-primary">
-              ₹{calculateGrandTotal(order).toFixed(2)}
+              PKR {calculateGrandTotal(order).toFixed(2)}
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
                     {item.quantity}
                   </span>
                   <span className="col-span-1 text-right font-medium text-textSecondary">
-                    ₹{(item.product.price * item.quantity).toFixed(2)}
+                    PKR {(item.product.price * item.quantity).toFixed(2)}
                   </span>
                 </div>
               ))}
@@ -255,7 +255,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           {/* Total Amount & Actions */}
           <div className="col-span-2 flex items-center justify-between pl-2">
             <div className="text-lg font-bold text-primary whitespace-nowrap">
-              ₹{calculateGrandTotal(order).toFixed(2)}
+              PKR {calculateGrandTotal(order).toFixed(2)}
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
@@ -438,25 +438,25 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
               <ShoppingBag className="w-5 h-5 text-white" />
               <div className="flex flex-col">
                 <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
-                <span className="text-lg font-bold text-white">₹{getCurrentStatusAmount().toFixed(2)}</span>
+                <span className="text-lg font-bold text-white">PKR {getCurrentStatusAmount().toFixed(2)}</span>
               </div>
             </div> */}
 
-                           <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
+            <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
                                         bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
                                         border border-white/20 
                                         shadow-md">
-                          <ShoppingBag className="w-4 h-4 text-white" />
-                          
-                          <div className="flex flex-col leading-tight">
-                            <span className="text-[9px] font-medium text-white uppercase tracking-wide">
-                              Total
-                            </span>
-                            <span className="text-sm font-semibold text-white">
-                              ₹{getCurrentStatusAmount().toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
+              <ShoppingBag className="w-4 h-4 text-white" />
+
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+                  Total
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  PKR {getCurrentStatusAmount().toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
