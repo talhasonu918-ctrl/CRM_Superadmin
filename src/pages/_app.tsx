@@ -68,6 +68,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             tailwind.config = {
               theme: {
                 extend: {
+                  fontFamily: {
+                    sans: ['var(--font-tenant)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                  },
                   colors: {
                     primary: 'var(--color-primary)',
                     secondary: 'var(--color-secondary)',

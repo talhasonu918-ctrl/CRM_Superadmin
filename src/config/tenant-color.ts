@@ -4,6 +4,7 @@ export const tenantConfig: TenantBranding = {
   id: 'HotNYum',
   name: 'HotNYum',
   logo: '/logos/invextech.png', // Assuming a path or placeholder
+  favicon: '/favicon.ico',
   light: {
     primary: '#f06c22',
     secondary: '#04341c',
@@ -16,6 +17,7 @@ export const tenantConfig: TenantBranding = {
     success: '#16a34a',
     warning: '#f59e0b',
     error: '#dc2626',
+    fontFamily: 'Orbit'
   },
   dark: {
     primary: '#f06c22',
@@ -29,5 +31,6 @@ export const tenantConfig: TenantBranding = {
     success: '#22c55e',
     warning: '#fbbf24',
     error: '#ef4444',
+    fontFamily: 'Orbit'
   }
 };

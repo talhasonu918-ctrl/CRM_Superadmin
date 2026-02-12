@@ -26,14 +26,6 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
     }
     return mockBranches;
   });
-  const [tenantFont, setTenantFont] = React.useState<string | undefined>(undefined);
-
-  React.useEffect(() => {
-    try {
-      const f = localStorage.getItem('tenantFont');
-      if (f) setTenantFont(f);
-    } catch (e) {}
-  }, []);
 
   const handleAddBranch = (data: Partial<Branch>) => {
     const newBranch: Branch = {
@@ -56,7 +48,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
     };
     const updated = [newBranch, ...branches];
     setBranches(updated);
-    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) {}
+    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) { }
     setAddModalOpen(false);
   };
 
@@ -64,7 +56,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
     if (!data.id) return setEditModalOpen(false);
     const updated = branches.map(b => b.id === data.id ? { ...b, ...data, updatedAt: new Date().toISOString() } : b);
     setBranches(updated);
-    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) {}
+    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) { }
     setEditModalOpen(false);
   };
 
@@ -72,7 +64,7 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
     if (!selectedBranch?.id) return setDeleteModalOpen(false);
     const updated = branches.filter(b => b.id !== selectedBranch.id);
     setBranches(updated);
-    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) {}
+    try { localStorage.setItem('branches', JSON.stringify(updated)); } catch (e) { }
     setDeleteModalOpen(false);
   };
 
@@ -108,7 +100,6 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
         onClose={() => setAddModalOpen(false)}
         title="Add New Branch"
         size="lg"
-        fontFamily={tenantFont}
       >
         <AddBranchForm
           onSubmit={handleAddBranch}
@@ -122,7 +113,6 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
         onClose={() => setEditModalOpen(false)}
         title="Edit Branch"
         size="lg"
-        fontFamily={tenantFont}
       >
         <EditBranchForm
           initialData={selectedBranch}
@@ -137,7 +127,6 @@ export const BranchesView: React.FC<BranchesViewProps> = ({ isDarkMode }) => {
         onClose={() => setViewModalOpen(false)}
         title="Branch Details"
         size="lg"
-        fontFamily={tenantFont}
       >
         <ViewBranchDetails branchData={selectedBranch} />
       </ReusableModal>

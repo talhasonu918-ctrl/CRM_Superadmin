@@ -18,7 +18,6 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
     const { company } = useCompany();
     const theme = getThemeColors(isDarkMode);
     const [settings, setSettings] = React.useState<Partial<MobileSettings>>(defaultMobileSettings);
-    const [tenantFont, setTenantFont] = React.useState<string | undefined>(undefined);
 
     React.useEffect(() => {
         // Load from localStorage if exists
@@ -30,10 +29,6 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
                 console.error('Failed to load mobile settings', e);
             }
         }
-
-        // Load global tenant font
-        const f = localStorage.getItem('tenantFont');
-        if (f) setTenantFont(f);
     }, []);
 
     const handleSubmit = (data: Partial<MobileSettings>) => {
@@ -45,7 +40,6 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
     return (
         <div
             className={`p-4 sm:p-8 rounded-xl border shadow-sm ${theme.neutral.background} ${theme.border.main}`}
-            style={{ fontFamily: tenantFont }}
         >
             <div className="flex items-center gap-4 mb-6 sm:mb-8">
                 <button

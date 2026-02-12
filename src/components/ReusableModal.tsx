@@ -11,7 +11,6 @@ interface ReusableModalProps {
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   isDarkMode?: boolean;
-  fontFamily?: string;
 }
 
 export const ReusableModal: React.FC<ReusableModalProps> = ({
@@ -21,18 +20,17 @@ export const ReusableModal: React.FC<ReusableModalProps> = ({
   children,
   size = 'lg',
   isDarkMode = false,
-  fontFamily,
 }) => {
   const theme = getThemeColors(isDarkMode);
   // Map size prop to Tailwind max-width classes for consistent control
   const sizeClass =
     size === 'sm' ? 'max-w-sm' :
-    size === 'md' ? 'max-w-md' :
-    size === 'lg' ? 'max-w-lg' :
-    size === 'xl' ? 'max-w-4xl' :
-    size === 'full' ? 'max-w-full' : 'max-w-lg';
+      size === 'md' ? 'max-w-md' :
+        size === 'lg' ? 'max-w-lg' :
+          size === 'xl' ? 'max-w-4xl' :
+            size === 'full' ? 'max-w-full' : 'max-w-lg';
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={size} fontFamily={fontFamily} title={title}>
+    <Modal isOpen={isOpen} onClose={onClose} size={size} title={title}>
       <div className={`relative m-auto px-6  pb-6 rounded-lg w-full ${sizeClass} overflow-visible ${theme.neutral.background}`}>
         {/* Absolute close button (single) */}
         <button

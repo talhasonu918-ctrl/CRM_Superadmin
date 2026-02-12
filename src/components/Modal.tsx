@@ -11,10 +11,9 @@ interface ModalProps {
   children: React.ReactNode;
   isDarkMode?: boolean;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  fontFamily?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDarkMode = false, size = 'lg', fontFamily }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDarkMode = false, size = 'lg' }) => {
   const theme = getThemeColors(isDarkMode);
   // map size to max-width classes
   const sizeClass =
@@ -51,7 +50,6 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
             exit={{ opacity: 0, scale: 0.98, y: 8 }}
             transition={{ type: 'spring', damping: 22, stiffness: 260 }}
             className={`relative w-full ${sizeClass} p-6 rounded-lg border ${theme.neutral.background} ${theme.border.main} ${theme.text.heading} max-h-[90vh] overflow-y-auto scrollbar-hidden shadow-md`}
-            style={{ fontFamily: fontFamily || undefined }}
           >
             {children}
           </motion.div>
