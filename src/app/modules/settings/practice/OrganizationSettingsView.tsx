@@ -45,7 +45,7 @@ export const OrganizationSettingsView: React.FC<OrganizationSettingsViewProps> =
 
     return (
         <div
-            className={`p-4 sm:p-8 rounded-xl border shadow-sm ${theme.neutral.background} ${theme.border.main}`}
+            className={`p-4 sm:p-8 rounded-xl shadow-sm ${theme.neutral.background}`}
             style={{ fontFamily: tenantFont }}
         >
             <div className="flex items-center gap-4 mb-6 sm:mb-8">

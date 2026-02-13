@@ -22,7 +22,7 @@ interface UserTableProps {
 
 export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onEditUser, onViewUser, onDeleteUser }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl border shadow-sm p-8 ${theme.neutral.background} ${theme.border.main}`;
+  const cardStyle = `rounded-xl  shadow-sm p-8 ${theme.neutral.background}`;
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${theme.input.background} ${theme.border.input} ${theme.text.primary}`;
 
   // Search and filter states
@@ -166,6 +166,8 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         isLoading={isLoading}
         hasNextPage={hasNextPage}
         onLoadMore={loadMoreWithCount}
+        total={total}
+        itemName="users"
         emptyComponent={
           <div className={`text-center py-8 ${theme.text.tertiary}`}>
             {searchTerm || activeFilter !== 'all' ? 'No users match your filters' : 'No users found'}
@@ -182,21 +184,6 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         className="max-h-[600px]"
         isDarkMode={isDarkMode}
       />
-
-      {/* Table Footer */}
-      <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
-        <div className={`flex items-center justify-between text-sm ${theme.text.tertiary}`}>
-          <span>
-            Showing <span className={`font-semibold ${theme.text.primary}`}>{Math.min(loadedCount, filteredData.length || loadedCount)}</span> of{' '}
-            <span className={`font-semibold ${theme.text.primary}`}>{total}</span> users
-          </span>
-          {hasNextPage && !isLoading && (
-            <span className={`text-xs animate-pulse ${theme.text.muted}`}>
-              Scroll down to load more
-            </span>
-          )}
-        </div>
-      </div>
     </div>
   );
 };
