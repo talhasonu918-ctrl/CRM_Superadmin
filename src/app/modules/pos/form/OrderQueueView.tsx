@@ -70,8 +70,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
       default: return allOrdersAmount;
     }
   };
-
-  const filteredOrders = mockQueueOrders.filter(order => {
+    const filteredOrders = mockQueueOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
 
