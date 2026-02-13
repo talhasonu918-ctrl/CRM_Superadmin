@@ -441,9 +441,9 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
 
   return (
     <>
-      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-0 bg-background ${isFullscreen ? 'h-full overflow-hidden' : 'min-h-[500px] lg:h-[500px] lg:overflow-hidden'}`}>
+      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-0 bg-background min-h-screen lg:h-screen lg:overflow-hidden`}>
         {/* Left Section - Products */}
-        <div className="flex-1 flex flex-col min-w-0 lg:pr-0 h-[400px] lg:h-full overflow-hidden">
+        <div className="flex-1 flex flex-col min-w-0 lg:pr-0 min-h-[400px] lg:h-full overflow-hidden">
 
           {/* Search */}
           <div className="mb-3 lg:mb-4 mt-2 lg:mt-3 px-2 flex-shrink-0 max-w-sm">
@@ -511,7 +511,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
         </div>
 
         {/* Right Section - Cart */}
-        <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border border-border rounded-md ${isFullscreen ? 'h-full' : 'h-[600px] lg:h-[500px]'} bg-surface overflow-y-auto custom-scrollbar scrollbar-thin`}>
+        <div className={`w-full lg:w-80 xl:w-96 flex-shrink-0 flex flex-col border border-border rounded-md min-h-[500px] lg:h-full bg-surface overflow-y-auto custom-scrollbar scrollbar-thin`}>
           {showInvoice ? (
             <InvoiceView
               type={invoiceType}
