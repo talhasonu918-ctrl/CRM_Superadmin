@@ -7,8 +7,9 @@ import { TakeAwayView } from './form/TakeAwayView';
 import { OrderQueueView } from './form/OrderQueueView';
 import { OnlineOrdersView } from './form/OnlineOrdersView';
 import { RiderManagementView } from './form/RiderManagementView';
-import { ShoppingCart, Users, Package, ListOrdered, Bell, Bike } from 'lucide-react';
+import { ShoppingCart, Users, Package, ListOrdered, Bell, Bike, Monitor } from 'lucide-react';
 import { FullScreenToggle } from '../../../components/FullScreenToggle';
+import KitchenDisplayView from '../kitchen-order-display';
 
 interface POSModuleProps {
   isDarkMode?: boolean;
@@ -87,6 +88,13 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
       icon: <Package size={18} />,
       content: <OnlineOrdersView isDarkMode={isDarkMode} />
     },
+
+    {
+      id: 'kds',
+      name: 'Kitchen Display',
+      icon: <Monitor size={18} />,
+      content: <KitchenDisplayView isDarkMode={isDarkMode} />
+    },
     {
       id: 'riders',
       name: 'Rider Management',
@@ -96,7 +104,11 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
   ];
 
   return (
-    <div id="pos-module-container" className="bg-background text-textPrimary h-full w-full overflow-auto scrollbar-hidden">
+    <div
+      id="pos-module-container"
+      className="bg-background text-textPrimary h-full w-full overflow-auto scrollbar-hidden"
+      style={{ WebkitOverflowScrolling: 'touch', overflowX: 'auto', overflowY: 'auto' }}
+    >
       <Tabs
         className="h-full"
         items={tabs}
@@ -109,7 +121,7 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
-              className={`relative p-2 rounded-lg hover:bg-surface/10 text-textSecondary transition-all duration-200`}
+              className={`relative p-2  rounded-lg hover:bg-surface/10 text-textSecondary transition-all duration-200`}
               title="Notifications"
             >
               <Bell size={18} />
@@ -145,4 +157,5 @@ export { POSView } from './form/POSView';
 export { TablesView } from './form/TablesView';
 export { TakeAwayView } from './form/TakeAwayView';
 export { OrderQueueView } from './form/OrderQueueView';
+export { default as KitchenDisplayView } from '../kitchen-order-display';
 export * from './types';

@@ -90,7 +90,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Bar Code */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Bar Code</label>
             <input
               type="text"
@@ -99,10 +99,10 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ barCode: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Generic Name */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Generic Name</label>
             <input
               type="text"
@@ -111,7 +111,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ genericName: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Description */}
           <div>
@@ -126,7 +126,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* PCT Code */}
-          <div>
+          {/* <div>
             <label className={labelClass}>PCT Code</label>
             <input
               type="text"
@@ -135,7 +135,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ pctCode: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Category */}
           <div>
@@ -160,19 +160,26 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Sub Category */}
-          <div>
-            <label className={labelClass}>Sub Category</label>
-            <input
-              type="text"
-              placeholder="SPECIAL"
-              value={formData.subCategory || ''}
-              onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
-              className={inputClass}
-            />
-          </div>
+         <div>
+           <label className={labelClass}>Sub Category</label>
+           <select
+             value={formData.subCategory || ''}
+             onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
+             className={
+               `${inputClass} ${!formData.subCategory ? 'text-gray-400' : 'text-slate-900'}`
+             }
+           >
+             <option value="" className="text-gray-400">Select Sub Category</option>
+             <option value="Best Seller">Best Seller</option>
+             <option value="Combo">Combo</option>
+             <option value="New Arrival">New Arrival</option>
+             <option value="Recommended">Recommended</option>
+           </select>
+         </div>
+
 
           {/* Racks */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Racks</label>
             <input
               type="text"
@@ -181,10 +188,10 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ racks: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Supplier */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Supplier</label>
             <input
               type="text"
@@ -193,9 +200,8 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ supplier: e.target.value })}
               className={inputClass}
             />
-          </div>
-
-          {/* Manufacturer */}
+          </div> */}
+      {/* Manufacturer */}
           <div>
             <label className={labelClass}>Manufacturer</label>
             <input
@@ -207,7 +213,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
             />
           </div>
           {/* Product Type  at drop down on it  */}
-          <div>
+          {/* <div>
             <label className={labelClass}>Product Type</label>
             <input
               type="text"
@@ -216,7 +222,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               onChange={(e) => onUpdateFormData({ productType: e.target.value })}
               className={inputClass}
             />
-          </div>
+          </div> */}
 
           {/* Assigned Branches */}
           {/* <div>

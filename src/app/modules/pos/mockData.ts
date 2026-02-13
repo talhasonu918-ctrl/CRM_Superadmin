@@ -1,87 +1,171 @@
+export const mockNotifications = [
+  {
+    id: 1,
+    title: 'New Order #1234',
+    message: 'Order received from John Doe',
+    time: '2 min ago',
+    unread: true,
+    type: 'order',
+    orderDetails: {
+      orderId: '#1234',
+      customerName: 'John Doe',
+      phoneNumber: '+92 300 1234567',
+      address: '123 Main Street, Block A, Gulberg Town, Lahore, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '10:30 AM',
+      totalAmount: 1250.0,
+      items: [
+        { name: 'Chicken Pizza Large', quantity: 2, price: 500 },
+        { name: 'Garlic Bread', quantity: 1, price: 150 },
+        { name: 'Cold Drink 1.5L', quantity: 1, price: 100 },
+      ],
+    },
+  },
+  {
+    id: 2,
+    title: 'Low Stock Alert',
+    message: 'Pizza dough running low',
+    time: '15 min ago',
+    unread: true,
+    type: 'alert',
+    orderDetails: {
+      orderId: '#ALERT-002',
+      customerName: 'Inventory System',
+      phoneNumber: 'N/A',
+      address: 'Main Branch - Stock Room',
+      orderDate: '2026-02-11',
+      orderTime: '10:15 AM',
+      totalAmount: 0,
+      items: [
+        { name: 'Pizza Dough', quantity: 5, price: 0, status: 'Low Stock - Reorder Required' },
+      ],
+    },
+  },
+  {
+    id: 3,
+    title: 'New Review',
+    message: '5-star review from customer',
+    time: '1 hour ago',
+    unread: false,
+    type: 'review',
+    orderDetails: {
+      orderId: '#5678',
+      customerName: 'Sarah Ahmed',
+      phoneNumber: '+92 321 9876543',
+      address: '45 Park Avenue, DHA Phase 5, Karachi, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '09:00 AM',
+      totalAmount: 850.0,
+      items: [
+        { name: 'Beef Burger Combo', quantity: 1, price: 450 },
+        { name: 'French Fries', quantity: 2, price: 200 },
+        { name: 'Milkshake', quantity: 1, price: 200 },
+      ],
+    },
+  },
+  {
+    id: 4,
+    title: 'Payment Received',
+    message: 'Payment of PKR 1500 confirmed',
+    time: '2 hours ago',
+    unread: false,
+    type: 'payment',
+    orderDetails: {
+      orderId: '#9012',
+      customerName: 'Ali Hassan',
+      phoneNumber: '+92 333 4567890',
+      address: '78 Mall Road, Gulberg, Lahore, Pakistan',
+      orderDate: '2026-02-11',
+      orderTime: '08:30 AM',
+      totalAmount: 1500.0,
+      items: [
+        { name: 'Family Deal - 2 Large Pizzas', quantity: 1, price: 1200 },
+        { name: 'Garlic Bread', quantity: 2, price: 300 },
+      ],
+    },
+  },
+];
 // Mock Data for POS Module
 
 import { Product, Table, TakeawayOrder, Order, Rider } from './types';
 
 export const mockProducts: Product[] = [
   // Deals
-  { id: 'deal-1', name: 'ECONOMY DEAL', price: 1500.00, category: 'Deals', image: '/products/pizza-deal.png', available: true },
-  { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: '/products/pizza-deal-2.png', available: true },
-  { id: 'deal-3', name: 'STUDENT DEAL', price: 850.00, category: 'Deals', image: '/products/burger-deal.png', available: true },
-  { id: 'deal-4', name: 'HNY DEAL', price: 1800.00, category: 'Deals', image: '/products/wings-deal.png', available: true },
-  { id: 'deal-5', name: 'MIX PLATTER', price: 1400.00, category: 'Deals', image: '/products/mix-platter.png', available: true },
+  { id: 'deal-1', name: 'ECONOMY DEAL', price: 1500.00, category: 'Deals', image: 'https://www.kfcpakistan.com/images/98cb5e60-7688-11f0-b6cc-7b8f56c77b94-WowBoxcopy-2025-08-11075549.png', available: true, dealItems: ['2 Small Pizzas', '1.5L Soft Drink'] },
+  { id: 'deal-2', name: 'EXTREME DEAL', price: 1900.00, category: 'Deals', image: 'https://www.kfcpakistan.com/images/ff4103d0-9789-11f0-b6e5-d9c08b0eb28c-FamilyFestival3-2025-09-22075859.png', available: true, dealItems: ['2 Medium Pizzas', '2.5L Soft Drink', 'Garlic Bread'] },
+  { id: 'deal-3', name: 'STUDENT DEAL', price: 850.00, category: 'Deals', image: 'https://www.kfcpakistan.com/images/440cfeb0-7322-11f0-b954-a7e4d4e58325-CrispyBoxcopy-2025-08-07000545.png', available: true, dealItems: ['1 Zinger Burger', 'Regular Fries', '300ml Drink'] },
+  { id: 'deal-4', name: 'HNY DEAL', price: 1800.00, category: 'Deals', image: 'https://www.kfcpakistan.com/images/4d334d30-7324-11f0-b22b-41b1303a1fa3-CrispyDuoBoxcopy-2025-08-07002019.png', available: true, dealItems: ['10pcs Wings', 'Large Pizza', '1.5L Soft Drink'] },
+  { id: 'deal-5', name: 'MIX PLATTER', price: 1400.00, category: 'Deals', image: 'https://www.kfcpakistan.com/images/b0c33f70-bc52-11ee-b144-5b816f8c83f0-Riceandspice_variant_0-2024-01-26135623.png', available: true, dealItems: ['Nuggets', 'Wings', 'Fries', 'Sauces'] },
 
   // Pizzas
-  { id: 'pizza-1', name: 'CHICKEN TIKKA', price: 0.00, category: 'Pizza', image: '/products/chicken-tikka.png', available: true },
-  { id: 'pizza-2', name: 'CHICKEN EURO', price: 0.00, category: 'Pizza', image: '/products/chicken-euro.png', available: true },
-  { id: 'pizza-3', name: 'ITALIAN PIZZA', price: 0.00, category: 'Pizza', image: '/products/italian-pizza.png', available: true },
-  { id: 'pizza-4', name: 'CHEESE LOVER', price: 0.00, category: 'Pizza', image: '/products/cheese-lover.png', available: true },
-  { id: 'pizza-5', name: 'HNY SPECIAL PIZZA', price: 0.00, category: 'Pizza', image: '/products/hny-special.png', available: true },
-  { id: 'pizza-6', name: 'CHICKEN SUPREME', price: 0.00, category: 'Pizza', image: '/products/chicken-supreme.png', available: true },
-  { id: 'pizza-7', name: 'YUM CROWN PIZZA', price: 0.00, category: 'Pizza', image: '/products/yum-crown.png', available: true },
-  { id: 'pizza-8', name: 'BEHARI PIZZA', price: 0.00, category: 'Pizza', image: '/products/behari-pizza.png', available: true },
-  { id: 'pizza-9', name: 'CHICKEN & CHEESE STUFFER', price: 0.00, category: 'Pizza', image: '/products/cheese-stuffer.png', available: true },
+  { id: 'pizza-1', name: 'CHICKEN TIKKA', price: 950.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/a8e33779-ec04-4f48-9608-5b1a7daf60ec/pizza1.png', available: true },
+  { id: 'pizza-2', name: 'CHICKEN EURO', price: 980.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/0fc1bf8f-070d-421c-93f0-861e4b5c551d/slazzerpreviewejw121.png', available: true },
+  { id: 'pizza-3', name: 'ITALIAN PIZZA', price: 1150.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/8e9b60e9-5905-4b67-bdb2-228728df8b32/slazzerpreviewtbn5f.png', available: true },
+  { id: 'pizza-4', name: 'CHEESE LOVER', price: 1050.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/125001e8-76d9-4494-b327-cfbd573866f3/slazzerpreviewzu6z01.png', available: true },
+  { id: 'pizza-5', name: 'HNY SPECIAL PIZZA', price: 1350.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png', available: true },
+  { id: 'pizza-6', name: 'CHICKEN SUPREME', price: 1100.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/e0d0ec88-589e-41a0-955a-31f04ff8f63a/slazzerpreviewpev2l.png', available: true },
+  { id: 'pizza-7', name: 'YUM CROWN PIZZA', price: 1450.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/9e40b43c-51bc-4d83-82bf-f98727cf7f61/slazzerpreview30udw.png', available: true },
+  { id: 'pizza-8', name: 'BEHARI PIZZA', price: 1250.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/e62285d1-8262-478c-bf2a-676fc588640f/slazzerpreviewlvqij.png', available: true },
+  { id: 'pizza-9', name: 'CHICKEN & CHEESE STUFFER', price: 1100.00, category: 'Pizza', image: 'https://4xs9fttk0t.ucarecd.net/7444fbdd-f667-48fd-ab51-237c7994f74e/slazzerpreviewjgsj7.png', available: true },
 
   // Burgers
-  { id: 'burger-1', name: 'KABAB STUFFER', price: 460.00, category: 'Burger', image: '/products/kabab-stuffer.png', available: true },
-  { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: '/products/crunch-craze.png', available: true },
-  { id: 'burger-3', name: 'SPICY PATTY BURGER', price: 370.00, category: 'Burger', image: '/products/spicy-patty.png', available: true },
-  { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: '/products/chicken-patty.png', available: true },
-  { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: '/products/fillet-burger.png', available: true },
-
+  { id: 'burger-1', name: 'KABAB STUFFER', price: 460.00, category: 'Burger', image: 'https://www.kfcpakistan.com/images/29700d60-f1a2-11ef-9e56-b384176afb2a-Krunchburger_variant_0-2025-02-23045345.png', available: true },
+  { id: 'burger-2', name: 'CRUNCH CRAZE ZINGER', price: 370.00, category: 'Burger', image: 'https://www.kfcpakistan.com/images/19b05560-bc56-11ee-97d6-7187fd7553de-Zingeratha_variant_0-2024-01-26142047.png', available: true },
+  { id: 'burger-3', name: 'SPICY PATTY BURGER', price: 370.00, category: 'Burger', image: 'https://www.kfcpakistan.com/images/20a9c8f0-ea3c-11ef-a1fe-ef7899095965-Twister_variant_0-2025-02-13185543.png', available: true },
+  { id: 'burger-4', name: 'CHICKEN PATTY', price: 280.00, category: 'Burger', image: 'https://4xs9fttk0t.ucarecd.net/284bc4db-1a0a-4a7d-bf52-613de217a512/slazzerpreview790b9.png', available: true },
+  { id: 'burger-5', name: 'FILLET BURGER', price: 410.00, category: 'Burger', image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png', available: true },
   // Wings
-  { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/peri-peri.png', available: true },
-  { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/hot-wings.png', available: true },
-  { id: 'wings-3', name: 'BBQ WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/bbq-wings.png', available: true },
-  { id: 'wings-4', name: 'SWEET CHILLI WINGS (10PCS)', price: 580.00, category: 'Wings', image: '/products/sweet-chilli.png', available: true },
-
+  { id: 'wings-1', name: 'PERI PERI WINGS (10PCS)', price: 580.00, category: 'Wings', image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'wings-2', name: 'HOT WINGS (10PCS)', price: 580.00, category: 'Wings', image: 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'wings-3', name: 'BBQ WINGS (10PCS)', price: 580.00, category: 'Wings', image: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'wings-4', name: 'SWEET CHILLI WINGS (10PCS)', price: 580.00, category: 'Wings', image: 'https://images.unsplash.com/photo-1634063228148-932cf90048af?q=80&w=300&auto=format&fit=crop', available: true },
   // Fries & Nuggets
-  { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: '/products/nuggets.png', available: true },
-  { id: 'fries-2', name: 'PLAIN FRIES', price: 0.00, category: 'Fries & Nuggets', image: '/products/plain-fries.png', available: true },
-  { id: 'fries-3', name: 'MASALA FRIES', price: 0.00, category: 'Fries & Nuggets', image: '/products/masala-fries.png', available: true },
-  { id: 'fries-4', name: 'LOADED FRIES', price: 550.00, category: 'Fries & Nuggets', image: '/products/loaded-fries.png', available: true },
-  { id: 'fries-5', name: 'OVEN BAKED FRIES', price: 850.00, category: 'Fries & Nuggets', image: '/products/oven-fries.png', available: true },
-  { id: 'fries-6', name: 'QUARTER BROAST', price: 720.00, category: 'Fries & Nuggets', image: '/products/quarter-broast.png', available: true },
-  { id: 'fries-7', name: 'HALF BROAST', price: 1230.00, category: 'Fries & Nuggets', image: '/products/half-broast.png', available: true },
-  { id: 'fries-8', name: 'FULL BROAST', price: 2290.00, category: 'Fries & Nuggets', image: '/products/full-broast.png', available: true },
-  { id: 'fries-9', name: 'MELLOW WRAP', price: 580.00, category: 'Fries & Nuggets', image: '/products/wrap.png', available: true },
-
+  { id: 'fries-1', name: 'FUN NUGGETS (10PCS)', price: 580.00, category: 'Fries & Nuggets', image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'fries-2', name: 'PLAIN FRIES', price: 250.00, category: 'Fries & Nuggets', image: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'fries-3', name: 'MASALA FRIES', price: 300.00, category: 'Fries & Nuggets', image: 'https://images.unsplash.com/photo-1630384066252-19e1f5735848?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'fries-4', name: 'LOADED FRIES', price: 550.00, category: 'Fries & Nuggets', image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'fries-5', name: 'OVEN BAKED FRIES', price: 850.00, category: 'Fries & Nuggets', image: 'https://images.unsplash.com/photo-1582196016295-f8c8bd4b3a99?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'fries-6', name: 'QUARTER BROAST', price: 720.00, category: 'Fries & Nuggets', image: 'https://www.kfcpakistan.com/images/32258900-7592-11f0-8081-2946661625ed-1pc-2025-08-10041432.png', available: true },
+  { id: 'fries-7', name: 'HALF BROAST', price: 1230.00, category: 'Fries & Nuggets', image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png', available: true },
+  { id: 'fries-8', name: 'FULL BROAST', price: 2290.00, category: 'Fries & Nuggets', image: 'https://www.kfcpakistan.com/images/ff4103d0-9789-11f0-b6e5-d9c08b0eb28c-FamilyFestival3-2025-09-22075859.png', available: true },
+  { id: 'fries-9', name: 'MELLOW WRAP', price: 580.00, category: 'Fries & Nuggets', image: 'https://www.kfcpakistan.com/images/20a9c8f0-ea3c-11ef-a1fe-ef7899095965-Twister_variant_0-2025-02-13185543.png', available: true },
   // Rolls & Sandwiches
-  { id: 'roll-1', name: 'CHILLI FLAME', price: 580.00, category: 'Roll & Sandwich', image: '/products/chilli-flame.png', available: true },
-  { id: 'roll-2', name: 'HNY SPECIAL ROLL', price: 590.00, category: 'Roll & Sandwich', image: '/products/special-roll.png', available: true },
-  { id: 'roll-3', name: 'CHILLI MELLI ROLL', price: 620.00, category: 'Roll & Sandwich', image: '/products/chilli-melli.png', available: true },
-  { id: 'roll-4', name: 'BEHARI ROLL', price: 620.00, category: 'Roll & Sandwich', image: '/products/behari-roll.png', available: true },
-  { id: 'roll-5', name: 'PIZZA SANDWICH', price: 590.00, category: 'Roll & Sandwich', image: '/products/pizza-sandwich.png', available: true },
-  { id: 'roll-6', name: 'CHICKEN CHEESE STICK', price: 590.00, category: 'Roll & Sandwich', image: '/products/cheese-stick.png', available: true },
-  { id: 'roll-7', name: 'CHICKEN MAYO SANDWICH', price: 450.00, category: 'Roll & Sandwich', image: '/products/mayo-sandwich.png', available: true },
-  { id: 'roll-8', name: 'CLUB SANDWICH', price: 520.00, category: 'Roll & Sandwich', image: '/products/club-sandwich.png', available: true },
-  { id: 'roll-9', name: 'ZINGER ROLL', price: 480.00, category: 'Roll & Sandwich', image: '/products/zinger-roll.png', available: true },
-  { id: 'roll-10', name: 'BBQ CHICKEN SANDWICH', price: 500.00, category: 'Roll & Sandwich', image: '/products/bbq-sandwich.png', available: true },
+  { id: 'roll-1', name: 'CHILLI FLAME', price: 580.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1626700051175-656fc7c3dbe6?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-2', name: 'HNY SPECIAL ROLL', price: 590.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1539252554452-96940fd29260?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-3', name: 'CHILLI MELLI ROLL', price: 620.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-4', name: 'BEHARI ROLL', price: 620.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1610440042657-612c34d95e9f?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-5', name: 'PIZZA SANDWICH', price: 590.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-6', name: 'CHICKEN CHEESE STICK', price: 590.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1481070414801-51fd732d7184?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-7', name: 'CHICKEN MAYO SANDWICH', price: 450.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1554522723-b2a47cb105e3?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-8', name: 'CLUB SANDWICH', price: 520.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-9', name: 'ZINGER ROLL', price: 480.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1509482560494-4126f8225994?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'roll-10', name: 'BBQ CHICKEN SANDWICH', price: 500.00, category: 'Roll & Sandwich', image: 'https://images.unsplash.com/photo-1521390188846-e2a39973e5bf?q=80&w=300&auto=format&fit=crop', available: true },
 
   // Broast
-  { id: 'broast-1', name: 'QUARTER BROAST', price: 720.00, category: 'Broast', image: '/products/quarter-broast.png', available: true },
-  { id: 'broast-2', name: 'HALF BROAST', price: 1230.00, category: 'Broast', image: '/products/half-broast.png', available: true },
-  { id: 'broast-3', name: 'FULL BROAST', price: 2290.00, category: 'Broast', image: '/products/full-broast.png', available: true },
-  { id: 'broast-4', name: 'BROAST WITH FRIES', price: 950.00, category: 'Broast', image: '/products/broast-fries.png', available: true },
-  { id: 'broast-5', name: 'CRISPY BROAST BUCKET', price: 1850.00, category: 'Broast', image: '/products/broast-bucket.png', available: true },
-  { id: 'broast-6', name: 'SPICY BROAST', price: 780.00, category: 'Broast', image: '/products/spicy-broast.png', available: true },
-  { id: 'broast-7', name: 'FAMILY BROAST COMBO', price: 2650.00, category: 'Broast', image: '/products/family-broast.png', available: true },
-  { id: 'broast-8', name: 'GARLIC BROAST', price: 850.00, category: 'Broast', image: '/products/garlic-broast.png', available: true },
+  { id: 'broast-1', name: 'QUARTER BROAST', price: 720.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/32258900-7592-11f0-8081-2946661625ed-1pc-2025-08-10041432.png', available: true },
+  { id: 'broast-2', name: 'HALF BROAST', price: 1230.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png', available: true },
+  { id: 'broast-3', name: 'FULL BROAST', price: 2290.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/ff4103d0-9789-11f0-b6e5-d9c08b0eb28c-FamilyFestival3-2025-09-22075859.png', available: true },
+  { id: 'broast-4', name: 'BROAST WITH FRIES', price: 950.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/19b05560-bc56-11ee-97d6-7187fd7553de-Zingeratha_variant_0-2024-01-26142047.png', available: true },
+  { id: 'broast-5', name: 'CRISPY BROAST BUCKET', price: 1850.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/4d334d30-7324-11f0-b22b-41b1303a1fa3-CrispyDuoBoxcopy-2025-08-07002019.png', available: true },
+  { id: 'broast-6', name: 'SPICY BROAST', price: 780.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/29700d60-f1a2-11ef-9e56-b384176afb2a-Krunchburger_variant_0-2025-02-23045345.png', available: true },
+  { id: 'broast-7', name: 'FAMILY BROAST COMBO', price: 2650.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/ff4103d0-9789-11f0-b6e5-d9c08b0eb28c-FamilyFestival3-2025-09-22075859.png', available: true },
+  { id: 'broast-8', name: 'GARLIC BROAST', price: 850.00, category: 'Broast', image: 'https://www.kfcpakistan.com/images/b0c33f70-bc52-11ee-b144-5b816f8c83f0-Riceandspice_variant_0-2024-01-26135623.png', available: true },
 
   // Drinks
-  { id: 'drink-1', name: 'MINERAL WATER (SMALL)', price: 60.00, category: 'Drinks', image: '/products/water-small.png', available: true },
-  { id: 'drink-2', name: 'MINERAL WATER (LARGE)', price: 100.00, category: 'Drinks', image: '/products/water-large.png', available: true },
-  { id: 'drink-3', name: 'PAK DRINK (300ML)', price: 100.00, category: 'Drinks', image: '/products/pak-drink.png', available: true },
-  { id: 'drink-4', name: 'DRINK (1LTR)', price: 150.00, category: 'Drinks', image: '/products/drink-1ltr.png', available: true },
-  { id: 'drink-5', name: 'PAK DRINK (1.5LTR)', price: 220.00, category: 'Drinks', image: '/products/pak-drink-1.5.png', available: true },
-  { id: 'drink-6', name: 'PAK DRINK TIN', price: 200.00, category: 'Drinks', image: '/products/pak-tin.png', available: true },
+  { id: 'drink-1', name: 'MINERAL WATER (SMALL)', price: 60.00, category: 'Drinks', image: 'https://www.dominos.com.pk/images/561f7ee0-9c0c-11ef-8241-d70815871548-Aquafina_variant_0-2024-11-06065707.jpg', available: true },
+  { id: 'drink-2', name: 'MINERAL WATER (LARGE)', price: 100.00, category: 'Drinks', image: 'https://www.dominos.com.pk/images/561f7ee0-9c0c-11ef-8241-d70815871548-Aquafina_variant_0-2024-11-06065707.jpg', available: true },
+  { id: 'drink-3', name: 'PAK DRINK (300ML)', price: 100.00, category: 'Drinks', image: 'https://www.kfcpakistan.com/images/f9ef5210-9789-11f0-a9fb-8733de1157b1-MirindaRegular_variant_0-2025-09-22075850.png', available: true },
+  { id: 'drink-4', name: 'DRINK (1LTR)', price: 150.00, category: 'Drinks', image: 'https://www.kfcpakistan.com/images/0a68d020-73c8-11f0-9aa3-ad226d559836-Pepsiltr_variant_0-2025-08-07195225.png', available: true },
+  { id: 'drink-5', name: 'PAK DRINK (1.5LTR)', price: 220.00, category: 'Drinks', image: 'https://www.kfcpakistan.com/images/f9ef5210-9789-11f0-a9fb-8733de1157b1-MirindaRegular_variant_0-2025-09-22075850.png', available: true },
+  { id: 'drink-6', name: 'PAK DRINK TIN', price: 200.00, category: 'Drinks', image: 'https://www.kfcpakistan.com/images/f9ef5210-9789-11f0-8081-2946661625ed-7UPMint_variant_0-2025-09-22075850.png', available: true },
 
   // Pasta
-  { id: 'pasta-1', name: 'CRUNCHY PASTA', price: 0.00, category: 'Pasta', image: '/products/crunchy-pasta.png', available: true },
-  { id: 'pasta-2', name: 'FLAMING PASTA', price: 0.00, category: 'Pasta', image: '/products/flaming-pasta.png', available: true },
-  { id: 'pasta-3', name: 'CREAMY PASTA', price: 0.00, category: 'Pasta', image: '/products/creamy-pasta.png', available: true },
-  { id: 'pasta-4', name: 'MALAI BOTI', price: 0.00, category: 'Pasta', image: '/products/malai-boti.png', available: true },
-  { id: 'pasta-5', name: 'CHICKEN FAJITA', price: 0.00, category: 'Pasta', image: '/products/chicken-fajita.png', available: true },
-  { id: 'pasta-6', name: 'VEGGIE LOVER', price: 0.00, category: 'Pasta', image: '/products/veggie-lover.png', available: true },
+  { id: 'pasta-1', name: 'CRUNCHY PASTA', price: 650.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1563379091339-03b21bc4a4f8?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'pasta-2', name: 'FLAMING PASTA', price: 720.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1555072956-7758afb20e8f?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'pasta-3', name: 'CREAMY PASTA', price: 680.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'pasta-4', name: 'MALAI BOTI', price: 850.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1598866594230-a7c12756260f?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'pasta-5', name: 'CHICKEN FAJITA', price: 780.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1473093226795-af9932fe5856?q=80&w=300&auto=format&fit=crop', available: true },
+  { id: 'pasta-6', name: 'VEGGIE LOVER', price: 620.00, category: 'Pasta', image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?q=80&w=300&auto=format&fit=crop', available: true },
 ];
 
 export const mockTables: Table[] = [
@@ -730,7 +814,8 @@ export const mockRiders: Rider[] = [
         { product: { id: 'p1', name: 'Crunch Craze Zinger', price: 370.00, category: 'Burger', image: '', available: true }, quantity: 2 },
         { product: { id: 'p2', name: 'Loaded Fries', price: 550.00, category: 'Fries', image: '', available: true }, quantity: 1 },
         { product: { id: 'p3', name: 'Drink (1LTR)', price: 150.00, category: 'Drinks', image: '', available: true }, quantity: 2 }
-      ]
+      ],
+      customerAddress: 'House 123, Street 4, Sector G-11, Islamabad'
     },
     rating: 4.8,
     performance: {
@@ -855,7 +940,8 @@ export const mockRiders: Rider[] = [
         { product: { id: 'p4', name: 'Economy Deal', price: 1500.00, category: 'Deals', image: '', available: true }, quantity: 1 },
         { product: { id: 'p5', name: 'Full Broast', price: 1200.00, category: 'Broast', image: '', available: true }, quantity: 1 },
         { product: { id: 'p6', name: 'Pasta (Family)', price: 750.00, category: 'Pasta', image: '', available: true }, quantity: 1 }
-      ]
+      ],
+      customerAddress: 'Flat 402, Block 5, Gulshan-e-Iqbal, Karachi'
     },
     rating: 4.9,
     performance: {
@@ -949,6 +1035,105 @@ export const mockRiders: Rider[] = [
       penalty: 0,
       cashCollected: 11200,
       netPayable: 41600
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-007',
+    name: 'Asif Ali',
+    phone: '+92 300 7777777',
+    cnic: '42101-7777777-7',
+    avatar: 'https://i.pravatar.cc/150?u=r7',
+    vehicleType: 'bike',
+    vehicleNumber: 'KHI-7777',
+    cityArea: 'Gulberg, Lahore',
+    joiningDate: '2024-01-01',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-1234',
+      itemsCount: 2,
+      totalAmount: 920.00,
+      paymentStatus: 'pending',
+      items: [
+        { product: { id: 'p7', name: 'Zinger Burger', price: 460.00, category: 'Burger', image: '', available: true }, quantity: 2 },
+        { product: { id: 'p8', name: 'Regular Fries', price: 250.00, category: 'Sides', image: '', available: true }, quantity: 1 }
+      ],
+      customerAddress: 'House 55, Street 2, Gulberg III, Lahore'
+    },
+    rating: 4.6,
+    performance: {
+      avgDeliveryTime: '30 min',
+      completedOrders: 50,
+      completedToday: 3,
+      cancelledOrders: 1,
+      complaints: 0
+    },
+    earnings: {
+      total: 3000,
+      perOrderRate: 60,
+      tips: 200,
+      bonus: 0,
+      penalty: 0,
+      cashCollected: 1200,
+      netPayable: 3200
+    },
+    attendance: {
+      shiftStart: '09:00 AM',
+      shiftEnd: '06:00 PM',
+      totalHours: 9,
+      lateCheckIn: false,
+      isPresent: true
+    }
+  },
+  {
+    id: 'R-008',
+    name: 'Salman Ahmed',
+    phone: '+92 344 8888888',
+    cnic: '42101-8888888-8',
+    avatar: 'https://i.pravatar.cc/150?u=r8',
+    vehicleType: 'bike',
+    vehicleNumber: 'LHR-8888',
+    cityArea: 'Johar Town, Lahore',
+    joiningDate: '2024-02-01',
+    status: 'busy',
+    accountStatus: 'active',
+    currentOrders: 1,
+    activeTask: {
+      orderNumber: 'ORD-5678',
+      itemsCount: 3,
+      totalAmount: 1250.00,
+      paymentStatus: 'pending',
+      items: [
+        { product: { id: 'p9', name: 'Chicken Pizza Medium', price: 850.00, category: 'Pizza', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p10', name: 'Cold Drink 1.5L', price: 200.00, category: 'Drinks', image: '', available: true }, quantity: 1 },
+        { product: { id: 'p11', name: 'Garlic Bread', price: 200.00, category: 'Sides', image: '', available: true }, quantity: 1 }
+      ],
+      customerAddress: 'Apartment 12B, Block R, Johar Town, Lahore'
+    },
+    rating: 4.7,
+    performance: {
+      avgDeliveryTime: '28 min',
+      completedOrders: 10,
+      completedToday: 2,
+      cancelledOrders: 0,
+      complaints: 0
+    },
+    earnings: {
+      total: 1000,
+      perOrderRate: 60,
+      tips: 150,
+      bonus: 0,
+      penalty: 0,
+      cashCollected: 500,
+      netPayable: 1150
     },
     attendance: {
       shiftStart: '09:00 AM',

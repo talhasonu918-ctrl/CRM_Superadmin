@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   image: string;
   available: boolean;
+  dealItems?: string[];
 }
 
 export interface CartItem {
@@ -62,6 +63,7 @@ export interface ActiveTask {
   totalAmount: number;
   paymentStatus: 'pending' | 'received';
   items?: CartItem[];
+  customerAddress?: string;
 }
 
 export interface Rider {

@@ -33,6 +33,37 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
 
   const filters = watch();
 
+  // Calculate counts for each status (not affected by search or active filter)
+  const allOrdersCount = mockOnlineOrders.length;
+  const pendingOrdersCount = mockOnlineOrders.filter(o => o.status === 'pending').length;
+  const preparingOrdersCount = mockOnlineOrders.filter(o => o.status === 'preparing').length;
+  const readyOrdersCount = mockOnlineOrders.filter(o => o.status === 'ready').length;
+  const servedOrdersCount = mockOnlineOrders.filter(o => o.status === 'served').length;
+  const cancelledOrdersCount = mockOnlineOrders.filter(o => o.status === 'cancelled').length;
+
+  // Calculate total amounts for each status
+  const calculateTotalAmount = (orders: typeof mockOnlineOrders) =>
+    orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
+
+  const allOrdersAmount = calculateTotalAmount(mockOnlineOrders);
+  const pendingOrdersAmount = calculateTotalAmount(mockOnlineOrders.filter(o => o.status === 'pending'));
+  const preparingOrdersAmount = calculateTotalAmount(mockOnlineOrders.filter(o => o.status === 'preparing'));
+  const readyOrdersAmount = calculateTotalAmount(mockOnlineOrders.filter(o => o.status === 'ready'));
+  const servedOrdersAmount = calculateTotalAmount(mockOnlineOrders.filter(o => o.status === 'served'));
+  const cancelledOrdersAmount = calculateTotalAmount(mockOnlineOrders.filter(o => o.status === 'cancelled'));
+
+  // Get current status amount
+  const getCurrentStatusAmount = () => {
+    switch (activeFilter) {
+      case 'pending': return pendingOrdersAmount;
+      case 'preparing': return preparingOrdersAmount;
+      case 'ready': return readyOrdersAmount;
+      case 'served': return servedOrdersAmount;
+      case 'cancelled': return cancelledOrdersAmount;
+      default: return allOrdersAmount;
+    }
+  };
+
   const filteredOrders = mockOnlineOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
 
@@ -119,7 +150,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
                 <div key={index} className="grid grid-cols-12 gap-2 text-xs text-textSecondary">
                   <div className="col-span-6 truncate font-medium">{item.product.name}</div>
                   <div className="col-span-2 text-center font-bold">{item.quantity}</div>
-                  <div className="col-span-4 text-right font-bold">₹{(item.product.price * item.quantity).toFixed(2)}</div>
+                  <div className="col-span-4 text-right font-bold">PKR {(item.product.price * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
               {order.items.length > 3 && (
@@ -188,7 +219,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           <div className="text-right">
             <span className="text-[9px] font-bold uppercase text-textSecondary block mb-0.5">Total</span>
             <div className="text-lg font-black text-primary">
-              ₹{order.grandTotal.toFixed(2)}
+              PKR {order.grandTotal.toFixed(2)}
             </div>
           </div>
         </div>
@@ -238,7 +269,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
                         {item.quantity}
                       </span>
                       <span className="col-span-1 text-right font-medium text-textSecondary">
-                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                        PKR {(item.product.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
@@ -293,7 +324,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           {/* Total Amount & Actions */}
           <div className="col-span-2 flex items-center justify-between pl-2">
             <div className="text-lg font-bold text-primary whitespace-nowrap">
-              ₹{order.grandTotal.toFixed(2)}
+              PKR {order.grandTotal.toFixed(2)}
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
@@ -373,10 +404,35 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
       {/* Header Box */}
       <div className="p-4 sm:p-5 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4 lg:mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-9 w-full lg:w-auto">
             <h1 className="text-xl sm:text-xl font-bold whitespace-nowrap text-textPrimary">
               Online Orders
             </h1>
+            {/* Total Amount Badge */}
+            {/* <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-orange-600 shadow-lg">
+              <ShoppingBag className="w-5 h-5 text-white" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
+                <span className="text-lg font-bold text-white">PKR {getCurrentStatusAmount().toFixed(2)}</span>
+              </div>
+            </div> */}
+
+
+            <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
+                            bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
+                            border border-white/20 
+                            shadow-md">
+              <ShoppingBag className="w-4 h-4 text-white" />
+
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+                  Total
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  PKR {getCurrentStatusAmount().toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
@@ -464,12 +520,12 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
             onTabChange={(tabId) => setActiveFilter(tabId)}
             defaultActiveTab={activeFilter}
             items={[
-              { id: 'all', name: 'All Status', content: ordersContent },
-              { id: 'pending', name: 'Pending', content: ordersContent },
-              { id: 'preparing', name: 'Preparing', content: ordersContent },
-              { id: 'ready', name: 'Ready', content: ordersContent },
-              { id: 'served', name: 'Served', content: ordersContent },
-              { id: 'cancelled', name: 'Cancelled', content: ordersContent },
+              { id: 'all', name: 'All Status', badge: allOrdersCount, content: ordersContent },
+              { id: 'pending', name: 'Pending', badge: pendingOrdersCount, content: ordersContent },
+              { id: 'preparing', name: 'Preparing', badge: preparingOrdersCount, content: ordersContent },
+              { id: 'ready', name: 'Ready', badge: readyOrdersCount, content: ordersContent },
+              { id: 'served', name: 'Served', badge: servedOrdersCount, content: ordersContent },
+              { id: 'cancelled', name: 'Cancelled', badge: cancelledOrdersCount, content: ordersContent },
             ]}
           />
         </div>

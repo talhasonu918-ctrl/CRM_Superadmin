@@ -28,11 +28,10 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
     options: [{ id: Date.now().toString(), name: '' }],
   });
 
-  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${
-    isDarkMode
+  const inputClass = `w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode
       ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500'
       : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500'
-  }`;
+    }`;
 
   const addOption = () => {
     setCurrentAddon({
@@ -133,13 +132,13 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="pizza flavor"
+                  placeholder="Enter the add-on"
                   value={currentAddon.name}
                   onChange={(e) => setCurrentAddon({ ...currentAddon, name: e.target.value })}
                   className={inputClass}
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Display Name
                 </label>
@@ -150,7 +149,7 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
                   onChange={(e) => setCurrentAddon({ ...currentAddon, displayName: e.target.value })}
                   className={inputClass}
                 />
-              </div>
+              </div> */}
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   Instructions
@@ -231,9 +230,8 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
             <div className="flex justify-end gap-3 pt-4">
               <button
                 onClick={() => setIsAdding(false)}
-                className={`px-6 py-2.5 rounded-lg font-semibold transition-colors ${
-                  isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
+                className={`px-6 py-2.5 rounded-lg font-semibold transition-colors ${isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  }`}
               >
                 Cancel
               </button>
@@ -252,9 +250,8 @@ export const ProductAddons: React.FC<ProductAddonsProps> = ({
       <div className="flex justify-between">
         <button
           onClick={onBack}
-          className={`px-6 py-2.5 rounded-lg font-semibold transition-colors ${
-            isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
+          className={`px-6 py-2.5 rounded-lg font-semibold transition-colors ${isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
         >
           Back
         </button>

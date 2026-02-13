@@ -1,9 +1,4 @@
 import { KitchenOrder } from '../app/modules/kitchen-order-display';
-
-/**
- * Send order to Kitchen Display System
- * Call this function from POS when "Send To Kitchen" button is clicked
- */
 export const sendToKitchen = (order: Partial<KitchenOrder>) => {
   const kitchenOrder: KitchenOrder = {
     id: order.id || `order-${Date.now()}`,
@@ -17,6 +12,7 @@ export const sendToKitchen = (order: Partial<KitchenOrder>) => {
     status: 'preparing',
     customerName: order.customerName,
     customerPhone: order.customerPhone,
+    customerAddress: order.customerAddress,
     timestamp: Date.now(),
   };
 
@@ -38,26 +34,3 @@ export const sendToKitchen = (order: Partial<KitchenOrder>) => {
   return kitchenOrder;
 };
 
-/**
- * Example usage in POS system:
- * 
- * import { sendToKitchen } from '@/utils/kitchenDisplay';
- * 
- * const handleSendToKitchen = () => {
- *   sendToKitchen({
- *     orderNumber: '# 116',
- *     tableNumber: 'TKA-004',
- *     orderType: 'TakeAway',
- *     waiterName: 'Ahmed Ali',
- *     customerName: 'John Doe',
- *     customerPhone: '+92 300 1234567',
- *     items: [
- *       { id: '1', name: 'Beef Burger', quantity: 2, completed: false },
- *       { id: '2', name: 'Fries', quantity: 1, completed: false },
- *     ],
- *     deals: [
- *       { name: 'Combo Deal', items: ['1x Burger', '1x Fries', '1x Drink'] }
- *     ]
- *   });
- * };
- */

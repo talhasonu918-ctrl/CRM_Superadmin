@@ -35,6 +35,42 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
 
   const filters = watch();
 
+  // First filter by order type only (for badge counts)
+  const orderTypeFiltered = mockQueueOrders.filter(order =>
+    orderTypeFilter === 'all' || order.type === orderTypeFilter
+  );
+
+  // Calculate counts for each status (not affected by search or active filter)
+  const allOrdersCount = orderTypeFiltered.length;
+  const pendingOrdersCount = orderTypeFiltered.filter(order => order.status === 'pending').length;
+  const preparingOrdersCount = orderTypeFiltered.filter(order => order.status === 'preparing').length;
+  const readyOrdersCount = orderTypeFiltered.filter(order => order.status === 'ready').length;
+  const servedOrdersCount = orderTypeFiltered.filter(order => order.status === 'served').length;
+  const cancelledOrdersCount = orderTypeFiltered.filter(order => order.status === 'cancelled').length;
+
+  // Calculate total amounts for each status
+  const calculateTotalAmount = (orders: typeof mockQueueOrders) =>
+    orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
+
+  const allOrdersAmount = calculateTotalAmount(orderTypeFiltered);
+  const pendingOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'pending'));
+  const preparingOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'preparing'));
+  const readyOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'ready'));
+  const servedOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'served'));
+  const cancelledOrdersAmount = calculateTotalAmount(orderTypeFiltered.filter(o => o.status === 'cancelled'));
+
+  // Get current status amount
+  const getCurrentStatusAmount = () => {
+    switch (activeFilter) {
+      case 'pending': return pendingOrdersAmount;
+      case 'preparing': return preparingOrdersAmount;
+      case 'ready': return readyOrdersAmount;
+      case 'served': return servedOrdersAmount;
+      case 'cancelled': return cancelledOrdersAmount;
+      default: return allOrdersAmount;
+    }
+  };
+
   const filteredOrders = mockQueueOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
@@ -51,7 +87,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
     return matchesSearch && matchesStatus && matchesOrderType;
   });
 
-  // Group orders by status for "All" view
+  // Group orders by status for "All" view (from filtered results)
   const pendingOrders = filteredOrders.filter(order => order.status === 'pending');
   const preparingOrders = filteredOrders.filter(order => order.status === 'preparing');
   const readyOrders = filteredOrders.filter(order => order.status === 'ready');
@@ -123,7 +159,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                 <div key={index} className="grid grid-cols-12 gap-2 text-xs text-textSecondary">
                   <div className="col-span-6 truncate font-medium">{item.product.name}</div>
                   <div className="col-span-2 text-center font-bold">{item.quantity}</div>
-                  <div className="col-span-4 text-right font-bold">₹{(item.product.price * item.quantity).toFixed(2)}</div>
+                  <div className="col-span-4 text-right font-bold">PKR {(item.product.price * item.quantity).toFixed(2)}</div>
                 </div>
               ))}
               {order.items.length > 3 && (
@@ -244,10 +280,29 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
     const showOrderDetails = orderTypeFilter !== 'all';
 
     return (
-      <div className="px-4 py-3 border-b border-border transition-all hover:bg-surface/50 bg-surface">
-        <div className={`grid ${showOrderDetails ? 'grid-cols-12' : 'grid-cols-10'} gap-4 items-center`}>
-          {/* Order / Time */}
-          <div className="col-span-2 flex flex-col gap-0.5">
+      <div className="px-4 py-4 sm:py-3 border-b border-border transition-all hover:bg-surface/50 bg-surface">
+        <div className={`flex flex-col sm:grid ${showOrderDetails ? 'sm:grid-cols-12' : 'sm:grid-cols-10'} gap-3 sm:gap-4 items-start sm:items-center`}>
+          {/* Top Row for Mobile (Order #, Time, Status) */}
+          <div className="flex items-center justify-between w-full sm:hidden mb-2">
+            <div className="flex flex-col gap-0.5">
+              <h3 className="font-bold text-sm text-textPrimary">
+                #{order.orderNumber.split('-').pop()}
+              </h3>
+              <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+                <Clock size={11} className="opacity-60" />
+                <span>{order.createdAt.split(' ').slice(1).join(' ')}</span>
+              </div>
+            </div>
+            <Badge
+              variant="flat"
+              className={`py-1 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest ${getStatusBadgeColor(order.status)}`}
+            >
+              {order.status}
+            </Badge>
+          </div>
+
+          {/* Desktop Order / Time */}
+          <div className="hidden sm:flex col-span-2 flex-col gap-0.5">
             <h3 className="font-bold text-sm text-textPrimary">
               {order.orderNumber.split('-').pop()}
             </h3>
@@ -257,8 +312,8 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
             </div>
           </div>
 
-          {/* Status */}
-          <div className="col-span-1">
+          {/* Desktop Status */}
+          <div className="hidden sm:block col-span-1">
             <Badge
               variant="flat"
               className={`py-1 px-3 rounded-full text-[10px] font-bold uppercase tracking-widest ${getStatusBadgeColor(order.status)}`}
@@ -267,28 +322,28 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
             </Badge>
           </div>
 
-          {/* Items Column (Sub-grid 3+1+1 = 5) */}
-          <div className="col-span-5">
-            <div className="flex flex-col gap-1.5">
+          {/* Items Column */}
+          <div className="col-span-12 sm:col-span-5 w-full">
+            <div className="flex flex-col gap-2 sm:gap-1.5">
               {displayedItems && displayedItems.length > 0 ? (
                 <>
                   {displayedItems.map((item, idx) => (
-                    <div key={idx} className="grid grid-cols-5 gap-2 text-xs pl-5">
+                    <div key={idx} className="grid grid-cols-6 sm:grid-cols-5 gap-2 text-xs pl-0 sm:pl-5">
                       <span className="col-span-3 truncate font-medium text-textSecondary">
                         {item.product.name}
                       </span>
                       <span className="col-span-1 text-center font-medium text-textSecondary">
                         {item.quantity}
                       </span>
-                      <span className="col-span-1 text-right font-medium text-textSecondary">
-                        ₹{(item.product.price * item.quantity).toFixed(2)}
+                      <span className="col-span-2 sm:col-span-1 text-right font-medium text-textSecondary">
+                        PKR {(item.product.price * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   ))}
                   {order.items && order.items.length > 2 && (
                     <button
                       onClick={() => setIsExpanded(!isExpanded)}
-                      className="text-[11px] font-bold hover:underline mt-0.5 flex items-center gap-1 text-primary pl-5"
+                      className="text-[11px] font-bold hover:underline mt-0.5 flex items-center gap-1 text-primary pl-0 sm:pl-5"
                     >
                       {isExpanded ? (
                         <>Show less <ChevronUp size={11} /></>
@@ -299,17 +354,18 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                   )}
                 </>
               ) : (
-                <div className="text-[11px] italic pl-5 text-textSecondary">No Items</div>
+                <div className="text-[11px] italic pl-0 sm:pl-5 text-textSecondary">No Items</div>
               )}
             </div>
           </div>
 
           {/* Order Details - Dynamic based on order type */}
           {showOrderDetails && (
-            <div className="col-span-2">
+            <div className={`col-span-12 sm:col-span-2 w-full pt-2 sm:pt-0 border-t sm:border-t-0 border-border/50`}>
+              <div className="sm:hidden text-[10px] font-bold uppercase tracking-wider text-textSecondary mb-1.5 ">Details:</div>
               {order.type === 'dine-in' && (
-                <>
-                  <div className="text-sm font-bold truncate mb-0.5 text-textPrimary">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <div className="text-sm font-bold text-textPrimary">
                     Table: {order.tableId || 'N/A'}
                   </div>
                   {order.waiterName && (
@@ -317,56 +373,67 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                       {order.waiterName}
                     </div>
                   )}
-                </>
+                </div>
               )}
 
               {order.type === 'takeaway' && (
-                <>
-                  <div className="text-sm font-bold truncate mb-0.5 text-textPrimary">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <div className="text-sm font-bold text-textPrimary">
                     {order.customerName || 'Walk-in'}
                   </div>
                   <div className="text-[11px] font-medium text-textSecondary">
                     {order.customerPhone || 'N/A'}
                   </div>
-                </>
+                </div>
               )}
 
               {order.type === 'delivery' && (
-                <div className="flex flex-col gap-0.5">
-                  <div className="text-sm font-bold truncate text-textPrimary">
-                    {order.customerName || 'N/A'}
+                <div className="grid grid-cols-2 sm:flex sm:flex-col gap-2 sm:gap-0.5">
+                  <div className="flex flex-col">
+                    <div className="text-sm font-bold text-textPrimary">
+                      {order.customerName || 'N/A'}
+                    </div>
+                    <div className="text-[11px] flex items-center gap-1.5 text-textSecondary">
+                      <Phone size={11} className="text-primary" />
+                      <span>{order.customerPhone || 'N/A'}</span>
+                    </div>
                   </div>
-                  <div className="text-[11px] flex items-center gap-1.5 text-textSecondary">
-                    <Phone size={11} className="text-primary" />
-                    <span>{order.customerPhone || 'N/A'}</span>
+                  <div className="flex flex-col gap-1">
+                    {order.deliveryAddress && (
+                      <div className="text-[11px] flex items-center gap-1.5 text-textSecondary">
+                        <MapPin size={11} className="text-primary flex-shrink-0" />
+                        <span className="truncate">{order.deliveryAddress}</span>
+                      </div>
+                    )}
+                    {(order.riderName || order.riderPhone) && (
+                      <div className="flex items-center gap-3">
+                        {order.riderName && (
+                          <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+                            <Bike size={11} className="text-success" />
+                            <span>{order.riderName}</span>
+                          </div>
+                        )}
+                        {order.riderPhone && (
+                          <div className="text-[11px] flex items-center gap-1 text-success font-medium">
+                            <Smartphone size={11} className="text-success" />
+                            <span>{order.riderPhone}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  {order.deliveryAddress && (
-                    <div className="text-[11px] flex items-center gap-1.5 text-textSecondary mt-0.5">
-                      <MapPin size={11} className="text-primary flex-shrink-0" />
-                      <span className="truncate">{order.deliveryAddress}</span>
-                    </div>
-                  )}
-                  {order.riderName && (
-                    <div className="text-[11px] flex items-center gap-1.5 text-textSecondary mt-1">
-                      <Bike size={11} className="text-success" />
-                      <span>{order.riderName}</span>
-                    </div>
-                  )}
-                  {order.riderPhone && (
-                    <div className="text-[11px] flex items-center gap-1.5 text-success">
-                      <Smartphone size={11} className="text-success" />
-                      <span>{order.riderPhone}</span>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
           )}
 
           {/* Total Amount & Actions */}
-          <div className="col-span-2 flex items-center justify-between pl-2">
-            <div className="text-lg font-bold text-primary whitespace-nowrap">
-              ₹{order.grandTotal.toFixed(2)}
+          <div className="col-span-12 sm:col-span-2 flex items-center justify-between w-full pt-2 sm:pt-0 border-t sm:border-t-0 border-border/50">
+            <div className="flex flex-col sm:block">
+              <span className="sm:hidden text-[10px] font-bold uppercase tracking-wider text-textSecondary mb-0.5">Total Amount</span>
+              <div className="text-lg font-black text-primary">
+                PKR {order.grandTotal.toFixed(2)}
+              </div>
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
@@ -402,18 +469,16 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
           {title}
         </h2>
         {viewMode === 'list' && (
-          <div className={`grid ${showOrderDetails ? 'grid-cols-12' : 'grid-cols-10'} gap-4 px-4 mb-2 text-[10px] uppercase tracking-widest text-textSecondary`}>
+          <div className={`hidden sm:grid ${showOrderDetails ? 'sm:grid-cols-12' : 'sm:grid-cols-10'} gap-4 px-4 mb-2 text-[10px] md:text-xs uppercase tracking-widest text-textSecondary font-bold`}>
             <div className="col-span-2">Order / Time</div>
             <div className="col-span-1">Status</div>
-            <div className="col-span-3 pl-5">Item</div>
-            <div className="col-span-1 text-center">Qty</div>
-            <div className="col-span-1 text-right">Price</div>
+            <div className="col-span-5 pl-5">Items (Item / Qty / Price)</div>
             {showOrderDetails && <div className="col-span-2">{orderDetailsHeader}</div>}
-            <div className="col-span-2 text-right pr-10 whitespace-nowrap">Total Amount</div>
+            <div className="col-span-2 text-right pr-10">Total Amount</div>
           </div>
         )}
         {viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 md:gap-4">
             {orders.map(order => (
               <OrderCard key={order.id} order={order} />
             ))}
@@ -458,10 +523,36 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
       {/* Header Box */}
       <div className="p-4 sm:p-5 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4 lg:mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row  items-start sm:items-center gap-3 sm:gap-9 w-full lg:w-auto">
             <h1 className="text-xl sm:text-xl font-bold whitespace-nowrap text-textPrimary">
               Current Orders
             </h1>
+            {/* Total Amount Badge */}
+            {/* <div className="flex items-center border-8 gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-orange-600 shadow-lg">
+              <ShoppingBag className="w-5 h-5 text-white" />
+              <div className="flex flex-col">
+                <span className="text-[10px] font-medium text-white/80 uppercase tracking-wide">Total Amount</span>
+                <span className="text-lg font-bold text-white">PKR {getCurrentStatusAmount().toFixed(2)}</span>
+              </div>
+            </div> */}
+
+
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg 
+                 bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
+                border border-white/20 
+                shadow-md">
+              <ShoppingBag className="w-4 h-4 text-white" />
+
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+                  Total
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  PKR {getCurrentStatusAmount().toFixed(2)}
+                </span>
+              </div>
+            </div>
+
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
@@ -563,12 +654,12 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               </div>
             }
             items={[
-              { id: 'all', name: 'All Status', content: ordersContent },
-              { id: 'pending', name: 'Pending', content: ordersContent },
-              { id: 'preparing', name: 'Preparing', content: ordersContent },
-              { id: 'ready', name: 'Ready', content: ordersContent },
-              { id: 'served', name: 'Served', content: ordersContent },
-              { id: 'cancelled', name: 'Cancelled', content: ordersContent },
+              { id: 'all', name: 'All Status', badge: allOrdersCount, content: ordersContent },
+              { id: 'pending', name: 'Pending', badge: pendingOrdersCount, content: ordersContent },
+              { id: 'preparing', name: 'Preparing', badge: preparingOrdersCount, content: ordersContent },
+              { id: 'ready', name: 'Ready', badge: readyOrdersCount, content: ordersContent },
+              { id: 'served', name: 'Served', badge: servedOrdersCount, content: ordersContent },
+              { id: 'cancelled', name: 'Cancelled', badge: cancelledOrdersCount, content: ordersContent },
             ]}
           />
         </div>

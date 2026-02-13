@@ -141,7 +141,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
             backgroundColor: state.isSelected
                 ? 'var(--color-primary)'
                 : state.isFocused
-                    ? 'rgba(var(--color-primary-rgb, 249, 115, 22), 0.1)'
+                    ? 'rgba(234, 88, 12, 0.1)'
                     : 'transparent',
             color: state.isSelected
                 ? '#ffffff'
