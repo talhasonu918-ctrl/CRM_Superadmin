@@ -125,8 +125,8 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                                         {...field}
                                         inPortal={false}
                                         className="w-full max-w-sm"
-                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
-                                        optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-primary [&_svg.chevron]:aria-expanded:rotate-180`}
+                                        optionClassName={`hover:bg-primary/20 transition-colors rounded-lg`}
                                         dropdownClassName="!w-full !h-auto !max-h-[260px]"
                                         suffix={
                                             <div className="flex items-center gap-2 pr-1">
@@ -162,8 +162,8 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                                         {...field}
                                         inPortal={false}
                                         className="w-full max-w-sm"
-                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
-                                        optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-primary [&_svg.chevron]:aria-expanded:rotate-180`}
+                                        optionClassName={`hover:bg-primary/20 transition-colors rounded-lg`}
                                         dropdownClassName="!w-full !h-auto !max-h-[260px]"
                                         suffix={
                                             <div className="flex items-center gap-2 pr-1">
@@ -199,8 +199,8 @@ export const MobileSettingsForm: React.FC<MobileSettingsFormProps> = ({
                                         {...field}
                                         inPortal={false}
                                         className="w-full max-w-sm"
-                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-orange-500 [&_svg.chevron]:aria-expanded:rotate-180`}
-                                        optionClassName={`hover:bg-orange-500/20 transition-colors rounded-lg`}
+                                        selectClassName={`!h-11 !border ${theme.border.input} rounded-lg focus:!border-primary [&_svg.chevron]:aria-expanded:rotate-180`}
+                                        optionClassName={`hover:bg-primary/20 transition-colors rounded-lg`}
                                         dropdownClassName="!w-full !h-auto !max-h-[260px]"
                                         suffix={
                                             <div className="flex items-center gap-2 pr-1">

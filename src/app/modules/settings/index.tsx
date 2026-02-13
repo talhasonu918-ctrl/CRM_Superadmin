@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, MapPin, Users, Smartphone } from 'lucide-react';
+import { Building2, MapPin, Users, Smartphone, FileText } from 'lucide-react';
 import { DashboardCard } from './components/DashboardCard';
 import { getThemeColors } from '../../../theme/colors';
 import { ReusableModal } from '../../../components/ReusableModal';
@@ -68,6 +68,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
       icon: Smartphone,
       title: 'Web Setting',
       href: company ? ROUTES.SETTINGS(company) + '/web' : '#',
+    },
+    {
+      icon: FileText,
+      title: 'Cms',
+      href: company ? ROUTES.SETTINGS(company) + '/cms/pages' : '#',
     },
   ];
 
