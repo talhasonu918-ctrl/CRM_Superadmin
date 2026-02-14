@@ -418,7 +418,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
             </div> */}
 
 
-            <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
+            <div className="flex items-center  gap-2 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg 
                             bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
                             border border-white/20 
                             shadow-md">
@@ -437,7 +437,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
             {/* Search */}
-            <div className="w-full sm:w-64">
+            <div className="w-full sm:w-54">
               <Controller
                 name="search"
                 control={control}
