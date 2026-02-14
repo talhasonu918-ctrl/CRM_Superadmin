@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
 import { ThemeProvider } from '@/src/contexts/ThemeContext';
-import { BrandingProvider } from '@/src/contexts/BrandingContext';
+import { BrandingProvider, useBranding } from '@/src/contexts/BrandingContext';
 import { CompanyProvider } from '@/src/contexts/CompanyContext';
 import toast, { Toaster } from 'react-hot-toast';
 import '../styles/globals.css';
@@ -19,6 +19,7 @@ interface AppContentProps {
 
 const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const { isAuthenticated, loading } = useAuth();
+  const { config } = useBranding();
   const currentRouter = useRouter();
 
   // Public routes that don't require authentication
@@ -53,19 +54,26 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
     return null;
   }
 
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Head>
+        <title>{config.name || 'SuperAdmin'}</title>
+      </Head>
+      <Component {...pageProps} />
+    </>
+  );
 };
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>{tenantConfig.name} - SuperAdmin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <script src="https://cdn.tailwindcss.com"></script>
         <script dangerouslySetInnerHTML={{
           __html: `
-            tailwind.config = {
+            window.tailwind = window.tailwind || {};
+            window.tailwind.config = {
               darkMode: 'class',
               theme: {
                 extend: {

@@ -3,7 +3,7 @@ import { TakeawayOrder } from '../types';
 import { mockTakeawayOrders } from '../mockData';
 import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
+
 import { CustomSelect, CustomSelectOption } from '../../../../components/CustomSelect';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
@@ -434,7 +434,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
               TakeAway Orders
             </h1>
             {/* Total Amount Badge */}
-        
+
             {/* <div className="flex items-cente  gap-2 px-3 py-1.5 rounded-lg 
                                         bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
                                         border border-white/20 
@@ -451,21 +451,21 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
               </div>
             </div> */}
 
-               <div className="flex items-center  gap-2 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg 
+            <div className="flex items-center  gap-2 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg 
                                         bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
                                         border border-white/20 
                                         shadow-md">
-                          <ShoppingBag className="w-4 h-4 text-white" />
-            
-                          <div className="flex flex-col leading-tight">
-                            <span className="text-[9px] font-medium text-white uppercase tracking-wide">
-                              Total
-                            </span>
-                            <span className="text-sm font-semibold text-white">
-                              PKR {getCurrentStatusAmount().toFixed(2)}
-                            </span>
-                          </div>
-                  </div>
+              <ShoppingBag className="w-4 h-4 text-white" />
+
+              <div className="flex flex-col leading-tight">
+                <span className="text-[9px] font-medium text-white uppercase tracking-wide">
+                  Total
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  PKR {getCurrentStatusAmount().toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">

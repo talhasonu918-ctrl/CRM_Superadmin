@@ -8,17 +8,22 @@ import { ROUTES } from '../../../../const/constants';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useBranding } from '../../../../contexts/BrandingContext';
 import { Button } from 'rizzui';
-import toast from 'react-hot-toast';
+import notify from '../../../../utils/toast';
 import { TenantBranding } from '../../../../theme/types';
 
 import { ArrowLeft } from 'lucide-react';
 import { getThemeColors } from '../../../../theme/colors';
+import { DeleteConfirmModal } from '../../../../components/DeleteConfirmModal';
+import { useState } from 'react';
+import { tenantConfig } from '../../../../config/tenant-color';
 
 export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }) {
     const theme = getThemeColors(isDarkMode);
     const router = useRouter();
     const { company } = useCompany();
     const { config, updateConfig, saveConfig } = useBranding();
+
+    const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
     const methods = useForm<TenantBranding>({
         defaultValues: config
@@ -32,18 +37,49 @@ export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }
         try {
             updateConfig(data);
             // We need to call saveConfig or directly update localStorage
-            localStorage.setItem('tenant_branding', JSON.stringify(data));
-            toast.success('Configuration saved successfully');
+            localStorage.setItem('tenant_branding_v2', JSON.stringify(data));
+
+            // Update lastCompany to prevent redirect loop to old slug
+            if (data.slug && data.slug !== 'default') {
+                localStorage.setItem('lastCompany', data.slug);
+            }
+
+            notify.success('Configuration saved successfully');
+
+            // Check if slug has changed and redirect
+            const currentSlug = (router.query.company as string) || window.location.pathname.split('/')[1];
+
+            console.log('DEBUG REDIRECT:', {
+                formSlug: data.slug,
+                currentSlug,
+                shouldRedirect: data.slug && data.slug !== currentSlug,
+                savedLastCompany: localStorage.getItem('lastCompany')
+            });
+
+            if (data.slug && data.slug !== currentSlug) {
+                // Redirect to the new slug URL
+                setTimeout(() => {
+                    console.log('Redirecting to:', `/${data.slug}/settings/web`);
+                    window.location.href = `/${data.slug}/settings/web`;
+                }, 500);
+            }
+
         } catch (error) {
-            toast.error('Failed to save configuration');
+            notify.error('Failed to save configuration');
         }
     };
 
     const handleReset = () => {
-        if (window.confirm('Reset to defaults? All custom branding will be lost.')) {
-            localStorage.removeItem('tenant_branding');
-            window.location.reload();
-        }
+        setIsResetModalOpen(true);
+    };
+
+    const confirmReset = () => {
+        localStorage.removeItem('tenant_branding_v2');
+        localStorage.removeItem('lastCompany');
+
+        // Force redirect to default URL
+        const defaultUrl = `/${tenantConfig.id}/settings/web`;
+        window.location.href = defaultUrl;
     };
 
     return (
@@ -83,6 +119,17 @@ export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }
                     </form>
                 </FormProvider>
             </div>
+
+            <DeleteConfirmModal
+                isOpen={isResetModalOpen}
+                onClose={() => setIsResetModalOpen(false)}
+                onConfirm={confirmReset}
+                onCancel={() => setIsResetModalOpen(false)}
+                title="Reset Branding?"
+                message="Are you sure you want to reset all branding settings to their defaults? This action cannot be undone."
+                confirmButtonText="Yes, Reset"
+                isDarkMode={isDarkMode}
+            />
         </div>
     );
 }

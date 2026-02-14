@@ -7,6 +7,7 @@ import { CgMaximizeAlt } from "react-icons/cg";
 import { navigationItems } from '../const';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBranding } from '../contexts/BrandingContext';
 import { ReusableModal } from './ReusableModal';
 import { mockNotifications } from '../app/modules/pos/mockData';
 
@@ -18,6 +19,7 @@ export function Layout({ children }: LayoutProps) {
   const router = useRouter();
   const { logout } = useAuth();
   const { isDarkMode, toggleTheme } = useTheme();
+  const { config } = useBranding();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
@@ -89,7 +91,7 @@ export function Layout({ children }: LayoutProps) {
       <div className="fixed top-0 left-0 right-0 h-16 flex items-center z-50">
         {/* Left Section - Orange background matching sidebar (Desktop) */}
         <div className={`hidden lg:flex items-center justify-between h-16 px-4 bg-primary transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'}`}>
-          <h1 className="text-lg font-bold text-white">{isCollapsed ? 'I' : 'Invex Food'}</h1>
+          <h1 className="text-lg font-bold text-white max-w-[180px] truncate" title={config.name || 'Invex Food'}>{isCollapsed ? (config.name ? config.name.charAt(0) : 'I') : (config.name || 'Invex Food')}</h1>
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="text-white hover:opacity-90 p-1 rounded"
@@ -121,7 +123,7 @@ export function Layout({ children }: LayoutProps) {
             </div> */}
 
             {/* Page Title - Mobile */}
-            <h1 className="md:hidden text-lg font-bold text-slate-800 dark:text-white">Invex Food </h1>
+            <h1 className="md:hidden text-lg font-bold text-slate-800 dark:text-white truncate max-w-[200px]">{config.name || 'Invex Food'}</h1>
 
             {/* Search Bar - Desktop */}
             {/* <div className="hidden xl:block relative">
@@ -141,7 +143,7 @@ export function Layout({ children }: LayoutProps) {
               className="w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center  dark:bg-slate-800  transition-colors  text-slate-600 dark:text-slate-300"
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
             >
-              {isFullscreen ? <LuMinimize className="w-6 h-6 text-orange-500 " /> : <LuMaximize className="w-6 h-6 text-orange-500" />}
+              {isFullscreen ? <LuMinimize className="w-6 h-6 text-primary " /> : <LuMaximize className="w-6 h-6 text-primary" />}
             </button>
 
             {/* Notification Bell */}
@@ -151,11 +153,11 @@ export function Layout({ children }: LayoutProps) {
                   setIsNotificationOpen(!isNotificationOpen);
                   setIsBranchDropdownOpen(false);
                 }}
-                className="relative w-10 h-10 rounded-full flex items-center justify-center bg-orange-100 dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors"
+                className="relative w-10 h-10 rounded-full flex items-center justify-center bg-primary/10 dark:bg-secondary/10 hover:bg-secondary/20 dark:hover:bg-secondary/20 transition-colors"
               >
                 <Bell className="w-5 h-5 text-black dark:text-white" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {unreadCount}
                   </span>
                 )}
@@ -175,11 +177,11 @@ export function Layout({ children }: LayoutProps) {
                         <div
                           key={notif.id}
                           onClick={() => handleNotificationClick(notif)}
-                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${notif.unread ? 'bg-orange-50/50 dark:bg-orange-500/5' : ''
+                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${notif.unread ? 'bg-primary/5 dark:bg-primary/5' : ''
                             }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.unread ? 'bg-orange-500' : 'bg-slate-300'}`} />
+                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.unread ? 'bg-primary' : 'bg-slate-300'}`} />
                             <div className="flex-1 min-w-0">
                               <h4 className="font-semibold text-sm text-slate-800 dark:text-white">{notif.title}</h4>
                               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notif.message}</p>
@@ -202,7 +204,7 @@ export function Layout({ children }: LayoutProps) {
                                 </div>
                               )}
 
-                              <p className="text-xs text-orange-500 dark:text-orange-400 mt-2 font-medium">{notif.time}</p>
+                              <p className="text-xs text-primary dark:text-primary mt-2 font-medium">{notif.time}</p>
                             </div>
                           </div>
                         </div>
@@ -214,17 +216,17 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Messages - Hidden on small screens */}
-            {/* <button className="hidden md:flex relative w-10 h-10 rounded-full items-center justify-center bg-pink-50 dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors">
-              <MessageSquare className="w-5 h-5 text-pink-500" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+            {/* <button className="hidden md:flex relative w-10 h-10 rounded-full items-center justify-center bg-secondary/10 dark:bg-secondary/10 hover:bg-secondary/20 dark:hover:bg-secondary/20 transition-colors">
+              <MessageSquare className="w-5 h-5 text-secondary" />
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-white text-xs font-bold rounded-full flex items-center justify-center">
                 5
               </span>
             </button> */}
 
             {/* Cart - Hidden on small screens */}
-            {/* <button className="hidden md:flex relative w-10 h-10 rounded-full items-center justify-center bg-pink-50 dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors">
-              <ShoppingCart className="w-5 h-5 text-pink-500" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-pink-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+            {/* <button className="hidden md:flex relative w-10 h-10 rounded-full items-center justify-center bg-secondary/10 dark:bg-secondary/10 hover:bg-secondary/20 dark:hover:bg-secondary/20 transition-colors">
+              <ShoppingCart className="w-5 h-5 text-secondary" />
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-white text-xs font-bold rounded-full flex items-center justify-center">
                 2
               </span>
             </button> */}
@@ -310,7 +312,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex flex-col h-full">
           {/* Mobile Header inside sidebar */}
           <div className="lg:hidden flex items-center justify-between h-16 px-4 bg-primary border-b border-border">
-            <h1 className="text-lg font-bold text-white">Invex Food</h1>
+            <h1 className="text-lg font-bold text-white">{config.name || 'Invex Food'}</h1>
           </div>
 
           {/* Navigation */}
@@ -461,7 +463,7 @@ export function Layout({ children }: LayoutProps) {
                 Close
               </button>
               <button
-                className="flex-1 px-4 py-2.5 bg-primary hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                className="flex-1 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
               >
                 View Full Order
               </button>

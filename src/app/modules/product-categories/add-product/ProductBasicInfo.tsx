@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ProductFormData } from '../product-types';
-import { showToast } from '../utils/toastUtils';
+import notify from '../../../../utils/toast';
 
 interface ProductBasicInfoProps {
   formData: ProductFormData;
@@ -46,7 +46,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
       reader.onloadend = () => {
         const base64String = reader.result as string;
         onUpdateFormData({ [fieldName]: base64String });
-        showToast('Image uploaded successfully!', '🖼️');
+        notify.success('Image uploaded successfully!', { icon: '🖼️' });
       };
       reader.readAsDataURL(file);
     }
@@ -160,22 +160,22 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
           </div>
 
           {/* Sub Category */}
-         <div>
-           <label className={labelClass}>Sub Category</label>
-           <select
-             value={formData.subCategory || ''}
-             onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
-             className={
-               `${inputClass} ${!formData.subCategory ? 'text-gray-400' : 'text-slate-900'}`
-             }
-           >
-             <option value="" className="text-gray-400">Select Sub Category</option>
-             <option value="Best Seller">Best Seller</option>
-             <option value="Combo">Combo</option>
-             <option value="New Arrival">New Arrival</option>
-             <option value="Recommended">Recommended</option>
-           </select>
-         </div>
+          <div>
+            <label className={labelClass}>Sub Category</label>
+            <select
+              value={formData.subCategory || ''}
+              onChange={(e) => onUpdateFormData({ subCategory: e.target.value })}
+              className={
+                `${inputClass} ${!formData.subCategory ? 'text-gray-400' : 'text-slate-900'}`
+              }
+            >
+              <option value="" className="text-gray-400">Select Sub Category</option>
+              <option value="Best Seller">Best Seller</option>
+              <option value="Combo">Combo</option>
+              <option value="New Arrival">New Arrival</option>
+              <option value="Recommended">Recommended</option>
+            </select>
+          </div>
 
 
           {/* Racks */}
@@ -201,7 +201,7 @@ export const ProductBasicInfo: React.FC<ProductBasicInfoProps> = ({
               className={inputClass}
             />
           </div> */}
-      {/* Manufacturer */}
+          {/* Manufacturer */}
           <div>
             <label className={labelClass}>Manufacturer</label>
             <input

@@ -9,7 +9,7 @@ import {
   ProductPricing,
   ProductSummary
 } from './index';
-import { showToast } from '../utils/toastUtils';
+import notify from '../../../../utils/toast';
 import { useCompany } from '@/src/contexts/CompanyContext';
 import { ROUTES } from '@/src/const/constants';
 
@@ -151,7 +151,7 @@ export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) =>
     existingProducts.push(newProduct);
     localStorage.setItem(productsKey, JSON.stringify(existingProducts));
 
-    showToast('Product added successfully!', '🎉');
+    notify.success('Product added successfully!', { icon: '🎉' });
 
     // Clear form data
     localStorage.removeItem(STORAGE_KEY);

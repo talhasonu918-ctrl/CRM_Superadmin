@@ -6,7 +6,7 @@ import { Button, Select, ActionIcon } from 'rizzui';
 import { Branch, Shift } from '../types';
 import { getThemeColors } from '../../../../../theme/colors';
 import { MapPin, Search, Plus, Trash2, Clock, ChevronDown, X } from 'lucide-react';
-import toast from 'react-hot-toast';
+
 
 interface EditBranchFormProps {
   initialData: Partial<Branch>;

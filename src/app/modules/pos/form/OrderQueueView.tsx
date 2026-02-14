@@ -4,7 +4,7 @@ import { Order } from '../types';
 import { mockQueueOrders } from '../mockData';
 import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp, Printer, MapPin, Bike, Smartphone } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
+
 import { CustomSelect, CustomSelectOption } from '../../../../components/CustomSelect';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
@@ -70,7 +70,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
       default: return allOrdersAmount;
     }
   };
-    const filteredOrders = mockQueueOrders.filter(order => {
+  const filteredOrders = mockQueueOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
 

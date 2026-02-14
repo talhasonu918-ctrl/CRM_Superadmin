@@ -4,7 +4,7 @@ import { Order } from '../types';
 import { mockOnlineOrders } from '../mockData';
 import { Search, Calendar, Grid as GridIcon, List as ListIcon, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp, Printer, MapPin, Bike, Smartphone } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import toast, { Toaster } from 'react-hot-toast';
+
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
 import Tabs, { TabItem } from '../../../../components/Tabs';

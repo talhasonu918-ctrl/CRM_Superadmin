@@ -6,7 +6,7 @@ import { DeleteConfirmModal } from '../../../components/DeleteConfirmModal';
 import { CategoryTable } from './table/table';
 import { AddCategoryForm, EditCategoryForm, ViewCategoryDetails, BulkDiscountForm } from './form';
 import { Category } from './types';
-import { showToast } from './utils/toastUtils';
+import notify from '../../../utils/toast';
 
 interface ProductCategoriesViewProps {
   isDarkMode: boolean;
@@ -25,7 +25,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
 
   const handleAddCategory = (data: Partial<Category>) => {
     console.log('Add category:', data);
-    
+
     // Generate unique ID
     const newCategory = {
       id: Date.now().toString(),
@@ -51,7 +51,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
     // Get existing products from localStorage
     const productsStr = localStorage.getItem('products_list');
     let products = [];
-    
+
     if (productsStr) {
       try {
         products = JSON.parse(productsStr);
@@ -86,7 +86,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
     window.dispatchEvent(new Event('refreshCategories'));
 
     // Show success toast
-    showToast(`"${newCategory.categoryName}" added successfully!`, '✅');
+    notify.success(`"${newCategory.categoryName}" added successfully!`, { icon: '✅' });
 
     setAddModalOpen(false);
   };
@@ -118,7 +118,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
           window.dispatchEvent(new Event('refreshCategories'));
 
           console.log('✅ Product deleted successfully:', selectedCategory.id);
-          showToast(`"${selectedCategory.categoryName}" deleted successfully!`, '🗑️');
+          notify.success(`"${selectedCategory.categoryName}" deleted successfully!`, { icon: '🗑️' });
         } catch (error) {
           console.error('❌ Failed to delete product:', error);
         }
@@ -135,11 +135,11 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
   const handleApplyBulkDiscount = (selectedProducts: string[], discount: number) => {
     // Get products from localStorage
     const productsStr = localStorage.getItem('products_list');
-    
+
     if (productsStr) {
       try {
         const products = JSON.parse(productsStr);
-        
+
         // Apply discount to selected products
         const updatedProducts = products.map((product: any) => {
           if (selectedProducts.includes(product.id)) {
@@ -147,21 +147,21 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
           }
           return product;
         });
-        
+
         // Save back to localStorage
         localStorage.setItem('products_list', JSON.stringify(updatedProducts));
-        
+
         // Trigger refresh event for table
         window.dispatchEvent(new Event('refreshCategories'));
-        
+
         // Show success toast
-        showToast(`Discount of ${discount}% applied to ${selectedProducts.length} product(s)!`, '🏷️');
+        notify.success(`Discount of ${discount}% applied to ${selectedProducts.length} product(s)!`, { icon: '🏷️' });
       } catch (error) {
         console.error('Failed to apply discount:', error);
-        showToast('Failed to apply discount', '❌');
+        notify.error('Failed to apply discount', { icon: '❌' });
       }
     }
-    
+
     setBulkDiscountModalOpen(false);
   };
 
