@@ -599,8 +599,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                 className="w-full h-full rounded-2xl"
                                 style={{ minHeight: '320px' }}
                             />
- 
-                            {/* Animated Bike Marker Overlay */}
+                   {/* Animated Bike Marker Overlay */}
                             {selectedRiderForMap.currentLocation && isMapLoaded && (
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
                                     <div className="relative">
