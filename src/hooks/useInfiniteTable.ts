@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -8,6 +8,7 @@ import {
   SortingState,
   ColumnFiltersState,
 } from '@tanstack/react-table';
+
 
 export interface User {
   id: string;
@@ -31,13 +32,13 @@ interface UseInfiniteTableOptions<T> {
   columns: ColumnDef<T>[];
   data?: T[];
   pageSize?: number;
-  onLoadMore?: (page: number) => Promise<T[]>;
+  onLoadMore?: (page: number, limit: number) => Promise<T[]>;
 }
 
 export function useInfiniteTable<T extends { id: string }>({
   columns,
   data: propData = [],
-  pageSize = 20,
+  pageSize = 10,
   onLoadMore,
 }: UseInfiniteTableOptions<T>) {
   const [data, setData] = useState<T[]>(propData);
@@ -45,34 +46,54 @@ export function useInfiniteTable<T extends { id: string }>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasNextPage, setHasNextPage] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+
+  // Track the next page to fetch. If propData has content, we assume page 1 is loaded.
+  const [currentPage, setCurrentPage] = useState(propData.length > 0 ? 2 : 1);
+
+  // Lock to prevent duplicate API calls
+  const isFetchingRef = useRef(false);
+
+  // Stable reference to the initial data IDs to prevent unnecessary resets
+  const lastPropDataIds = useRef(JSON.stringify(propData.map(d => d.id)));
 
   useEffect(() => {
-    // Only update if data is actually different
-    if (
-      propData.length !== data.length ||
-      (propData.length > 0 && data.length > 0 && propData[0].id !== data[0].id)
-    ) {
+    const currentIds = JSON.stringify(propData.map(d => d.id));
+    if (currentIds !== lastPropDataIds.current) {
       setData(propData);
+      // Calculate the next page based on current data length
+      const nextPage = Math.floor(propData.length / pageSize) + 1;
+      setCurrentPage(propData.length > 0 ? (nextPage > 1 ? nextPage : 2) : 1);
+      setHasNextPage(propData.length >= pageSize);
+      lastPropDataIds.current = currentIds;
+
+      // Also reset fetching lock if data is reset externally
+      isFetchingRef.current = false;
+      setIsLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [propData]);
+  }, [propData, pageSize]);
 
   const loadMore = useCallback(async () => {
-    if (!onLoadMore || isLoading || !hasNextPage) return;
+    if (!onLoadMore || isLoading || !hasNextPage || isFetchingRef.current) return;
 
+    isFetchingRef.current = true;
     setIsLoading(true);
+
     try {
-      const newData = await onLoadMore(currentPage);
-      if (newData.length < pageSize) {
+      const newData = await onLoadMore(currentPage, pageSize);
+
+      if (!newData || newData.length < pageSize) {
         setHasNextPage(false);
       }
-      setData((prev: T[]) => [...prev, ...newData]);
-      setCurrentPage((prev: number) => prev + 1);
+
+      if (newData && newData.length > 0) {
+        setData((prev: T[]) => [...prev, ...newData]);
+        setCurrentPage((prev: number) => prev + 1);
+      }
     } catch (error) {
-      console.error('Error loading more data:', error);
+      console.error('Error loading more entries:', error);
     } finally {
       setIsLoading(false);
+      isFetchingRef.current = false;
     }
   }, [onLoadMore, isLoading, hasNextPage, currentPage, pageSize]);
 
@@ -95,12 +116,14 @@ export function useInfiniteTable<T extends { id: string }>({
     setCurrentPage(1);
     setHasNextPage(true);
     setIsLoading(false);
+    isFetchingRef.current = false;
   }, []);
 
   const setInitialData = useCallback((newData: T[]) => {
     setData(newData);
-    setCurrentPage(1);
+    setCurrentPage(2); // Assume page 1 is provided
     setHasNextPage(newData.length >= pageSize);
+    isFetchingRef.current = false;
   }, [pageSize]);
 
   return {
@@ -115,6 +138,7 @@ export function useInfiniteTable<T extends { id: string }>({
     setSorting,
     columnFilters,
     setColumnFilters,
+    currentPage,
   };
 }
 
@@ -152,7 +176,7 @@ export function generateMockUsers(count: number, startIndex = 0): User[] {
 }
 
 // Mock API function to simulate loading more users
-export async function loadMoreUsers(page: number, pageSize = 20): Promise<User[]> {
+export async function loadMoreUsers(page: number, pageSize = 10): Promise<User[]> {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000));
 

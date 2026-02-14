@@ -1,349 +1,573 @@
-import React from 'react';
-import { useForm, Controller, useFormContext } from 'react-hook-form';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
 import { Button } from 'rizzui';
-import { getThemeColors } from '../../../../../theme/colors';
-import { useBranding } from '../../../../../contexts/BrandingContext';
+import { Plus, Trash2, Upload, X } from 'lucide-react';
 import { TenantBranding } from '../../../../../theme/types';
-import { Image as ImageIcon, Upload, UploadCloud } from 'lucide-react';
 import Select from 'react-select';
 import toast from 'react-hot-toast';
+import { getThemeColors } from '../../../../../theme/colors';
+import { useTheme } from '../../../../../contexts/ThemeContext';
 
 interface ThemeSettingsFormProps {
     isDarkMode?: boolean;
-    hideSubmitButton?: boolean;
 }
 
-export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({
-    isDarkMode = false,
-    hideSubmitButton = false,
-}) => {
+const SectionBox = ({ title, children, className = "" }: any) => {
+    const { isDarkMode } = useTheme();
     const theme = getThemeColors(isDarkMode);
-    const { config, updateConfig } = useBranding();
-
-    const contextMethods = useFormContext<any>();
-    const isContext = !!contextMethods;
-
-    const methods = useForm<any>({
-        defaultValues: {
-            primary: config.light.primary,
-            secondary: config.light.secondary,
-            accent: config.light.accent,
-            favicon: config.favicon,
-            fontFamily: config.fontFamily,
-        },
-    });
-
-    const { control, handleSubmit, watch } = isContext ? contextMethods : methods;
-
-    const onSubmit = (data: any) => {
-        updateConfig({
-            light: {
-                ...config.light,
-                primary: data.primary,
-                secondary: data.secondary,
-                accent: data.accent,
-            },
-            favicon: data.favicon,
-            fontFamily: data.fontFamily,
-            dark: {
-                ...config.dark,
-                primary: data.primary,
-                secondary: data.secondary,
-                accent: data.accent,
-            }
-        });
-        toast.success('Theme configuration saved!');
-    };
-
-    const inputClass = "w-full h-10 px-3 border rounded-lg focus:outline-none focus:border-orange-500 transition-colors";
-
-    const FormWrapper = isContext ? 'div' : 'form';
-    const formProps = isContext
-        ? { className: "space-y-6" }
-        : { onSubmit: handleSubmit(onSubmit), className: "space-y-6" };
-
     return (
-        // @ts-ignore
-        <FormWrapper {...formProps}>
-            <div>
-                <h3 className={`text-sm sm:text-base font-semibold mb-3 sm:mb-4 pb-2 border-b ${theme.text.primary} ${theme.border.main}`}>
-                    Theme Configuration
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    {/* Primary Color */}
-                    <div>
-                        <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            Primary Color
-                        </label>
-                        <div className="flex gap-2">
-                            <Controller
-                                name="primary"
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shrink-0">
-                                            <input
-                                                type="color"
-                                                {...field}
-                                                className="absolute -top-2 -left-2 w-16 h-16 p-0 border-0 cursor-pointer"
-                                            />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            {...field}
-                                            className={`${inputClass} ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-                                        />
-                                    </>
-                                )}
+        <div className={`${theme.neutral.card} border ${theme.border.main} rounded-lg shadow-sm mb-4 md:mb-6 ${className} transition-colors duration-300`}>
+            <div className={`px-3 md:px-4 py-2.5 md:py-3 ${isDarkMode ? theme.neutral.backgroundSecondary : 'bg-primary'} border-b ${theme.border.main}`}>
+                <h3 className={`${isDarkMode ? theme.text.primary : 'text-white'} font-bold text-xs md:text-sm uppercase tracking-wide`}>{title}</h3>
+            </div>
+            <div className="p-3 md:p-4 lg:p-6">
+                {children}
+            </div>
+        </div>
+    );
+};
+
+const InputField = ({ label, name, placeholder, disabled = false, type = "text", className = "" }: any) => {
+    const { isDarkMode } = useTheme();
+    const theme = getThemeColors(isDarkMode);
+    return (
+        <div className={`mb-3 md:mb-4 ${className}`}>
+            <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-1.5 md:mb-2`}>{label}</label>
+            <Controller
+                name={name}
+                render={({ field }) => (
+                    <input
+                        {...field}
+                        type={type}
+                        disabled={disabled}
+                        placeholder={placeholder}
+                        className={`w-full h-9 md:h-10 px-2 md:px-3 border ${theme.border.main} rounded text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all ${disabled ? `${theme.neutral.backgroundSecondary} ${theme.text.muted} cursor-not-allowed` : `${theme.neutral.card} ${theme.text.primary}`}`}
+                    />
+                )}
+            />
+        </div>
+    );
+};
+
+const ColorBox = ({ label, name }: any) => {
+    const { isDarkMode } = useTheme();
+    const theme = getThemeColors(isDarkMode);
+    return (
+        <div className="mb-4">
+            <label className={`block ${theme.text.secondary} text-sm font-semibold mb-2`}>{label}</label>
+            <Controller
+                name={name}
+                render={({ field }) => (
+                    <div className={`flex items-center w-full border ${theme.border.main} rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent transition-all shadow-sm ${theme.neutral.card}`}>
+                        <div className={`relative w-12 h-11 border-r ${theme.border.main} flex-shrink-0`}>
+                            <div
+                                className="absolute inset-0 w-full h-full"
+                                style={{ backgroundColor: field.value }}
+                            />
+                            <input
+                                type="color"
+                                {...field}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                style={{ padding: 0, margin: 0 }}
                             />
                         </div>
-                    </div>
-
-                    {/* Secondary Color */}
-                    <div>
-                        <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            Secondary Color
-                        </label>
-                        <div className="flex gap-2">
-                            <Controller
-                                name="secondary"
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shrink-0">
-                                            <input
-                                                type="color"
-                                                {...field}
-                                                className="absolute -top-2 -left-2 w-16 h-16 p-0 border-0 cursor-pointer"
-                                            />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            {...field}
-                                            className={`${inputClass} ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-                                        />
-                                    </>
-                                )}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Accent Color */}
-                    <div>
-                        <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            Accent Color
-                        </label>
-                        <div className="flex gap-2">
-                            <Controller
-                                name="accent"
-                                control={control}
-                                render={({ field }) => (
-                                    <>
-                                        <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-gray-200 shrink-0">
-                                            <input
-                                                type="color"
-                                                {...field}
-                                                className="absolute -top-2 -left-2 w-16 h-16 p-0 border-0 cursor-pointer"
-                                            />
-                                        </div>
-                                        <input
-                                            type="text"
-                                            {...field}
-                                            className={`${inputClass} ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
-                                        />
-                                    </>
-                                )}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
-                    {/* Font Family */}
-                    <div>
-                        <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            Font Family
-                        </label>
-                        <Controller
-                            name="fontFamily"
-                            control={control}
-                            render={({ field }) => {
-                                const fontOptions = [
-                                    // Popular Sans Serif
-                                    { value: 'Inter', label: 'Inter (Modern)' },
-                                    { value: 'Poppins', label: 'Poppins (Geometric)' },
-                                    { value: 'Roboto', label: 'Roboto (System)' },
-                                    { value: 'Open Sans', label: 'Open Sans' },
-                                    { value: 'Montserrat', label: 'Montserrat (Modern)' },
-                                    { value: 'Lato', label: 'Lato' },
-                                    { value: 'Raleway', label: 'Raleway' },
-                                    { value: 'Nunito', label: 'Nunito (Rounded)' },
-                                    { value: 'Quicksand', label: 'Quicksand (Friendly)' },
-                                    { value: 'Work Sans', label: 'Work Sans' },
-                                    { value: 'Ubuntu', label: 'Ubuntu' },
-
-                                    // Elegant Serif
-                                    { value: 'Playfair Display', label: 'Playfair Display (Serif)' },
-                                    { value: 'Merriweather', label: 'Merriweather (Classic)' },
-                                    { value: 'Lora', label: 'Lora' },
-                                    { value: 'Libre Baskerville', label: 'Libre Baskerville' },
-                                    { value: 'Source Serif Pro', label: 'Source Serif Pro' },
-
-                                    // Display / Artistic
-                                    { value: 'Pacifico', label: 'Pacifico (Script)' },
-                                    { value: 'Dancing Script', label: 'Dancing Script' },
-                                    { value: 'Orbit', label: 'Orbit (Tech)' },
-                                    { value: 'Oranienbaum', label: 'Oranienbaum (Classic)' },
-                                    { value: 'Over the Rainbow', label: 'Over the Rainbow' },
-                                    { value: 'Lobster', label: 'Lobster' },
-                                    { value: 'Abril Fatface', label: 'Abril Fatface' },
-                                    { value: 'Bebas Neue', label: 'Bebas Neue' },
-                                    { value: 'Cinzel', label: 'Cinzel' },
-                                    { value: 'Comfortaa', label: 'Comfortaa' },
-                                    { value: 'Great Vibes', label: 'Great Vibes' },
-                                    { value: 'Permanent Marker', label: 'Permanent Marker' },
-                                    { value: 'Righteous', label: 'Righteous' },
-                                    { value: 'Press Start 2P', label: 'Press Start 2P' },
-                                    { value: 'Special Elite', label: 'Special Elite' },
-                                    { value: 'Unbounded', label: 'Unbounded' },
-                                ];
-
-                                const currentValue = fontOptions.find(opt => opt.value === (field.value || config.fontFamily || 'Inter')) || { value: field.value, label: field.value };
-
-                                return (
-                                    <div className="font-picker-wrapper">
-                                        {/* @ts-ignore */}
-                                        <Select
-                                            options={fontOptions}
-                                            value={currentValue}
-                                            onChange={(option: any) => {
-                                                const fontName = option?.value;
-                                                console.log('%c Staged Font Selection:', 'color: #3b82f6; font-weight: bold;', fontName);
-
-                                                if (fontName) {
-                                                    field.onChange(fontName);
-                                                    // Removed real-time updateConfig to wait for SAVE button
-                                                }
-                                            }}
-                                            placeholder="Select Font Family"
-                                            classNamePrefix="react-select"
-                                            styles={{
-                                                control: (base) => ({
-                                                    ...base,
-                                                    height: '44px',
-                                                    borderRadius: '0.5rem',
-                                                    border: '1px solid var(--color-border)',
-                                                    background: 'var(--color-surface)',
-                                                    boxShadow: 'none',
-                                                    '&:hover': {
-                                                        borderColor: '#f06c22'
-                                                    }
-                                                }),
-                                                menu: (base) => ({
-                                                    ...base,
-                                                    background: 'var(--color-surface)',
-                                                    border: '1px solid var(--color-border)',
-                                                    borderRadius: '0.5rem',
-                                                    zIndex: 9999
-                                                }),
-                                                option: (base, state) => ({
-                                                    ...base,
-                                                    background: state.isSelected ? 'rgba(240, 108, 34, 0.15)' : state.isFocused ? 'rgba(240, 108, 34, 0.05)' : 'transparent',
-                                                    color: state.isSelected ? '#f06c22' : 'var(--color-text-primary)',
-                                                    cursor: 'pointer',
-                                                    '&:active': {
-                                                        background: 'rgba(240, 108, 34, 0.2)'
-                                                    }
-                                                }),
-                                                singleValue: (base) => ({
-                                                    ...base,
-                                                    color: 'var(--color-text-primary)'
-                                                })
-                                            }}
-                                        />
-                                    </div>
-                                );
-                            }}
+                        <input
+                            type="text"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            className={`flex-1 h-11 px-3 border-none focus:ring-0 text-sm font-mono uppercase ${theme.text.primary} bg-transparent placeholder-gray-400`}
+                            placeholder="#000000"
                         />
                     </div>
+                )}
+            />
+        </div>
+    );
+};
 
-                    {/* Favicon URL & Upload */}
-                    <div className="sm:col-span-1">
-                        <label className={`block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 ${theme.text.tertiary}`}>
-                            Favicon
-                        </label>
-                        <div className="flex items-center gap-3">
-                            <div className={`relative w-10 h-10 rounded-lg border ${theme.border.main} overflow-hidden flex items-center justify-center bg-gray-50 shrink-0`}>
-                                {watch('favicon') ? (
-                                    <img
-                                        src={watch('favicon')}
-                                        alt="Favicon Preview"
-                                        className="w-full h-full object-contain p-1"
-                                    />
-                                ) : (
-                                    <div className="text-gray-400">
-                                        {/* @ts-ignore */}
-                                        <Image size={20} />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="flex-1 flex gap-2">
-                                <Controller
-                                    name="favicon"
-                                    control={control}
-                                    render={({ field }) => (
-                                        <input
-                                            type="text"
-                                            {...field}
-                                            placeholder="/favicon.ico or https://..."
-                                            className={`${inputClass} ${theme.input.background} ${theme.text.primary} ${theme.border.input} flex-1`}
-                                        />
-                                    )}
-                                />
-                                <label className={`flex items-center justify-center w-10 h-10 rounded-lg border ${theme.border.main} ${theme.button.secondary} cursor-pointer hover:bg-gray-100 transition-colors shrink-0`} title="Upload from Gallery">
-                                    {/* @ts-ignore */}
-                                    <Upload size={18} className={theme.text.primary} />
-                                    <input
-                                        type="file"
-                                        className="hidden"
-                                        accept="image/*"
-                                        onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                                // 100KB limit for localStorage safety
-                                                if (file.size > 100 * 1024) {
-                                                    toast.error('Favicon must be smaller than 100KB');
-                                                    return;
-                                                }
-                                                const reader = new FileReader();
-                                                reader.onloadend = () => {
-                                                    const base64String = reader.result as string;
-                                                    // @ts-ignore
-                                                    (isContext ? contextMethods : methods).setValue('favicon', base64String, { shouldDirty: true });
-                                                    // Instant update for real-time preview
-                                                    updateConfig({ favicon: base64String });
-                                                }
-                                                reader.readAsDataURL(file);
-                                            }
-                                        }}
-                                    />
-                                </label>
-                            </div>
+const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
+    const { watch, setValue } = useFormContext();
+    const [isUploading, setIsUploading] = useState(false);
+    const { isDarkMode } = useTheme();
+    const theme = getThemeColors(isDarkMode);
+    const url = watch(name);
+
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 2 * 1024 * 1024) {
+                toast.error('Image must be smaller than 2MB');
+                return;
+            }
+            setIsUploading(true);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setValue(name, reader.result as string);
+                setIsUploading(false);
+                toast.success('Image uploaded successfully');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const sizeClasses = {
+        small: 'h-12 md:h-16',
+        medium: 'h-24 md:h-32',
+        large: 'h-32 md:h-48'
+    };
+
+    return (
+        <div className="mb-4 md:mb-6">
+            <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-2 md:mb-3`}>{label}</label>
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4">
+                {/* Preview */}
+                <div className={`w-full md:w-48 lg:w-64 ${sizeClasses[previewSize as keyof typeof sizeClasses]} border-2 border-dashed ${theme.border.main} rounded-lg flex items-center justify-center ${theme.neutral.backgroundSecondary} overflow-hidden`}>
+                    {url ? (
+                        <img src={url} alt={label} className="max-w-full max-h-full object-contain p-2" />
+                    ) : (
+                        <div className={`text-center ${theme.text.muted}`}>
+                            <Upload className="mx-auto mb-2" size={20} />
+                            <span className="text-xs">No image</span>
                         </div>
+                    )}
+                </div>
+
+                {/* URL Input & Upload Button */}
+                <div className="flex-1 space-y-2 md:space-y-3">
+                    <Controller
+                        name={name}
+                        render={({ field }) => (
+                            <input
+                                {...field}
+                                placeholder="Enter image URL or upload from gallery"
+                                className={`w-full h-9 md:h-10 px-2 md:px-3 border ${theme.border.main} rounded text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-primary ${theme.neutral.card} ${theme.text.primary}`}
+                            />
+                        )}
+                    />
+                    <div className="flex gap-2">
+                        <label className="flex-1 bg-primary hover:opacity-90 text-white px-3 md:px-4 py-1.5 md:py-2 rounded cursor-pointer text-xs md:text-sm font-semibold text-center transition-colors">
+                            <Upload className="inline-block mr-1 md:mr-2" size={14} />
+                            {isUploading ? 'Uploading...' : 'Upload from Gallery'}
+                            <input
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                                disabled={isUploading}
+                            />
+                        </label>
+                        {url && (
+                            <button
+                                type="button"
+                                onClick={() => setValue(name, '')}
+                                className="px-3 md:px-4 py-1.5 md:py-2 bg-error hover:opacity-90 text-white rounded text-xs md:text-sm font-semibold transition-colors"
+                            >
+                                <X size={14} />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+        </div>
+    );
+};
 
-            {!hideSubmitButton && (
-                <div className="flex justify-end pt-2">
-                    <Button
-                        type="submit"
-                        className={`${theme.button.primary} h-10 text-white rounded-lg px-6 sm:px-8 text-sm sm:text-base`}
-                    >
-                        Apply Theme
-                    </Button>
+const ToggleRow = ({ label, name }: any) => {
+    const { isDarkMode } = useTheme();
+    const theme = getThemeColors(isDarkMode);
+    return (
+        <div className={`flex items-center justify-between py-2.5 md:py-3 border-b ${theme.border.main} last:border-0`}>
+            <span className={`${theme.text.secondary} text-xs md:text-sm font-medium`}>{label}</span>
+            <Controller
+                name={name}
+                render={({ field }) => (
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                            className="sr-only peer"
+                        />
+                        <div className={`w-10 h-5 md:w-11 md:h-6 ${isDarkMode ? 'bg-surface' : 'bg-gray-300'} peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-transparent after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-primary`}></div>
+                    </label>
+                )}
+            />
+        </div>
+    );
+};
+
+const FontSelector = () => {
+    const { control, setValue } = useFormContext();
+    const [systemFonts, setSystemFonts] = useState<any[]>([]);
+    const { isDarkMode } = useTheme();
+    const theme = getThemeColors(isDarkMode);
+
+    useEffect(() => {
+        // Fetch system fonts from API
+        const fetchFonts = async () => {
+            try {
+                const response = await fetch('/api/fonts');
+                if (response.ok) {
+                    const fonts: string[] = await response.json();
+                    const options = fonts.map(f => ({ value: f, label: f }));
+                    setSystemFonts(options);
+                }
+            } catch (error) {
+                console.error('Failed to fetch fonts:', error);
+            }
+        };
+        fetchFonts();
+    }, []);
+
+    const googleFonts = [
+        { value: 'Inter', label: 'Inter (Modern Sans)' },
+        { value: 'Poppins', label: 'Poppins (Geometric)' },
+        { value: 'Roboto', label: 'Roboto (Material)' },
+        { value: 'Open Sans', label: 'Open Sans (Humanist)' },
+        { value: 'Montserrat', label: 'Montserrat (Urban)' },
+        { value: 'Lato', label: 'Lato (Classic)' },
+        { value: 'Raleway', label: 'Raleway (Elegant)' },
+        { value: 'Nunito', label: 'Nunito (Rounded)' },
+        { value: 'Playfair Display', label: 'Playfair Display (Serif)' },
+        { value: 'Merriweather', label: 'Merriweather (Serif)' },
+    ];
+
+    const allFonts = [...googleFonts, ...systemFonts];
+
+    return (
+        <div className="mb-3 md:mb-4">
+            <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-1.5 md:mb-2`}>
+                Font Family
+            </label>
+            <Controller
+                name="fonts.primary"
+                control={control}
+                render={({ field }) => (
+                    <Select
+                        options={allFonts}
+                        value={allFonts.find(f => field.value?.includes(f.value))}
+                        onChange={(option: any) => {
+                            const fontValue = `${option.value}, system-ui, -apple-system, sans-serif`;
+                            field.onChange(fontValue);
+                            setValue('fonts.heading', fontValue);
+                        }}
+                        placeholder="Select Font Family"
+                        className="text-xs md:text-sm"
+                        styles={{
+                            control: (base) => ({
+                                ...base,
+                                minHeight: '36px',
+                                height: '36px',
+                                background: 'var(--color-surface)',
+                                '@media (min-width: 768px)': {
+                                    minHeight: '40px',
+                                    height: '40px',
+                                },
+                                borderColor: 'var(--color-border)',
+                                '&:hover': {
+                                    borderColor: 'var(--color-primary)'
+                                }
+                            }),
+                            singleValue: (base) => ({
+                                ...base,
+                                color: 'var(--color-text-primary)'
+                            }),
+                            input: (base) => ({
+                                ...base,
+                                color: 'var(--color-text-primary)'
+                            }),
+                            placeholder: (base) => ({
+                                ...base,
+                                color: 'var(--color-text-secondary)'
+                            }),
+                            menu: (base) => ({
+                                ...base,
+                                background: 'var(--color-surface)',
+                                border: '1px solid var(--color-border)',
+                                zIndex: 9999
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                background: state.isFocused
+                                    ? 'var(--color-surface)'
+                                    : 'var(--color-surface)',
+                                color: 'var(--color-text-primary)',
+                                '&:active': {
+                                    background: 'var(--color-primary)',
+                                    color: '#ffffff'
+                                }
+                            })
+                        }}
+                    />
+                )}
+            />
+        </div>
+    );
+};
+
+export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode }) => {
+    // Use the passed prop if provided, otherwise fallback to context
+    const themeContext = useTheme();
+    const darkMode = typeof isDarkMode === 'boolean' ? isDarkMode : themeContext.isDarkMode;
+    const theme = getThemeColors(darkMode);
+    const { control, watch, setValue } = useFormContext<TenantBranding>();
+    const bannerFields = useFieldArray({ control, name: "images.banners" });
+    const homeFields = useFieldArray({ control, name: "images.homeImages" });
+
+    const tenantName = watch('name');
+
+    // Auto-generate slug from tenant name
+    useEffect(() => {
+        if (tenantName) {
+            const generatedSlug = tenantName
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')     // Remove special characters
+                .replace(/[\s_-]+/g, '-')     // Replace spaces and underscores with hyphens
+                .replace(/^-+|-+$/g, '');     // Remove leading/trailing hyphens
+
+            setValue('slug', generatedSlug);
+        }
+    }, [tenantName, setValue]);
+
+    return (
+        <div className="space-y-4 md:space-y-6">
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 md:gap-6">
+                {/* Left Column - Main Content (2/3) */}
+                <div className="xl:col-span-2 space-y-4 md:space-y-6">
+                    <SectionBox title="General Info">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                            <InputField label="Tenant Name" name="name" placeholder="Domino's Pizza" />
+                            <InputField label="Slug" name="slug" disabled placeholder="dominos" />
+                        </div>
+                    </SectionBox>
+
+                    <SectionBox title="Typography">
+                        <FontSelector />
+                    </SectionBox>
+
+                    <SectionBox title="Colors">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+                            <ColorBox label="Primary Color" name="colors.primary" />
+                            <ColorBox label="Secondary Color" name="colors.secondary" />
+                            <ColorBox label="Accent Color" name="colors.accent" />
+                            <ColorBox label="Background Color" name="colors.background" />
+                            <ColorBox label="Dark Color" name="colors.dark" />
+                            <ColorBox label="Text Color" name="colors.text" />
+                            <ColorBox label="Text Light" name="colors.textLight" />
+                            <ColorBox label="Success Color" name="colors.success" />
+                            <ColorBox label="Error Color" name="colors.error" />
+                            <ColorBox label="Warning Color" name="colors.warning" />
+                        </div>
+                    </SectionBox>
+
+                    <SectionBox title="Logo & Images">
+                        <ImageUploadField label="Logo" name="images.logo" previewSize="medium" />
+                        <ImageUploadField label="Logo (White)" name="images.logoWhite" previewSize="medium" />
+                        <ImageUploadField label="Favicon" name="images.favicon" previewSize="small" />
+                        <ImageUploadField label="Hero Image" name="images.hero" previewSize="large" />
+                        <ImageUploadField label="Login Banner" name="images.loginBanner" previewSize="large" />
+                        <ImageUploadField label="App Screen 1" name="images.appScreen1" previewSize="medium" />
+                        <ImageUploadField label="App Screen 2" name="images.appScreen2" previewSize="medium" />
+                    </SectionBox>
+
+                    <SectionBox title="Banners">
+                        <div className="space-y-3 md:space-y-4">
+                            {bannerFields.fields.map((field, index) => (
+                                <div key={field.id} className={`border ${theme.border.main} rounded-lg p-3 md:p-4 ${theme.neutral.backgroundSecondary}`}>
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                                        <div className="flex-shrink-0">
+                                            <div className={`w-full sm:w-32 h-32 sm:h-20 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden`}>
+                                                {watch(`images.banners.${index}.image`) ? (
+                                                    <img
+                                                        src={watch(`images.banners.${index}.image`)}
+                                                        alt={`Banner ${index + 1}`}
+                                                        className="max-w-full max-h-full object-contain"
+                                                    />
+                                                ) : (
+                                                    <span className={`text-[10px] md:text-xs ${theme.text.muted} text-center px-1`}>No image</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 space-y-3">
+                                            <Controller
+                                                name={`images.banners.${index}.image`}
+                                                render={({ field }) => (
+                                                    <input
+                                                        {...field}
+                                                        placeholder="Enter banner image URL"
+                                                        className={`w-full h-10 px-3 border ${theme.border.main} rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary ${theme.neutral.card} ${theme.text.primary}`}
+                                                    />
+                                                )}
+                                            />
+                                            <div className="flex items-stretch gap-2">
+                                                <label className="flex-1 h-10 bg-primary hover:opacity-90 text-white px-4 py-2 rounded flex items-center justify-center cursor-pointer text-xs md:text-sm font-bold transition-all shadow-sm active:scale-95">
+                                                    <Upload className="mr-2 flex-shrink-0" size={14} />
+                                                    <span className="whitespace-nowrap">Upload Image</span>
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = () => {
+                                                                    setValue(`images.banners.${index}.image`, reader.result as string);
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => bannerFields.remove(index)}
+                                                    className="px-4 h-10 bg-secondary hover:opacity-90 text-white rounded text-xs md:text-sm font-bold transition-all shadow-sm active:scale-95 flex items-center justify-center whitespace-nowrap"
+                                                >
+                                                    <Trash2 className="mr-1 md:mr-2 flex-shrink-0" size={14} />
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => bannerFields.append({ id: Date.now(), image: '' })}
+                                className={`w-full ${theme.neutral.card} border-2 border-dashed ${theme.border.main} hover:border-primary ${theme.text.primary} hover:bg-primary/5 px-6 py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 group`}
+                            >
+                                <Plus className="group-hover:scale-110 transition-transform text-primary" size={20} />
+                                Add Banner
+                            </button>
+                        </div>
+                    </SectionBox>
+
+                    <SectionBox title="Home Images">
+                        <div className="space-y-3 md:space-y-4">
+                            {homeFields.fields.map((field, index) => (
+                                <div key={field.id} className={`border ${theme.border.main} rounded-lg p-3 md:p-4 ${theme.neutral.backgroundSecondary}`}>
+                                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                                        <div className="flex-shrink-0">
+                                            <div className={`w-full sm:w-32 h-32 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden`}>
+                                                {watch(`images.homeImages.${index}.image`) ? (
+                                                    <img
+                                                        src={watch(`images.homeImages.${index}.image`)}
+                                                        alt={`Home ${index + 1}`}
+                                                        className="max-w-full max-h-full object-contain"
+                                                    />
+                                                ) : (
+                                                    <span className={`text-[10px] md:text-xs ${theme.text.muted} text-center px-1`}>No image</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 space-y-3">
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                <InputField label="Title" name={`images.homeImages.${index}.title`} className="mb-0" />
+                                                <InputField label="Category ID" name={`images.homeImages.${index}.categoryId`} className="mb-0" />
+                                                <InputField label="Sub Category ID" name={`images.homeImages.${index}.subCategoryId`} className="mb-0" />
+                                                <Controller
+                                                    name={`images.homeImages.${index}.image`}
+                                                    render={({ field }) => (
+                                                        <div>
+                                                            <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-2`}>Image URL</label>
+                                                            <input
+                                                                {...field}
+                                                                placeholder="Enter image URL"
+                                                                className={`w-full h-10 px-3 border ${theme.border.main} rounded text-sm focus:outline-none focus:ring-2 focus:ring-primary ${theme.neutral.card} ${theme.text.primary}`}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                />
+                                            </div>
+                                            <div className="flex items-stretch gap-2">
+                                                <label className="flex-1 h-10 bg-primary hover:opacity-90 text-white px-4 py-2 rounded flex items-center justify-center cursor-pointer text-xs md:text-sm font-bold transition-all shadow-sm active:scale-95">
+                                                    <Upload className="mr-2 flex-shrink-0" size={14} />
+                                                    <span className="whitespace-nowrap">Upload Image</span>
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (file) {
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = () => {
+                                                                    setValue(`images.homeImages.${index}.image`, reader.result as string);
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => homeFields.remove(index)}
+                                                    className="px-4 h-10 bg-secondary hover:opacity-90 text-white rounded text-xs md:text-sm font-bold transition-all shadow-sm active:scale-95 flex items-center justify-center whitespace-nowrap"
+                                                >
+                                                    <Trash2 className="mr-1 md:mr-2 flex-shrink-0" size={14} />
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={() => homeFields.append({ id: Date.now(), image: '', title: '', categoryId: '', subCategoryId: '' })}
+                                className={`w-full ${theme.neutral.card} border-2 border-dashed ${theme.border.main} hover:border-primary ${theme.text.primary} hover:bg-primary/5 px-6 py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 group`}
+                            >
+                                <Plus className="group-hover:scale-110 transition-transform text-primary" size={20} />
+                                Add Home Image
+                            </button>
+                        </div>
+                    </SectionBox>
                 </div>
-            )}
-        </FormWrapper>
+
+                {/* Right Column - Sidebar (1/3) */}
+                <div className="xl:col-span-1 space-y-4 md:space-y-6">
+                    <SectionBox title="Social Media Links">
+                        <InputField label="Facebook URL" name="socialMedia.facebook" placeholder="https://facebook.com/dominos" />
+                        <InputField label="Instagram URL" name="socialMedia.instagram" placeholder="https://instagram.com/dominos" />
+                        <InputField label="Twitter URL" name="socialMedia.twitter" placeholder="https://twitter.com/dominos" />
+                        <InputField label="YouTube URL" name="socialMedia.youtube" placeholder="https://youtube.com/dominos" />
+                    </SectionBox>
+
+                    <SectionBox title="Contact Info">
+                        <InputField label="Phone Number" name="contact.phone" placeholder="+92-300-1111-111" />
+                        <InputField label="Email" name="contact.email" placeholder="info@dominos.pk" />
+                        <InputField label="Support Email" name="contact.supportEmail" placeholder="support@dominos.pk" />
+                        <InputField label="Address" name="contact.address" placeholder="Headquarters Address" />
+                    </SectionBox>
+
+                    <SectionBox title="Business Settings">
+                        <InputField label="Currency" name="business.currency" placeholder="PKR" />
+                        <InputField label="Currency Symbol" name="business.currencySymbol" placeholder="Rs." />
+                        <InputField label="Locale" name="business.locale" placeholder="en-PK" />
+                        <InputField label="Timezone" name="business.timezone" placeholder="Asia/Karachi" />
+                        <InputField label="Tax Rate (%)" name="business.taxRate" type="number" />
+                        <InputField label="Delivery Fee" name="business.deliveryFee" type="number" />
+                        <InputField label="Min Order Amount" name="business.minOrderAmount" type="number" />
+                    </SectionBox>
+
+                    <SectionBox title="SEO Settings (Features)">
+                        <ToggleRow label="Delivery" name="features.delivery" />
+                        <ToggleRow label="Pickup" name="features.pickup" />
+                        <ToggleRow label="Dine-In" name="features.dineIn" />
+                        <ToggleRow label="Online Payment" name="features.onlinePayment" />
+                        <ToggleRow label="Cash on Delivery" name="features.cashOnDelivery" />
+                        <ToggleRow label="Loyalty Program" name="features.loyaltyProgram" />
+                        <ToggleRow label="Gift Cards" name="features.giftCards" />
+                        <ToggleRow label="Scheduling" name="features.scheduling" />
+                        <ToggleRow label="Vouchers" name="features.vouchers" />
+                    </SectionBox>
+                </div>
+            </div>
+        </div>
     );
 };

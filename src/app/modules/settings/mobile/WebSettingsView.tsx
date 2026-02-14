@@ -1,9 +1,7 @@
+'use client';
+
 import React, { useEffect } from 'react';
-import { MobileSettingsForm } from './form/MobileSettingsForm';
 import { ThemeSettingsForm } from './form/ThemeSettingsForm';
-import { MobileSettings, defaultMobileSettings } from './types';
-import { getThemeColors } from '../../../../theme/colors';
-import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { useCompany } from '../../../../contexts/CompanyContext';
 import { ROUTES } from '../../../../const/constants';
@@ -11,154 +9,80 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { useBranding } from '../../../../contexts/BrandingContext';
 import { Button } from 'rizzui';
 import toast from 'react-hot-toast';
+import { TenantBranding } from '../../../../theme/types';
 
-interface WebSettingsViewProps {
-    isDarkMode?: boolean;
-}
+import { ArrowLeft } from 'lucide-react';
+import { getThemeColors } from '../../../../theme/colors';
 
-export const WebSettingsView: React.FC<WebSettingsViewProps> = ({
-    isDarkMode = false,
-}) => {
+export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }) {
+    const theme = getThemeColors(isDarkMode);
     const router = useRouter();
     const { company } = useCompany();
-    const theme = getThemeColors(isDarkMode);
-    const { config, updateConfig } = useBranding();
+    const { config, updateConfig, saveConfig } = useBranding();
 
-    // Initialize unified form
-    const methods = useForm({
-        defaultValues: {
-            ...defaultMobileSettings,
-            primary: config.light.primary,
-            secondary: config.light.secondary,
-            accent: config.light.accent,
-            favicon: config.favicon,
-            fontFamily: config.fontFamily,
-        }
+    const methods = useForm<TenantBranding>({
+        defaultValues: config
     });
 
-    // Load settings from local storage and update form ONCE on mount
     useEffect(() => {
-        const savedMobile = localStorage.getItem('mobile_settings');
-        let parsedMobile = {};
+        methods.reset(config);
+    }, [config, methods]);
 
-        if (savedMobile) {
-            try {
-                parsedMobile = JSON.parse(savedMobile);
-            } catch (e) {
-                console.error('Failed to load mobile settings', e);
-            }
+    const onSubmit = (data: TenantBranding) => {
+        try {
+            updateConfig(data);
+            // We need to call saveConfig or directly update localStorage
+            localStorage.setItem('tenant_branding', JSON.stringify(data));
+            toast.success('Configuration saved successfully');
+        } catch (error) {
+            toast.error('Failed to save configuration');
         }
+    };
 
-        // Initialize form with combined data
-        methods.reset({
-            ...defaultMobileSettings,
-            ...parsedMobile,
-            primary: config.light.primary,
-            secondary: config.light.secondary,
-            accent: config.light.accent,
-            favicon: config.favicon,
-            fontFamily: config.fontFamily,
-        });
-    }, []); // Only run once on mount
-
-    // SYNC FORM WITH GLOBAL CONFIG: The Senior approach to global state synchronization
-    // This ensures that if FontPicker updates the global state, the form value is also updated
-    // preventing the "Save" button from sending stale data.
-    useEffect(() => {
-        const currentVals = methods.getValues();
-        if (config.fontFamily && currentVals.fontFamily !== config.fontFamily) {
-            methods.setValue('fontFamily', config.fontFamily, { shouldDirty: true });
+    const handleReset = () => {
+        if (window.confirm('Reset to defaults? All custom branding will be lost.')) {
+            localStorage.removeItem('tenant_branding');
+            window.location.reload();
         }
-        if (config.favicon && currentVals.favicon !== config.favicon) {
-            methods.setValue('favicon', config.favicon, { shouldDirty: true });
-        }
-    }, [config.fontFamily, config.favicon, methods]);
-    // Dependency on config ensures that if branding changes externally (or initial load), form updates.
-    // Note: This might cause re-renders or resets if config changes frequently.
-    // Ideally we only reset once on mount for settings, but branding might be dynamic.
-    // Given the task, this is acceptable.
-
-    const onSubmit = (data: any) => {
-        // 1. Save Mobile Settings
-        const mobileData: Partial<MobileSettings> = {
-            appVersion: data.appVersion,
-            webVersion: data.webVersion,
-            apiEndpoint: data.apiEndpoint,
-            maintenanceMode: data.maintenanceMode,
-            pushNotifications: data.pushNotifications,
-            autoUpdates: data.autoUpdates,
-            androidStoreUrl: data.androidStoreUrl,
-            iosStoreUrl: data.iosStoreUrl,
-            supportEmail: data.supportEmail,
-            privacyPolicyUrl: data.privacyPolicyUrl,
-            termsOfServiceUrl: data.termsOfServiceUrl,
-        };
-        localStorage.setItem('mobile_settings', JSON.stringify(mobileData));
-
-        // 2. Save Theme Settings - Explicitly pass all fields to avoid stale closure issues
-        updateConfig({
-            fontFamily: data.fontFamily,
-            favicon: data.favicon,
-            light: {
-                primary: data.primary,
-                secondary: data.secondary,
-                accent: data.accent,
-                // Background and other BrandColors properties are handled by deep merge in updateConfig
-            } as any,
-            dark: {
-                primary: data.primary,
-                secondary: data.secondary,
-                accent: data.accent,
-            } as any
-        });
-        // toast.success('Configuration saved successfully!');
     };
 
     return (
-        <div
-            className={`p-4 sm:p-8 rounded-xl border shadow-sm ${theme.neutral.background} ${theme.border.main}`}
-        >
-            <div className="flex items-center gap-4 mb-6 sm:mb-8">
-                <button
-                    onClick={() => company && router.push(ROUTES.SETTINGS(company))}
-                    className={`p-2 rounded-lg border ${theme.border.main} ${theme.neutral.backgroundSecondary} ${theme.text.primary} hover:border-primary transition-all`}
-                    title="Back to Settings"
-                >
-                    <ArrowLeft size={20} />
-                </button>
-                <div>
-                    <h4 className={`text-lg sm:text-xl font-bold tracking-tight ${theme.text.primary}`}>Web Settings</h4>
-                    <p className={`text-xs sm:text-sm mt-1 ${theme.text.secondary}`}>
-                        Configure your web application version and endpoints
-                    </p>
+        <div className={`min-h-screen ${theme.neutral.backgroundSecondary} pb-20 transition-colors duration-300`}>
+            {/* Top Navigation Bar (Admin Branding Settings) */}
+            <div className={`${isDarkMode ? theme.neutral.card : 'bg-primary'} flex flex-col md:flex-row items-center justify-between px-4 md:px-6 py-3 md:py-0 md:h-14 sticky top-0 z-50 shadow-md gap-3 md:gap-0 transition-colors`}>
+                <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-start">
+                    <button
+                        onClick={() => company ? router.push(ROUTES.SETTINGS(company)) : router.back()}
+                        className="p-1.5 md:p-2 hover:bg-white/10 rounded-full transition-colors text-white flex items-center justify-center"
+                        title="Back"
+                    >
+                        <ArrowLeft size={20} className="md:w-6 md:h-6" />
+                    </button>
+                    <h1 className="text-white text-base md:text-lg font-bold truncate">Branding Settings</h1>
+                </div>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                    <button
+                        onClick={handleReset}
+                        className="bg-white text-primary hover:bg-gray-100 px-3 md:px-4 py-1.5 rounded text-[10px] md:text-sm font-bold border border-white transition-all flex-1 md:flex-none whitespace-nowrap"
+                    >
+                        Reset
+                    </button>
+                    <button
+                        onClick={methods.handleSubmit(onSubmit)}
+                        className="bg-secondary text-white px-4 md:px-6 py-1.5 rounded text-[10px] md:text-sm font-bold hover:opacity-90 transition-all shadow-lg flex-1 md:flex-none whitespace-nowrap"
+                    >
+                        Save Changes
+                    </button>
                 </div>
             </div>
 
-            <FormProvider {...methods}>
-                <form onSubmit={methods.handleSubmit(onSubmit)}>
-                    {/* <MobileSettingsForm
-                        isDarkMode={isDarkMode}
-                        showOnlyWeb={true}
-                        hideSubmitButton={true}
-                    /> */}
-
-                    <div className={`mt-8 pt-8 border-t ${theme.border.main}`}>
-                        <ThemeSettingsForm
-                            isDarkMode={isDarkMode}
-                            hideSubmitButton={true}
-                        />
-                    </div>
-
-                    <div className="flex justify-end mt-8 pt-4 border-t border-gray-100 dark:border-gray-700">
-                        <Button
-                            type="submit"
-                            className={`${theme.button.primary} h-10 text-white rounded-lg px-8 text-sm font-medium shadow-sm hover:shadow-md transition-all active:scale-95`}
-                        >
-                            Save Configuration
-                        </Button>
-                    </div>
-                </form>
-            </FormProvider>
+            <div className="max-w-[1400px] mx-auto p-4 md:p-8">
+                <FormProvider {...methods}>
+                    <form onSubmit={methods.handleSubmit(onSubmit)}>
+                        <ThemeSettingsForm isDarkMode={isDarkMode} />
+                    </form>
+                </FormProvider>
+            </div>
         </div>
     );
-};
+}

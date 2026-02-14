@@ -19,13 +19,13 @@ interface PracticeTableProps {
 }
 
 // Generate more mock settings for display
-const generateMockSettings = (count: number): PracticeSetting[] => {
+const generateMockSettings = (count: number, startIndex: number = 0): PracticeSetting[] => {
   const settings: PracticeSetting[] = [];
 
   for (let i = 0; i < count; i++) {
-    const num = mockPracticeSettings.length + i + 1;
+    const num = startIndex + i + 1;
     settings.push({
-      id: String(num),
+      id: `setting-${num}`,
       practiceName: `Practice Setting ${num}`,
       currency: ['USD', 'EUR', 'INR', 'GBP'][Math.floor(Math.random() * 4)],
       timezone: ['EST', 'CST', 'PST', 'MST'][Math.floor(Math.random() * 4)],
@@ -48,10 +48,12 @@ const generateMockSettings = (count: number): PracticeSetting[] => {
   return settings;
 };
 
-const loadMoreSettings = async (): Promise<PracticeSetting[]> => {
+const loadMoreSettings = async (page: number, limit: number): Promise<PracticeSetting[]> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(generateMockSettings(20));
+      // Calculate start index based on page and limit
+      const startIndex = (page - 1) * limit;
+      resolve(generateMockSettings(limit, startIndex));
     }, 800);
   });
 };
@@ -68,7 +70,7 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
     }`;
 
-  const [loadedCount, setLoadedCount] = useState(20);
+  const [loadedCount, setLoadedCount] = useState(10);
   const total = 100;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
     practiceName: true,
@@ -93,7 +95,9 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
   );
 
   // Initialize table with infinite scroll
-  const initialData = [...mockPracticeSettings, ...generateMockSettings(19)];
+  const initialData = useMemo(() => [...mockPracticeSettings, ...generateMockSettings(9)], []);
+  const initialSlice = useMemo(() => initialData.slice(0, 10), [initialData]);
+
   const {
     table,
     isLoading,
@@ -101,15 +105,15 @@ export const PracticeTable: React.FC<PracticeTableProps> = ({
     loadMore,
   } = useInfiniteTable<PracticeSetting>({
     columns,
-    data: initialData,
-    pageSize: 20,
+    data: initialSlice,
+    pageSize: 10,
     onLoadMore: loadMoreSettings,
   });
 
   // Custom load more with count tracking
   const loadMoreWithCount = async () => {
     await loadMore();
-    setLoadedCount(prev => Math.min(prev + 20, total));
+    setLoadedCount(prev => Math.min(prev + 10, total));
   };
 
   // Filter data based on search

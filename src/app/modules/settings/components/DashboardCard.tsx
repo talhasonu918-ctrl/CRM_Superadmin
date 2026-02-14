@@ -32,7 +32,7 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({
     return (
         <div
             onClick={handleClick}
-            className={`max-w-xs w-full p-6 rounded-xl border cursor-pointer transition-all duration-200 ${theme.neutral.card} ${theme.primary.border} hover:border-orange-600 hover:shadow-md`}
+            className={`max-w-xs w-full p-6 rounded-xl border cursor-pointer transition-all duration-200 ${theme.neutral.card} ${theme.primary.border} hover:border-primary hover:shadow-md`}
         >
             <div className="flex flex-col items-center text-center gap-4">
                 <div

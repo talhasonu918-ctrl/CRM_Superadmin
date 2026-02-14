@@ -35,7 +35,7 @@ const generateMockBranches = (count: number, startIndex: number = 0): Branch[] =
       address: `${num} Street, City, State ${String(10000 + num).slice(0, 5)}`,
       city: 'City',
       country: 'Country',
-    
+
       phone: `+1 (555) ${String(Math.floor(Math.random() * 900) + 100)}-${String(Math.floor(Math.random() * 9000) + 1000)}`,
       email: `branch${num}@example.com`,
       // timezone: 'UTC',
@@ -57,7 +57,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   data,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl border shadow-sm p-4 sm:p-8 ${theme.neutral.background} ${theme.border.main}`;
+  const cardStyle = `rounded-xl shadow-sm p-4 sm:p-8 ${theme.neutral.background}`;
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? ' border-slate-700 focus:border-orange-500 text-white' : 'bg-slate-50 border-slate-100 focus:bg-white focus:border-orange-500'
     }`;
 
@@ -96,18 +96,20 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   );
 
   // Client-side pagination logic
-  const pageSize = 20;
+  const pageSize = 10;
 
-  const handleLoadMore = useCallback(async (page: number) => {
+  const handleLoadMore = useCallback(async (page: number, limit: number) => {
     return new Promise<Branch[]>((resolve) => {
       // Simulate network delay
       setTimeout(() => {
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize;
+        const start = (page - 1) * limit;
+        const end = start + limit;
         resolve(fullData.slice(start, end));
       }, 500);
     });
   }, [fullData]);
+
+  const initialBranchesSlice = useMemo(() => fullData.slice(0, pageSize), [fullData, pageSize]);
 
   const {
     table,
@@ -117,7 +119,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     data: tableData, // Get actual loaded data from hook
   } = useInfiniteTable<Branch>({
     columns,
-    data: fullData.slice(0, pageSize),
+    data: initialBranchesSlice,
     pageSize,
     onLoadMore: handleLoadMore,
   });
@@ -232,8 +234,10 @@ export const BranchTable: React.FC<BranchTableProps> = ({
         <InfiniteTable
           table={table}
           isLoading={isLoading}
-          hasNextPage={hasNextPage && !isFiltering} // Disable load more if filtering (since we only filter loaded)
+          hasNextPage={hasNextPage && !isFiltering}
           onLoadMore={loadMore}
+          total={totalCount}
+          itemName="branches"
           emptyComponent={
             <div className={`text-center py-8  ${theme.text.secondary}`}>
               {searchTerm || statusFilter !== 'all' ? 'No branches match your filters' : 'No branches found'}
@@ -250,21 +254,6 @@ export const BranchTable: React.FC<BranchTableProps> = ({
           className="max-h-[600px]"
           isDarkMode={isDarkMode}
         />
-      </div>
-
-      {/* Table Footer */}
-      <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
-        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
-          <span className="text-center sm:text-left">
-            Showing <span className={`font-semibold ${theme.text.primary}`}>{currentCount}</span> of{' '}
-            <span className={`font-semibold ${theme.text.primary}`}>{totalCount}</span> branches
-          </span>
-          {hasNextPage && !isLoading && !isFiltering && (
-            <span className={`animate-pulse ${theme.text.tertiary}`}>
-              Scroll down to load more
-            </span>
-          )}
-        </div>
       </div>
     </div>
   );

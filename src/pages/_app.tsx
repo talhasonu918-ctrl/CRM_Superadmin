@@ -66,6 +66,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <script dangerouslySetInnerHTML={{
           __html: `
             tailwind.config = {
+              darkMode: 'class',
               theme: {
                 extend: {
                   fontFamily: {

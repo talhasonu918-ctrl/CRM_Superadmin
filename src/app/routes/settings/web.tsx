@@ -1,9 +1,10 @@
 import React from 'react';
 import { Layout } from '../../../components/NavigationLayout';
 import { WebSettingsView } from '../../modules/settings/mobile/WebSettingsView';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 export default function WebSettings() {
-    const isDarkMode = false;
+    const { isDarkMode } = useTheme();
 
     return (
         <Layout>
