@@ -1262,6 +1262,10 @@ export const mockRiders: Rider[] = [
     status: 'busy',
     accountStatus: 'active',
     currentOrders: 1,
+    currentLocation: {
+    lat: 31.5204, 
+    lng: 74.3587
+},
     activeTask: {
       orderNumber: 'ORD-1234',
       itemsCount: 2,
@@ -1311,6 +1315,10 @@ export const mockRiders: Rider[] = [
     status: 'busy',
     accountStatus: 'active',
     currentOrders: 1,
+        currentLocation: {
+    lat: 31.5204, 
+    lng: 74.3587
+},
     activeTask: {
       orderNumber: 'ORD-5678',
       itemsCount: 3,
