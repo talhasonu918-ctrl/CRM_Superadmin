@@ -7,7 +7,7 @@ import { CustomSelect } from '../../../../components/CustomSelect';
 import Tabs, { TabItem } from '../../../../components/Tabs';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { mockHistoryOrders } from '../mockData';
-import { Clock, Grid, User, Phone, MapPin, ShoppingBag, Calendar, TrendingUp, ChevronDown, ChevronUp, Info, ArrowUp, ArrowDown, ShoppingCart, RotateCcw, CalendarDays } from 'lucide-react';
+import { Clock, Grid, User, Phone, MapPin, ShoppingBag, Calendar, TrendingUp, ChevronDown, ChevronUp, Info, ArrowUp, ArrowDown, ShoppingCart, RotateCcw, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import { OrderReceipt } from './OrderReceipt';
@@ -69,16 +69,29 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
   const { control, watch, setValue } = useForm<FilterFormData>({
     defaultValues: {
       search: '',
-      dateFrom: '2026-02-13',
-      dateTo: '2026-02-13',
+      dateFrom: new Date().toISOString().split('T')[0],
+      dateTo: new Date().toISOString().split('T')[0],
     },
   });
+
+  // Calendar view state
+  const [viewDate, setViewDate] = useState(new Date());
+
+  // Helper to get days in month
+  const getDaysInMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  // Helper to get first day of month (0-6, 0 is Sunday)
+  const getFirstDayOfMonth = (date: Date) => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
 
   const filters = watch();
 
   const handlePeriodChange = (period: string) => {
     setSelectedPeriod(period);
-    const today = new Date('2026-02-13');
+    const today = new Date();
     let from = new Date(today);
     let to = new Date(today);
 
@@ -96,6 +109,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
         from.setMonth(today.getMonth() - 1);
         break;
       default:
+        // For custom, allow the calendar to be used
         return;
     }
 
@@ -103,12 +117,28 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
     setValue('dateTo', to.toISOString().split('T')[0]);
   };
 
+  const handlePrevMonth = () => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));
+  };
+
   const handleDateClick = (day: number) => {
-    const dateStr = `2026-02-${day.toString().padStart(2, '0')}`;
+    // specific date selection sets both from and to
+    const selectedDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+    // Adjust for timezone offset to ensure correct ISO string date part
+    const offsetDate = new Date(selectedDate.getTime() - (selectedDate.getTimezoneOffset() * 60000));
+    const dateStr = offsetDate.toISOString().split('T')[0];
+
     setValue('dateFrom', dateStr);
     setValue('dateTo', dateStr);
-    setSelectedPeriod('custom');
-    setShowCalendar(false);
+    setSelectedPeriod('custom'); // Or keep 'today'/'yesterday' highlighted if it matches? Simplified to 'custom' or just keep selection logic separate.
+    // Ideally we might want start/end range picking but for now single date click implies "show me this day"
+
+    // Optional: Close calendar after selection
+    // setShowCalendar(false); 
   };
 
   // First filter by order type and DATE (for dynamic badges and amounts)
@@ -231,7 +261,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
   // Convert HistoryOrder to POSOrder for OrderDetailsModal
   const convertToPOSOrder = (historyOrder: HistoryOrder | null): POSOrder | null => {
     if (!historyOrder) return null;
-    
+
     return {
       id: historyOrder.id,
       orderNumber: historyOrder.orderNumber,
@@ -251,8 +281,8 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
       discount: historyOrder.discount,
       tax: historyOrder.tax,
       grandTotal: historyOrder.grandTotal,
-      paymentMode: (historyOrder.paymentMethod?.toLowerCase() === 'cash' ? 'cash' : 
-                    historyOrder.paymentMethod?.toLowerCase() === 'card' ? 'card' : 'online') as 'cash' | 'card' | 'online',
+      paymentMode: (historyOrder.paymentMethod?.toLowerCase() === 'cash' ? 'cash' :
+        historyOrder.paymentMethod?.toLowerCase() === 'card' ? 'card' : 'online') as 'cash' | 'card' | 'online',
       cashBack: 0,
       tableId: historyOrder.tableId,
       customerName: historyOrder.customerName,
@@ -584,7 +614,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
                   <>
                     <div className="flex items-center gap-1.5">
                       <User size={12} className="text-primary" />
-                      <span className="truncate">{order.customerName }</span>
+                      <span className="truncate">{order.customerName}</span>
                     </div>
                     {order.customerPhone && (
                       <div className="text-[10px] text-textSecondary truncate">{order.customerPhone}</div>
@@ -753,19 +783,49 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
                 ))}
               </div>
               <div className="mt-4 pt-3 border-t border-border">
+                {/* Calendar Header */}
+                <div className="flex items-center justify-between mb-2 px-1">
+                  <button onClick={handlePrevMonth} className="p-1 hover:bg-surface rounded-full text-textSecondary hover:text-textPrimary transition-colors">
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="text-sm font-bold text-textPrimary">
+                    {viewDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+                  </span>
+                  <button onClick={handleNextMonth} className="p-1 hover:bg-surface rounded-full text-textSecondary hover:text-textPrimary transition-colors">
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+
                 <div className="grid grid-cols-7 gap-1 text-[10px] text-center font-bold text-textSecondary uppercase mb-2">
                   <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-[11px] text-center">
-                  {[...Array(31)].map((_, i) => {
+                  {/* Empty slots for start of month */}
+                  {[...Array(getFirstDayOfMonth(viewDate))].map((_, i) => (
+                    <div key={`empty-${i}`} className="p-1.5" />
+                  ))}
+
+                  {/* Days */}
+                  {[...Array(getDaysInMonth(viewDate))].map((_, i) => {
                     const day = i + 1;
-                    const dateStr = `2026-02-${day.toString().padStart(2, '0')}`;
+                    // Construct date string for comparison
+                    const currentLoopDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), day);
+                    const offsetDate = new Date(currentLoopDate.getTime() - (currentLoopDate.getTimezoneOffset() * 60000));
+                    const dateStr = offsetDate.toISOString().split('T')[0];
+
                     const isSelected = filters.dateFrom === dateStr;
+                    const isToday = new Date().toDateString() === currentLoopDate.toDateString();
+
                     return (
                       <button
                         key={i}
                         onClick={() => handleDateClick(day)}
-                        className={`p-1.5 rounded-md transition-colors ${isSelected ? 'bg-primary text-white font-bold' : 'text-textPrimary hover:bg-primary/20'}`}
+                        className={`p-1.5 rounded-md transition-colors ${isSelected
+                            ? 'bg-primary text-white font-bold shadow-sm'
+                            : isToday
+                              ? 'bg-primary/20 text-primary font-bold'
+                              : 'text-textPrimary hover:bg-surface hover:border-primary/30 border border-transparent'
+                          }`}
                       >
                         {day}
                       </button>
@@ -852,7 +912,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
             </h1>
 
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg 
-                     bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
+                     bg-primary backdrop-blur-md 
                     border border-white/20 
                     shadow-md">
               <TrendingUp className="w-4 h-4 text-white" />

@@ -14,24 +14,27 @@ const BrandingContext = createContext<BrandingContextType | undefined>(undefined
 /**
  * Applies brand colors to CSS variables
  */
-export const applyBrandColors = (colors: BrandColors, isDarkMode: boolean = false) => {
-    if (typeof document === 'undefined') return;
+export const applyBrandColors = (colors: BrandColors | undefined, isDarkMode: boolean = false) => {
+    if (typeof document === 'undefined' || !colors) return;
 
-    const colorMap: Record<string, string> = {
-        '--color-primary': colors.primary,
-        '--color-secondary': colors.secondary,
-        '--color-accent': colors.accent,
-        '--color-success': colors.success,
-        '--color-warning': colors.warning,
-        '--color-error': colors.error,
-    };
+    const colorMap: Record<string, string> = {};
+    if (colors.primary) colorMap['--color-primary'] = colors.primary;
+    if (colors.secondary) colorMap['--color-secondary'] = colors.secondary;
+    if (colors.accent) colorMap['--color-accent'] = colors.accent;
+    if (colors.success) colorMap['--color-success'] = colors.success;
+    if (colors.warning) colorMap['--color-warning'] = colors.warning;
+    if (colors.error) colorMap['--color-error'] = colors.error;
 
     if (!isDarkMode) {
-        colorMap['--color-background'] = colors.background;
-        colorMap['--color-surface'] = colors.background; // Fallback
-        colorMap['--color-text-primary'] = colors.text;
-        colorMap['--color-text-secondary'] = colors.textLight;
-        colorMap['--color-border'] = colors.textLight + '33'; // Subtle border from text color
+        if (colors.background) {
+            colorMap['--color-background'] = colors.background;
+            colorMap['--color-surface'] = colors.background; // Fallback
+        }
+        if (colors.text) colorMap['--color-text-primary'] = colors.text;
+        if (colors.textLight) {
+            colorMap['--color-text-secondary'] = colors.textLight;
+            colorMap['--color-border'] = colors.textLight + '33'; // Subtle border from text color
+        }
     } else {
         // In dark mode, we remove these so the .dark class variables in globals.css can take over
         document.documentElement.style.removeProperty('--color-background');
@@ -42,7 +45,9 @@ export const applyBrandColors = (colors: BrandColors, isDarkMode: boolean = fals
     }
 
     Object.entries(colorMap).forEach(([prop, value]) => {
-        document.documentElement.style.setProperty(prop, value);
+        if (value !== undefined) {
+            document.documentElement.style.setProperty(prop, value);
+        }
     });
 };
 
@@ -110,8 +115,12 @@ export const BrandingProvider: React.FC<{
 
         useEffect(() => {
             try {
-                applyBrandColors(config.colors, isDarkMode);
-                applyBrandingAssets(config);
+                if (config && config.colors) {
+                    applyBrandColors(config.colors, isDarkMode);
+                }
+                if (config) {
+                    applyBrandingAssets(config);
+                }
             } catch (error) {
                 console.error('Failed to apply branding styles', error);
             }

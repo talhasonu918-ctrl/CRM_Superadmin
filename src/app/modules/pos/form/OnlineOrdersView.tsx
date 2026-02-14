@@ -419,7 +419,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
 
 
             <div className="flex items-center  gap-2 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg 
-                            bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
+                            bg-primary backdrop-blur-md 
                             border border-white/20 
                             shadow-md">
               <ShoppingBag className="w-4 h-4 text-white" />

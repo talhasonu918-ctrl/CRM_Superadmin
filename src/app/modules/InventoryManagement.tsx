@@ -379,7 +379,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
               </button>
               <button
                 onClick={openAddModal}
-                className="bg-orange-500 text-white px-4 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
+                className="bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
               >
                 <Plus size={18} /> Add Product
               </button>
@@ -523,7 +523,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
             </button>
             <button
               onClick={handleSubmit}
-              className="flex-1 px-4 py-3 bg-orange-500 text-white rounded-lg font-medium text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
+              className="flex-1 px-4 py-3 bg-primary text-white rounded-lg font-medium text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
             >
               {formData.id ? "Update Product" : "Add Product"}
             </button>

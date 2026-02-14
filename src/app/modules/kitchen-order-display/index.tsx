@@ -361,7 +361,7 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
         </button>
         <button
           onClick={() => onReady(order)}
-          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all ${isAllCompleted ? 'bg-orange-500 text-white hover:bg-orange-600' : `border-2 ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary}`
+          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all ${isAllCompleted ? 'bg-primary text-white hover:bg-orange-600' : `border-2 ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary}`
             }`}
         >
           <CheckCircle size={14} /> Ready

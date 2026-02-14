@@ -31,7 +31,7 @@ export const mockNotifications = [
     orderDetails: {
       orderId: '#ALERT-002',
       customerName: 'Inventory System',
-      phoneNumber: 'N/A',
+      phoneNumber: 'Available on request',
       address: 'Main Branch - Stock Room',
       orderDate: '2026-02-11',
       orderTime: '10:15 AM',
@@ -998,6 +998,10 @@ export const mockRiders: Rider[] = [
       ],
       customerAddress: 'House 123, Street 4, Sector G-11, Islamabad'
     },
+    currentLocation: {
+      lat: 24.8607,
+      lng: 67.0011
+    },
     rating: 4.8,
     performance: {
       avgDeliveryTime: '25 min',
@@ -1036,6 +1040,10 @@ export const mockRiders: Rider[] = [
     status: 'busy',
     accountStatus: 'active',
     currentOrders: 2,
+    currentLocation: {
+      lat: 24.8145,
+      lng: 67.0784
+    },
     rating: 4.5,
     performance: {
       avgDeliveryTime: '32 min',
@@ -1069,11 +1077,15 @@ export const mockRiders: Rider[] = [
     avatar: 'https://i.pravatar.cc/150?u=r3',
     vehicleType: 'cycle',
     vehicleNumber: 'N/A',
-    cityArea: 'North Nazimabad, Karachi',
+    cityArea: 'M.A Jinnah Road, Okara',
     joiningDate: '2023-08-10',
     status: 'available',
     accountStatus: 'active',
     currentOrders: 0,
+    currentLocation: {
+      lat: 30.8081,
+      lng: 73.4458
+    },
     rating: 4.2,
     performance: {
       avgDeliveryTime: '45 min',
@@ -1124,6 +1136,10 @@ export const mockRiders: Rider[] = [
       ],
       customerAddress: 'Flat 402, Block 5, Gulshan-e-Iqbal, Karachi'
     },
+    currentLocation: {
+      lat: 31.4697,
+      lng: 74.2728
+    },
     rating: 4.9,
     performance: {
       avgDeliveryTime: '22 min',
@@ -1162,6 +1178,10 @@ export const mockRiders: Rider[] = [
     status: 'offline',
     accountStatus: 'blocked',
     currentOrders: 0,
+    currentLocation: {
+      lat: 24.8586,
+      lng: 67.0095
+    },
     rating: 3.6,
     performance: {
       avgDeliveryTime: '40 min',
@@ -1200,6 +1220,10 @@ export const mockRiders: Rider[] = [
     status: 'on-break',
     accountStatus: 'active',
     currentOrders: 0,
+    currentLocation: {
+      lat: 31.4822,
+      lng: 74.3163
+    },
     rating: 4.7,
     performance: {
       avgDeliveryTime: '28 min',
@@ -1247,7 +1271,7 @@ export const mockRiders: Rider[] = [
         { product: { id: 'p7', name: 'Zinger Burger', price: 460.00, category: 'Burger', image: '', available: true }, quantity: 2 },
         { product: { id: 'p8', name: 'Regular Fries', price: 250.00, category: 'Sides', image: '', available: true }, quantity: 1 }
       ],
-      customerAddress: 'House 55, Street 2, Gulberg III, Lahore'
+      customerAddress: 'Gulberg III, Lahore'
     },
     rating: 4.6,
     performance: {
@@ -1325,386 +1349,103 @@ export const mockRiders: Rider[] = [
     }
   }
 ];
-export const mockHistoryOrders = [
-  {
-    id: 'h001',
-    orderNumber: 'ORD-2026-001-562',
-    customerName: 'John Doe',
-    tableId: 'Table 5',
-    waiterName: 'Sarah Wilson',
-    customerPhone: '+92 300 1234567',
-    riderName: 'Ali Khan',
-    riderPhone: '+92 321 9876543',
-    deliveryAddress: '123 Main Street, Block A, Gulberg III, Lahore',
-    status: 'completed',
-    type: 'dine-in',
-    items: [
-      { name: 'ECONOMY DEAL', price: 1500.00, quantity: 1 },
-      { name: 'CRUNCH CRAZE ZINGER', price: 370.00, quantity: 1 },
-    ],
-    subtotal: 1870.00,
-    tax: 225.00,
-    discount: 100.00,
-    grandTotal: 1995.00,
-    createdAt: '2026-01-29 5:15 PM',
-    completedAt: '2026-01-29 6:45 PM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h002',
-    orderNumber: 'ORD-2026-001-563',
-    customerName: 'Maria Garcia',
-    customerPhone: '+92 333 5555666',
-    status: 'completed',
-    type: 'takeaway',
-    items: [
-      { name: 'EXTREME DEAL', price: 3800.00, quantity: 2 },
-      { name: 'FULL BROAST', price: 2200.00, quantity: 1 },
-    ],
-    subtotal: 9800.00,
-    tax: 1176.00,
-    discount: 576.00,
-    grandTotal: 10400.00,
-    createdAt: '2026-01-29 8:05 PM',
-    completedAt: '2026-01-29 8:35 PM',
-    paymentMethod: 'Card',
-  },
-  {
-    id: 'h003',
-    orderNumber: 'ORD-2026-001-564',
-    customerName: 'Ahmad Hassan',
-    customerPhone: '+92 300 7777888',
-    riderName: 'Hassan Ali',
-    riderPhone: '+92 315 4444333',
-    deliveryAddress: '456 Garden Town, Block B, Model Town, Lahore',
-    status: 'completed',
-    type: 'delivery',
-    items: [
-      { name: 'HNY DEAL', price: 1800.00, quantity: 1 },
-      { name: 'FILET BURGER', price: 320.00, quantity: 2 },
-    ],
-    subtotal: 2440.00,
-    tax: 292.80,
-    discount: 72.80,
-    grandTotal: 2660.00,
-    createdAt: '2026-01-28 7:20 PM',
-    completedAt: '2026-01-28 8:55 PM',
-    paymentMethod: 'Online',
-  },
-  {
-    id: 'h004',
-    orderNumber: 'ORD-2026-001-565',
-    customerName: 'Fatima Khan',
-    tableId: 'Table 12',
-    waiterName: 'Ahmed Malik',
-    status: 'cancelled',
-    type: 'dine-in',
-    items: [
-      { name: 'STUDENT DEAL', price: 850.00, quantity: 1 },
-      { name: 'CHICKEN PATTY', price: 280.00, quantity: 1 },
-    ],
-    subtotal: 1130.00,
-    tax: 135.60,
-    discount: 35.60,
-    grandTotal: 1230.00,
-    createdAt: '2026-01-28 3:10 PM',
-    completedAt: '2026-01-28 3:25 PM',
-    cancellationReason: 'Customer request',
-    paymentMethod: 'N/A',
-  },
-  {
-    id: 'h005',
-    orderNumber: 'ORD-2026-001-566',
-    customerName: 'Usman Ali',
-    customerPhone: '+92 345 9999000',
-    riderName: 'Kashif Sheikh',
-    riderPhone: '+92 302 1111222',
-    deliveryAddress: '789 Liberty Market, Gulberg II, Lahore',
-    status: 'refunded',
-    type: 'delivery',
-    items: [
-      { name: 'FAMILY FEAST', price: 4500.00, quantity: 1 },
-      { name: 'SPICY WINGS', price: 650.00, quantity: 2 },
-    ],
-    subtotal: 5800.00,
-    tax: 696.00,
-    discount: 296.00,
-    grandTotal: 6200.00,
-    createdAt: '2026-01-27 6:30 PM',
-    completedAt: '2026-01-27 8:15 PM',
-    refundedAt: '2026-01-27 9:00 PM',
-    refundReason: 'Quality issue',
-    paymentMethod: 'Card',
-  },
-  {
-    id: 'h006',
-    orderNumber: 'ORD-2026-001-567',
-    customerName: 'Zainab Bibi',
-    tableId: 'Table 2',
-    waiterName: 'Sarah Wilson',
-    status: 'completed',
-    type: 'dine-in',
-    items: [
-      { name: 'CHICKEN TIKKA PIZZA', price: 950.00, quantity: 2 },
-      { name: 'PAK DRINK (1.5LTR)', price: 220.00, quantity: 1 },
-    ],
-    subtotal: 2120.00,
-    tax: 254.40,
-    discount: 54.40,
-    grandTotal: 2320.00,
-    createdAt: '2026-01-30 1:20 PM',
-    completedAt: '2026-01-30 2:05 PM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h007',
-    orderNumber: 'ORD-2026-001-568',
-    customerName: 'Omer Farooq',
-    customerPhone: '+92 301 2223334',
-    status: 'completed',
-    type: 'takeaway',
-    items: [
-      { name: 'HHY DEAL', price: 1800.00, quantity: 1 },
-      { name: 'HOT WINGS (10PCS)', price: 580.00, quantity: 1 },
-    ],
-    subtotal: 2380.00,
-    tax: 285.60,
-    discount: 85.60,
-    grandTotal: 2580.00,
-    createdAt: '2026-01-30 4:45 PM',
-    completedAt: '2026-01-30 5:15 PM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h008',
-    orderNumber: 'ORD-2026-001-569',
-    customerName: 'Sana Ahmed',
-    customerPhone: '+92 322 4445556',
-    riderName: 'Bilal Ahmed',
-    riderPhone: '+92 321 2222222',
-    deliveryAddress: 'Plot #88, Sector C, Bahria Town, Lahore',
-    status: 'completed',
-    type: 'delivery',
-    items: [
-      { name: 'STUDENT DEAL', price: 850.00, quantity: 3 },
-      { name: 'PLAIN FRIES', price: 250.00, quantity: 2 },
-    ],
-    subtotal: 3050.00,
-    tax: 366.00,
-    discount: 116.00,
-    grandTotal: 3300.00,
-    createdAt: '2026-01-30 7:30 PM',
-    completedAt: '2026-01-30 8:45 PM',
-    paymentMethod: 'Online',
-  },
-  {
-    id: 'h009',
-    orderNumber: 'ORD-2026-001-570',
-    customerName: 'Hamza Sohail',
-    tableId: 'Table 8',
-    waiterName: 'Ahmed Malik',
-    status: 'completed',
-    type: 'dine-in',
-    items: [
-      { name: 'MIX PLATTER', price: 1400.00, quantity: 1 },
-      { name: 'CREAMY PASTA', price: 680.00, quantity: 1 },
-    ],
-    subtotal: 2080.00,
-    tax: 249.60,
-    discount: 49.60,
-    grandTotal: 2280.00,
-    createdAt: '2026-01-30 9:15 PM',
-    completedAt: '2026-01-30 10:00 PM',
-    paymentMethod: 'Card',
-  },
-  {
-    id: 'h010',
-    orderNumber: 'ORD-2026-001-571',
-    customerName: 'Ayesha Malik',
-    customerPhone: '+92 331 6667778',
-    status: 'completed',
-    type: 'takeaway',
-    items: [
-      { name: 'ECONOMY DEAL', price: 1500.00, quantity: 1 },
-      { name: 'KABAB STUFFER', price: 460.00, quantity: 2 },
-    ],
-    subtotal: 2420.00,
-    tax: 290.40,
-    discount: 90.40,
-    grandTotal: 2620.00,
-    createdAt: '2026-01-30 10:30 PM',
-    completedAt: '2026-01-30 10:55 PM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h011',
-    orderNumber: 'ORD-2026-001-572',
-    customerName: 'Kashif Ali',
-    customerPhone: '+92 345 1111222',
-    riderName: 'Danish Ali',
-    riderPhone: '+92 345 4444444',
-    deliveryAddress: 'House #12, Street 5, Phase 8, DHA, Lahore',
-    status: 'completed',
-    type: 'delivery',
-    items: [
-      { name: 'EXTREME DEAL', price: 1900.00, quantity: 1 },
-      { name: 'PAK DRINK (1.5LTR)', price: 220.00, quantity: 1 },
-    ],
-    subtotal: 2120.00,
-    tax: 254.40,
-    discount: 54.40,
-    grandTotal: 2320.00,
-    createdAt: '2026-01-31 1:15 PM',
-    completedAt: '2026-01-31 2:30 PM',
-    paymentMethod: 'Online',
-  },
-  {
-    id: 'h012',
-    orderNumber: 'ORD-2026-001-573',
-    customerName: 'Nida Aziz',
-    tableId: 'Table 4',
-    waiterName: 'Sarah Wilson',
-    status: 'refunded',
-    type: 'dine-in',
-    items: [
-      { name: 'ITALIAN PIZZA', price: 1150.00, quantity: 1 },
-    ],
-    subtotal: 1150.00,
-    tax: 138.00,
-    discount: 38.00,
-    grandTotal: 1250.00,
-    createdAt: '2026-01-31 3:45 PM',
-    completedAt: '2026-01-31 4:30 PM',
-    refundedAt: '2026-01-31 5:00 PM',
-    refundReason: 'Incorrect items served',
-    paymentMethod: 'Card',
-  },
-  // Today's Orders (Feb 13, 2026)
-  {
-    id: 'h013',
-    orderNumber: 'ORD-2026-0213-001',
-    customerName: 'Zainab Qureshi',
-    status: 'completed',
-    type: 'takeaway',
-    items: [{ name: 'FAMILY DEAL', price: 2500, quantity: 1 }],
-    subtotal: 2500,
-    tax: 300,
-    discount: 100,
-    grandTotal: 2700,
-    createdAt: '2026-02-13 11:30 AM',
-    completedAt: '2026-02-13 11:50 AM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h014',
-    orderNumber: 'ORD-2026-0213-002',
-    customerName: 'Omar Khan',
-    status: 'pending',
-    type: 'delivery',
-    items: [{ name: 'CHEESE BURGER', price: 450, quantity: 2 }],
-    subtotal: 900,
-    tax: 108,
-    discount: 0,
-    grandTotal: 1008,
-    createdAt: '2026-02-13 12:15 PM',
-    completedAt: '2026-02-13 12:45 PM',
-    paymentMethod: 'Online',
-  },
-  {
-    id: 'h015',
-    orderNumber: 'ORD-2026-0213-003',
-    customerName: 'Sana Ahmed',
-    status: 'cancelled',
-    type: 'dine-in',
-    tableId: 'Table 2',
-    items: [{ name: 'PASTA ALFREDO', price: 850, quantity: 1 }],
-    subtotal: 850,
-    tax: 102,
-    discount: 52,
-    grandTotal: 900,
-    createdAt: '2026-02-13 01:45 PM',
-    completedAt: '2026-02-13 02:00 PM',
-    cancellationReason: 'Customer left',
-    paymentMethod: 'N/A',
-  },
-  {
-    id: 'h016',
-    orderNumber: 'ORD-2026-0213-004',
-    customerName: 'Bilal Hassan',
-    status: 'refunded',
-    type: 'delivery',
-    items: [{ name: 'ZINGA BURGER', price: 550, quantity: 3 }],
-    subtotal: 1650,
-    tax: 198,
-    discount: 48,
-    grandTotal: 1800,
-    createdAt: '2026-02-13 03:20 PM',
-    completedAt: '2026-02-13 04:00 PM',
-    refundedAt: '2026-02-13 04:30 PM',
-    refundReason: 'Cold food delivered',
-    paymentMethod: 'Card',
-  },
-  // Other days in February
-  {
-    id: 'h017',
-    orderNumber: 'ORD-2026-0210-001',
-    customerName: 'Fatima Zahra',
-    status: 'completed',
-    type: 'takeaway',
-    items: [{ name: 'PIZZA LARGE', price: 1200, quantity: 2 }],
-    subtotal: 2400,
-    tax: 288,
-    discount: 88,
-    grandTotal: 2600,
-    createdAt: '2026-02-10 07:10 PM',
-    completedAt: '2026-02-10 07:35 PM',
-    paymentMethod: 'Cash',
-  },
-  {
-    id: 'h018',
-    orderNumber: 'ORD-2026-0205-001',
-    customerName: 'Hamza Malik',
-    status: 'completed',
-    type: 'delivery',
-    items: [{ name: 'COMBO MEAL', price: 950, quantity: 1 }],
-    subtotal: 950,
-    tax: 114,
-    discount: 14,
-    grandTotal: 1050,
-    createdAt: '2026-02-05 08:30 PM',
-    completedAt: '2026-02-05 09:15 PM',
-    paymentMethod: 'Online',
-  },
-  // Yesterday's Orders (Feb 12, 2026)
-  {
-    id: 'h019',
-    orderNumber: 'ORD-2026-0212-001',
-    customerName: 'Ahmad Raza',
-    status: 'completed',
-    type: 'dine-in',
-    tableId: 'Table 5',
-    items: [{ name: 'BBQ PLATTER', price: 3200, quantity: 1 }],
-    subtotal: 3200,
-    tax: 384,
-    discount: 184,
-    grandTotal: 3400,
-    createdAt: '2026-02-12 08:30 PM',
-    completedAt: '2026-02-12 09:10 PM',
-    paymentMethod: 'Card',
-  },
-  {
-    id: 'h020',
-    orderNumber: 'ORD-2026-0212-002',
-    customerName: 'Mariam Ali',
-    status: 'completed',
-    type: 'takeaway',
-    items: [{ name: 'CHICKEN TIKKA', price: 450, quantity: 4 }],
-    subtotal: 1800,
-    tax: 216,
-    discount: 16,
-    grandTotal: 2000,
-    createdAt: '2026-02-12 09:45 PM',
-    completedAt: '2026-02-12 10:05 PM',
-    paymentMethod: 'Cash',
+
+
+// Helper function to generate mock history orders
+const generateMockHistoryOrders = () => {
+  const orders: any[] = [];
+  const statuses = ['pending', 'completed', 'cancelled', 'refunded'];
+  const types = ['dine-in', 'takeaway', 'delivery'];
+  const customerNames = ['John Doe', 'Jane Smith', 'Ali Khan', 'Sarah Wilson', 'Fatima Ahmed', 'Bilal Hassan', 'Ayesha Malik', 'Usman Gondal'];
+  const waiterNames = ['Ahmed Khan', 'Bilal Hussain', 'Sohail Malik', 'Raza Ali'];
+
+  // 15 days ago from today
+  const today = new Date();
+
+  for (let i = 0; i < 15; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    const dateStr = date.toISOString().split('T')[0];
+
+    // Generate ~5 orders per day
+    const ordersPerDay = 5 + Math.floor(Math.random() * 3); // 5 to 7 orders
+
+    for (let j = 0; j < ordersPerDay; j++) {
+      const type = types[Math.floor(Math.random() * types.length)];
+      const status = statuses[Math.floor(Math.random() * statuses.length)];
+      const customer = customerNames[Math.floor(Math.random() * customerNames.length)];
+
+      // Generate items
+      const numItems = 1 + Math.floor(Math.random() * 4);
+      const items = [];
+      let subtotal = 0;
+
+      for (let k = 0; k < numItems; k++) {
+        const product = mockProducts[Math.floor(Math.random() * mockProducts.length)];
+        const quantity = 1 + Math.floor(Math.random() * 2);
+        items.push({
+          name: product.name,
+          price: product.price,
+          quantity: quantity
+        });
+        subtotal += product.price * quantity;
+      }
+
+      const tax = subtotal * 0.16; // 16% tax
+      const discount = Math.random() > 0.7 ? subtotal * 0.1 : 0;
+      const grandTotal = subtotal + tax - discount;
+
+      const hour = 12 + Math.floor(Math.random() * 10);
+      const minute = Math.floor(Math.random() * 60);
+      const timeStr = `${hour > 12 ? hour - 12 : hour}:${minute.toString().padStart(2, '0')} ${hour >= 12 ? 'PM' : 'AM'}`;
+
+      const orderDate = `${dateStr} ${timeStr}`;
+
+      // Calculate completed/refunded times
+      const completedTime = new Date(new Date(orderDate).getTime() + 45 * 60000); // +45 mins
+      const completedAt = `${completedTime.toISOString().split('T')[0]} ${completedTime.getHours() > 12 ? completedTime.getHours() - 12 : completedTime.getHours()}:${completedTime.getMinutes().toString().padStart(2, '0')} ${completedTime.getHours() >= 12 ? 'PM' : 'AM'}`;
+
+      // Basic order structure
+      const order: any = {
+        id: `h-${i}-${j}`,
+        orderNumber: `ORD-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}${date.getDate().toString().padStart(2, '0')}-${100 + j}`,
+        customerName: customer,
+        customerPhone: `+92 300 ${Math.floor(1000000 + Math.random() * 9000000)}`,
+        status: status,
+        type: type,
+        items: items,
+        subtotal: subtotal,
+        tax: tax,
+        discount: discount,
+        grandTotal: grandTotal,
+        createdAt: orderDate,
+        completedAt: (status === 'completed' || status === 'refunded') ? completedAt : '',
+        paymentMethod: Math.random() > 0.5 ? 'Cash' : 'Card',
+      };
+
+      if (status === 'refunded') {
+        order.refundedAt = completedAt;
+        order.refundReason = 'Quality Issue';
+      }
+
+      if (status === 'cancelled') {
+        order.cancellationReason = 'Customer changed mind';
+      }
+
+      if (type === 'dine-in') {
+        order.tableId = `Table ${1 + Math.floor(Math.random() * 15)}`;
+        order.waiterName = waiterNames[Math.floor(Math.random() * waiterNames.length)];
+      } else if (type === 'delivery') {
+        const rider = mockRiders[Math.floor(Math.random() * mockRiders.length)];
+        order.riderName = rider.name;
+        order.riderPhone = rider.phone;
+        order.deliveryAddress = 'Some Address Block A';
+      }
+
+      orders.push(order);
+    }
   }
-];
+  return orders;
+};
+
+export const mockHistoryOrders = generateMockHistoryOrders();

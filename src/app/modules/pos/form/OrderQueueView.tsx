@@ -537,9 +537,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
 
 
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg 
-                 bg-gradient-to-r from-primary to-orange-600 backdrop-blur-md 
-                border border-white/20 
-                shadow-md">
+                 bg-primary backdrop-blur-md border border-white/20 shadow-md">
               <ShoppingBag className="w-4 h-4 text-white" />
 
               <div className="flex flex-col leading-tight">
@@ -551,10 +549,8 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                 </span>
               </div>
             </div>
-
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
+      </div>
+     <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
             {/* Search */}
             <div className="w-full sm:w-64">
               <Controller
