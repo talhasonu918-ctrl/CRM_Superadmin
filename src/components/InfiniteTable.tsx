@@ -59,27 +59,33 @@ function InfiniteTable<T = any>({
     );
   }
 
-  const fetchMoreOnBottomReached = useCallback(
-    (containerRefElement?: HTMLDivElement | null) => {
-      if (containerRefElement) {
-        const { scrollHeight, scrollTop, clientHeight } = containerRefElement;
-        // Once the user has scrolled within 300px of the bottom of the table, fetch more data if there is any
-        if (
-          scrollHeight - scrollTop - clientHeight < 300 &&
-          !isLoading &&
-          hasNextPage &&
-          onLoadMore
-        ) {
-          onLoadMore();
-        }
-      }
-    },
-    [onLoadMore, isLoading, hasNextPage]
-  );
+  // Intersection Observer implementation using a callback ref
+  const observer = useRef<IntersectionObserver | null>(null);
+  const observerTargetCallback = useCallback((node: HTMLDivElement | null) => {
+    if (observer.current) observer.current.disconnect();
 
+    if (node && hasNextPage && !isLoading) {
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage && !isLoading && onLoadMore) {
+            onLoadMore();
+          }
+        },
+        {
+          root: tableContainerRef.current,
+          threshold: 0.01
+        }
+      );
+      observer.current.observe(node);
+    }
+  }, [hasNextPage, isLoading, onLoadMore]);
+
+  // Clean up observer on unmount
   useEffect(() => {
-    fetchMoreOnBottomReached(tableContainerRef.current);
-  }, [fetchMoreOnBottomReached]);
+    return () => {
+      if (observer.current) observer.current.disconnect();
+    };
+  }, []);
 
   const footers = table.getFooterGroups()
     .map((group: any) =>
@@ -109,7 +115,6 @@ function InfiniteTable<T = any>({
     <>
       <div
         ref={tableContainerRef}
-        onScroll={(e) => fetchMoreOnBottomReached(e.target as HTMLDivElement)}
         className={`w-full overflow-x-auto overflow-y-auto custom-scrollbar max-h-[600px] ${className}`}
       >
         <Table
@@ -186,20 +191,27 @@ function InfiniteTable<T = any>({
                 </Table.Row>
               ))
             )}
-          </Table.Body>
-
-          {isLoading && (
-            <Table.Body>
+            {/* Loading row inside the body */}
+            {isLoading && (
               <Table.Row>
                 <Table.Cell
                   colSpan={table.getAllColumns().length}
-                  className="!text-center !py-4"
+                  className="!text-center !py-4 border-0"
                 >
                   {loadingComponent || defaultLoadingComponent}
                 </Table.Cell>
               </Table.Row>
-            </Table.Body>
-          )}
+            )}
+
+            {/* Sentinel for infinite scroll - only visible when not loading and has more */}
+            {!isLoading && hasNextPage && (
+              <Table.Row>
+                <Table.Cell colSpan={table.getAllColumns().length} className="p-0 border-0 h-0">
+                  <div ref={observerTargetCallback} style={{ height: '10px', width: '100%', opacity: 0 }} />
+                </Table.Cell>
+              </Table.Row>
+            )}
+          </Table.Body>
 
           {footers.length > 0 && (
             <Table.Footer>
@@ -224,34 +236,36 @@ function InfiniteTable<T = any>({
             </Table.Footer>
           )}
         </Table>
-      </div>
+      </div >
 
       {/* Integrated Pagination Footer */}
-      {(total !== undefined || hasNextPage || isLoading) && (
-        <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
-          <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
-            <span className="text-center sm:text-left">
-              Showing <span className={`font-semibold ${theme.text.primary}`}>{(rows || table.getRowModel().rows).length}</span>
-              {total !== undefined && (
-                <>
-                  {' '}of <span className={`font-semibold ${theme.text.primary}`}>{total}</span>
-                </>
-              )} {itemName}
-            </span>
-            {hasNextPage && !isLoading && (
-              <span className={`animate-pulse ${theme.text.muted}`}>
-                Scroll down to load more
+      {
+        (total !== undefined || hasNextPage || isLoading) && (
+          <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
+            <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
+              <span className="text-center sm:text-left">
+                Showing <span className={`font-semibold ${theme.text.primary}`}>{(rows || table.getRowModel().rows).length}</span>
+                {total !== undefined && (
+                  <>
+                    {' '}of <span className={`font-semibold ${theme.text.primary}`}>{total}</span>
+                  </>
+                )} {itemName}
               </span>
-            )}
-            {isLoading && (
-              <span className={`flex items-center gap-2 ${theme.text.muted}`}>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                Loading more...
-              </span>
-            )}
+              {hasNextPage && !isLoading && (
+                <span className={`animate-pulse ${theme.text.muted}`}>
+                  Scroll down to load more
+                </span>
+              )}
+              {isLoading && (
+                <span className={`flex items-center gap-2 ${theme.text.muted}`}>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                  Loading more...
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </>
   );
 }

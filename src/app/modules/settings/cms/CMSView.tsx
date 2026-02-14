@@ -13,15 +13,16 @@ import {
     ArrowLeft
 } from 'lucide-react';
 import { Button, Badge } from 'rizzui';
-import notify from '@/src/utils/toast';
+import notify from '../../../../utils/toast';
 import { useRouter, useParams } from 'next/navigation';
-import { useTheme } from '@/src/contexts/ThemeContext';
-import { getThemeColors } from '@/src/theme/colors';
-import { ROUTES } from '@/src/const/constants';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getThemeColors } from '../../../../theme/colors';
+import { ROUTES } from '../../../../const/constants';
 import { CMSTable } from './table/table';
-import { DeleteConfirmModal } from '@/src/components/DeleteConfirmModal';
+import { DeleteConfirmModal } from '../../../../components/DeleteConfirmModal';
 
 // Import Quill directly
+// Quill CSS is required for the editor to render correctly
 import 'quill/dist/quill.snow.css';
 
 // Custom Quill Wrapper to avoid findDOMNode error in React 19

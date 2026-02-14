@@ -1,7 +1,7 @@
 import React from 'react';
-import { Layout } from '@/src/components/NavigationLayout';
-import { CMSView } from '@/src/app/modules/settings/cms/CMSView';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { Layout } from '../../../../components/NavigationLayout';
+import { CMSView } from '../../../../app/modules/settings/cms/CMSView';
+import { useTheme } from '../../../../contexts/ThemeContext';
 
 export default function CMSPage() {
     const { isDarkMode } = useTheme();

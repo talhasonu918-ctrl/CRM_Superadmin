@@ -34,7 +34,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   });
   const searchTerm = watch('searchTerm');
   const activeFilter = watch('activeFilter');
-  const [loadedCount, setLoadedCount] = useState(20);
+  const [loadedCount, setLoadedCount] = useState(10);
   const total = 60;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
     fullName: true,
@@ -50,7 +50,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   );
 
   // Use state for user data so updates are reflected
-  const [users, setUsers] = useState<User[]>(() => generateMockUsers(20));
+  const [users, setUsers] = useState<User[]>(() => generateMockUsers(10));
   const {
     table,
     isLoading,
@@ -59,9 +59,9 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   } = useInfiniteTable<User>({
     columns,
     data: users,
-    pageSize: 20,
-    onLoadMore: async (page) => {
-      const more = await loadMoreUsers(page);
+    pageSize: 10,
+    onLoadMore: async (page, limit) => {
+      const more = await loadMoreUsers(page, limit);
       setUsers(prev => [...prev, ...more]);
       return more;
     },
@@ -70,7 +70,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   // Custom load more with count tracking
   const loadMoreWithCount = async () => {
     await loadMore();
-    setLoadedCount(prev => Math.min(prev + 20, total));
+    setLoadedCount(prev => Math.min(prev + 10, total));
   };
 
   // Filter data based on search and active

@@ -96,18 +96,20 @@ export const BranchTable: React.FC<BranchTableProps> = ({
   );
 
   // Client-side pagination logic
-  const pageSize = 20;
+  const pageSize = 10;
 
-  const handleLoadMore = useCallback(async (page: number) => {
+  const handleLoadMore = useCallback(async (page: number, limit: number) => {
     return new Promise<Branch[]>((resolve) => {
       // Simulate network delay
       setTimeout(() => {
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize;
+        const start = (page - 1) * limit;
+        const end = start + limit;
         resolve(fullData.slice(start, end));
       }, 500);
     });
   }, [fullData]);
+
+  const initialBranchesSlice = useMemo(() => fullData.slice(0, pageSize), [fullData, pageSize]);
 
   const {
     table,
@@ -117,7 +119,7 @@ export const BranchTable: React.FC<BranchTableProps> = ({
     data: tableData, // Get actual loaded data from hook
   } = useInfiniteTable<Branch>({
     columns,
-    data: fullData.slice(0, pageSize),
+    data: initialBranchesSlice,
     pageSize,
     onLoadMore: handleLoadMore,
   });

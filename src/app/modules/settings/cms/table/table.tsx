@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useReactTable, getCoreRowModel, ColumnDef } from '@tanstack/react-table';
+import { ColumnDef } from '@tanstack/react-table';
 import { useForm } from 'react-hook-form';
 import { Button } from 'rizzui';
 import InfiniteTable from '../../../../../components/InfiniteTable';
@@ -8,6 +8,7 @@ import { FilterDropdown } from '../../../../../components/FilterDropdown';
 import { cmsColumns, CMSPageRow } from './columns';
 import { Layout, FileX, Search } from 'lucide-react';
 import { getThemeColors } from '../../../../../theme/colors';
+import { useInfiniteTable } from '../../../../../hooks/useInfiniteTable';
 
 interface CMSTableProps {
     isDarkMode: boolean;
@@ -77,15 +78,27 @@ export const CMSTable: React.FC<CMSTableProps> = ({
 
     const columns = useMemo(() => cmsColumns({ onEdit, onDelete, onView, isDarkMode }), [onEdit, onDelete, onView, isDarkMode]);
 
-    // Create the table instance
-    const table = useReactTable({
-        data: filteredData,
+    const initialCMSSlice = useMemo(() => filteredData.slice(0, 10), [filteredData]);
+
+    const {
+        table,
+        isLoading,
+        hasNextPage,
+        loadMore,
+    } = useInfiniteTable<CMSPageRow>({
         columns: columns as ColumnDef<CMSPageRow>[],
-        getCoreRowModel: getCoreRowModel(),
-        state: {
-            columnVisibility,
-        },
-        onColumnVisibilityChange: setColumnVisibility,
+        data: initialCMSSlice,
+        pageSize: 10,
+        onLoadMore: async (page: number, limit: number) => {
+            // Simulate API behavior with local data
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const start = (page - 1) * limit;
+                    const end = start + limit;
+                    resolve(filteredData.slice(start, end));
+                }, 500);
+            });
+        }
     });
 
     return (
@@ -138,7 +151,10 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                 columnVisibility={columnVisibility}
                 isDarkMode={isDarkMode}
                 className="max-h-[600px]"
-                total={data.length}
+                total={filteredData.length}
+                hasNextPage={hasNextPage}
+                isLoading={isLoading}
+                onLoadMore={loadMore}
                 itemName="pages"
                 emptyComponent={
                     <div className={`flex flex-col items-center justify-center text-center py-12 ${theme.text.tertiary}`}>
