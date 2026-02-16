@@ -343,7 +343,10 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               <h3 className="font-bold text-sm text-textPrimary">
                 #{order.orderNumber.split('-').pop()}
               </h3>
-              <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+              <div className="text-[11px] flex items-center gap-1.5 text-textSecondary uppercase font-bold tracking-tight">
+                {order.type === 'dine-in' ? '🍽️ Dine-In' : order.type === 'takeaway' ? '📦 Takeaway' : '🛵 Online'}
+              </div>
+              <div className="text-[11px] flex items-center gap-1 text-textSecondary/70">
                 <Clock size={11} className="opacity-60" />
                 <span>{order.createdAt.split(' ').slice(1).join(' ')}</span>
               </div>
@@ -361,7 +364,10 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
             <h3 className="font-bold text-sm text-textPrimary">
               {order.orderNumber.split('-').pop()}
             </h3>
-            <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+            <div className="text-[11px] flex items-center gap-1.5 text-textSecondary uppercase font-bold tracking-tight">
+              {order.type === 'dine-in' ? '🍽️ Dine-In' : order.type === 'takeaway' ? '📦 Takeaway' : '🛵 Online'}
+            </div>
+            <div className="text-[11px] flex items-center gap-1 text-textSecondary/70">
               <Clock size={11} className="opacity-60" />
               <span>{order.createdAt.split(' ').slice(1).join(' ')}</span>
             </div>
@@ -525,7 +531,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
         </h2>
         {viewMode === 'list' && (
           <div className={`hidden sm:grid ${showOrderDetails ? 'sm:grid-cols-12' : 'sm:grid-cols-10'} gap-4 px-4 mb-2 text-[10px] md:text-xs uppercase tracking-widest text-textSecondary font-bold`}>
-            <div className="col-span-2">Order / Time</div>
+            <div className="col-span-2">Order / Category / Time</div>
             <div className="col-span-1">Status</div>
             <div className="col-span-5 pl-5">Items (Item / Qty / Price)</div>
             {showOrderDetails && <div className="col-span-2">{orderDetailsHeader}</div>}

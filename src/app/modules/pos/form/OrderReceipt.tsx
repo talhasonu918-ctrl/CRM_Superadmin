@@ -13,11 +13,11 @@ interface Order {
     deliveryAddress?: string;
     status: string;
     type: string;
-    items?: any[]; // Handling both structured and flat items
-    subtotal?: number;
-    total?: number; // Some components use total instead of subtotal
-    tax?: number;
-    discount?: number;
+    items?: { name: string; price: number; quantity: number }[];
+    total: number;
+    subtotal: number;
+    tax: number;
+    discount: number;
     grandTotal: number;
     createdAt: string;
     completedAt: string;
@@ -261,6 +261,16 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     </div>
                 )}
 
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">{order.type === 'Delivery' ? 'RIDER' : 'WAITER'}</div>
+                    <div className="thermal-info-value">{order.riderName || order.waiterName || 'Counter'}</div>
+                </div>
+
+                <div className="thermal-info-row" style={{ marginTop: '2px', paddingTop: '2px', borderTop: '0.5px dotted #ccc' }}>
+                    <div className="thermal-info-label">CASHIER</div>
+                    <div className="thermal-info-value">{['KALEN H', 'ALI AHMED', 'ASIF ALI'][Math.floor(Math.random() * 3)]}</div>
+                </div>
 
                 {order.status && (
                     <div className="thermal-info-row">

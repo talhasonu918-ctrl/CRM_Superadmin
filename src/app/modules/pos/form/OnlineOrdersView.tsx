@@ -25,7 +25,7 @@ interface FilterFormData {
 export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode = false }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  
+
   // State for actions
   const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<Order | null>(null);
   const [orderToPrint, setOrderToPrint] = useState<Order | null>(null);
@@ -294,7 +294,10 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
             <h3 className="font-bold text-sm text-textPrimary">
               {order.orderNumber.split('-').pop()}
             </h3>
-            <div className="text-[11px] flex items-center gap-1 text-textSecondary">
+            <div className="text-[11px] flex items-center gap-1.5 text-textSecondary uppercase font-bold tracking-tight">
+              🛵 Online
+            </div>
+            <div className="text-[11px] flex items-center gap-1 text-textSecondary/70">
               <Clock size={11} className="opacity-60" />
               <span>{order.createdAt.split(' ').slice(1).join(' ')}</span>
             </div>
@@ -404,7 +407,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
         </h2>
         {viewMode === 'list' && (
           <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
-            <div className="col-span-2">Order / Time</div>
+            <div className="col-span-2">Order / Category / Time</div>
             <div className="col-span-1">Status</div>
             <div className="col-span-3 pl-5">Item</div>
             <div className="col-span-1 text-center">Qty</div>
