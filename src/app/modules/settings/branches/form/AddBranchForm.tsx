@@ -67,7 +67,6 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
       setIsMapLoaded(true);
       return;
     }
-
     const script = document.createElement('script');
     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
     script.async = true;
@@ -600,34 +599,27 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
             className={`w-full h-48 rounded-lg border ${theme.border.input} overflow-hidden shadow-inner bg-slate-100 flex items-center justify-center`}
           >
             {!isMapLoaded && (
-              <div className="text-xs font-semibold text-slate-400 flex flex-col items-center gap-2">
+              <div className="text-xs  font-semibold text-slate-400 flex flex-col items-center gap-2">
                 <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                 Loading Map...
               </div>
             )}
           </div>
         </div>
-
-        {/* Lat/Lng (Hidden but bound to form) */}
+      {/* Lat/Lng (Hidden but bound to form) */}
         <Controller name="lat" control={control} render={({ field }) => <input type="hidden" {...field} />} />
         <Controller name="lng" control={control} render={({ field }) => <input type="hidden" {...field} />} />
       </div>
-
-      {/* Action Buttons */}
+    {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t mt-4">
         <Button
           type="button"
           variant="outline"
           onClick={onCancel}
-          className={`h-10 rounded-lg px-8 border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}
-        >
+          className={`h-10 rounded-lg px-8 border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors font-semibold w-full sm:w-auto`}>
           Cancel
         </Button>
-
-        <Button
-          type="submit"
-          className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all w-full sm:w-auto`}
-        >
+        <Button     type="submit"   className={`${theme.button.primary} h-10 text-white rounded-lg px-8 font-semibold shadow-md active:scale-[0.98] transition-all w-full sm:w-auto`}>
           Add Branch
         </Button>
       </div>

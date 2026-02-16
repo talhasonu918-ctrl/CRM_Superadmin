@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Rider } from '../types';
 import { mockRiders } from '../mockData';
 import {
@@ -11,6 +11,15 @@ import { Badge, Title, ActionIcon, Avatar } from 'rizzui';
 import { ReusableModal } from '../../../../components/ReusableModal';
 import { DropdownMenu } from '../../../../components/dropdown';
 import Tabs from '../../../../components/Tabs';
+import toast from 'react-hot-toast';
+import Lottie from 'lottie-react';
+import bikeAnimation from '../../../../components/delivery man bike fast.json';
+
+declare global {
+    interface Window {
+        google: any;
+    }
+}
 
 interface RiderManagementViewProps {
     isDarkMode?: boolean;
@@ -29,6 +38,13 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
     const [expandedRiderId, setExpandedRiderId] = useState<string | null>(null);
     const [isMapModalOpen, setIsMapModalOpen] = useState(false);
     const [selectedRiderForMap, setSelectedRiderForMap] = useState<Rider | null>(null);
+
+    // Google Maps state
+    const [isMapLoaded, setIsMapLoaded] = useState(false);
+    const [map, setMap] = useState<any>(null);
+    const [mapKey, setMapKey] = useState(0);
+    const mapRef = useRef<HTMLDivElement>(null);
+    const markerRef = useRef<any>(null);
 
     const handleUpdateTaskStatus = (riderId: string, newStatus: 'pending' | 'received') => {
         setRiders(prev => prev.map(rider => {
@@ -86,6 +102,133 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
             default: return 'bg-textSecondary/50';
         }
     };
+
+    // Load Google Maps Script
+    useEffect(() => {
+        if (!isMapModalOpen) return;
+
+        const loadGoogleMapsScript = () => {
+            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+            if (!apiKey) {
+                console.error('❌ Google Maps API key is missing');
+                toast.error('Google Maps API key not configured');
+                return;
+            }
+
+            if (window.google && window.google.maps) {
+                console.log('✅ Google Maps already loaded');
+                setIsMapLoaded(true);
+                return;
+            }
+
+            if (document.querySelector('script[src*="maps.googleapis.com"]')) {
+                console.log('⏳ Google Maps script already loading...');
+                const checkInterval = setInterval(() => {
+                    if (window.google && window.google.maps) {
+                        console.log('✅ Google Maps loaded (interval check)');
+                        setIsMapLoaded(true);
+                        clearInterval(checkInterval);
+                    }
+                }, 100);
+                return;
+            }
+
+            console.log('🔄 Loading Google Maps script...');
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+            script.async = true;
+            script.defer = true;
+
+            script.onload = () => {
+                console.log('✅ Google Maps script loaded successfully');
+                setIsMapLoaded(true);
+            };
+
+            script.onerror = (error) => {
+                console.error('❌ Error loading Google Maps script:', error);
+                toast.error('Failed to load Google Maps');
+            };
+
+            document.head.appendChild(script);
+        };
+
+        loadGoogleMapsScript();
+    }, [isMapModalOpen]);
+
+    // Initialize Google Maps
+    useEffect(() => {
+        if (!isMapModalOpen || !mapRef.current || !isMapLoaded || !selectedRiderForMap?.currentLocation) return;
+
+        const initMap = () => {
+            try {
+                console.log('🗺️ Initializing Google Maps for rider:', selectedRiderForMap.name);
+
+                const riderLocation = {
+                    lat: selectedRiderForMap.currentLocation!.lat,
+                    lng: selectedRiderForMap.currentLocation!.lng
+                };
+
+                const mapInstance = new window.google.maps.Map(mapRef.current, {
+                    center: riderLocation,
+                    zoom: 15,
+                    mapTypeControl: false,
+                    streetViewControl: false,
+                    fullscreenControl: false,
+                    zoomControl: true,
+                    styles: isDarkMode ? [
+                        { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+                        { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+                        { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] }
+                    ] : []
+                });
+
+                // Create custom marker icon
+                const bikeIcon = {
+                    url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" fill="#0066FF" stroke="white" stroke-width="2"/>
+                            <path d="M5 12h14M12 5l7 7-7 7" stroke="white" stroke-width="2"/>
+                        </svg>
+                    `),
+                    scaledSize: new window.google.maps.Size(32, 32),
+                    anchor: new window.google.maps.Point(16, 16),
+                };
+
+                // Add marker
+                const marker = new window.google.maps.Marker({
+                    position: riderLocation,
+                    map: mapInstance,
+                    icon: bikeIcon,
+                    title: selectedRiderForMap.name,
+                    animation: window.google.maps.Animation.DROP
+                });
+
+                markerRef.current = marker;
+                setMap(mapInstance);
+
+                console.log('✅ Map initialized successfully');
+                toast.success(`Tracking ${selectedRiderForMap.name}`);
+            } catch (error) {
+                console.error('❌ Error initializing map:', error);
+                toast.error('Failed to initialize map');
+            }
+        };
+
+        initMap();
+    }, [isMapModalOpen, isMapLoaded, selectedRiderForMap, isDarkMode, mapKey]);
+
+    // Cleanup on modal close
+    useEffect(() => {
+        if (!isMapModalOpen) {
+            if (markerRef.current) {
+                markerRef.current.setMap(null);
+                markerRef.current = null;
+            }
+            setMap(null);
+            setMapKey(prev => prev + 1);
+        }
+    }, [isMapModalOpen]);
 
     const GridView = (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
@@ -419,10 +562,6 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                 {viewMode === 'grid' ? GridView : ListView}
             </div>
-
-
-
-
             {/* Live Location Tracking Modal */}
             <ReusableModal
                 isOpen={isMapModalOpen}
@@ -433,29 +572,67 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
             >
                 {selectedRiderForMap && (
                     <div className="flex flex-col gap-6">
-                        {/* Map Placeholder */}
-                        <div className="relative w-full h-80 rounded-2xl overflow-hidden border border-border shadow-inner bg-background flex items-center justify-center">
-                            {/* Visual Grid for Map Mockup */}
-                            <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, var(--color-primary) 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
-
-                            {/* Animated Marker */}
-                            <div className="relative z-10">
-                                <div className="absolute -inset-4 bg-primary/30 rounded-full animate-ping" />
-                                <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center shadow-xl border-2 border-white dark:border-gray-900 relative z-20">
-                                    <Bike className="text-white" size={24} />
+                        {/* Real Google Maps Container */}
+                        <div className="relative w-full h-80 rounded-2xl overflow-hidden border border-border shadow-lg">
+                            {!isMapLoaded ? (
+                                // Loading state
+                                <div className="absolute inset-0 bg-background flex items-center justify-center">
+                                    <div className="flex flex-col items-center gap-3">
+                                        <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                                        <span className="text-xs font-bold text-textSecondary">Loading map...</span>
+                                    </div>
                                 </div>
-                            </div>
-
-
-
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-surface/90 backdrop-blur-sm px-6 py-2.5 rounded-full border border-border shadow-lg flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap text-textPrimary">Signal Stable</span>
+                            ) : !selectedRiderForMap.currentLocation ? (
+                                // No location data
+                                <div className="absolute inset-0 bg-background flex items-center justify-center">
+                                    <div className="text-center">
+                                        <MapPin className="mx-auto text-textSecondary mb-2" size={32} />
+                                        <span className="text-xs font-bold text-textSecondary">Location not available</span>
+                                    </div>
                                 </div>
-                                <div className="w-px h-3 bg-border" />
-                                <div className="text-[10px] font-bold whitespace-nowrap text-textPrimary">Lat: 24.8607 • Long: 67.0011</div>
-                            </div>
+                            ) : null}
+
+                            {/* Google Maps DIV */}
+                            <div
+                                ref={mapRef}
+                                key={mapKey}
+                                className="w-full h-full rounded-2xl"
+                                style={{ minHeight: '320px' }}
+                            />
+                   {/* Animated Bike Marker Overlay */}
+                            {selectedRiderForMap.currentLocation && isMapLoaded && (
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
+                                    <div className="relative">
+                                        {/* Pulsing Circle Background */}
+                                        <div className="absolute inset-0 -m-6">
+                                            <div className="w-16 h-16 rounded-full bg-primary/20 animate-ping" />
+                                        </div>
+                                        {/* Lottie Bike Animation */}
+                                        <div className="relative z-20 w-20 h-20 drop-shadow-xl">
+                                            <Lottie
+                                                animationData={bikeAnimation}
+                                                loop={true}
+                                                style={{ width: '100%', height: '100%' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Location Info Overlay */}
+                            {selectedRiderForMap.currentLocation && (
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-surface/95 backdrop-blur-sm px-6 py-2.5 rounded-full border border-border shadow-lg flex items-center gap-4">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap text-textPrimary">Signal Stable</span>
+                                    </div>
+                                    <div className="w-px h-3 bg-border" />
+                                    <div className="text-[10px] font-bold whitespace-nowrap text-textPrimary flex items-center gap-1.5">
+                                        <MapPin size={10} className="text-primary" />
+                                        {selectedRiderForMap.cityArea}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Rider Info Card */}
@@ -469,7 +646,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                             </div>
                             <div className="text-right">
                                 <div className="text-[10px] font-black uppercase tracking-widest opacity-50 mb-0.5 text-textSecondary">Assigned To</div>
-                                <div className="text-xs font-bold text-primary">{selectedRiderForMap.activeTask?.orderNumber || 'Waiting...'}</div>
+                                <div className="text-xs font-bold text-primary">{selectedRiderForMap.activeTask?.orderNumber || 'Available '}</div>
                             </div>
                         </div>
 

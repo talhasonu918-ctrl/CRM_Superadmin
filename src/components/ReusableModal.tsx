@@ -44,7 +44,6 @@ export const ReusableModal: React.FC<ReusableModalProps> = ({
         <div className={`mb-5 flex items-center justify-start border-b pb-3 pt-2 ${theme.border.main}`}>
           <Title as="h3" className={`${theme.text.primary} text-xl font-semibold`}>{title}</Title>
         </div>
-
         <div className={`${theme.text.secondary} space-y-4`}>
           {children}
         </div>

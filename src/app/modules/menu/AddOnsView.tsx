@@ -190,7 +190,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-priamry hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <Plus size={16} />
             Add Group
@@ -308,7 +308,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
               <span className="font-medium">Add-Ons</span>
               <button
                 onClick={addAddOn}
-                className="text-orange-500 text-sm"
+                className="text-primary text-sm"
               >
                 + Add Add-On
               </button>
@@ -352,7 +352,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
               onClick={handleSave}
               className={`px-4 py-2 rounded-lg text-white ${
                 isValid
-                  ? 'bg-orange-500 hover:bg-orange-600'
+                  ? 'bg-primary hover:bg-orange-600'
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
             >

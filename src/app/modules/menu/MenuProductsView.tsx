@@ -436,7 +436,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 text-sm rounded-lg font-medium flex items-center gap-2 transition-colors shadow-md whitespace-nowrap"
+            className="bg-primary hover:bg-orange-600 text-white px-4 py-2.5 text-sm rounded-lg font-medium flex items-center gap-2 transition-colors shadow-md whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             Add Product
@@ -1134,7 +1134,7 @@ export const MenuProductsView: React.FC<MenuProductsViewProps> = ({ isDarkMode }
             </button>
             <button
               onClick={handleSave}
-              className="px-6 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-medium text-sm transition-all shadow-md"
+              className="px-6 py-2.5 bg-primary hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-medium text-sm transition-all shadow-md"
             >
               {editingId ? 'Update Product' : 'Save Product'}
             </button>

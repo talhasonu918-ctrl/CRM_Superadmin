@@ -80,6 +80,10 @@ export interface Rider {
   accountStatus: 'active' | 'inactive' | 'blocked';
   currentOrders: number;
   activeTask?: ActiveTask;
+  currentLocation?: {
+    lat: number;
+    lng: number;
+  };
   rating: number;
   performance: {
     avgDeliveryTime: string;
