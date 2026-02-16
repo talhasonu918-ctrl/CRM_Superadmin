@@ -1277,6 +1277,10 @@ export const mockRiders: Rider[] = [
       ],
       customerAddress: 'Gulberg III, Lahore'
     },
+    // currentLocation: {
+    //   lat: 31.5204,
+    //   lng: 74.3587
+    // },
     rating: 4.6,
     performance: {
       avgDeliveryTime: '30 min',

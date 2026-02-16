@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Printer, Send, ArrowLeft, Download } from 'lucide-react';
 import { CartItem } from '../types';
+import { useBranding } from '../../../../contexts/BrandingContext';
 
 interface InvoiceViewProps {
     type: 'KOT' | 'KDS';
@@ -44,6 +45,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
     onSendToKitchen,
     isDarkMode = false,
 }) => {
+    const { config } = useBranding();
     const [branchInfo, setBranchInfo] = useState({ name: 'Main Branch', phone: '+92 300 1234567' });
 
     useEffect(() => {
@@ -215,7 +217,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                         <div className="screen-only">
                             {/* Company Info */}
                             <div className="text-center mb-6 pt-4">
-                                <h1 className="text-4xl font-black text-primary tracking-tighter mb-1">Invex Food</h1>
+                                <h1 className="text-4xl font-black text-primary tracking-tighter mb-1">{config.name || 'Invex Food'}</h1>
                                 <p className="text-xl font-bold text-textPrimary tracking-tight">{branchInfo.name}</p>
                                 <p className="text-[11px] text-textSecondary font-bold tracking-widest">{branches.find(b => b.name === branchInfo.name)?.location}</p>
                                 <div className="w-full border-t border-dotted border-border my-3" />
@@ -342,14 +344,14 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                         <div className="print-only">
                             {/* Header */}
                             {/* <div className="thermal-header">
-                              <div className="thermal-branch">Invex Food</div>
+                              <div className="thermal-branch">{config.name || 'Invex Food'}</div>
                             <div className="thermal-branch">{branchInfo.name.toUpperCase()}</div>
                             <div className="thermal-location">{branches.find(b => b.name === branchInfo.name)?.location}</div>
                         </div> */}
 
 
                             <div className="thermal-header">
-                                <div className="thermal-brand">Invex Food</div>
+                                <div className="thermal-brand">{config.name || 'Invex Food'}</div>
 
                                 <div className="thermal-branch">
                                     {branchInfo.name.toUpperCase()}

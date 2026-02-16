@@ -14,6 +14,7 @@ import Tabs from '../../../../components/Tabs';
 import toast from 'react-hot-toast';
 import Lottie from 'lottie-react';
 import bikeAnimation from '../../../../components/delivery man bike fast.json';
+import ContactRiderModal from './ContactRiderModal';
 
 declare global {
     interface Window {
@@ -37,6 +38,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
     const [expandedRiderId, setExpandedRiderId] = useState<string | null>(null);
     const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+    const [isContactModalOpen, setIsContactModalOpen] = useState(false);
     const [selectedRiderForMap, setSelectedRiderForMap] = useState<Rider | null>(null);
 
     // Google Maps state
@@ -194,7 +196,6 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                     scaledSize: new window.google.maps.Size(32, 32),
                     anchor: new window.google.maps.Point(16, 16),
                 };
-
                 // Add marker
                 const marker = new window.google.maps.Marker({
                     position: riderLocation,
@@ -599,7 +600,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                 className="w-full h-full rounded-2xl"
                                 style={{ minHeight: '320px' }}
                             />
-                   {/* Animated Bike Marker Overlay */}
+                            {/* Animated Bike Marker Overlay */}
                             {selectedRiderForMap.currentLocation && isMapLoaded && (
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10">
                                     <div className="relative">
@@ -658,6 +659,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                 Close Tracking
                             </button>
                             <button
+                                onClick={() => setIsContactModalOpen(true)}
                                 className="flex-1 py-3 rounded-xl shadow-lg shadow-primary/20 text-[11px] font-black uppercase tracking-widest transition-all bg-primary text-white hover:shadow-xl hover:scale-[1.02]"
                             >
                                 Contact Rider
@@ -666,6 +668,17 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                     </div>
                 )}
             </ReusableModal>
+
+            {/* Contact Rider Modal */}
+            {selectedRiderForMap && (
+                <ContactRiderModal
+                    isOpen={isContactModalOpen}
+                    onClose={() => setIsContactModalOpen(false)}
+                    riderName={selectedRiderForMap.name}
+                    phoneNumber={selectedRiderForMap.phone}
+                    isDarkMode={isDarkMode}
+                />
+            )}
         </div>
     );
 };

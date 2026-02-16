@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Order } from '../types';
 import { mockOnlineOrders } from '../mockData';
 import { Search, Calendar, Grid as GridIcon, List as ListIcon, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp, Printer, MapPin, Bike, Smartphone } from 'lucide-react';
@@ -8,6 +8,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
 import Tabs, { TabItem } from '../../../../components/Tabs';
+import { notify } from '../../../../utils/toast';
+import { OrderDetailsModal } from './OrderDetailsModal';
+import { OrderReceipt } from './OrderReceipt';
 
 interface OnlineOrdersViewProps {
   isDarkMode?: boolean;
@@ -22,6 +25,15 @@ interface FilterFormData {
 export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode = false }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  
+  // State for actions
+  const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<Order | null>(null);
+  const [orderToPrint, setOrderToPrint] = useState<Order | null>(null);
+  const [localOrders, setLocalOrders] = useState<Order[]>(mockOnlineOrders);
+
+  useEffect(() => {
+    setLocalOrders(mockOnlineOrders);
+  }, []);
 
   const { control, watch } = useForm<FilterFormData>({
     defaultValues: {
@@ -64,7 +76,50 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
     }
   };
 
-  const filteredOrders = mockOnlineOrders.filter(order => {
+  // Action Handlers
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrderForDetails(order);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedOrderForDetails(null);
+  };
+
+  const handleMarkAsReady = (orderId: string) => {
+    const updatedOrders = localOrders.map(order =>
+      order.id === orderId ? { ...order, status: 'ready' as const } : order
+    );
+    setLocalOrders(updatedOrders);
+
+    if (selectedOrderForDetails?.id === orderId) {
+      setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'ready' as const }) : null);
+    }
+
+    notify.success('Order marked as ready');
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      const updatedOrders = localOrders.map(order =>
+        order.id === orderId ? { ...order, status: 'cancelled' as const } : order
+      );
+      setLocalOrders(updatedOrders);
+
+      if (selectedOrderForDetails?.id === orderId) {
+        setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'cancelled' as const }) : null);
+      }
+      notify.error('Order cancelled');
+    }
+  };
+
+  const handlePrintReceipt = (order: Order) => {
+    setOrderToPrint(order);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
+  const filteredOrders = localOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
 
     const matchesSearch = !searchLower ||
@@ -120,10 +175,10 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           </div>
           <OrderActionsDropdown
             isDarkMode={isDarkMode}
-            onViewDetails={() => console.log('View details', order.id)}
-            onMarkAsReady={() => console.log('Mark as ready', order.id)}
-            onPrintReceipt={() => console.log('Print receipt', order.id)}
-            onCancelOrder={() => console.log('Cancel order', order.id)}
+            onViewDetails={() => handleViewDetails(order)}
+            onMarkAsReady={() => handleMarkAsReady(order.id)}
+            onPrintReceipt={() => handlePrintReceipt(order)}
+            onCancelOrder={() => handleCancelOrder(order.id)}
           />
         </div>
 
@@ -328,10 +383,10 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
-              onViewDetails={() => console.log('View details', order.id)}
-              onMarkAsReady={() => console.log('Mark as ready', order.id)}
-              onPrintReceipt={() => console.log('Print receipt', order.id)}
-              onCancelOrder={() => console.log('Cancel order', order.id)}
+              onViewDetails={() => handleViewDetails(order)}
+              onMarkAsReady={() => handleMarkAsReady(order.id)}
+              onPrintReceipt={() => handlePrintReceipt(order)}
+              onCancelOrder={() => handleCancelOrder(order.id)}
             />
           </div>
         </div>
@@ -531,6 +586,21 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
         </div>
 
       </div>
+
+      {/* Modals */}
+      {selectedOrderForDetails && (
+        <OrderDetailsModal
+          order={selectedOrderForDetails}
+          isOpen={!!selectedOrderForDetails}
+          onClose={handleCloseDetails}
+        />
+      )}
+
+      {orderToPrint && (
+        <div className="hidden print:block">
+          <OrderReceipt order={orderToPrint as any} />
+        </div>
+      )}
     </div>
   );
 };

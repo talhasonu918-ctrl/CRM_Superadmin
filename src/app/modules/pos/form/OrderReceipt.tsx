@@ -1,4 +1,5 @@
 import React from 'react';
+import { useBranding } from '../../../../contexts/BrandingContext';
 
 interface Order {
   id: string;
@@ -40,6 +41,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
     order,
     branchInfo = defaultBranch
 }) => {
+    const { config } = useBranding();
     if (!order) return null;
 
     // Format date and time
@@ -181,7 +183,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
 
             <div id="order-receipt-content" className="hidden print:block">
                 <div className="thermal-header">
-                    <div className="thermal-brand">INVEX FOOD</div>
+                    <div className="thermal-brand">{(config.name || 'Invex Food').toUpperCase()}</div>
                     <div className="thermal-branch">{branchInfo.name.toUpperCase()}</div>
                     <div className="thermal-location">{branchInfo.location}</div>
                 </div>

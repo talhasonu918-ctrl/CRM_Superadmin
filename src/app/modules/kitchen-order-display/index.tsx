@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Printer, CheckCircle, User, ShoppingBag, Star, Search } from 'lucide-react';
 import { getThemeColors } from '../../../theme/colors';
+import { useBranding } from '../../../contexts/BrandingContext';
 
 interface OrderItem {
   id: string;
@@ -376,6 +377,7 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
 };
 
 export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMode = false }) => {
+  const { config } = useBranding();
   const theme = getThemeColors(isDarkMode);
   const [orders, setOrders] = useState<KitchenOrder[]>(() => {
     if (typeof window !== 'undefined') {
@@ -706,7 +708,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
       {printOrder && (
         <div id="kitchen-print-content" className="print-only">
           <div className="thermal-header">
-            <div className="thermal-brand">INVEX FOOD</div>
+            <div className="thermal-brand">{(config.name || 'Invex Food').toUpperCase()}</div>
             <div className="thermal-branch">{branchInfo.name.toUpperCase()}</div>
             <div className="thermal-location">{branches.find((b: { id: number; name: string; location: string; phone: string }) => b.name === branchInfo.name)?.location}</div>
             <div className="thermal-branch">KITCHEN ORDER</div>

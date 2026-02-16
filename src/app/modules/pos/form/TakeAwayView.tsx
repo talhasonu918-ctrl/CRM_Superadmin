@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TakeawayOrder } from '../types';
 import { mockTakeawayOrders } from '../mockData';
 import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp } from 'lucide-react';
@@ -8,6 +8,9 @@ import { CustomSelect, CustomSelectOption } from '../../../../components/CustomS
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
 import Tabs, { TabItem } from '../../../../components/Tabs';
+import { notify } from '../../../../utils/toast';
+import { OrderDetailsModal } from './OrderDetailsModal';
+import { OrderReceipt } from './OrderReceipt';
 
 interface TakeAwayViewProps {
   isDarkMode?: boolean;
@@ -22,6 +25,15 @@ interface FilterFormData {
 export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }) => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  
+  // State for actions
+  const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<TakeawayOrder | null>(null);
+  const [orderToPrint, setOrderToPrint] = useState<TakeawayOrder | null>(null);
+  const [localOrders, setLocalOrders] = useState<TakeawayOrder[]>(mockTakeawayOrders);
+
+  useEffect(() => {
+    setLocalOrders(mockTakeawayOrders);
+  }, []);
 
   const { control, watch } = useForm<FilterFormData>({
     defaultValues: {
@@ -33,22 +45,65 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
 
   const filters = watch();
 
+  // Action Handlers
+  const handleViewDetails = (order: TakeawayOrder) => {
+    setSelectedOrderForDetails(order);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedOrderForDetails(null);
+  };
+
+  const handleMarkAsReady = (orderId: string) => {
+    const updatedOrders = localOrders.map(order =>
+      order.id === orderId ? { ...order, status: 'ready' as const } : order
+    );
+    setLocalOrders(updatedOrders);
+
+    if (selectedOrderForDetails?.id === orderId) {
+      setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'ready' as const }) : null);
+    }
+
+    notify.success('Order marked as ready');
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      const updatedOrders = localOrders.map(order =>
+        order.id === orderId ? { ...order, status: 'cancelled' as const } : order
+      );
+      setLocalOrders(updatedOrders);
+
+      if (selectedOrderForDetails?.id === orderId) {
+        setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'cancelled' as const }) : null);
+      }
+      notify.error('Order cancelled');
+    }
+  };
+
+  const handlePrintReceipt = (order: TakeawayOrder) => {
+    setOrderToPrint(order);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
   // Calculate counts for each status (not affected by search or active filter)
-  const allOrdersCount = mockTakeawayOrders.length;
-  const preparingOrdersCount = mockTakeawayOrders.filter(order => order.status === 'preparing').length;
-  const readyOrdersCount = mockTakeawayOrders.filter(order => order.status === 'ready').length;
-  const servedOrdersCount = mockTakeawayOrders.filter(order => order.status === 'served').length;
-  const cancelledOrdersCount = mockTakeawayOrders.filter(order => order.status === 'cancelled').length;
+  const allOrdersCount = localOrders.length;
+  const preparingOrdersCount = localOrders.filter(order => order.status === 'preparing').length;
+  const readyOrdersCount = localOrders.filter(order => order.status === 'ready').length;
+  const servedOrdersCount = localOrders.filter(order => order.status === 'served').length;
+  const cancelledOrdersCount = localOrders.filter(order => order.status === 'cancelled').length;
 
   // Calculate total amounts for each status
-  const calculateTotalAmount = (orders: typeof mockTakeawayOrders) =>
+  const calculateTotalAmount = (orders: typeof localOrders) =>
     orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
 
-  const allOrdersAmount = calculateTotalAmount(mockTakeawayOrders);
-  const preparingOrdersAmount = calculateTotalAmount(mockTakeawayOrders.filter(o => o.status === 'preparing'));
-  const readyOrdersAmount = calculateTotalAmount(mockTakeawayOrders.filter(o => o.status === 'ready'));
-  const servedOrdersAmount = calculateTotalAmount(mockTakeawayOrders.filter(o => o.status === 'served'));
-  const cancelledOrdersAmount = calculateTotalAmount(mockTakeawayOrders.filter(o => o.status === 'cancelled'));
+  const allOrdersAmount = calculateTotalAmount(localOrders);
+  const preparingOrdersAmount = calculateTotalAmount(localOrders.filter(o => o.status === 'preparing'));
+  const readyOrdersAmount = calculateTotalAmount(localOrders.filter(o => o.status === 'ready'));
+  const servedOrdersAmount = calculateTotalAmount(localOrders.filter(o => o.status === 'served'));
+  const cancelledOrdersAmount = calculateTotalAmount(localOrders.filter(o => o.status === 'cancelled'));
 
   // Get current status amount
   const getCurrentStatusAmount = () => {
@@ -61,7 +116,7 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
     }
   };
 
-  const filteredOrders = mockTakeawayOrders.filter(order => {
+  const filteredOrders = localOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
 
@@ -119,10 +174,10 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
           </Badge>
           <OrderActionsDropdown
             isDarkMode={isDarkMode}
-            onViewDetails={() => console.log('View details', order.id)}
-            onMarkAsReady={() => console.log('Mark as ready', order.id)}
-            onPrintReceipt={() => console.log('Print receipt', order.id)}
-            onCancelOrder={() => console.log('Cancel order', order.id)}
+            onViewDetails={() => handleViewDetails(order)}
+            onMarkAsReady={() => handleMarkAsReady(order.id)}
+            onPrintReceipt={() => handlePrintReceipt(order)}
+            onCancelOrder={() => handleCancelOrder(order.id)}
           />
         </div>
       </div>
@@ -259,10 +314,10 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
-              onViewDetails={() => console.log('View details', order.id)}
-              onMarkAsReady={() => console.log('Mark as ready', order.id)}
-              onPrintReceipt={() => console.log('Print receipt', order.id)}
-              onCancelOrder={() => console.log('Cancel order', order.id)}
+              onViewDetails={() => handleViewDetails(order)}
+              onMarkAsReady={() => handleMarkAsReady(order.id)}
+              onPrintReceipt={() => handlePrintReceipt(order)}
+              onCancelOrder={() => handleCancelOrder(order.id)}
             />
           </div>
         </div>
@@ -560,6 +615,21 @@ export const TakeAwayView: React.FC<TakeAwayViewProps> = ({ isDarkMode = false }
         </div>
 
       </div>
+
+      {/* Modals */}
+      {selectedOrderForDetails && (
+        <OrderDetailsModal
+          order={selectedOrderForDetails}
+          isOpen={!!selectedOrderForDetails}
+          onClose={handleCloseDetails}
+        />
+      )}
+
+      {orderToPrint && (
+        <div className="hidden print:block">
+          <OrderReceipt order={orderToPrint as any} />
+        </div>
+      )}
     </div>
   );
 };

@@ -166,7 +166,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               <div className="flex items-center justify-between ml-1">
                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Password</label>
                 {mode === AuthMode.LOGIN && (
-                  <button type="button" className="text-[10px] font-black text-orange-500 uppercase tracking-widest hover:underline">Forgot?</button>
+                  <button type="button" className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Forgot?</button>
                 )}
               </div>
               <div className="relative">
@@ -194,7 +194,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
             <button 
               type="submit" 
               disabled={isSubmitting}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest group active:scale-[0.98] mt-4"
+              className="w-full bg-primary hover:bg-orange-600 disabled:opacity-50 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest group active:scale-[0.98] mt-4"
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -212,7 +212,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               {mode === AuthMode.LOGIN ? "Don't have an account?" : "Already managing a kitchen?"}
               <button 
                 onClick={() => onSwitchMode(mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN)}
-                className="text-orange-500 ml-2 hover:underline"
+                className="text-primary ml-2 hover:underline"
               >
                 {mode === AuthMode.LOGIN ? 'Register Now' : 'Login Here'}
               </button>

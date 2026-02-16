@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Order } from '../types';
 import { mockQueueOrders } from '../mockData';
 import { Search, Calendar, Grid, List, Phone, User, ShoppingBag, Clock, ChevronDown, ChevronUp, Printer, MapPin, Bike, Smartphone } from 'lucide-react';
@@ -9,6 +9,9 @@ import { CustomSelect, CustomSelectOption } from '../../../../components/CustomS
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { Badge } from 'rizzui';
 import Tabs, { TabItem } from '../../../../components/Tabs';
+import { notify } from '../../../../utils/toast';
+import { OrderDetailsModal } from './OrderDetailsModal';
+import { OrderReceipt } from './OrderReceipt';
 
 interface OrderQueueViewProps {
   isDarkMode?: boolean;
@@ -25,6 +28,15 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [orderTypeFilter, setOrderTypeFilter] = useState<string>('all'); // 'all', 'dine-in', 'takeaway', 'delivery'
 
+  // State for actions
+  const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<Order | null>(null);
+  const [orderToPrint, setOrderToPrint] = useState<Order | null>(null);
+  const [localOrders, setLocalOrders] = useState<Order[]>(mockQueueOrders);
+
+  useEffect(() => {
+    setLocalOrders(mockQueueOrders);
+  }, []);
+
   const { control, watch } = useForm<FilterFormData>({
     defaultValues: {
       search: '',
@@ -35,8 +47,52 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
 
   const filters = watch();
 
+  // Action Handlers
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrderForDetails(order);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedOrderForDetails(null);
+  };
+
+  const handleMarkAsReady = (orderId: string) => {
+    const updatedOrders = localOrders.map(order =>
+      order.id === orderId ? { ...order, status: 'ready' as const } : order
+    );
+    setLocalOrders(updatedOrders);
+
+    if (selectedOrderForDetails?.id === orderId) {
+      setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'ready' as const }) : null);
+    }
+
+    notify.success('Order marked as ready');
+  };
+
+  const handleCancelOrder = (orderId: string) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      const updatedOrders = localOrders.map(order =>
+        order.id === orderId ? { ...order, status: 'cancelled' as const } : order
+      );
+      setLocalOrders(updatedOrders);
+
+      if (selectedOrderForDetails?.id === orderId) {
+        setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'cancelled' as const }) : null);
+      }
+      notify.error('Order cancelled');
+    }
+  };
+
+  const handlePrintReceipt = (order: Order) => {
+    setOrderToPrint(order);
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  };
+
+
   // First filter by order type only (for badge counts)
-  const orderTypeFiltered = mockQueueOrders.filter(order =>
+  const orderTypeFiltered = localOrders.filter(order =>
     orderTypeFilter === 'all' || order.type === orderTypeFilter
   );
 
@@ -49,7 +105,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
   const cancelledOrdersCount = orderTypeFiltered.filter(order => order.status === 'cancelled').length;
 
   // Calculate total amounts for each status
-  const calculateTotalAmount = (orders: typeof mockQueueOrders) =>
+  const calculateTotalAmount = (orders: typeof localOrders) =>
     orders.reduce((sum, order) => sum + (order.grandTotal || 0), 0);
 
   const allOrdersAmount = calculateTotalAmount(orderTypeFiltered);
@@ -70,7 +126,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
       default: return allOrdersAmount;
     }
   };
-  const filteredOrders = mockQueueOrders.filter(order => {
+  const filteredOrders = localOrders.filter(order => {
     const searchLower = filters.search?.toLowerCase();
     const searchNormalized = searchLower?.replace(/\s+/g, '');
 
@@ -125,10 +181,10 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
           </div>
           <OrderActionsDropdown
             isDarkMode={isDarkMode}
-            onViewDetails={() => console.log('View details', order.id)}
-            onMarkAsReady={() => console.log('Mark as ready', order.id)}
-            onPrintReceipt={() => console.log('Print receipt', order.id)}
-            onCancelOrder={() => console.log('Cancel order', order.id)}
+            onViewDetails={() => handleViewDetails(order)}
+            onMarkAsReady={() => handleMarkAsReady(order.id)}
+            onPrintReceipt={() => handlePrintReceipt(order)}
+            onCancelOrder={() => handleCancelOrder(order.id)}
           />
         </div>
 
@@ -436,10 +492,10 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
             </div>
             <OrderActionsDropdown
               isDarkMode={isDarkMode}
-              onViewDetails={() => console.log('View details', order.id)}
-              onMarkAsReady={() => console.log('Mark as ready', order.id)}
-              onPrintReceipt={() => console.log('Print receipt', order.id)}
-              onCancelOrder={() => console.log('Cancel order', order.id)}
+              onViewDetails={() => handleViewDetails(order)}
+              onMarkAsReady={() => handleMarkAsReady(order.id)}
+              onPrintReceipt={() => handlePrintReceipt(order)}
+              onCancelOrder={() => handleCancelOrder(order.id)}
             />
           </div>
         </div>
@@ -549,8 +605,8 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                 </span>
               </div>
             </div>
-      </div>
-     <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
+          </div>
+          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto ml-auto">
             {/* Search */}
             <div className="w-full sm:w-64">
               <Controller
@@ -659,6 +715,21 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
           />
         </div>
       </div>
+
+      {/* Modals */}
+      {selectedOrderForDetails && (
+        <OrderDetailsModal
+          order={selectedOrderForDetails}
+          isOpen={!!selectedOrderForDetails}
+          onClose={handleCloseDetails}
+        />
+      )}
+
+      {orderToPrint && (
+        <div className="hidden print:block">
+          <OrderReceipt order={orderToPrint as any} />
+        </div>
+      )}
     </div>
   );
 };
