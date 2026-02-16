@@ -67,7 +67,7 @@ export const DashboardView: React.FC = () => {
     const totalOrders = data.reduce((acc, curr) => acc + curr.orders, 0);
     
     return [
-      { label: timeframe === 'today' ? 'Today Orders' : timeframe === 'weekly' ? 'Weekly Orders' : 'Monthly Orders', val: totalOrders.toLocaleString(), icon: ShoppingBag, color: 'text-orange-500', bg: 'bg-orange-500/5', trend: '+12.5%' },
+      { label: timeframe === 'today' ? 'Today Orders' : timeframe === 'weekly' ? 'Weekly Orders' : 'Monthly Orders', val: totalOrders.toLocaleString(), icon: ShoppingBag, color: 'text-primary', bg: 'bg-orange-500/5', trend: '+12.5%' },
       { label: 'Total Revenue', val: `$${totalSales.toLocaleString()}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/5', trend: '+8.2%' },
       { label: 'Active Customers', val: '842', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/5', trend: '+2.4%' },
       { label: 'Order Acceptance', val: '98.5%', icon: CheckCircle2, color: 'text-purple-500', bg: 'bg-purple-500/5', trend: '+0.4%' },
@@ -88,7 +88,7 @@ export const DashboardView: React.FC = () => {
                 key={t}
                 onClick={() => setTimeframe(t)}
                 className={`px-4 py-1.5 text-[11px] font-bold rounded-lg transition-all ${
-                  timeframe === t ? 'bg-white dark:bg-slate-700 text-orange-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                  timeframe === t ? 'bg-white dark:bg-slate-700 text-primary shadow-sm' : 'text-slate-400 hover:text-slate-600'
                 }`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -125,7 +125,7 @@ export const DashboardView: React.FC = () => {
             <h4 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest">Revenue Analytics ({timeframe})</h4>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
                 <span className="text-[11px] font-bold text-slate-400">Sales</span>
               </div>
             </div>
@@ -153,7 +153,7 @@ export const DashboardView: React.FC = () => {
         <div className={`col-span-12 lg:col-span-4 ${cardStyle} p-6`}>
           <div className="flex items-center justify-between mb-6">
             <h4 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest">Live Operations</h4>
-            <div className="flex items-center gap-1 text-[10px] font-bold text-orange-500 uppercase">
+            <div className="flex items-center gap-1 text-[10px] font-bold text-primary uppercase">
               <Loader2 className="w-3 h-3 animate-spin" /> Real-time
             </div>
           </div>
@@ -164,7 +164,7 @@ export const DashboardView: React.FC = () => {
                   <span className="font-bold text-xs">{order.id} • {order.customer}</span>
                   <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider ${
                     order.status === 'Ready' ? 'bg-emerald-500/10 text-emerald-500' : 
-                    order.status === 'Preparing' ? 'bg-orange-500/10 text-orange-500' : 'bg-slate-500/10 text-slate-500'
+                    order.status === 'Preparing' ? 'bg-orange-500/10 text-primary' : 'bg-slate-500/10 text-slate-500'
                   }`}>
                     {order.status}
                   </span>
@@ -174,7 +174,7 @@ export const DashboardView: React.FC = () => {
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                     <Clock size={12} /> {order.time}
                   </div>
-                  <span className="font-bold text-xs text-orange-500">${order.total.toFixed(2)}</span>
+                  <span className="font-bold text-xs text-primary">${order.total.toFixed(2)}</span>
                 </div>
               </div>
             ))}

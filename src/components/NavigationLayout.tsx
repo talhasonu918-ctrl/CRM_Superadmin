@@ -141,7 +141,7 @@ export function Layout({ children }: LayoutProps) {
               className="w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center  dark:bg-slate-800  transition-colors  text-slate-600 dark:text-slate-300"
               title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
             >
-              {isFullscreen ? <LuMinimize className="w-6 h-6 text-orange-500 " /> : <LuMaximize className="w-6 h-6 text-orange-500" />}
+              {isFullscreen ? <LuMinimize className="w-6 h-6 text-primary " /> : <LuMaximize className="w-6 h-6 text-primary" />}
             </button>
 
             {/* Notification Bell */}
@@ -151,11 +151,11 @@ export function Layout({ children }: LayoutProps) {
                   setIsNotificationOpen(!isNotificationOpen);
                   setIsBranchDropdownOpen(false);
                 }}
-                className="relative w-10 h-10 rounded-full flex items-center justify-center bg-orange-100 dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors"
+                className="relative w-10 h-10 rounded-full flex items-center justify-center bg-orange-50  dark:bg-pink-500/10 hover:bg-pink-100 dark:hover:bg-pink-500/20 transition-colors"
               >
                 <Bell className="w-5 h-5 text-black dark:text-white" />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-orange-400 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
                     {unreadCount}
                   </span>
                 )}
