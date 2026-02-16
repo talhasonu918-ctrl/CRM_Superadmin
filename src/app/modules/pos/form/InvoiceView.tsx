@@ -487,16 +487,17 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                 <div className="p-6 bg-background/80 border-t border-border mt-auto grid grid-cols-2 gap-4 no-print">
                     <button
                         onClick={onSendToKitchen}
-                        className="flex items-center justify-center gap-2 py-2 bg-secondary text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-secondary/90 transition-all shadow-lg active:scale-95"
+                        className="flex items-center  justify-center gap-2 py-1.5 sm:py-2 bg-secondary text-white rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-sm uppercase tracking-widest hover:bg-secondary/90 transition-all shadow-lg active:scale-95"
                     >
-                        <Send size={20} />
-                        Send Kitchen
+                        {/* <Send size={20} /> */}
+                        <Send className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6" />
+                         Send Kitchen
                     </button>
                     <button
                         onClick={handlePrint}
-                        className="flex items-center justify-center gap-2 py-2 bg-primary text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
+                        className="flex items-center justify-center gap-2 py-1.5 sm:py-2 bg-primary text-white rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-sm uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg active:scale-95"
                     >
-                        <Download size={20} />
+                        <Download  className="w-3 h-3 sm:w-5 sm:h-5 md:w-6 md:h-6"/>
                         Print
                     </button>
                 </div>

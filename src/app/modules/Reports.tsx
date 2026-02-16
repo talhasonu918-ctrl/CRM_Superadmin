@@ -1,117 +1,151 @@
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
-  ResponsiveContainer, LineChart, Line, AreaChart, Area 
-} from 'recharts';
-import { Download, TrendingUp, DollarSign, ShoppingBag, PieChart as PieChartIcon, Calendar } from 'lucide-react';
+  FileText, Bike, Receipt, Clock, ChefHat, 
+  Users, DollarSign, User, Layers
+} from 'lucide-react';
+import ItemWiseReport from './reports/ItemWiseReport';
+import RiderWiseReport from './reports/RiderWiseReport';
+import TransactionReport from './reports/TransactionReport';
+import KitchenWiseReport from './reports/KitchenWiseReport';
+import KitchenOrderReadyTimeReport from './reports/KitchenOrderReadyTimeReport';
 
-const salesPerformance = [
-  { name: 'Mon', revenue: 4000, orders: 240 },
-  { name: 'Tue', revenue: 3000, orders: 198 },
-  { name: 'Wed', revenue: 5000, orders: 320 },
-  { name: 'Thu', revenue: 4780, orders: 280 },
-  { name: 'Fri', revenue: 6890, orders: 410 },
-  { name: 'Sat', revenue: 8390, orders: 520 },
-  { name: 'Sun', revenue: 7100, orders: 480 },
-];
-
-const bestSellers = [
-  { item: 'Pepperoni Pizza', quantity: 850, revenue: 12750 },
-  { item: 'Zesty Beef Burger', quantity: 620, revenue: 9300 },
-  { item: 'Truffle Pasta', quantity: 450, revenue: 10125 },
-  { item: 'Choco Shake', quantity: 380, revenue: 2280 },
-  { item: 'Caesar Salad', quantity: 310, revenue: 2790 },
-];
-
-export const ReportsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-  const cardStyle = `rounded-xl border shadow-sm p-6 ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100'}`;
+// Placeholder component for other reports
+const ComingSoonReport: React.FC<{ isDarkMode: boolean; title: string }> = ({ isDarkMode, title }) => {
+  const cardStyle = isDarkMode ? 'bg-[#1e2836]' : 'bg-white';
+  const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
+  const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-extrabold tracking-tight">Business Reports</h2>
-          <p className="text-slate-400 text-xs font-medium">Deep dive into sales, growth and performance.</p>
+    <div className="space-y-4">
+      <div className={`${cardStyle} rounded-lg p-8 border ${borderStyle} text-center`}>
+        <div className="mb-4">
+          <svg className="w-24 h-24 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
         </div>
-        <div className="flex items-center gap-3">
-          <button className={`flex items-center gap-2 px-4 py-2 rounded-lg border font-bold text-xs ${isDarkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white border-slate-100 text-slate-500'}`}>
-            <Calendar size={14} /> Custom Range
-          </button>
-          <button className="bg-orange-500 text-white px-5 py-2.5 rounded-lg font-bold text-xs flex items-center gap-2 shadow-lg shadow-orange-500/10 active:scale-95 transition-all">
-            <Download size={14} /> Export Report
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: 'Growth rate', val: '+24.5%', icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/5' },
-          { label: 'Avg Order Value', val: '$28.40', icon: DollarSign, color: 'text-orange-500', bg: 'bg-orange-500/5' },
-          { label: 'Peak Order Time', val: '7 PM - 9 PM', icon: Clock, color: 'text-blue-500', bg: 'bg-blue-500/5' }
-        ].map((stat, i) => (
-          <div key={i} className={`${cardStyle} flex items-center gap-5`}>
-            <div className={`w-12 h-12 ${stat.bg} ${stat.color} rounded-xl flex items-center justify-center`}>
-              <stat.icon size={24} />
-            </div>
-            <div>
-              <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none mb-1">{stat.label}</p>
-              <h3 className="text-xl font-extrabold">{stat.val}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-12 gap-6">
-        <div className={`col-span-12 lg:col-span-8 ${cardStyle}`}>
-          <div className="flex justify-between items-center mb-6">
-            <h4 className="text-sm font-bold tracking-tight">Revenue Trend</h4>
-            <div className="flex gap-4">
-              <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-orange-500" /> <span className="text-[10px] font-bold text-slate-400">Revenue</span></div>
-            </div>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={salesPerformance}>
-                <defs>
-                  <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ff6b35" stopOpacity={0.1}/>
-                    <stop offset="95%" stopColor="#ff6b35" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} strokeDasharray="3 3" stroke={isDarkMode ? '#1e293b' : '#f1f5f9'} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8', fontWeight: 600}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fontSize: 10, fill: '#94a3b8', fontWeight: 600}} tickFormatter={(v) => `$${v}`} />
-                <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '11px'}} />
-                <Area type="monotone" dataKey="revenue" stroke="#ff6b35" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className={`col-span-12 lg:col-span-4 ${cardStyle}`}>
-          <h4 className="text-sm font-bold tracking-tight mb-6">Best Selling Items</h4>
-          <div className="space-y-4">
-            {bestSellers.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between pb-4 border-b border-slate-50 dark:border-slate-800 last:border-0 last:pb-0">
-                <div>
-                  <p className="text-xs font-bold">{item.item}</p>
-                  <p className="text-[10px] text-slate-400 font-medium">{item.quantity} units sold</p>
-                </div>
-                <p className="text-xs font-extrabold text-orange-500">${item.revenue.toLocaleString()}</p>
-              </div>
-            ))}
-          </div>
-          <button className="w-full mt-6 py-2 rounded-lg bg-slate-50 dark:bg-slate-800 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-slate-600 transition-all">View All Products</button>
-        </div>
+        <h3 className={`text-xl font-bold mb-2 ${textStyle}`}>{title}</h3>
+        <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+          Coming Soon
+        </p>
       </div>
     </div>
   );
 };
 
-const Clock = ({ size, className }: { size?: number, className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="12 6 12 12 16 14" />
-  </svg>
-);
+export const ReportsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+  const [selectedReport, setSelectedReport] = useState<string | null>(null);
+
+  const cardStyle = isDarkMode ? 'bg-[#1e2836]' : 'bg-white';
+  const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
+  const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+
+  const reportCards = [
+    { id: 'item-wise', name: 'Item Wise Sale Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary dark:bg-priamry' },
+    { id: 'transaction', name: 'Transaction Report', icon: Receipt, color: 'text-white', bgColor: 'bg-primary dark:bg-priamry' },
+    // { id: 'category-wise', name: 'Category Wise Sale Report', icon: Layers, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'customer-ledger', name: 'Customer Ledger', icon: User, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'supplier-ledger', name: 'Supplier Ledger', icon: User, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'waiter', name: 'Waiter Report', icon: Users, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'user-wise-sale', name: 'User Wise Sale Report', icon: User, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'supplier-wise-purchase', name: 'Supplier Wise Purchase Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'item-location-transfer', name: 'Item Wise Location Transfer Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'location-item-transfer', name: 'Location Wise Item Transfer Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'sales-summary', name: 'Sales Summary', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'discount', name: 'Discount Report', icon: DollarSign, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'customer-wise-sale', name: 'Customer Wise Sale Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'item-recipe-consumption', name: 'Item Wise Recipe Consumption Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'item-sale-details', name: 'Item Wise Sale Details Report', icon: FileText, color: 'text-primary', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'gross-profit', name: 'Gross Profit Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'payment-mode-wise', name: 'Payment Mode Wise Sale Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'invoice-type-wise', name: 'Invoice Type Wise Sale Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'user-item-sale', name: 'User Wise Item Sale Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'item-wise-purchase', name: 'Item Wise Purchase Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    { id: 'kitchen-wise', name: 'Kitchen Wise Sale Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary dark:bg-priamry' },
+    // { id: 'hourly-wise', name: 'Hourly Wise Sale Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'deals', name: 'Deals Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    // { id: 'cancellation', name: 'Cancellation Report', icon: FileText, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    { id: 'kitchen-ready-time', name: 'Kitchen Order Ready Time Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary dark:bg-primary' },
+    // { id: 'pl', name: 'P&L Report', icon: Layers, color: 'text-purple-600', bgColor: 'bg-purple-50 dark:bg-purple-900/20' },
+    { id: 'rider-wise', name: 'Rider Report', icon: Bike, color: 'text-white', bgColor: 'bg-primary dark:bg-primary' },
+  ];
+
+  const renderReportDetail = () => {
+    switch (selectedReport) {
+      case 'item-wise':
+        return <ItemWiseReport isDarkMode={isDarkMode} />;
+      case 'rider-wise':
+        return <RiderWiseReport isDarkMode={isDarkMode} />;
+      case 'transaction':
+        return <TransactionReport isDarkMode={isDarkMode} />;
+      case 'kitchen-wise':
+        return <KitchenWiseReport isDarkMode={isDarkMode} />;
+      case 'kitchen-ready-time':
+        return <KitchenOrderReadyTimeReport isDarkMode={isDarkMode} />;
+      default:
+        return (
+          <div className={`${cardStyle} rounded-lg p-8 border ${borderStyle} text-center`}>
+            <p className={`text-lg ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+              Report coming soon
+            </p>
+          </div>
+        );
+    }
+  };
+
+  // If a report is selected, show the detail view
+  if (selectedReport) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setSelectedReport(null)}
+            className={`px-4 py-2 rounded-lg border ${borderStyle} ${cardStyle} hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-2`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Reports
+          </button>
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-tight">
+              {reportCards.find(r => r.id === selectedReport)?.name}
+            </h2>
+          </div>
+        </div>
+        {renderReportDetail()}
+      </div>
+    );
+  }
+
+  // Grid view of all reports
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-extrabold tracking-tight">Reports</h2>
+          <p className="text-slate-400 text-sm font-medium">Comprehensive business analytics and insights</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        {reportCards.map((report) => {
+          const Icon = report.icon;
+          return (
+            <div
+              key={report.id}
+              onClick={() => setSelectedReport(report.id)}
+              className={`${cardStyle} rounded-lg p-6 border ${borderStyle} hover:shadow-lg transition-all cursor-pointer hover:scale-105 flex flex-col items-center justify-center text-center gap-3 min-h-[140px]`}
+            >
+              <div className={`w-12 h-12 rounded-lg ${report.bgColor} flex items-center justify-center`}>
+                <Icon className={`w-6 h-6 ${report.color}`} />
+              </div>
+              <h3 className={`text-sm font-semibold ${textStyle}`}>{report.name}</h3>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

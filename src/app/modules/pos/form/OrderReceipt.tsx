@@ -2,28 +2,29 @@ import React from 'react';
 import { useBranding } from '../../../../contexts/BrandingContext';
 
 interface Order {
-  id: string;
-  orderNumber: string;
-  customerName?: string;
-  tableId?: string;
-  waiterName?: string;
-  customerPhone?: string;
-  riderName?: string;
-  riderPhone?: string;
-  deliveryAddress?: string;
-  status: string;
-  type: string;
-  items?: { name: string; price: number; quantity: number }[];
-  subtotal: number;
-  tax: number;
-  discount: number;
-  grandTotal: number;
-  createdAt: string;
-  completedAt: string;
-  refundedAt?: string;
-  cancellationReason?: string;
-  refundReason?: string;
-  paymentMethod?: string;
+    id: string;
+    orderNumber: string;
+    customerName?: string;
+    tableId?: string;
+    waiterName?: string;
+    customerPhone?: string;
+    riderName?: string;
+    riderPhone?: string;
+    deliveryAddress?: string;
+    status: string;
+    type: string;
+    items?: any[]; // Handling both structured and flat items
+    subtotal?: number;
+    total?: number; // Some components use total instead of subtotal
+    tax?: number;
+    discount?: number;
+    grandTotal: number;
+    createdAt: string;
+    completedAt: string;
+    refundedAt?: string;
+    cancellationReason?: string;
+    refundReason?: string;
+    paymentMethod?: string;
 }
 
 interface OrderReceiptProps {
@@ -48,15 +49,19 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
     const dateTime = order.createdAt.split(' ');
     const date = dateTime[0] || new Date().toISOString().split('T')[0];
     const time = dateTime[1] || new Date().toTimeString().slice(0, 5);
-    
+
     // Use order properties directly
-    const items = order.items || [];
-    const subTotal = order.subtotal || 0;
+    const rawItems = order.items || [];
+    const subTotal = order.subtotal || order.total || 0;
     const paymentMethod = order.paymentMethod || 'Cash';
 
-    // Debug logging
-    console.log('OrderReceipt - Order data:', order);
-    console.log('OrderReceipt - Items:', items);
+    // Helper to get item name and price regardless of structure
+    const getItemData = (item: any) => {
+        const name = item.name || item.product?.name || 'Unknown Item';
+        const price = item.price !== undefined ? item.price : (item.product?.price || 0);
+        const quantity = item.quantity || 1;
+        return { name, price, quantity };
+    };
 
     return (
         <>
@@ -200,16 +205,62 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                 </div>
 
                 {order.tableId && (
-                    <div className="thermal-info-row">
+                    <div className="thermal-info-row ">
                         <div className="thermal-info-label">TABLE NO</div>
                         <div className="thermal-info-value">{order.tableId}</div>
                     </div>
                 )}
 
-                <div className="thermal-info-row">
-                    <div className="thermal-info-label">CUSTOMER</div>
-                    <div className="thermal-info-value">{order.customerName || 'Walk-in'}</div>
-                </div>
+                {/* <div className="thermal-info-row border-8"> */}
+
+                {/* <div className="thermal-info-value">{order.customerName || 'Walk-in'}</div> */}
+                {/* </div> */}
+
+                {/* {order.customerPhone && (
+                    <div className="thermal-info-row">
+                        <div className="thermal-info-label"></div>
+                        <div className="thermal-info-value">{order.customerPhone}</div>
+                    </div>
+                )}
+
+                {order.deliveryAddress && (
+                    <div className="thermal-info-row">
+                        <div className="thermal-info-label"></div>
+                        <div className="thermal-info-value" style={{ textAlign: 'right', fontSize: '10px' }}>{order.deliveryAddress}</div>
+                    </div>
+                )} */}
+
+                {/* Compact Customer Info Section */}
+                {(order.customerName || order.customerPhone || order.deliveryAddress) && (
+                    <div className="thermal-info-row" style={{ alignItems: 'flex-start' }}>
+                        <div className="thermal-info-label">CUSTOMER</div>
+                        <div className="thermal-info-value" style={{ width: '55%' }}>
+                            {order.customerName && (
+                                <div style={{ fontWeight: 200, fontSize: '12px' }}>
+                                    {order.customerName}
+                                </div>
+                            )}
+                            {order.customerPhone && (
+                                <div style={{ fontSize: '11px', opacity: 0.8 }}>
+                                    {order.customerPhone}
+                                </div>
+                            )}
+                            {order.deliveryAddress && (
+                                <div
+                                    style={{
+                                        fontSize: '10px',
+                                        opacity: 0.8,
+                                        wordWrap: 'break-word',
+                                        marginTop: '2px'
+                                    }}
+                                >
+                                    {order.deliveryAddress}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
 
                 {order.status && (
                     <div className="thermal-info-row">
@@ -233,13 +284,16 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     <div className="thermal-price">Price</div>
                 </div>
 
-                {items.map((item: any, idx: number) => (
-                    <div key={idx} className="thermal-table-row">
-                        <div className="thermal-item-name">{item.name}</div>
-                        <div className="thermal-qty">{item.quantity}</div>
-                        <div className="thermal-price">PKR {(item.price * item.quantity).toFixed(2)}</div>
-                    </div>
-                ))}
+                {rawItems.map((rawItem: any, idx: number) => {
+                    const item = getItemData(rawItem);
+                    return (
+                        <div key={idx} className="thermal-table-row">
+                            <div className="thermal-item-name">{item.name}</div>
+                            <div className="thermal-qty">{item.quantity}</div>
+                            <div className="thermal-price">PKR {(item.price * item.quantity).toFixed(2)}</div>
+                        </div>
+                    );
+                })}
 
                 <div className="thermal-divider"></div>
 

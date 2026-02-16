@@ -167,10 +167,20 @@ export function Layout({ children }: LayoutProps) {
               {isNotificationOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setIsNotificationOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-border z-50 max-h-96 overflow-y-auto">
-                    <div className="p-4 border-b border-border">
-                      <h3 className="font-semibold text-slate-800 dark:text-white">Notifications</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{unreadCount} unread messages</p>
+                  <div className="fixed md:absolute right-4 md:right-0 inset-x-4 md:inset-auto mt-2 md:w-96 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-border z-50 max-h-[80vh] md:max-h-96 overflow-y-auto">
+                    <div className="p-4 border-b border-border sticky top-0 bg-white dark:bg-slate-800 z-10">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-bold text-slate-800 dark:text-white">Notifications</h3>
+                          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">{unreadCount} unread messages</p>
+                        </div>
+                        <button
+                          onClick={() => setIsNotificationOpen(false)}
+                          className="md:hidden p-2 -mr-2 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
                     </div>
                     <div className="divide-y divide-border">
                       {notifications.map((notif) => (
@@ -325,7 +335,13 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   key={item.name}
                   href={href}
-                  onClick={closeMobileMenu}
+                  onClick={() => {
+                    closeMobileMenu();
+                    // If clicking Kitchen Display while already on that page, dispatch reset event
+                    if (isActive && href === '/kitchen-display') {
+                      window.dispatchEvent(new Event('resetKitchenDisplay'));
+                    }
+                  }}
                   className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors ${isActive
                     ? `bg-primary/10 text-primary ${isCollapsed ? 'lg:border-l-0' : 'lg:border-l-4'} border-l-4 border-primary`
                     : `text-textSecondary hover:bg-surface/10`
@@ -379,15 +395,17 @@ export function Layout({ children }: LayoutProps) {
         {selectedOrder && (
           <div className="space-y-6">
             {/* Order Header */}
-            <div className="grid grid-cols-2 gap-4 pb-4 border-b border-border">
-              <div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Order ID</p>
-                <p className="text-lg font-bold text-primary">{selectedOrder.orderId}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-border">
+              <div className="bg-primary/5 p-3 rounded-lg border border-primary/10">
+                <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400 mb-1">Order ID</p>
+                <p className="text-xl font-black text-primary">{selectedOrder.orderId}</p>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Order Date & Time</p>
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{selectedOrder.orderDate}</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">{selectedOrder.orderTime}</p>
+              <div className="sm:text-right bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-border/50">
+                <p className="text-[10px] uppercase font-black tracking-widest text-slate-500 dark:text-slate-400 mb-1">Date & Time</p>
+                <div className="flex flex-col sm:items-end">
+                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{selectedOrder.orderDate}</p>
+                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{selectedOrder.orderTime}</p>
+                </div>
               </div>
             </div>
 
@@ -427,43 +445,44 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Order Items */}
             <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
+              <h3 className="text-sm font-black uppercase tracking-widest text-slate-800 dark:text-white flex items-center gap-2">
                 <Package className="w-4 h-4 text-primary" />
                 Order Items
               </h3>
 
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
-                <div className="space-y-3">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-border overflow-hidden">
+                <div className="divide-y divide-border/50">
                   {selectedOrder.items?.map((item: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between py-2 border-b border-slate-200 dark:border-slate-700 last:border-0">
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-slate-800 dark:text-white">{item.name}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">Qty: {item.quantity}</p>
+                    <div key={index} className="flex items-center justify-between p-4 hover:bg-slate-100/50 dark:hover:bg-slate-700/30 transition-colors">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">{item.name}</p>
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">Quantity: {item.quantity}</p>
                       </div>
-                      <p className="text-sm font-semibold text-slate-800 dark:text-white">PKR {item.price.toFixed(2)}</p>
+                      <div className="text-right">
+                        <p className="text-sm font-black text-slate-800 dark:text-white whitespace-nowrap">PKR {item.price.toLocaleString()}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-4 pt-4 border-t-2 border-slate-300 dark:border-slate-600">
+                <div className="bg-slate-100/80 dark:bg-slate-700/50 p-4 border-t-2 border-slate-300 dark:border-slate-600">
                   <div className="flex items-center justify-between">
-                    <p className="text-base font-bold text-slate-800 dark:text-white">Total Amount</p>
-                    <p className="text-lg font-bold text-primary">PKR {selectedOrder.totalAmount.toFixed(2)}</p>
+                    <p className="text-sm font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Total Amount</p>
+                    <p className="text-lg font-black text-primary">PKR {selectedOrder.totalAmount.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
               <button
                 onClick={() => setIsOrderModalOpen(false)}
-                className="flex-1 px-4 py-2.5 rounded-lg font-medium transition-colors bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200"
+                className="flex-1 order-2 sm:order-1 px-4 py-3 rounded-xl font-bold transition-all bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200"
               >
                 Close
               </button>
               <button
-                className="flex-1 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
+                className="flex-1 order-1 sm:order-2 px-4 py-3 bg-primary hover:bg-orange-600 text-white rounded-xl font-black transition-all shadow-md active:scale-95"
               >
                 View Full Order
               </button>

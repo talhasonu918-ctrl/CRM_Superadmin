@@ -321,7 +321,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
           <div className="text-right">
             <span className="text-[9px] font-bold uppercase text-textSecondary block mb-0.5">Total</span>
             <div className="text-lg font-black text-primary">
-              ₹{order.grandTotal.toFixed(2)}
+              PKR {order.grandTotal.toFixed(2)}
             </div>
           </div>
         </div>

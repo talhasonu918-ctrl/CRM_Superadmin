@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Printer, CheckCircle, User, ShoppingBag, Star, Search } from 'lucide-react';
 import { getThemeColors } from '../../../theme/colors';
 import { useBranding } from '../../../contexts/BrandingContext';
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 interface OrderItem {
   id: string;
@@ -32,10 +33,22 @@ export interface KitchenOrder {
   customerPhone?: string;
   customerAddress?: string;
   timestamp?: number;
+  subCategories?: string[]; // Added for filtering
+}
+
+interface KDSProfile {
+  id: string;
+  name: string;
+  subCategories: string[];
+  orderTypes: string[];
+  users: string[];
+  createdAt: number;
 }
 
 interface KitchenDisplayViewProps {
   isDarkMode?: boolean;
+  activeProfile?: KDSProfile | null;
+  onBackToTable?: () => void;
 }
 
 // Mock data matching the image design - Initial orders
@@ -49,6 +62,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '00:05',
     status: 'preparing',
     timestamp: Date.now() - 5 * 1000,
+    subCategories: ['BROAST', 'Fries & Nuggets-FRIES'],
     items: [
       { id: '1', name: 'Grilled Chicken', quantity: 2, completed: false, addedAt: Date.now() - 5 * 1000 },
       { id: '2', name: 'Caesar Salad', quantity: 1, completed: true, addedAt: Date.now() - 5 * 1000 },
@@ -72,6 +86,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '01:00',
     status: 'preparing',
     timestamp: Date.now() - 60 * 1000,
+    subCategories: ['BURGER', 'Fries & Nuggets-WINGS'],
     items: [
       { id: '1', name: 'Beef Burger', quantity: 2, completed: true, addedAt: Date.now() - 60 * 1000 },
       { id: '2', name: 'Chicken Wings', quantity: 1, completed: false, addedAt: Date.now() - 30 * 1000 },
@@ -86,6 +101,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '02:00',
     status: 'ready',
     timestamp: Date.now() - 120 * 1000,
+    subCategories: ['PIZZA-TRADITIONAL'],
     items: [
       { id: '1', name: 'Margherita Pizza', quantity: 1, completed: true, addedAt: Date.now() - 120 * 1000 },
     ],
@@ -101,6 +117,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '00:12',
     status: 'ready',
     timestamp: Date.now() - 12 * 60 * 1000,
+    subCategories: ['BURGER', 'Fries & Nuggets-WINGS', 'DRINKS-BEVERAGES'],
     items: [
       { id: '1', name: 'Zinger Burger', quantity: 2, completed: true, addedAt: Date.now() - 12 * 60 * 1000 },
       { id: '2', name: 'Chicken Nuggets', quantity: 1, completed: true, addedAt: Date.now() - 10 * 60 * 1000 },
@@ -125,6 +142,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '00:03',
     status: 'preparing',
     timestamp: Date.now() - 3 * 60 * 1000,
+    subCategories: ['PIZZA-SPECIAL', 'DEALS', 'DRINKS-BEVERAGES'],
     items: [
       { id: '1', name: 'BBQ Pizza Large', quantity: 1, completed: false, addedAt: Date.now() - 3 * 60 * 1000 },
       { id: '2', name: 'Garlic Bread', quantity: 2, completed: false, addedAt: Date.now() - 2 * 60 * 1000 },
@@ -149,6 +167,7 @@ const initialMockOrders: KitchenOrder[] = [
     elapsedTime: '00:01',
     status: 'preparing',
     timestamp: Date.now() - 1 * 60 * 1000,
+    subCategories: ['Fries & Nuggets-WINGS', 'Fries & Nuggets-FRIES'],
     items: [
       { id: '1', name: 'Chicken Wings', quantity: 2, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
       { id: '2', name: 'Potato Wedges', quantity: 1, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
@@ -376,9 +395,10 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
   );
 };
 
-export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMode = false }) => {
+export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMode = false, activeProfile: propActiveProfile, onBackToTable }) => {
   const { config } = useBranding();
   const theme = getThemeColors(isDarkMode);
+  const [activeKDSProfile, setActiveKDSProfile] = useState<KDSProfile | null>(propActiveProfile || null);
   const [orders, setOrders] = useState<KitchenOrder[]>(() => {
     if (typeof window !== 'undefined') {
       const savedOrders = localStorage.getItem('kitchenOrders');
@@ -391,6 +411,11 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [printOrder, setPrintOrder] = useState<KitchenOrder | null>(null);
   const [shouldPrint, setShouldPrint] = useState(false);
+
+  // Update active profile when prop changes
+  useEffect(() => {
+    setActiveKDSProfile(propActiveProfile || null);
+  }, [propActiveProfile]);
 
   const branches = [
     { id: 1, name: 'Main Branch', location: 'M.A Jinnah road Okara', phone: '+92 300 1234567' },
@@ -457,6 +482,25 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
 
   const filteredOrders = useMemo(() => {
     return orders.filter(order => {
+      // KDS Profile filtering
+      if (activeKDSProfile) {
+        // Filter by order types defined in KDS profile
+        if (activeKDSProfile.orderTypes.length > 0 && !activeKDSProfile.orderTypes.includes(order.orderType)) {
+          return false;
+        }
+
+        // Filter by subcategories - check if order has any items from allowed subcategories
+        if (activeKDSProfile.subCategories.length > 0 && order.subCategories) {
+          const hasMatchingSubCategory = order.subCategories.some(subCat =>
+            activeKDSProfile.subCategories.includes(subCat)
+          );
+          if (!hasMatchingSubCategory) {
+            return false;
+          }
+        }
+      }
+
+      // Regular filters
       const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
       const matchesType = filterType === 'all' || order.orderType === filterType;
       const matchesSearch = searchQuery === '' ||
@@ -465,7 +509,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
         (order.customerName && order.customerName.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesStatus && matchesType && matchesSearch;
     });
-  }, [orders, filterStatus, filterType, searchQuery]);
+  }, [orders, filterStatus, filterType, searchQuery, activeKDSProfile]);
 
   const statusCounts = useMemo(() => ({
     all: orders.length,
@@ -604,51 +648,93 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
       <div className={`min-h-[calc(100vh-8rem)] flex flex-col ${isDarkMode ? 'bg-[#0F1115]' : 'bg-gradient-to-br from-gray-50 to-gray-100'} no-print`}>
         <div className={`px-4 sm:px-6 pt-6 pb-4 border-b ${theme.border.main} ${isDarkMode ? 'bg-gray-900/50' : 'bg-white/50'} backdrop-blur-sm sticky top-0 z-20`}>
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-4">
-            <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className={`text-2xl sm:text-3xl font-bold ${theme.text.primary}`}>Kitchen Display System</h1>
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('kitchenOrders');
-                    localStorage.removeItem('dispatchOrders');
-                    window.location.reload();
-                  }}
-                  className="text-[10px] font-bold px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors uppercase tracking-wider"
-                >
-                  Reset System Data
-                </button>
+            <div className="flex-1 space-y-2">
+              <div className="flex flex-wrap items-center gap-4">
+                {activeKDSProfile && (
+                  <button
+                    onClick={() => {
+                      if (onBackToTable) {
+                        onBackToTable();
+                      } else {
+                        localStorage.removeItem('activeKDSProfile');
+                        window.location.reload();
+                      }
+                    }}
+                    className={`px-4 py-1.5 rounded-full transition-all border ${isDarkMode
+                      ? 'bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700'
+                      : 'bg-gray-100 border-gray-200 hover:bg-gray-200 text-gray-700'
+                      } text-xs font-bold flex items-center gap-2 shadow-sm`}
+                  >
+                    <span><FaArrowLeftLong/></span> Back to KDS List
+                  </button>
+                )}
+                <div className="flex items-center gap-3">
+                  <h1 className={`text-2xl sm:text-3xl font-black tracking-tight ${theme.text.primary}`}>
+                    Kitchen Display System {activeKDSProfile && <span className="opacity-40 font-medium">| {activeKDSProfile.name}</span>}
+                  </h1>
+                  <button
+                    onClick={() => {
+                      localStorage.removeItem('kitchenOrders');
+                      localStorage.removeItem('dispatchOrders');
+                      window.location.reload();
+                    }}
+                    className="text-[9px] font-black px-2 py-1 rounded-md bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors uppercase tracking-widest border border-red-500/20"
+                  >
+                    Reset System Data
+                  </button>
+                </div>
               </div>
-              <p className={`text-sm ${theme.text.tertiary}`}>Live order tracking • {filteredOrders.length} active orders</p>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                <p className={`text-xs sm:text-sm font-medium ${theme.text.tertiary}`}>
+                  Live order tracking • {filteredOrders.length} active orders
+                </p>
+                {activeKDSProfile && activeKDSProfile.subCategories.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className={`text-[10px] uppercase font-black tracking-widest ${theme.text.muted}`}>Filtering:</span>
+                    {activeKDSProfile.subCategories.map((sub, idx) => (
+                      <span
+                        key={idx}
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tight border shadow-sm ${isDarkMode
+                          ? 'bg-purple-500/10 border-purple-500/20 text-purple-400'
+                          : 'bg-purple-50 border-purple-100 text-purple-600'
+                          }`}
+                      >
+                        {sub}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="flex-1 max-w-md">
-              <div className="relative">
-                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary}`} size={18} />
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+              <div className="relative flex-1 lg:w-80">
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${theme.text.tertiary}`} size={16} />
                 <input
                   type="text"
                   placeholder="Search invoice and order..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl border ${theme.border.main} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm`}
+                  className={`w-full pl-10 pr-4 py-2 rounded-xl border ${theme.border.main} ${theme.input.background} ${theme.input.text} ${theme.input.placeholder} focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm transition-all`}
                 />
               </div>
-            </div>
-            <div className="flex flex-wrap gap-2 sm:gap-3">
-              <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
-                  <div>
-                    <div className={`text-xs ${theme.text.tertiary}`}>Preparing</div>
-                    <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.preparing}</div>
+
+              <div className="flex gap-2">
+                <div className={`flex flex-col items-center min-w-[70px] px-3 py-1.5 rounded-xl ${theme.neutral.card} border ${theme.border.secondary} shadow-sm group hover:border-purple-500/30 transition-all`}>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary}`}>Preparing</span>
                   </div>
+                  <span className={`text-xl font-black ${theme.text.primary}`}>{statusCounts.preparing}</span>
                 </div>
-              </div>
-              <div className={`px-3 sm:px-4 py-2 rounded-xl ${theme.neutral.card} shadow-sm border ${theme.border.secondary}`}>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <div>
-                    <div className={`text-xs ${theme.text.tertiary}`}>Ready</div>
-                    <div className={`text-lg font-bold ${theme.text.primary}`}>{statusCounts.ready}</div>
+
+                <div className={`flex flex-col items-center min-w-[70px] px-3 py-1.5 rounded-xl ${theme.neutral.card} border ${theme.border.secondary} shadow-sm group hover:border-green-500/30 transition-all`}>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                    <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary}`}>Ready</span>
                   </div>
+                  <span className={`text-xl font-black ${theme.text.primary}`}>{statusCounts.ready}</span>
                 </div>
               </div>
             </div>
@@ -688,7 +774,6 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
             </div>
           </div>
         </div>
-
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           {filteredOrders.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
