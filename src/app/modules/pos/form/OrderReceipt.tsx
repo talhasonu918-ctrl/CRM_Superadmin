@@ -2,28 +2,28 @@ import React from 'react';
 import { useBranding } from '../../../../contexts/BrandingContext';
 
 interface Order {
-  id: string;
-  orderNumber: string;
-  customerName?: string;
-  tableId?: string;
-  waiterName?: string;
-  customerPhone?: string;
-  riderName?: string;
-  riderPhone?: string;
-  deliveryAddress?: string;
-  status: string;
-  type: string;
-  items?: { name: string; price: number; quantity: number }[];
-  subtotal: number;
-  tax: number;
-  discount: number;
-  grandTotal: number;
-  createdAt: string;
-  completedAt: string;
-  refundedAt?: string;
-  cancellationReason?: string;
-  refundReason?: string;
-  paymentMethod?: string;
+    id: string;
+    orderNumber: string;
+    customerName?: string;
+    tableId?: string;
+    waiterName?: string;
+    customerPhone?: string;
+    riderName?: string;
+    riderPhone?: string;
+    deliveryAddress?: string;
+    status: string;
+    type: string;
+    items?: { name: string; price: number; quantity: number }[];
+    subtotal: number;
+    tax: number;
+    discount: number;
+    grandTotal: number;
+    createdAt: string;
+    completedAt: string;
+    refundedAt?: string;
+    cancellationReason?: string;
+    refundReason?: string;
+    paymentMethod?: string;
 }
 
 interface OrderReceiptProps {
@@ -48,7 +48,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
     const dateTime = order.createdAt.split(' ');
     const date = dateTime[0] || new Date().toISOString().split('T')[0];
     const time = dateTime[1] || new Date().toTimeString().slice(0, 5);
-    
+
     // Use order properties directly
     const items = order.items || [];
     const subTotal = order.subtotal || 0;
@@ -209,6 +209,16 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                 <div className="thermal-info-row">
                     <div className="thermal-info-label">CUSTOMER</div>
                     <div className="thermal-info-value">{order.customerName || 'Walk-in'}</div>
+                </div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">{order.type === 'Delivery' ? 'RIDER' : 'WAITER'}</div>
+                    <div className="thermal-info-value">{order.riderName || order.waiterName || 'Counter'}</div>
+                </div>
+
+                <div className="thermal-info-row" style={{ marginTop: '2px', paddingTop: '2px', borderTop: '0.5px dotted #ccc' }}>
+                    <div className="thermal-info-label">CASHIER</div>
+                    <div className="thermal-info-value">{['KALEN H', 'ALI AHMED', 'ASIF ALI'][Math.floor(Math.random() * 3)]}</div>
                 </div>
 
                 {order.status && (

@@ -216,11 +216,12 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                         {/* SCREEN VERSION - Modern UI */}
                         <div className="screen-only">
                             {/* Company Info */}
-                            <div className="text-center mb-6 pt-4">
+                            <div className="text-center mb-4">
                                 <h1 className="text-4xl font-black text-primary tracking-tighter mb-1">{config.name || 'Invex Food'}</h1>
                                 <p className="text-xl font-bold text-textPrimary tracking-tight">{branchInfo.name}</p>
                                 <p className="text-[11px] text-textSecondary font-bold tracking-widest">{branches.find(b => b.name === branchInfo.name)?.location}</p>
-                                <div className="w-full border-t border-dotted border-border my-3" />
+                                <p className="text-[11px] font-bold text-textPrimary mt-1">PH : {branchInfo.phone}</p>
+                                <div className="w-full border-t border-dotted border-border my-2" />
                                 <p className="text-[11px] font-bold text-textPrimary">{date} {time}</p>
                             </div>
 
@@ -253,6 +254,10 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                             <div className="text-[10px] opacity-70">{orderType === 'Delivery' ? selectedRider?.sublabel : selectedWaiter?.sublabel}</div>
                                         )}
                                     </div>
+                                </div>
+                                <div className="flex justify-between pt-1 border-t border-dotted border-border/30">
+                                    <span className="opacity-60">CASHIER</span>
+                                    <span>{['Kalen H', 'Ali Ahmed', 'Asif Ali'][Math.floor(Math.random() * 3)]}</span>
                                 </div>
                             </div>
 
@@ -333,10 +338,9 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                 <span className="text-lg font-black text-textPrimary">PKR {totals.total.toFixed(2)}</span>
                             </div>
 
-                            <div className="text-center space-y-1">
-                                <p className="text-[11px] font-bold text-textPrimary opacity-70">PH : {branchInfo.phone}</p>
+                            <div className="text-center">
                                 <p className="text-sm font-black text-textPrimary tracking-widest uppercase mt-2">Thank You !</p>
-                                <div className="w-16 h-0.5 bg-primary/20 mx-auto mt-4" />
+                                <div className="w-16 h-0.5 bg-primary/20 mx-auto mt-2" />
                             </div>
                         </div>
 
@@ -404,6 +408,11 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                     <div className="thermal-info-value" style={{ fontSize: '10px' }}>{orderType === 'Delivery' ? selectedRider?.sublabel : selectedWaiter?.sublabel}</div>
                                 </div>
                             )}
+
+                            <div className="thermal-info-row" style={{ marginTop: '2px', paddingTop: '2px', borderTop: '0.5px dotted #ccc' }}>
+                                <div className="thermal-info-label">CASHIER</div>
+                                <div className="thermal-info-value">{['KALEN H', 'ALI AHMED', 'ASIF ALI'][Math.floor(Math.random() * 3)]}</div>
+                            </div>
 
                             <div className="thermal-divider"></div>
 
