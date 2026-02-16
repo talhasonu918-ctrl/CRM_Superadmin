@@ -53,14 +53,22 @@ export const applyBrandingAssets = (branding: TenantBranding) => {
     if (typeof document === 'undefined') return;
 
     // 1. Update Favicon
+    let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
     if (branding.images?.favicon) {
-        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
         if (!link) {
             link = document.createElement('link');
             link.rel = 'icon';
             document.head.appendChild(link);
         }
         link.href = branding.images.favicon;
+    } else {
+        // Force clear favicon by setting it to a transparent pixel
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'icon';
+            document.head.appendChild(link);
+        }
+        link.href = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
 
     // 2. Apply Fonts (Google Fonts)
@@ -94,7 +102,7 @@ export const BrandingProvider: React.FC<{
 }) => {
         const [config, setConfig] = useState<TenantBranding>(() => {
             if (typeof window !== 'undefined') {
-                const saved = localStorage.getItem('tenant_branding');
+                const saved = localStorage.getItem('tenant_branding_v2');
                 if (saved) {
                     try {
                         return JSON.parse(saved);
@@ -137,7 +145,7 @@ export const BrandingProvider: React.FC<{
 
         const saveConfig = useCallback(() => {
             if (typeof window !== 'undefined') {
-                localStorage.setItem('tenant_branding', JSON.stringify(config));
+                localStorage.setItem('tenant_branding_v2', JSON.stringify(config));
             }
         }, [config]);
 

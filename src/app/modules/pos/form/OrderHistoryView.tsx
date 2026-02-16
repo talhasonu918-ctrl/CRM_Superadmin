@@ -8,7 +8,7 @@ import Tabs, { TabItem } from '../../../../components/Tabs';
 import { OrderActionsDropdown } from '../../../../components/dropdown';
 import { mockHistoryOrders } from '../mockData';
 import { Clock, Grid, User, Phone, MapPin, ShoppingBag, Calendar, TrendingUp, ChevronDown, ChevronUp, Info, ArrowUp, ArrowDown, ShoppingCart, RotateCcw, CalendarDays } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { notify } from '../../../../utils/toast';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import { OrderReceipt } from './OrderReceipt';
 import { Order as POSOrder } from '../types';
@@ -168,7 +168,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
       setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'completed' }) : null);
     }
 
-    toast.success('Order marked as completed');
+    notify.success('Order marked as completed');
   };
 
   const handleCancelOrder = (orderId: string) => {
@@ -181,7 +181,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
       if (selectedOrderForDetails?.id === orderId) {
         setSelectedOrderForDetails(prev => prev ? ({ ...prev, status: 'cancelled' }) : null);
       }
-      toast.error('Order cancelled');
+      notify.error('Order cancelled');
     }
   };
 
@@ -231,7 +231,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
   // Convert HistoryOrder to POSOrder for OrderDetailsModal
   const convertToPOSOrder = (historyOrder: HistoryOrder | null): POSOrder | null => {
     if (!historyOrder) return null;
-    
+
     return {
       id: historyOrder.id,
       orderNumber: historyOrder.orderNumber,
@@ -251,8 +251,8 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
       discount: historyOrder.discount,
       tax: historyOrder.tax,
       grandTotal: historyOrder.grandTotal,
-      paymentMode: (historyOrder.paymentMethod?.toLowerCase() === 'cash' ? 'cash' : 
-                    historyOrder.paymentMethod?.toLowerCase() === 'card' ? 'card' : 'online') as 'cash' | 'card' | 'online',
+      paymentMode: (historyOrder.paymentMethod?.toLowerCase() === 'cash' ? 'cash' :
+        historyOrder.paymentMethod?.toLowerCase() === 'card' ? 'card' : 'online') as 'cash' | 'card' | 'online',
       cashBack: 0,
       tableId: historyOrder.tableId,
       customerName: historyOrder.customerName,
@@ -584,7 +584,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
                   <>
                     <div className="flex items-center gap-1.5">
                       <User size={12} className="text-primary" />
-                      <span className="truncate">{order.customerName }</span>
+                      <span className="truncate">{order.customerName}</span>
                     </div>
                     {order.customerPhone && (
                       <div className="text-[10px] text-textSecondary truncate">{order.customerPhone}</div>

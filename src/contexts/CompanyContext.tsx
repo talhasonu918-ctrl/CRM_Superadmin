@@ -43,31 +43,21 @@ export const CompanyProvider: React.FC<CompanyProviderProps> = ({ children }) =>
         let activeId = urlCompanyId || queryCompany;
 
         if (!activeId && typeof window !== 'undefined') {
-            activeId = localStorage.getItem('lastCompany');
+            activeId = localStorage.getItem('lastCompany') || tenantConfig.id;
         }
 
-        // Always use tenantConfig ID to ensure absolute centralization
-        setCompanyId(tenantConfig.id);
-        setCompanyDetails(tenantConfig);
+        // Set the active company ID
+        if (activeId) {
+            setCompanyId(activeId);
 
-        if (typeof window !== 'undefined') {
-            localStorage.setItem('lastCompany', tenantConfig.id);
-        }
-
-        // Forced Redirection logic
-        const isInternalId = activeId === tenantConfig.id;
-        const isAuthSegment = urlCompanyId === 'auth';
-        const isDefaultSegment = urlCompanyId === 'default';
-
-        // If the URL contains an ID that isn't the current master config ID, redirect
-        if (urlCompanyId && !isInternalId && !isAuthSegment && !isDefaultSegment) {
-            // Check if it's potentially an old ID like hot-n-yum
-            const newPath = `/${tenantConfig.id}/${pathSegments.slice(1).join('/')}${router.asPath.includes('?') ? '?' + router.asPath.split('?')[1] : ''}`;
-
-            if (router.asPath !== newPath) {
-                router.replace(newPath);
+            // Update localStorage
+            if (typeof window !== 'undefined' && activeId !== 'auth') {
+                localStorage.setItem('lastCompany', activeId);
             }
         }
+
+        // For now, we use static tenantConfig, but in future this could come from API based on activeId
+        setCompanyDetails(tenantConfig);
 
         setIsLoading(false);
     }, [company, router.isReady, router.asPath]);

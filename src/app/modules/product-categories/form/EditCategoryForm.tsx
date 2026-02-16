@@ -3,7 +3,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { Info, Package, Barcode, Settings, Upload, X } from 'lucide-react';
 
 import { ProductFormData } from '../product-types';
-import { showToast } from '../utils/toastUtils';
+import notify from '../../../../utils/toast';
 import { Category } from '../types';
 import { getThemeColors } from '../../../../theme/colors';
 
@@ -124,7 +124,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
     // Submit to parent component
     console.log('Valid form data:', updatedProduct);
     onSubmit(updatedProduct);
-    showToast('Category updated successfully!', '✅');
+    notify.success('Category updated successfully!', { icon: '✅' });
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, fieldName: keyof ProductFormData) => {
@@ -146,7 +146,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
           ...prev,
           [fieldName]: base64String
         }));
-        showToast('Image uploaded successfully!', '🖼️');
+        notify.success('Image uploaded successfully!', { icon: '🖼️' });
       };
       reader.readAsDataURL(file);
     }
@@ -459,7 +459,7 @@ export const EditCategoryForm: React.FC<EditCategoryFormProps> = ({
                 <CheckboxField name="isAutoReady" label="Auto Ready" />
               </div>
             </div>
-          <div className={`p-4 rounded-lg border-2 ${isDarkMode ? 'bg-orange-900/10 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
+            <div className={`p-4 rounded-lg border-2 ${isDarkMode ? 'bg-orange-900/10 border-orange-800' : 'bg-orange-50 border-orange-200'}`}>
               <p className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
                 <strong>Note:</strong> Variant pricing, branch pricing, variants, and add-ons cannot be edited here.
                 Please use the dedicated product management section for advanced configurations.

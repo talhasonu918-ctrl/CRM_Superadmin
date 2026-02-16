@@ -6,7 +6,7 @@ import { Button } from 'rizzui';
 import { Plus, Trash2, Upload, X } from 'lucide-react';
 import { TenantBranding } from '../../../../../theme/types';
 import Select from 'react-select';
-import toast from 'react-hot-toast';
+import notify from '../../../../../utils/toast';
 import { getThemeColors } from '../../../../../theme/colors';
 import { useTheme } from '../../../../../contexts/ThemeContext';
 
@@ -98,7 +98,7 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
-                toast.error('Image must be smaller than 2MB');
+                notify.error('Image must be smaller than 2MB');
                 return;
             }
             setIsUploading(true);
@@ -106,7 +106,7 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
             reader.onloadend = () => {
                 setValue(name, reader.result as string);
                 setIsUploading(false);
-                toast.success('Image uploaded successfully');
+                notify.success('Image uploaded successfully');
             };
             reader.readAsDataURL(file);
         }
@@ -123,7 +123,7 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
             <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-2 md:mb-3`}>{label}</label>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
                 {/* Preview */}
-                <div className={`w-full md:w-48 lg:w-64 ${sizeClasses[previewSize as keyof typeof sizeClasses]} border-2 border-dashed ${theme.border.main} rounded-lg flex items-center justify-center ${theme.neutral.backgroundSecondary} overflow-hidden`}>
+                <label className={`w-full md:w-48 lg:w-64 ${sizeClasses[previewSize as keyof typeof sizeClasses]} border-2 border-dashed ${theme.border.main} rounded-lg flex items-center justify-center ${theme.neutral.backgroundSecondary} overflow-hidden cursor-pointer hover:opacity-80 transition-opacity relative`}>
                     {url ? (
                         <img src={url} alt={label} className="max-w-full max-h-full object-contain p-2" />
                     ) : (
@@ -132,7 +132,14 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
                             <span className="text-xs">No image</span>
                         </div>
                     )}
-                </div>
+                    <input
+                        type="file"
+                        className="hidden"
+                        accept="image/*"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                    />
+                </label>
 
                 {/* URL Input & Upload Button */}
                 <div className="flex-1 space-y-2 md:space-y-3">
@@ -340,8 +347,8 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                 <div className="xl:col-span-2 space-y-4 md:space-y-6">
                     <SectionBox title="General Info">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                            <InputField label="Tenant Name" name="name" placeholder="Domino's Pizza" />
-                            <InputField label="Slug" name="slug" disabled placeholder="dominos" />
+                            <InputField label="Tenant Name" name="name" placeholder="Enter Tenant Name" />
+                            <InputField label="Slug" name="slug" disabled placeholder="tenant-slug" />
                         </div>
                     </SectionBox>
 
@@ -367,7 +374,9 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                     <SectionBox title="Logo & Images">
                         <ImageUploadField label="Logo" name="images.logo" previewSize="medium" />
                         <ImageUploadField label="Logo (White)" name="images.logoWhite" previewSize="medium" />
-                        <ImageUploadField label="Favicon" name="images.favicon" previewSize="small" />
+                        <ImageUploadField label="Favicon" name="images.favicon" previewSize="medium" />
+                        <ImageUploadField label="OG Image (Social Share)" name="images.ogImage" previewSize="medium" />
+                        <ImageUploadField label="Order History Image" name="images.orderHistoryImage" previewSize="medium" />
                         <ImageUploadField label="Hero Image" name="images.hero" previewSize="large" />
                         <ImageUploadField label="Login Banner" name="images.loginBanner" previewSize="large" />
                         <ImageUploadField label="App Screen 1" name="images.appScreen1" previewSize="medium" />
@@ -380,7 +389,7 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                                 <div key={field.id} className={`border ${theme.border.main} rounded-lg p-3 md:p-4 ${theme.neutral.backgroundSecondary}`}>
                                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                                         <div className="flex-shrink-0">
-                                            <div className={`w-full sm:w-32 h-32 sm:h-20 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden`}>
+                                            <label className={`w-full sm:w-32 h-32 sm:h-20 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity`}>
                                                 {watch(`images.banners.${index}.image`) ? (
                                                     <img
                                                         src={watch(`images.banners.${index}.image`)}
@@ -390,7 +399,22 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                                                 ) : (
                                                     <span className={`text-[10px] md:text-xs ${theme.text.muted} text-center px-1`}>No image</span>
                                                 )}
-                                            </div>
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                setValue(`images.banners.${index}.image`, reader.result as string);
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
                                         </div>
                                         <div className="flex-1 space-y-3">
                                             <Controller
@@ -453,7 +477,7 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                                 <div key={field.id} className={`border ${theme.border.main} rounded-lg p-3 md:p-4 ${theme.neutral.backgroundSecondary}`}>
                                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
                                         <div className="flex-shrink-0">
-                                            <div className={`w-full sm:w-32 h-32 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden`}>
+                                            <label className={`w-full sm:w-32 h-32 border-2 ${theme.border.main} rounded ${theme.neutral.card} flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-80 transition-opacity`}>
                                                 {watch(`images.homeImages.${index}.image`) ? (
                                                     <img
                                                         src={watch(`images.homeImages.${index}.image`)}
@@ -463,7 +487,22 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                                                 ) : (
                                                     <span className={`text-[10px] md:text-xs ${theme.text.muted} text-center px-1`}>No image</span>
                                                 )}
-                                            </div>
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (file) {
+                                                            const reader = new FileReader();
+                                                            reader.onloadend = () => {
+                                                                setValue(`images.homeImages.${index}.image`, reader.result as string);
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
                                         </div>
                                         <div className="flex-1 space-y-3">
                                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -532,17 +571,17 @@ export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode
                 {/* Right Column - Sidebar (1/3) */}
                 <div className="xl:col-span-1 space-y-4 md:space-y-6">
                     <SectionBox title="Social Media Links">
-                        <InputField label="Facebook URL" name="socialMedia.facebook" placeholder="https://facebook.com/dominos" />
-                        <InputField label="Instagram URL" name="socialMedia.instagram" placeholder="https://instagram.com/dominos" />
-                        <InputField label="Twitter URL" name="socialMedia.twitter" placeholder="https://twitter.com/dominos" />
-                        <InputField label="YouTube URL" name="socialMedia.youtube" placeholder="https://youtube.com/dominos" />
+                        <InputField label="Facebook URL" name="socialMedia.facebook" placeholder="https://facebook.com/your-page" />
+                        <InputField label="Instagram URL" name="socialMedia.instagram" placeholder="https://instagram.com/your-page" />
+                        <InputField label="Twitter URL" name="socialMedia.twitter" placeholder="https://twitter.com/your-page" />
+                        <InputField label="YouTube URL" name="socialMedia.youtube" placeholder="https://youtube.com/your-channel" />
                     </SectionBox>
 
                     <SectionBox title="Contact Info">
-                        <InputField label="Phone Number" name="contact.phone" placeholder="+92-300-1111-111" />
-                        <InputField label="Email" name="contact.email" placeholder="info@dominos.pk" />
-                        <InputField label="Support Email" name="contact.supportEmail" placeholder="support@dominos.pk" />
-                        <InputField label="Address" name="contact.address" placeholder="Headquarters Address" />
+                        <InputField label="Phone Number" name="contact.phone" placeholder="+92-300-0000-000" />
+                        <InputField label="Email" name="contact.email" placeholder="info@example.com" />
+                        <InputField label="Support Email" name="contact.supportEmail" placeholder="support@example.com" />
+                        <InputField label="Address" name="contact.address" placeholder="Enter Business Address" />
                     </SectionBox>
 
                     <SectionBox title="Business Settings">

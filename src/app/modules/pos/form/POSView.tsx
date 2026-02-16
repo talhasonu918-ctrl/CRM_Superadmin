@@ -10,7 +10,7 @@ import { SearchInput } from '../../../../components/SearchInput';
 import { tableStateManager } from '../../../../utils/tableStateManager';
 import { AddCustomerModal } from './AddCustomerModal';
 import { sendToKitchen } from '../../../../utils/kitchenDisplay';
-import toast, { Toaster } from 'react-hot-toast';
+import { notify } from '../../../../utils/toast';
 import { InvoiceView } from './InvoiceView';
 
 interface POSViewProps {
@@ -345,7 +345,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
 
   const handleSendToKitchen = () => {
     if (cart.length === 0) {
-      toast.error('Please add items to cart before sending to kitchen', {
+      notify.error('Please add items to cart before sending to kitchen', {
         duration: 3000,
         position: 'top-right',
       });
@@ -395,7 +395,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
     playBeep();
 
     // Show success toast
-    toast.success(`Order ${orderNumber} sent to Kitchen Display!`, {
+    notify.success(`Order ${orderNumber} sent to Kitchen Display!`, {
       duration: 3000,
       position: 'top-right',
     });
@@ -416,7 +416,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
 
   const handleSaveOrder = () => {
     if (cart.length === 0) {
-      toast.error('Cart is empty', { position: 'top-right' });
+      notify.error('Cart is empty', { position: 'top-right' });
       return;
     }
 
@@ -426,7 +426,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
     }
 
     playBeep();
-    toast.success('Order saved successfully!', { position: 'top-right' });
+    notify.success('Order saved successfully!', { position: 'top-right' });
 
     // Clear state
     setCart([]);
@@ -879,7 +879,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
           )}
         </div>
       </div >
-      <Toaster />
+
     </>
   );
 };
