@@ -329,6 +329,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     <div className="thermal-total-value">PKR {(order.grandTotal || 0).toFixed(2)}</div>
                 </div>
 
+
                 <div className="thermal-footer">
                     <div style={{ marginTop: '8px' }}>Payment Method: {paymentMethod}</div>
                     <div style={{ marginTop: '8px' }}>PH: {branchInfo.phone}</div>

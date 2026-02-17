@@ -21,6 +21,8 @@
     "@types/react-datepicker": "^6.2.0",
     "font-list": "^2.0.2",
     "framer-motion": "^11.15.0",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
     "libphonenumber-js": "^1.12.36",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.563.0",
@@ -38,7 +40,8 @@
     "react-select": "^5.10.2",
     "recharts": "^2.15.0",
     "rizzui": "^2.1.0",
-    "use-sound": "^5.0.0"
+    "use-sound": "^5.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.11",
