@@ -36,7 +36,7 @@ export const OrdersView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =>
       ACCEPTED: 'bg-blue-50 text-blue-500 dark:bg-blue-500/10',
       PREPARING: 'bg-orange-50 text-orange-500 dark:bg-orange-500/10',
       READY: 'bg-emerald-50 text-emerald-500 dark:bg-emerald-500/10',
-      DELIVERY: 'bg-purple-50 text-purple-500 dark:bg-purple-500/10',
+      DELIVERY: 'bg-primary/10 text-primary dark:bg-primary/20',
       DELIVERED: 'bg-emerald-500/10 text-emerald-600',
       CANCELLED: 'bg-rose-50 text-rose-500 dark:bg-rose-500/10',
     };

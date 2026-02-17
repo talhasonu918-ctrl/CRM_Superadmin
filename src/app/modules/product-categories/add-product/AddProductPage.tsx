@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { ArrowLeft, Check } from 'lucide-react';
 import { ProductFormData } from '../product-types';
-import {
-  ProductBasicInfo,
-  ProductAddons,
-  ProductVariants,
-  ProductPricing,
-  ProductSummary
-} from './index';
+import { ProductBasicInfo, ProductAddons, ProductVariants, ProductPricing, ProductSummary } from './index';
 import notify from '../../../../utils/toast';
 import { useCompany } from '@/src/contexts/CompanyContext';
 import { ROUTES } from '@/src/const/constants';

@@ -70,7 +70,7 @@ export const DashboardView: React.FC = () => {
       { label: timeframe === 'today' ? 'Today Orders' : timeframe === 'weekly' ? 'Weekly Orders' : 'Monthly Orders', val: totalOrders.toLocaleString(), icon: ShoppingBag, color: 'text-primary', bg: 'bg-orange-500/5', trend: '+12.5%' },
       { label: 'Total Revenue', val: `$${totalSales.toLocaleString()}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/5', trend: '+8.2%' },
       { label: 'Active Customers', val: '842', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/5', trend: '+2.4%' },
-      { label: 'Order Acceptance', val: '98.5%', icon: CheckCircle2, color: 'text-purple-500', bg: 'bg-purple-500/5', trend: '+0.4%' },
+      { label: 'Order Acceptance', val: '98.5%', icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/5', trend: '+0.4%' },
     ];
   }, [timeframe]);
 

@@ -26,6 +26,7 @@ export interface InfiniteTableProps<T = any> {
   total?: number;
   noDataMessage?: string;
   itemName?: string;
+  renderSubComponent?: (props: { row: Row<T> }) => React.ReactNode;
 }
 
 function InfiniteTable<T = any>({
@@ -42,6 +43,7 @@ function InfiniteTable<T = any>({
   total,
   noDataMessage,
   itemName = 'items',
+  renderSubComponent,
 }: InfiniteTableProps<T>) {
   const { isDarkMode: themeDarkMode } = useTheme();
   const isDarkMode = propDarkMode || themeDarkMode;
@@ -139,7 +141,7 @@ function InfiniteTable<T = any>({
                         style={{
                           width: header.getSize(),
                         }}
-                        className={`!text-start !font-semibold ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
+                        className={`!text-start !font-semibold px-2 sm:px-6 ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -166,29 +168,37 @@ function InfiniteTable<T = any>({
               </Table.Row>
             ) : (
               (rows || table.getRowModel().rows).map((row: any) => (
-                <Table.Row
-                  key={row.id}
-                  className={`transition-colors ${theme.neutral.hoverLight}`}
-                >
-                  {row.getVisibleCells().map((cell: any) => {
-                    // Check column visibility
-                    if (columnVisibility && columnVisibility[cell.column.id] === false) {
-                      return null;
-                    }
-                    return (
-                      <Table.Cell
-                        key={cell.id}
-                        className="!text-start py-4 px-2 sm:px-4"
-                        style={{
-                          width: cell.column.getSize(),
-                          color: isDarkMode ? '#f1f5f9' : '#0f172a',
-                        }}
-                      >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                <React.Fragment key={row.id}>
+                  <Table.Row
+                    className={`transition-colors ${theme.neutral.hoverLight}`}
+                  >
+                    {row.getVisibleCells().map((cell: any) => {
+                      // Check column visibility
+                      if (columnVisibility && columnVisibility[cell.column.id] === false) {
+                        return null;
+                      }
+                      return (
+                        <Table.Cell
+                          key={cell.id}
+                          className="!text-start py-4 px-2 sm:px-6"
+                          style={{
+                            width: cell.column.getSize(),
+                            color: isDarkMode ? '#f1f5f9' : '#0f172a',
+                          }}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </Table.Cell>
+                      );
+                    })}
+                  </Table.Row>
+                  {row.getIsExpanded() && renderSubComponent && (
+                    <Table.Row>
+                      <Table.Cell colSpan={row.getVisibleCells().length} className="p-0 border-0">
+                        {renderSubComponent({ row })}
                       </Table.Cell>
-                    );
-                  })}
-                </Table.Row>
+                    </Table.Row>
+                  )}
+                </React.Fragment>
               ))
             )}
             {/* Loading row inside the body */}
@@ -219,7 +229,7 @@ function InfiniteTable<T = any>({
                 <Table.Row key={footerGroup.id}>
                   {footerGroup.headers.map((footer: any) => {
                     return (
-                      <Table.Cell key={footer.id} className="!py-4">
+                      <Table.Cell key={footer.id} className="!py-4 px-2 sm:px-6">
                         {footer.isPlaceholder ? null : (
                           <>
                             {flexRender(
@@ -241,7 +251,7 @@ function InfiniteTable<T = any>({
       {/* Integrated Pagination Footer */}
       {
         (total !== undefined || hasNextPage || isLoading) && (
-          <div className={`mt-4 pt-4 border-t ${theme.border.main}`}>
+          <div className={`mt-4 pt-4 px-0 sm:px-6 border-t ${theme.border.main}`}>
             <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm ${theme.text.secondary}`}>
               <span className="text-center sm:text-left">
                 Showing <span className={`font-semibold ${theme.text.primary}`}>{(rows || table.getRowModel().rows).length}</span>

@@ -513,11 +513,11 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
           </div>
         </div>
 
-        <div className="col-span-1">
-          <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
+        {/* <div className="col-span-1"> */}
+          {/* <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>
             Country
-          </label>
-          <Controller
+          </label> */}
+          {/* <Controller
             name="country"
             control={control}
             render={({ field }) => (
@@ -535,8 +535,8 @@ export const AddBranchForm: React.FC<AddBranchFormProps> = ({
                 />
               </div>
             )}
-          />
-        </div>
+          /> */}
+        {/* </div> */}
 
         <div className="col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.tertiary}`}>

@@ -109,3 +109,17 @@ export interface Rider {
     isPresent: boolean;
   };
 }
+
+export interface ItemWiseSalesData {
+  id: string;
+  productName: string;
+  soldQuantity: number;
+  costPrice: number;
+  retailPrice: number;
+  revenue: number;
+  profit: number;
+  margin: number;
+  category?: string;
+  date: string; // YYYY-MM-DD
+  channel: 'dine-in' | 'takeaway' | 'delivery';
+}

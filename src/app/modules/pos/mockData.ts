@@ -1,3 +1,507 @@
+// Kitchen Order Ready Time Report Data
+export interface KitchenOrderReadyTimeData {
+  id: string;
+  invoiceId: string;
+  orderType: 'TakeAway' | 'DineIn' | 'Delivery';
+  orderNo: string;
+  waiter: string;
+  rider: string;
+  tableNo: string;
+  delayTime: string; // e.g., "00:05:00"
+  status: 'On Time' | 'Late';
+  date: string;
+  items: { productName: string; quantity: number; readyTime: string }[];
+}
+
+export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
+  {
+    id: '1',
+    invoiceId: '5482043',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-1',
+    waiter: 'John Doe',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Chicken Tikka Pizza', quantity: 1, readyTime: '10:15 AM' },
+      { productName: 'Pepsi 1.5L', quantity: 1, readyTime: '10:12 AM' }
+    ]
+  },
+  {
+    id: '2',
+    invoiceId: '5482171',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-2',
+    waiter: 'Sarah Smith',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:05:00',
+    status: 'Late',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Zinger Burger', quantity: 2, readyTime: '10:35 AM' }
+    ]
+  },
+  {
+    id: '3',
+    invoiceId: '5482285',
+    orderType: 'DineIn',
+    orderNo: '2/16/2026-3',
+    waiter: 'Alex Wong',
+    rider: '-',
+    tableNo: 'T-5',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Beef Burger Combo', quantity: 1, readyTime: '11:05 AM' }
+    ]
+  },
+  {
+    id: '4',
+    invoiceId: '5482390',
+    orderType: 'Delivery',
+    orderNo: '2/16/2026-4',
+    waiter: 'Admin',
+    rider: 'Mike Ross',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Large Combo Deal', quantity: 1, readyTime: '11:30 AM' }
+    ]
+  },
+  {
+    id: '5',
+    invoiceId: '5482450',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-5',
+    waiter: 'John Doe',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:10:00',
+    status: 'Late',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Hot Wings (10pcs)', quantity: 1, readyTime: '12:15 PM' }
+    ]
+  },
+  {
+    id: '6',
+    invoiceId: '5482560',
+    orderType: 'DineIn',
+    orderNo: '2/16/2026-6',
+    waiter: 'Sarah Smith',
+    rider: '-',
+    tableNo: 'T-12',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Chicken Euro Pizza', quantity: 1, readyTime: '01:05 PM' }
+    ]
+  },
+  {
+    id: '7',
+    invoiceId: '5482670',
+    orderType: 'Delivery',
+    orderNo: '2/16/2026-7',
+    waiter: 'Admin',
+    rider: 'James Bond',
+    tableNo: '-',
+    delayTime: '00:15:00',
+    status: 'Late',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Family Festival Deal', quantity: 1, readyTime: '01:45 PM' }
+    ]
+  },
+  {
+    id: '8',
+    invoiceId: '5482780',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-8',
+    waiter: 'Alex Wong',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Student Deal', quantity: 3, readyTime: '02:05 PM' }
+    ]
+  },
+  {
+    id: '9',
+    invoiceId: '5482890',
+    orderType: 'DineIn',
+    orderNo: '2/16/2026-9',
+    waiter: 'John Doe',
+    rider: '-',
+    tableNo: 'T-2',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Mellow Wrap', quantity: 2, readyTime: '02:45 PM' }
+    ]
+  },
+  {
+    id: '10',
+    invoiceId: '5482900',
+    orderType: 'Delivery',
+    orderNo: '2/16/2026-10',
+    waiter: 'Admin',
+    rider: 'Mike Ross',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Club Sandwich', quantity: 4, readyTime: '03:15 PM' }
+    ]
+  },
+  {
+    id: '11',
+    invoiceId: '5483011',
+    orderType: 'DineIn',
+    orderNo: '2/16/2026-11',
+    waiter: 'Sarah Smith',
+    rider: '-',
+    tableNo: 'T-8',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Italian Pizza Medium', quantity: 1, readyTime: '03:55 PM' }
+    ]
+  },
+  {
+    id: '12',
+    invoiceId: '5483122',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-12',
+    waiter: 'Alex Wong',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Fries Large', quantity: 2, readyTime: '04:15 PM' }
+    ]
+  },
+  {
+    id: '13',
+    invoiceId: '5483233',
+    orderType: 'Delivery',
+    orderNo: '2/16/2026-13',
+    waiter: 'Admin',
+    rider: 'James Bond',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Zinger Burger', quantity: 5, readyTime: '04:55 PM' }
+    ]
+  },
+  {
+    id: '14',
+    invoiceId: '5483344',
+    orderType: 'TakeAway',
+    orderNo: '2/16/2026-14',
+    waiter: 'John Doe',
+    rider: '-',
+    tableNo: '-',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Chicken Cheese Stick', quantity: 2, readyTime: '05:25 PM' }
+    ]
+  },
+  {
+    id: '15',
+    invoiceId: '5483455',
+    orderType: 'DineIn',
+    orderNo: '2/16/2026-15',
+    waiter: 'Sarah Smith',
+    rider: '-',
+    tableNo: 'T-1',
+    delayTime: '00:00:00',
+    status: 'On Time',
+    date: '2026-02-16',
+    items: [
+      { productName: 'Mixed Platter', quantity: 1, readyTime: '06:05 PM' }
+    ]
+  }
+];
+
+// Rider Sale Report Data
+export interface RiderSaleReportData {
+  id: string;
+  employeeId: number;
+  riderName: string;
+  totalInvoices: number;
+  totalDistance: number;
+  totalRevenue: number;
+  averageSpeed?: number;
+  rating?: number;
+  branchId: string;
+  date: string; // YYYY-MM-DD
+}
+
+export const mockRiderReport: RiderSaleReportData[] = [
+  // Today's Data (Feb 17, 2026)
+  {
+    id: '1',
+    employeeId: 2254,
+    riderName: 'Usman (rider)',
+    totalInvoices: 3,
+    totalDistance: 12.5,
+    totalRevenue: 6080.00,
+    averageSpeed: 25.4,
+    rating: 4.8,
+    branchId: 'main-branch',
+    date: '2026-02-17'
+  },
+  {
+    id: '2',
+    employeeId: 3110,
+    riderName: 'Mike Ross',
+    totalInvoices: 8,
+    totalDistance: 45.2,
+    totalRevenue: 15420.00,
+    averageSpeed: 22.1,
+    rating: 4.9,
+    branchId: 'main-branch',
+    date: '2026-02-17'
+  },
+  {
+    id: '3',
+    employeeId: 2890,
+    riderName: 'James Bond',
+    totalInvoices: 5,
+    totalDistance: 32.8,
+    totalRevenue: 9800.00,
+    averageSpeed: 35.0,
+    rating: 5.0,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  },
+  {
+    id: '4',
+    employeeId: 1045,
+    riderName: 'Zeeshan Khan',
+    totalInvoices: 12,
+    totalDistance: 88.4,
+    totalRevenue: 22450.00,
+    averageSpeed: 20.5,
+    rating: 4.7,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  },
+  // Yesterday's Data (Feb 16, 2026)
+  {
+    id: '5',
+    employeeId: 2201,
+    riderName: 'Bilal Ahmed',
+    totalInvoices: 7,
+    totalDistance: 38.6,
+    totalRevenue: 11200.00,
+    averageSpeed: 28.2,
+    rating: 4.6,
+    branchId: 'main-branch',
+    date: '2026-02-16'
+  },
+  {
+    id: '6',
+    employeeId: 1002,
+    riderName: 'Ali Hassan',
+    totalInvoices: 15,
+    totalDistance: 110.2,
+    totalRevenue: 32000.00,
+    averageSpeed: 24.5,
+    rating: 4.9,
+    branchId: 'branch-2',
+    date: '2026-02-16'
+  },
+  {
+    id: '7',
+    employeeId: 3045,
+    riderName: 'Hamza Khan',
+    totalInvoices: 4,
+    totalDistance: 18.4,
+    totalRevenue: 8500.00,
+    averageSpeed: 26.8,
+    rating: 4.5,
+    branchId: 'branch-2',
+    date: '2026-02-16'
+  },
+  {
+    id: '8',
+    employeeId: 2567,
+    riderName: 'Umar Farooq',
+    totalInvoices: 10,
+    totalDistance: 72.1,
+    totalRevenue: 18450.00,
+    averageSpeed: 22.4,
+    rating: 4.8,
+     branchId: 'main-branch',
+     date: '2026-02-16'
+  },
+  // Day Before (Feb 15, 2026)
+  {
+    id: '9',
+    employeeId: 1890,
+    riderName: 'Saad Ahmed',
+    totalInvoices: 6,
+    totalDistance: 40.5,
+    totalRevenue: 12300.00,
+    averageSpeed: 23.9,
+    rating: 4.7,
+     branchId: 'branch-3',
+     date: '2026-02-15'
+  },
+  {
+    id: '10',
+    employeeId: 3210,
+    riderName: 'Basit Ali',
+    totalInvoices: 9,
+    totalDistance: 55.4,
+    totalRevenue: 16800.00,
+    averageSpeed: 21.6,
+    rating: 4.6,
+     branchId: 'main-branch',
+     date: '2026-02-15'
+  },
+  {
+    id: '11',
+    employeeId: 1044,
+    riderName: 'Kamran Akmal',
+    totalInvoices: 14,
+    totalDistance: 95.8,
+    totalRevenue: 28400.00,
+    averageSpeed: 27.2,
+    rating: 4.9,
+     branchId: 'branch-2',
+     date: '2026-02-15'
+  },
+  {
+    id: '12',
+    employeeId: 2254,
+    riderName: 'Usman (rider)',
+    totalInvoices: 8,
+    totalDistance: 45.0,
+    totalRevenue: 18200.00,
+    averageSpeed: 26.5,
+    rating: 4.9,
+    branchId: 'main-branch',
+    date: '2026-02-16'
+  },
+  {
+    id: '13',
+    employeeId: 2233,
+    riderName: 'Fawad Alam',
+    totalInvoices: 11,
+    totalDistance: 78.2,
+    totalRevenue: 20100.00,
+    averageSpeed: 24.8,
+    rating: 4.8,
+    branchId: 'branch-3',
+    date: '2026-02-17'
+  },
+  {
+    id: '14',
+    employeeId: 3344,
+    riderName: 'Shoaib Malik',
+    totalInvoices: 5,
+    totalDistance: 34.6,
+    totalRevenue: 10200.00,
+    averageSpeed: 23.5,
+    rating: 4.7,
+    branchId: 'branch-1',
+    date: '2026-02-17'
+  },
+  {
+    id: '15',
+    employeeId: 1122,
+    riderName: 'Babar Azam',
+    totalInvoices: 18,
+    totalDistance: 135.4,
+    totalRevenue: 40500.00,
+    averageSpeed: 26.5,
+    rating: 5.0,
+    branchId: 'branch-1',
+    date: '2026-02-17'
+  },
+  {
+    id: '16',
+    employeeId: 4491,
+    riderName: 'Rizwan Ahmed',
+    totalInvoices: 13,
+    totalDistance: 92.1,
+    totalRevenue: 25400.00,
+    averageSpeed: 22.8,
+    rating: 4.9,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  },
+  {
+    id: '17',
+    employeeId: 4423,
+    riderName: 'Ahmed',
+    totalInvoices: 13,
+    totalDistance: 92.1,
+    totalRevenue: 25400.00,
+    averageSpeed: 22.8,
+    rating: 4.9,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  },
+  {
+    id: '18',
+    employeeId: 4411,
+    riderName: 'Zia Ahmed',
+    totalInvoices: 13,
+    totalDistance: 92.1,
+    totalRevenue: 25400.00,
+    averageSpeed: 22.8,
+    rating: 4.9,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  },
+  {
+    id: '19',
+    employeeId: 4499,
+    riderName: 'Ali Ahmed',
+    totalInvoices: 13,
+    totalDistance: 92.1,
+    totalRevenue: 25400.00,
+    averageSpeed: 22.8,
+    rating: 4.9,
+    branchId: 'branch-1',
+    date: '2026-02-17'
+  },
+  {
+    id: '20',
+    employeeId: 4433,
+    riderName: 'Asim',
+    totalInvoices: 13,
+    totalDistance: 92.1,
+    totalRevenue: 25400.00,
+    averageSpeed: 22.8,
+    rating: 4.9,
+    branchId: 'branch-2',
+    date: '2026-02-17'
+  }
+];
+
 export const mockNotifications = [
   {
     id: 1,
@@ -87,7 +591,7 @@ export const mockNotifications = [
 ];
 // Mock Data for POS Module
 
-import { Product, Table, TakeawayOrder, Order, Rider } from './types';
+import { Product, Table, TakeawayOrder, Order, Rider, ItemWiseSalesData } from './types';
 
 export const mockProducts: Product[] = [
   // Deals
@@ -236,6 +740,94 @@ export interface InventoryItem {
   sales: number;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
 }
+
+// Kitchen Wise Sale Report Data
+export interface KitchenSaleReportData {
+  id: number;
+  kdsName: string;
+  totalProducts: number;
+
+  totalSoldQuantity: number;
+  grossSale: number;
+  totalSaleTax: number;
+  totalDiscount: number;
+  netSale: number;
+}
+
+export interface KitchenSaleTransaction {
+  id: string;
+  date: string; // YYYY-MM-DD
+  kdsName: string;
+  productName: string;
+  productId: string;
+  quantity: number;
+  amount: number;
+  tax: number;
+  discount: number;
+}
+
+export const mockKitchenSaleReport: KitchenSaleReportData[] = [
+  {
+    id: 1,
+    kdsName: 'Main Kitchen',
+    totalProducts: 14,
+    totalSoldQuantity: 40,
+    grossSale: 28140.00,
+    totalSaleTax: 0.00,
+    totalDiscount: 0.00,
+    netSale: 28140.00
+  },
+  {
+    id: 2,
+    kdsName: 'Pizza Station',
+    totalProducts: 8,
+    totalSoldQuantity: 25,
+    grossSale: 15650.00,
+    totalSaleTax: 0.00,
+    totalDiscount: 0.00,
+    netSale: 15650.00
+  },
+  {
+    id: 3,
+    kdsName: 'Grill Station',
+    totalProducts: 12,
+    totalSoldQuantity: 30,
+    grossSale: 12500.00,
+    totalSaleTax: 0.00,
+    totalDiscount: 0.00,
+    netSale: 12500.00
+  },
+  {
+    id: 4,
+    kdsName: 'Beverage Station',
+    totalProducts: 5,
+    totalSoldQuantity: 8,
+    grossSale: 2510.00,
+    totalSaleTax: 0.00,
+    totalDiscount: 0.00,
+    netSale: 2510.00
+  }
+  
+];
+
+export const mockKitchenSales: KitchenSaleTransaction[] = [
+  // Today's Sales (2026-02-16)
+  { id: 'ks-1', date: '2026-02-16', kdsName: 'Main Kitchen', productName: 'Chicken Tikka Pizza', productId: 'pizza-1', quantity: 5, amount: 4750, tax: 0, discount: 0 },
+  { id: 'ks-2', date: '2026-02-16', kdsName: 'Main Kitchen', productName: 'Zinger Burger', productId: 'burger-2', quantity: 10, amount: 3700, tax: 0, discount: 0 },
+  { id: 'ks-3', date: '2026-02-16', kdsName: 'Pizza Station', productName: 'Italian Pizza', productId: 'pizza-3', quantity: 8, amount: 9200, tax: 0, discount: 0 },
+  { id: 'ks-4', date: '2026-02-16', kdsName: 'Grill Station', productName: 'Peri Peri Wings', productId: 'wings-1', quantity: 12, amount: 6960, tax: 0, discount: 0 },
+  { id: 'ks-5', date: '2026-02-16', kdsName: 'Beverage Station', productName: 'Pepsi 1.5L', productId: 'drink-4', quantity: 8, amount: 1760, tax: 0, discount: 0 },
+
+  // Yesterday's Sales (2026-02-15)
+  { id: 'ks-6', date: '2026-02-15', kdsName: 'Main Kitchen', productName: 'Chicken Tikka Pizza', productId: 'pizza-1', quantity: 15, amount: 14250, tax: 0, discount: 0 },
+  { id: 'ks-7', date: '2026-02-15', kdsName: 'Pizza Station', productName: 'Cheese Lover Pizza', productId: 'pizza-4', quantity: 20, amount: 21000, tax: 0, discount: 0 },
+  { id: 'ks-8', date: '2026-02-15', kdsName: 'Grill Station', productName: 'BBQ Wings', productId: 'wings-3', quantity: 10, amount: 5800, tax: 0, discount: 0 },
+
+  // Last Week Sales (2026-02-10)
+  { id: 'ks-9', date: '2026-02-10', kdsName: 'Main Kitchen', productName: 'Zinger Burger', productId: 'burger-2', quantity: 50, amount: 18500, tax: 0, discount: 0 },
+  { id: 'ks-10', date: '2026-02-10', kdsName: 'Beverage Station', productName: 'Mineral Water', productId: 'drink-1', quantity: 30, amount: 1800, tax: 0, discount: 0 },
+];
+
 
 export const mockInventory: InventoryItem[] = [
   {
@@ -1263,9 +1855,9 @@ export const mockRiders: Rider[] = [
     accountStatus: 'active',
     currentOrders: 1,
     currentLocation: {
-    lat: 31.5204, 
-    lng: 74.3587
-},
+      lat: 31.5204,
+      lng: 74.3587
+    },
     activeTask: {
       orderNumber: 'ORD-1234',
       itemsCount: 2,
@@ -1319,10 +1911,10 @@ export const mockRiders: Rider[] = [
     status: 'busy',
     accountStatus: 'active',
     currentOrders: 1,
-        currentLocation: {
-    lat: 31.5204, 
-    lng: 74.3587
-},
+    currentLocation: {
+      lat: 31.5204,
+      lng: 74.3587
+    },
     activeTask: {
       orderNumber: 'ORD-5678',
       itemsCount: 3,
@@ -1461,3 +2053,526 @@ const generateMockHistoryOrders = () => {
 };
 
 export const mockHistoryOrders = generateMockHistoryOrders();
+
+export const mockItemWiseSales: ItemWiseSalesData[] = [
+  // Today's Sales (2026-02-17)
+  {
+    id: 's1',
+    productName: 'CHICKEN TIKKA (MEDIUM)',
+    soldQuantity: 12,
+    costPrice: 650.00,
+    retailPrice: 1120.00,
+    revenue: 13440.00,
+    profit: 5640.00,
+    margin: 42.00,
+    category: 'Main Course',
+    date: '2026-02-17',
+    channel: 'dine-in'
+  },
+  {
+    id: 's2',
+    productName: 'BEEF BURGER',
+    soldQuantity: 8,
+    costPrice: 280.00,
+    retailPrice: 450.00,
+    revenue: 3600.00,
+    profit: 1360.00,
+    margin: 37.78,
+    category: 'Burger',
+    date: '2026-02-17',
+    channel: 'takeaway'
+  },
+  {
+    id: 's3',
+    productName: 'PIZZA MARGHERITA',
+    soldQuantity: 15,
+    costPrice: 450.00,
+    retailPrice: 899.00,
+    revenue: 13485.00,
+    profit: 6735.00,
+    margin: 49.94,
+    category: 'Pizza',
+    date: '2026-02-17',
+    channel: 'delivery'
+  },
+  {
+    id: 's4',
+    productName: 'ECONOMY DEAL',
+    soldQuantity: 20,
+    costPrice: 900.00,
+    retailPrice: 1500.00,
+    revenue: 30000.00,
+    profit: 12000.00,
+    margin: 40.00,
+    category: 'Deals',
+    date: '2026-02-17',
+    channel: 'dine-in'
+  },
+  {
+    id: 's5',
+    productName: 'PERI PERI WINGS (10PCS)',
+    soldQuantity: 10,
+    costPrice: 300.00,
+    retailPrice: 580.00,
+    revenue: 5800.00,
+    profit: 2800.00,
+    margin: 48.28,
+    category: 'Wings',
+    date: '2026-02-17',
+    channel: 'takeaway'
+  },
+  // Yesterday's Sales (2026-02-16)
+  {
+    id: 's6',
+    productName: 'CHICKEN EURO',
+    soldQuantity: 5,
+    costPrice: 550.00,
+    retailPrice: 980.00,
+    revenue: 4900.00,
+    profit: 2150.00,
+    margin: 43.88,
+    category: 'Pizza',
+    date: '2026-02-16',
+    channel: 'delivery'
+  },
+  {
+    id: 's7',
+    productName: 'CLUB SANDWICH',
+    soldQuantity: 14,
+    costPrice: 250.00,
+    retailPrice: 520.00,
+    revenue: 7280.00,
+    profit: 3780.00,
+    margin: 51.92,
+    category: 'Roll & Sandwich',
+    date: '2026-02-16',
+    channel: 'dine-in'
+  },
+  {
+    id: 's8',
+    productName: 'PAK DRINK (1.5LTR)',
+    soldQuantity: 30,
+    costPrice: 150.00,
+    retailPrice: 220.00,
+    revenue: 6600.00,
+    profit: 2100.00,
+    margin: 31.82,
+    category: 'Drinks',
+    date: '2026-02-16',
+    channel: 'takeaway'
+  },
+  {
+    id: 's9',
+    productName: 'CRUNCHY PASTA',
+    soldQuantity: 7,
+    costPrice: 350.00,
+    retailPrice: 650.00,
+    revenue: 4550.00,
+    profit: 2100.00,
+    margin: 46.15,
+    category: 'Pasta',
+    date: '2026-02-16',
+    channel: 'delivery'
+  },
+  {
+    id: 's10',
+    productName: 'FULL BROAST',
+    soldQuantity: 4,
+    costPrice: 1500.00,
+    retailPrice: 2290.00,
+    revenue: 9160.00,
+    profit: 3160.00,
+    margin: 34.50,
+    category: 'Broast',
+    date: '2026-02-16',
+    channel: 'dine-in'
+  }
+];
+
+export interface TransactionData {
+  id: number;
+  orderNo: string;
+  waiter: string;
+  table: string;
+  floorNo: string;
+  type: string;
+  guestsCount: number;
+  customer: string;
+  phone: string;
+  grossSale: number;
+  serviceCharges: number;
+  salesTax: number;
+  discount: number;
+  deliveryCharges: number;
+  netSale: number;
+  paid: number;
+  paymentMode: string;
+  paymentDate: string;
+  due: number;
+  cashback: number;
+  createdAt: string;
+  status: string;
+}
+
+export const mockTransactions: TransactionData[] = [
+  {
+    id: 1,
+    orderNo: 'ORD-2026-001',
+    waiter: 'Ahmed Ali',
+    table: 'G1',
+    floorNo: 'Ground Floor',
+    type: 'dine-in',
+    guestsCount: 4,
+    customer: 'John Doe',
+    phone: '+92 300 1234567',
+    grossSale: 2500.00,
+    serviceCharges: 250.00,
+    salesTax: 312.50,
+    discount: 200.00,
+    deliveryCharges: 0.00,
+    netSale: 2862.50,
+    paid: 2862.50,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 10:30 AM',
+    status: 'Completed'
+  },
+  {
+    id: 2,
+    orderNo: 'ORD-2026-002',
+    waiter: 'Sara Khan',
+    table: 'F3',
+    floorNo: 'First Floor',
+    type: 'dine-in',
+    guestsCount: 2,
+    customer: 'Sarah Ahmed',
+    phone: '+92 321 9876543',
+    grossSale: 1800.00,
+    serviceCharges: 180.00,
+    salesTax: 225.00,
+    discount: 0.00,
+    deliveryCharges: 0.00,
+    netSale: 2205.00,
+    paid: 2205.00,
+    paymentMode: 'Card',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 11:15 AM',
+    status: 'Completed'
+  },
+  {
+    id: 3,
+    orderNo: 'ORD-2026-003',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'delivery',
+    guestsCount: 3,
+    customer: 'Ali Hassan',
+    phone: '+92 333 4567890',
+    grossSale: 3200.00,
+    serviceCharges: 0.00,
+    salesTax: 400.00,
+    discount: 320.00,
+    deliveryCharges: 150.00,
+    netSale: 3430.00,
+    paid: 3430.00,
+    paymentMode: 'Online',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 12:00 PM',
+    status: 'Completed'
+  },
+  {
+    id: 4,
+    orderNo: 'ORD-2026-004',
+    waiter: 'Fatima Noor',
+    table: 'G5',
+    floorNo: 'Ground Floor',
+    type: 'dine-in',
+    guestsCount: 6,
+    customer: 'Usman Tariq',
+    phone: '+92 345 2345678',
+    grossSale: 4500.00,
+    serviceCharges: 450.00,
+    salesTax: 562.50,
+    discount: 450.00,
+    deliveryCharges: 0.00,
+    netSale: 5062.50,
+    paid: 5062.50,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 01:30 PM',
+    status: 'Completed'
+  },
+  {
+    id: 5,
+    orderNo: 'ORD-2026-005',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'takeaway',
+    guestsCount: 1,
+    customer: 'Maria Khan',
+    phone: '+92 311 5678901',
+    grossSale: 1200.00,
+    serviceCharges: 0.00,
+    salesTax: 150.00,
+    discount: 100.00,
+    deliveryCharges: 0.00,
+    netSale: 1250.00,
+    paid: 1250.00,
+    paymentMode: 'Card',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 02:45 PM',
+    status: 'Completed'
+  },
+  {
+    id: 6,
+    orderNo: 'ORD-2026-006',
+    waiter: 'Ahmed Ali',
+    table: 'F10',
+    floorNo: 'First Floor',
+    type: 'dine-in',
+    guestsCount: 8,
+    customer: 'Bilal Rasheed',
+    phone: '+92 322 7890123',
+    grossSale: 6800.00,
+    serviceCharges: 680.00,
+    salesTax: 850.00,
+    discount: 680.00,
+    deliveryCharges: 0.00,
+    netSale: 7650.00,
+    paid: 5000.00,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-17',
+    due: 2650.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 03:20 PM',
+    status: 'Pending'
+  },
+  {
+    id: 7,
+    orderNo: 'ORD-2026-007',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'delivery',
+    guestsCount: 2,
+    customer: 'Ayesha Malik',
+    phone: '+92 334 8901234',
+    grossSale: 2100.00,
+    serviceCharges: 0.00,
+    salesTax: 262.50,
+    discount: 0.00,
+    deliveryCharges: 200.00,
+    netSale: 2562.50,
+    paid: 2562.50,
+    paymentMode: 'Online',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 04:00 PM',
+    status: 'Completed'
+  },
+  {
+    id: 8,
+    orderNo: 'ORD-2026-008',
+    waiter: 'Sara Khan',
+    table: 'G24',
+    floorNo: 'Ground Floor',
+    type: 'dine-in',
+    guestsCount: 4,
+    customer: 'Hamza Younis',
+    phone: '+92 301 2345678',
+    grossSale: 3500.00,
+    serviceCharges: 350.00,
+    salesTax: 437.50,
+    discount: 350.00,
+    deliveryCharges: 0.00,
+    netSale: 3937.50,
+    paid: 4000.00,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 62.50,
+    createdAt: '2026-02-17 05:15 PM',
+    status: 'Completed'
+  },
+  {
+    id: 9,
+    orderNo: 'ORD-2026-009',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'takeaway',
+    guestsCount: 1,
+    customer: 'Zainab Riaz',
+    phone: '+92 312 3456789',
+    grossSale: 950.00,
+    serviceCharges: 0.00,
+    salesTax: 118.75,
+    discount: 50.00,
+    deliveryCharges: 0.00,
+    netSale: 1018.75,
+    paid: 1018.75,
+    paymentMode: 'Card',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 06:30 PM',
+    status: 'Completed'
+  },
+  {
+    id: 10,
+    orderNo: 'ORD-2026-010',
+    waiter: 'Fatima Noor',
+    table: 'F25',
+    floorNo: 'First Floor',
+    type: 'dine-in',
+    guestsCount: 5,
+    customer: 'Ibrahim Shah',
+    phone: '+92 323 4567890',
+    grossSale: 5200.00,
+    serviceCharges: 520.00,
+    salesTax: 650.00,
+    discount: 520.00,
+    deliveryCharges: 0.00,
+    netSale: 5850.00,
+    paid: 5850.00,
+    paymentMode: 'Online',
+    paymentDate: '2026-02-17',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-17 07:00 PM',
+    status: 'Completed'
+  },
+  {
+    id: 11,
+    orderNo: 'ORD-2026-011',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'delivery',
+    guestsCount: 4,
+    customer: 'Khadija Anwar',
+    phone: '+92 335 5678901',
+    grossSale: 2800.00,
+    serviceCharges: 0.00,
+    salesTax: 350.00,
+    discount: 280.00,
+    deliveryCharges: 180.00,
+    netSale: 3050.00,
+    paid: 3050.00,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-16',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-16 08:45 PM',
+    status: 'Completed'
+  },
+  {
+    id: 12,
+    orderNo: 'ORD-2026-012',
+    waiter: 'Ahmed Ali',
+    table: 'G2',
+    floorNo: 'Ground Floor',
+    type: 'dine-in',
+    guestsCount: 2,
+    customer: 'Nadia Farooq',
+    phone: '+92 346 6789012',
+    grossSale: 1600.00,
+    serviceCharges: 160.00,
+    salesTax: 200.00,
+    discount: 0.00,
+    deliveryCharges: 0.00,
+    netSale: 1960.00,
+    paid: 1960.00,
+    paymentMode: 'Card',
+    paymentDate: '2026-02-16',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-16 07:30 PM',
+    status: 'Completed'
+  },
+  {
+    id: 13,
+    orderNo: 'ORD-2026-013',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'takeaway',
+    guestsCount: 1,
+    customer: 'Omar Siddiqui',
+    phone: '+92 313 7890123',
+    grossSale: 1350.00,
+    serviceCharges: 0.00,
+    salesTax: 168.75,
+    discount: 135.00,
+    deliveryCharges: 0.00,
+    netSale: 1383.75,
+    paid: 1383.75,
+    paymentMode: 'Online',
+    paymentDate: '2026-02-16',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-16 06:00 PM',
+    status: 'Completed'
+  },
+  {
+    id: 14,
+    orderNo: 'ORD-2026-014',
+    waiter: 'Sara Khan',
+    table: 'F4',
+    floorNo: 'First Floor',
+    type: 'dine-in',
+    guestsCount: 6,
+    customer: 'Rabia Jamil',
+    phone: '+92 324 8901234',
+    grossSale: 4200.00,
+    serviceCharges: 420.00,
+    salesTax: 525.00,
+    discount: 420.00,
+    deliveryCharges: 0.00,
+    netSale: 4725.00,
+    paid: 4725.00,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-16',
+    due: 0.00,
+    cashback: 0.00,
+    createdAt: '2026-02-16 05:00 PM',
+    status: 'Completed'
+  },
+  {
+    id: 15,
+    orderNo: 'ORD-2026-015',
+    waiter: 'N/A',
+    table: 'N/A',
+    floorNo: 'N/A',
+    type: 'delivery',
+    guestsCount: 3,
+    customer: 'Sana Iqbal',
+    phone: '+92 336 9012345',
+    grossSale: 2400.00,
+    serviceCharges: 0.00,
+    salesTax: 300.00,
+    discount: 0.00,
+    deliveryCharges: 150.00,
+    netSale: 2850.00,
+    paid: 2000.00,
+    paymentMode: 'Cash',
+    paymentDate: '2026-02-16',
+    due: 850.00,
+    cashback: 0.00,
+    createdAt: '2026-02-16 04:15 PM',
+    status: 'Pending'
+  }
+];

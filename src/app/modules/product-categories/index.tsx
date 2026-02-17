@@ -231,8 +231,8 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={`w-full rounded-lg border py-2.5 pl-10 pr-4 text-sm outline-none transition-all ${isDarkMode
-                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
-                : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
+                ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20'
+                : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20'
                 }`}
             />
           </div>
@@ -268,7 +268,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
             {/* Add Category */}
             <button
               onClick={() => setAddModalOpen(true)}
-              className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40"
+              className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-lg shadow-primary/30 hover:shadow-primary/40"
             >
               <Plus size={18} />
               Add Category

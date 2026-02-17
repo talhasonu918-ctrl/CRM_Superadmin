@@ -14,7 +14,7 @@ interface Order {
     status: string;
     type: string;
     items?: { name: string; price: number; quantity: number }[];
-    total: number;
+    total?: number;
     subtotal: number;
     tax: number;
     discount: number;
@@ -334,7 +334,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     <div style={{ marginTop: '8px' }}>PH: {branchInfo.phone}</div>
                     <div style={{ marginTop: '8px', fontWeight: 'bold' }}>THANK YOU!</div>
                 </div>
-            </div>
+   </div>
         </>
     );
 };

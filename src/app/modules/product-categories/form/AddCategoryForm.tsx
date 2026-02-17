@@ -146,7 +146,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
             <input
               {...register('hsCode')}
               placeholder="HS Code"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 transition-all text-sm ${
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm ${
                 isDarkMode 
                   ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500' 
                   : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
