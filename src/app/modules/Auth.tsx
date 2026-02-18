@@ -4,11 +4,13 @@ import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, UtensilsCrossed, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { AuthMode } from '../../lib/types';
+import toast from 'react-hot-toast';
+import axiosInstance from '../../lib/axios';
 
 interface AuthViewProps {
   mode: AuthMode;
   onSwitchMode: (mode: AuthMode) => void;
-  onSuccess: (data: { email: string; password: string; name?: string }) => void;
+  onSuccess: (data: { email: string; password: string; name?: string; token?: string }) => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
@@ -18,10 +20,56 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: any) => {
-    // Simulated auth delay
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    console.log('Auth data:', data);
-    onSuccess(data);
+    try {
+      if (mode === AuthMode.SIGNUP) {
+        // Prepare registration data according to backend requirements
+        const registerData = {
+          fullName: data.name,
+          email: data.email,
+          password: data.password,
+        };
+
+        const response = await axiosInstance.post('auth/register', registerData);
+
+        if (response.data?.isSuccess) {
+          toast.success('Account created successfully!');
+          const token = response.data?.data?.accessToken || response.data?.data?.token;
+          onSuccess({ ...data, token });
+        } else {
+          toast.error(response.data?.message || 'Registration failed');
+        }
+      } else {
+        // Login logic
+        const response = await axiosInstance.post('auth/login', {
+          email: data.email,
+          password: data.password,
+        });
+
+        if (response.data?.isSuccess) {
+          toast.success('Welcome back!');
+          const token = response.data?.data?.accessToken || response.data?.data?.token;
+          onSuccess({ ...data, token });
+        } else {
+          toast.error(response.data?.message || 'Invalid email or password');
+        }
+      }
+    } catch (error: any) {
+      console.error('Backend Auth Error (Full):', {
+        status: error.response?.status,
+        data: error.response?.data,
+        headers: error.response?.headers
+      });
+      
+      // Try to extract the most descriptive message from the backend
+      const responseData = error.response?.data;
+      const errorMessage = responseData?.message || 
+                         responseData?.error ||
+                         (Array.isArray(responseData?.errors) ? responseData.errors[0] : null) ||
+                         (typeof responseData === 'string' ? responseData : null) ||
+                         'Registration failed. Please check your details.';
+                         
+      toast.error(errorMessage);
+    }
   };
 
   const bgColor = isDarkMode ? 'bg-[#0F1115]' : 'bg-white';
@@ -174,7 +222,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 <input 
                   {...register('password', { 
                     required: 'Password is required',
-                    minLength: { value: 6, message: 'Minimum 6 characters' }
+                    minLength: { value: 8, message: 'Minimum 8 characters' },
+                    pattern: {
+                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message: "Must include Uppercase, Lowercase, Number & Special Character"
+                    }
                   })}
                   type={showPassword ? 'text' : 'password'} 
                   placeholder="••••••••"

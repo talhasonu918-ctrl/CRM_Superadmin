@@ -17,17 +17,18 @@ const AuthPage: React.FC = () => {
     }
   }, [isAuthenticated, router]);
 
-  const handleAuthSuccess = async (data: { email: string; password: string; name?: string }) => {
+  const handleAuthSuccess = async (data: { email: string; password: string; name?: string; token?: string }) => {
     try {
-      let success = false;
       if (mode === AuthMode.LOGIN) {
-        success = await login(data.email, data.password);
+        if (data.token) {
+          login(data.email, data.password, data.token);
+          router.push('/dashboard');
+        }
       } else {
-        success = await signup(data.email, data.password, data.name || '');
-      }
-
-      if (success) {
-        router.push('/dashboard');
+        if (data.token) {
+          signup(data.email, data.password, data.name || '', data.token);
+          router.push('/dashboard');
+        }
       }
     } catch (error) {
       console.error('Authentication failed:', error);
