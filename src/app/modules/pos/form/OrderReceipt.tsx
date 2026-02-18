@@ -185,12 +185,13 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     }
                 }
             `}</style>
-
-            <div id="order-receipt-content" className="hidden print:block">
+             <div id="order-receipt-content" className="hidden print:block">
                 <div className="thermal-header">
                     <div className="thermal-brand">{(config.name || 'Invex Food').toUpperCase()}</div>
                     <div className="thermal-branch">{branchInfo.name.toUpperCase()}</div>
                     <div className="thermal-location">{branchInfo.location}</div>
+                    {/* <div style={{ marginTop: '8px' }}>PH: {branchInfo.phone}</div> */}
+                    <div  className="thermal-location">PH: {branchInfo.phone}</div>
                 </div>
                 <div className="thermal-divider"></div>
 
@@ -285,16 +286,13 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                     <div className="thermal-info-label">Order Number</div>
                     <div className="thermal-info-value">{order.orderNumber}</div>
                 </div>
-
-                <div className="thermal-divider"></div>
-
-                <div className="thermal-table-header">
+              <div className="thermal-divider"></div>
+              <div className="thermal-table-header">
                     <div className="thermal-item-name">Item</div>
                     <div className="thermal-qty">Qty</div>
                     <div className="thermal-price">Price</div>
                 </div>
-
-                {rawItems.map((rawItem: any, idx: number) => {
+              {rawItems.map((rawItem: any, idx: number) => {
                     const item = getItemData(rawItem);
                     return (
                         <div key={idx} className="thermal-table-row">
@@ -304,9 +302,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
                         </div>
                     );
                 })}
-
-                <div className="thermal-divider"></div>
-
+               <div className="thermal-divider"></div>
                 <div className="thermal-total-row">
                     <div className="thermal-total-label">SUBTOTAL</div>
                     <div className="thermal-total-value">PKR {subTotal.toFixed(2)}</div>
@@ -331,11 +327,70 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
 
 
                 <div className="thermal-footer">
-                    <div style={{ marginTop: '8px' }}>Payment Method: {paymentMethod}</div>
-                    <div style={{ marginTop: '8px' }}>PH: {branchInfo.phone}</div>
+                    {/* <div style={{ marginTop: '8px' }}>Payment Method: {paymentMethod}</div> */}
+                  
                     <div style={{ marginTop: '8px', fontWeight: 'bold' }}>THANK YOU!</div>
                 </div>
-   </div>
+
+                {/* Company Copy Section */}
+                <div className="thermal-divider" style={{ borderTop: '2px dashed #000', marginTop: '20px', marginBottom: '10px' }}></div>
+                
+                <div className="thermal-header" style={{ marginBottom: '8px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 'bold', letterSpacing: '2px' }}>COMPANY COPY</div>
+                </div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">ORDER NO:</div>
+                    <div className="thermal-info-value" style={{ fontWeight: 'bold' }}>#{order.orderNumber}</div>
+                </div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">DATE:</div>
+                    <div className="thermal-info-value">{date} {time}</div>
+                </div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">ORDER TYPE:</div>
+                    <div className="thermal-info-value">{order.type?.toUpperCase()}</div>
+                </div>
+
+                {order.tableId && (
+                    <div className="thermal-info-row">
+                        <div className="thermal-info-label">TABLE NO:</div>
+                        <div className="thermal-info-value">{order.tableId}</div>
+                    </div>
+                )}
+
+                <div className="thermal-divider" style={{ margin: '4px 0', borderTop: '0.5px dotted #000' }}></div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">{order.type === 'Delivery' ? 'RIDER:' : 'WAITER:'}</div>
+                    <div className="thermal-info-value">{order.riderName || order.waiterName || 'Counter'}</div>
+                </div>
+
+                <div className="thermal-info-row">
+                    <div className="thermal-info-label">CASHIER:</div>
+                    <div className="thermal-info-value">ALI AHMED</div>
+                </div>
+
+                {order.customerName && (
+                    <div className="thermal-info-row">
+                        <div className="thermal-info-label">CUSTOMER:</div>
+                        <div className="thermal-info-value">{order.customerName}</div>
+                    </div>
+                )}
+
+                <div className="thermal-divider" style={{ margin: '4px 0', borderTop: '0.5px dotted #000' }}></div>
+
+                <div className="thermal-info-row" style={{ marginTop: '4px' }}>
+                    <div className="thermal-info-label" style={{ fontWeight: 'bold', fontSize: '13px' }}>TOTAL AMOUNT:</div>
+                    <div className="thermal-info-value" style={{ fontWeight: 'bold', fontSize: '13px' }}>PKR {(order.grandTotal || 0).toFixed(2)}</div>
+                </div>
+
+                <div className="thermal-footer" style={{ marginTop: '10px' }}>
+                    <div className="thermal-divider"></div>
+                </div>
+            </div>
         </>
     );
 };

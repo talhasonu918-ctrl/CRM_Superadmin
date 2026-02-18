@@ -255,7 +255,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                         )}
                                     </div>
                                 </div>
-                                <div className="flex justify-between pt-1 border-t border-dotted border-border/30">
+                                <div className="flex justify-between pt-1 ">
                                     <span className="opacity-60">CASHIER</span>
                                     <span>{['Kalen H', 'Ali Ahmed', 'Asif Ali'][Math.floor(Math.random() * 3)]}</span>
                                 </div>
@@ -363,6 +363,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                 <div className="thermal-location">
                                     {branches.find(b => b.name === branchInfo.name)?.location}
                                 </div>
+                                 <div  className="thermal-location" >PH: {branchInfo.phone}</div>
                             </div>
 
 
@@ -409,7 +410,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                 </div>
                             )}
 
-                            <div className="thermal-info-row" style={{ marginTop: '2px', paddingTop: '2px', borderTop: '0.5px dotted #ccc' }}>
+                            <div className="thermal-info-row" style={{ marginTop: '2px', paddingTop: '2px' }}>
                                 <div className="thermal-info-label">CASHIER</div>
                                 <div className="thermal-info-value">{['KALEN H', 'ALI AHMED', 'ASIF ALI'][Math.floor(Math.random() * 3)]}</div>
                             </div>
@@ -482,13 +483,69 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
 
                             {/* Footer */}
                             <div className="thermal-footer">
-                                <div style={{ marginTop: '8px' }}>Payment Method</div>
-                                <div style={{ marginTop: '4px' }}>Bill# {orderNumber}</div>
-                                <div style={{ marginTop: '8px' }}>PH: {branchInfo.phone}</div>
+                                {/* <div style={{ marginTop: '8px' }}>Payment Method</div> */}
+                                {/* <div style={{ marginTop: '4px' }}>Bill# {orderNumber}</div> */}
                                 <div style={{ marginTop: '8px', fontWeight: 'bold' }}>THANK YOU !</div>
                             </div>
 
-                            <div className="thermal-divider" style={{ marginTop: '8px' }}></div>
+                            {/* Company Copy Section */}
+                            <div className="thermal-divider" style={{ borderTop: '2px dashed #000', marginTop: '20px', marginBottom: '10px' }}></div>
+                            
+                            <div className="thermal-header" style={{ marginBottom: '8px' }}>
+                                <div style={{ fontSize: '14px', fontWeight: 'bold', letterSpacing: '2px' }}>COMPANY COPY</div>
+                            </div>
+
+                            <div className="thermal-info-row">
+                                <div className="thermal-info-label">ORDER NO:</div>
+                                <div className="thermal-info-value" style={{ fontWeight: 'bold' }}>#{orderNumber}</div>
+                            </div>
+
+                            <div className="thermal-info-row">
+                                <div className="thermal-info-label">DATE/TIME:</div>
+                                <div className="thermal-info-value">{date} {time}</div>
+                            </div>
+
+                            <div className="thermal-info-row">
+                                <div className="thermal-info-label">ORDER TYPE:</div>
+                                <div className="thermal-info-value">{orderType.replace(/([A-Z])/g, ' $1').trim().toUpperCase()}</div>
+                            </div>
+
+                            {orderType === 'DineIn' && (
+                                <div className="thermal-info-row">
+                                    <div className="thermal-info-label">TABLE NO:</div>
+                                    <div className="thermal-info-value">{selectedTable?.label || 'N/A'}</div>
+                                </div>
+                            )}
+
+                            <div className="thermal-divider" style={{ margin: '4px 0', borderTop: '0.5px dotted #000' }}></div>
+
+                            <div className="thermal-info-row">
+                                <div className="thermal-info-label">{orderType === 'Delivery' ? 'RIDER:' : 'WAITER:'}</div>
+                                <div className="thermal-info-value">{orderType === 'Delivery' ? selectedRider?.label : selectedWaiter?.label || 'Counter'}</div>
+                            </div>
+
+                            <div className="thermal-info-row">
+                                <div className="thermal-info-label">CASHIER:</div>
+                                <div className="thermal-info-value">ALI AHMED</div>
+                            </div>
+
+                            {selectedCustomer?.label && (
+                                <div className="thermal-info-row">
+                                    <div className="thermal-info-label">CUSTOMER:</div>
+                                    <div className="thermal-info-value">{selectedCustomer.label}</div>
+                                </div>
+                            )}
+
+                            <div className="thermal-divider" style={{ margin: '4px 0', borderTop: '0.5px dotted #000' }}></div>
+
+                            <div className="thermal-info-row" style={{ marginTop: '4px' }}>
+                                <div className="thermal-info-label" style={{ fontWeight: 'bold', fontSize: '13px' }}>TOTAL AMOUNT:</div>
+                                <div className="thermal-info-value" style={{ fontWeight: 'bold', fontSize: '13px' }}>PKR {totals.total.toFixed(2)}</div>
+                            </div>
+
+                            <div className="thermal-footer" style={{ marginTop: '10px' }}>
+                                <div className="thermal-divider"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
