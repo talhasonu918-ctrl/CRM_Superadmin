@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FiEdit, FiEye, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
-import { Search } from 'lucide-react';
+import { Search, List, LayoutGrid } from 'lucide-react';
 import { useBranding } from '../../../contexts/BrandingContext';
 import InfiniteTable from '../../../components/InfiniteTable';
 import { useInfiniteTable } from '../../../hooks/useInfiniteTable';
@@ -124,7 +124,7 @@ const KDSModal: React.FC<KDSModalProps> = ({ isOpen, onClose, onSave, editProfil
             <div className="space-y-4">
               <div>
                 <label className={`block text-sm font-medium mb-1.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  KDS Name
+                  KDS Name 
                 </label>
                 <input
                   type="text"
@@ -213,6 +213,7 @@ export const KDSManagement: React.FC<KDSManagementProps> = ({ isDarkMode = false
   const [editingProfile, setEditingProfile] = useState<KDSProfile | undefined>();
   const [isViewOnly, setIsViewOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   // Load KDS profiles from localStorage
   useEffect(() => {
@@ -410,31 +411,149 @@ export const KDSManagement: React.FC<KDSManagementProps> = ({ isDarkMode = false
                   }`}
               />
             </div>
-            <button
-              onClick={handleAddNew}
-              className="flex items-center justify-center gap-2 px-4 lg:px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold text-sm transition-all shadow-md active:scale-95 whitespace-nowrap"
-            >
-              <FiPlus className="w-4 h-4 sm:hidden" />
-              <span>Add KDS +</span>
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleAddNew}
+                className="flex items-center justify-center gap-2 px-4 lg:px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold text-sm transition-all shadow-md active:scale-95 whitespace-nowrap"
+              >
+                <FiPlus className="w-4 h-4 sm:hidden" />
+                <span>Add KDS +</span>
+              </button>
           </div>
+          
+          </div>
+          
         </div>
+           <div className={`flex  mb-1 sm:mb-2 rounded-lg items-end justify-end ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-1.5 rounded-md transition-all ${viewMode === 'list'
+                      ? 'bg-primary text-white shadow-sm'
+                      : (isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500')
+                    }`}
+                >
+                  <List size={20} />
+                </button>
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded-md transition-all ${viewMode === 'grid'
+                      ? 'bg-primary text-white shadow-sm'
+                      : (isDarkMode ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500')
+                    }`}
+                >
+                  <LayoutGrid size={20} />
+                </button>
+              </div>
 
-        {/* Table Container */}
-        <div className={`rounded-xl overflow-hidden border ${isDarkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white shadow-sm border-gray-100'}`}>
-          <div className="[&_thead]:bg-[#f8f9fc] dark:[&_thead]:bg-gray-800">
-            <div className="overflow-x-auto custom-scrollbar">
-              <InfiniteTable
-                table={table}
-                isLoading={isTableLoading}
-                isDarkMode={isDarkMode}
-                total={filteredProfiles.length}
-                noDataMessage="No KDS profiles found"
-                className="min-h-[400px]"
-              />
+        {/* Main Content Container */}
+        {viewMode === 'list' ? (
+          <div className={`rounded-xl overflow-hidden border ${isDarkMode ? 'bg-gray-900/50 border-gray-800' : 'bg-white shadow-sm border-gray-100'}`}>
+            <div className="[&_thead]:bg-[#f8f9fc] dark:[&_thead]:bg-gray-800">
+              <div className="overflow-x-auto custom-scrollbar">
+                <InfiniteTable
+                  table={table}
+                  isLoading={isTableLoading}
+                  isDarkMode={isDarkMode}
+                  total={filteredProfiles.length}
+                  noDataMessage="No KDS profiles found"
+                  className="min-h-[400px]"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                className={`p-5 rounded-2xl border transition-all duration-300 hover:shadow-lg ${isDarkMode
+                  ? 'bg-gray-900 border-gray-800 text-white hover:border-primary/50'
+                  : 'bg-white border-gray-200 shadow-sm text-gray-900 hover:border-primary/50'
+                  }`}
+              >
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex-1 min-w-0 pr-2">
+                    <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-blue-50 text-blue-600'
+                      }`}>
+                      SR#{profile.id}
+                    </span>
+                    <h3 className="text-lg font-bold mt-3 text-gray-900 dark:text-gray-100 truncate flex items-center gap-2 group cursor-pointer" onClick={() => handleViewKDSDisplay(profile)}>
+                      <span className="truncate">{profile.name}</span>
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleEdit(profile)}
+                      className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                      title="Edit"
+                    >
+                      <FiEdit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleViewDetails(profile)}
+                      className="p-2 text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
+                      title="View Details"
+                    >
+                      <FiEye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(profile.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                      title="Delete"
+                    >
+                      <FiTrash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className={`text-[10px] font-bold uppercase tracking-wider mb-2 block ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                      Sub Categories
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 min-h-[48px]">
+                      {profile.subCategories.slice(0, 4).map((cat, idx) => (
+                        <span
+                          key={idx}
+                          className={`px-2 py-0.5 rounded-md text-[10px] font-medium leading-relaxed border ${isDarkMode
+                            ? 'bg-gray-800 border-gray-700 text-gray-300'
+                            : 'bg-white border-gray-200 text-gray-700'
+                            }`}
+                        >
+                          {cat}
+                        </span>
+                      ))}
+                      {profile.subCategories.length > 4 && (
+                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-medium border ${isDarkMode
+                          ? 'bg-gray-800 border-gray-700 text-gray-500'
+                          : 'bg-gray-50 border-gray-100 text-gray-400'
+                          }`}>
+                          +{profile.subCategories.length - 4} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                    <div className="flex flex-col">
+                      <span className={`text-[10px] font-bold ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>ORDER TYPES</span>
+                      <span className="text-xs font-semibold">{profile.orderTypes.join(', ')}</span>
+                    </div>
+                    <button
+                      onClick={() => handleViewKDSDisplay(profile)}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${isDarkMode
+                        ? 'bg-primary text-white hover:bg-primary/90'
+                        : 'bg-primary/10 text-primary hover:bg-primary/20'
+                        }`}
+                    >
+                      Open Display
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <KDSModal
