@@ -8,7 +8,7 @@ import {
   ShoppingBag, Users, DollarSign, Star,
   Clock, TrendingUp, CheckCircle2, Loader2
 } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAppSelector } from '../../redux/store';
 
 const REVENUE_DATA = {
   today: [
@@ -57,7 +57,7 @@ const LIVE_ORDERS = [
 ];
 
 export const DashboardView: React.FC = () => {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const [timeframe, setTimeframe] = useState<'today' | 'weekly' | 'monthly'>('today');
   const cardStyle = `rounded-2xl border transition-all ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`;
 

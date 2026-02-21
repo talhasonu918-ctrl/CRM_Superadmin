@@ -4,7 +4,7 @@ import { ArrowLeft, Check } from 'lucide-react';
 import { ProductFormData } from '../product-types';
 import { ProductBasicInfo, ProductAddons, ProductVariants, ProductPricing, ProductSummary } from './index';
 import notify from '../../../../utils/toast';
-import { useCompany } from '@/src/contexts/CompanyContext';
+import { useAppSelector } from '@/src/redux/store';
 import { ROUTES } from '@/src/const/constants';
 
 interface AddProductPageProps {
@@ -23,7 +23,7 @@ const tabs = [
 
 export const AddProductPage: React.FC<AddProductPageProps> = ({ isDarkMode }) => {
   const router = useRouter();
-  const { company } = useCompany();
+  const company = useAppSelector((state) => state.company.company);
   const [currentTab, setCurrentTab] = useState(0);
   const [formData, setFormData] = useState<ProductFormData>({
     name: '',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { FiEdit, FiEye, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import { Search, List, LayoutGrid } from 'lucide-react';
-import { useBranding } from '../../../contexts/BrandingContext';
+import { useAppSelector } from '../../../redux/store';
 import InfiniteTable from '../../../components/InfiniteTable';
 import { useInfiniteTable } from '../../../hooks/useInfiniteTable';
 import { ColumnDef } from '@tanstack/react-table';
@@ -207,7 +207,7 @@ const KDSModal: React.FC<KDSModalProps> = ({ isOpen, onClose, onSave, editProfil
 };
 
 export const KDSManagement: React.FC<KDSManagementProps> = ({ isDarkMode = false, onViewKDS }) => {
-  const { config } = useBranding();
+  const config = useAppSelector((state) => state.branding.config);
   const [kdsProfiles, setKdsProfiles] = useState<KDSProfile[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProfile, setEditingProfile] = useState<KDSProfile | undefined>();

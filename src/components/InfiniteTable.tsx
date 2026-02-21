@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { Table } from 'rizzui/table';
 import { flexRender, Table as TanStackTableTypes, Row } from '@tanstack/react-table';
 import { getThemeColors } from '../theme/colors';
-import { useTheme } from '../contexts/ThemeContext';
+import { useAppSelector } from '../redux/store';
 
 export interface TableColumn<T = any> {
   id: string;
@@ -45,7 +45,7 @@ function InfiniteTable<T = any>({
   itemName = 'items',
   renderSubComponent,
 }: InfiniteTableProps<T>) {
-  const { isDarkMode: themeDarkMode } = useTheme();
+  const themeDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const isDarkMode = propDarkMode || themeDarkMode;
   const theme = getThemeColors(isDarkMode);
   const tableContainerRef = useRef<HTMLDivElement>(null);

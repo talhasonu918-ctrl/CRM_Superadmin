@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { AuthView } from '@/src/app/modules/Auth';
 import { AuthMode } from '@/src/lib/types';
-import { useAuth } from '@/src/contexts/AuthContext';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector, useAppDispatch } from '@/src/redux/store';
+import { toggleTheme } from '@/src/redux/themeSlice';
+import { login, signup } from '@/src/redux/authSlice';
 
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>(AuthMode.LOGIN);
-  const { isAuthenticated, login, signup } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,14 +21,14 @@ const AuthPage: React.FC = () => {
 
   const handleAuthSuccess = async (data: { email: string; password: string; name?: string }) => {
     try {
-      let success = false;
+      let result;
       if (mode === AuthMode.LOGIN) {
-        success = await login(data.email, data.password);
+        result = await dispatch(login({ email: data.email, password: data.password }));
       } else {
-        success = await signup(data.email, data.password, data.name || '');
+        // Use the new grant-access flow for signup/admin creation
+        result = await dispatch(login({ email: data.email, fullName: data.name }));
       }
-
-      if (success) {
+      if (result && result.meta && result.meta.requestStatus === 'fulfilled') {
         router.push('/dashboard');
       }
     } catch (error) {
@@ -48,7 +50,7 @@ const AuthPage: React.FC = () => {
       onSwitchMode={handleSwitchMode}
       onSuccess={handleAuthSuccess}
       isDarkMode={isDarkMode}
-      toggleTheme={toggleTheme}
+      toggleTheme={() => dispatch(toggleTheme())}
     />
   );
 };

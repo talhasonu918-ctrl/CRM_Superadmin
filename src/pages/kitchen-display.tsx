@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { KDSWrapper } from '@/src/app/modules/kitchen-order-display/KDSWrapper';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 
 export default function KitchenDisplay() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const router = useRouter();
   const [resetCount, setResetCount] = useState(0);
 

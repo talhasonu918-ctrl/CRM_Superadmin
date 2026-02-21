@@ -1,10 +1,10 @@
 import React from 'react';
 import { PaymentView } from '@/src/app/modules/Payments';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 
 export default function Payments() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
   return (
     <Layout>

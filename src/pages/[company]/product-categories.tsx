@@ -1,10 +1,10 @@
 import React from 'react';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 import { ProductCategoriesView } from '@/src/app/modules/product-categories/index';
 
 export default function ProductCategories() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
   return (
     <Layout>

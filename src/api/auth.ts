@@ -41,12 +41,24 @@ export const refreshToken = async () => {
   return response.data;
 };
 
-/**
- * Logout Flow — The "Best Way":
- * 1. Tries to notify the server (security session invalidation)
- * 2. Clears local storage tokens
- * 3. Redirects the user to the login page
- */
+// Grant Access function (Unauthenticated — uses axiosPublic)
+export const grantAccess = async (data: { email: string; fullName: string }) => {
+  const response = await axiosPublic.post('/auth/grant-access', data);
+  const result = response.data;
+
+  if (result.isSuccess) {
+    // Save tokens if they exist in the response
+    const { accessToken, refreshToken, token } = result.data ?? result;
+    const finalToken = accessToken || token;
+
+    if (finalToken) setAccessToken(finalToken);
+    if (refreshToken) setRefreshToken(refreshToken);
+  }
+
+  return result;
+};
+
+
 export const logout = async () => {
   try {
     // Only call logout API if we actually have an access token
@@ -54,13 +66,11 @@ export const logout = async () => {
       await axiosPrivate.post('/auth/logout');
     }
   } catch (error) {
-    // We catch the error but don't block the UI logout.
-    // Even if the server fails, we MUST clear tokens locally.
+    
     console.error('Logout API notification failed:', error);
   } finally {
     clearTokens();
 
-    // Redirect ensures the user is kicked out of protected views
     if (typeof window !== 'undefined') {
       Router.push('/login');
     }

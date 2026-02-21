@@ -5,9 +5,9 @@ import { Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, Ch
 import { LuMaximize, LuMinimize } from "react-icons/lu";
 import { CgMaximizeAlt } from "react-icons/cg";
 import { navigationItems } from '../const';
-import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
-import { useBranding } from '../contexts/BrandingContext';
+import { useAppSelector, useAppDispatch } from '../redux/store';
+import { toggleTheme } from '../redux/themeSlice';
+import { logout } from '../redux/authSlice';
 import { ReusableModal } from './ReusableModal';
 import { mockNotifications } from '../app/modules/pos/mockData';
 
@@ -17,9 +17,9 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const router = useRouter();
-  const { logout } = useAuth();
-  const { isDarkMode, toggleTheme } = useTheme();
-  const { config } = useBranding();
+  const dispatch = useAppDispatch();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
+  const config = useAppSelector((state) => state.branding.config);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
@@ -50,7 +50,7 @@ export function Layout({ children }: LayoutProps) {
   const unreadCount = notifications.filter(n => n.unread).length;
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     router.push('/auth');
   };
 
@@ -358,7 +358,7 @@ export function Layout({ children }: LayoutProps) {
           {/* Theme Toggle and Logout */}
           <div className={`${isCollapsed ? 'lg:p-2' : 'lg:p-4'} p-4 border-t border-border space-y-2`}>
             <button
-              onClick={toggleTheme}
+              onClick={() => dispatch(toggleTheme())}
               className={`flex items-center w-full px-4 py-3 text-sm font-medium rounded-lg transition-colors text-textSecondary hover:bg-surface/10 ${isCollapsed ? 'lg:justify-center lg:px-2' : ''}`}
               title="Toggle theme"
             >

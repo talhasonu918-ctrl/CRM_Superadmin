@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Printer, CheckCircle, User, ShoppingBag, Star, Search } from 'lucide-react';
 import { getThemeColors } from '../../../theme/colors';
-import { useBranding } from '../../../contexts/BrandingContext';
+import { useAppSelector } from '../../../redux/store';
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 interface OrderItem {
@@ -396,7 +396,7 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
 };
 
 export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMode = false, activeProfile: propActiveProfile, onBackToTable }) => {
-  const { config } = useBranding();
+  const config = useAppSelector((state) => state.branding.config);
   const theme = getThemeColors(isDarkMode);
   const [activeKDSProfile, setActiveKDSProfile] = useState<KDSProfile | null>(propActiveProfile || null);
   const [orders, setOrders] = useState<KitchenOrder[]>(() => {

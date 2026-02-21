@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Printer, Send, ArrowLeft, Download } from 'lucide-react';
 import { CartItem } from '../types';
-import { useBranding } from '../../../../contexts/BrandingContext';
+import { useAppSelector } from '../../../../redux/store';
 
 interface InvoiceViewProps {
     type: 'KOT' | 'KDS';
@@ -45,7 +45,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
     onSendToKitchen,
     isDarkMode = false,
 }) => {
-    const { config } = useBranding();
+    const config = useAppSelector((state) => state.branding.config);
     const [branchInfo, setBranchInfo] = useState({ name: 'Main Branch', phone: '+92 300 1234567' });
 
     useEffect(() => {

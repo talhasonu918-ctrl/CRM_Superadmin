@@ -1,10 +1,10 @@
 import React from 'react';
 import { MenuModule } from '@/src/app/modules/menu';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 
 export default function Menu() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
   return (
     <Layout>

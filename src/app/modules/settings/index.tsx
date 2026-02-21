@@ -7,7 +7,7 @@ import { OrganizationSettingsForm } from './practice/form/OrganizationSettingsFo
 import { MobileSettingsForm } from './mobile/form/MobileSettingsForm';
 import { MobileSettings, defaultMobileSettings } from './mobile/types';
 import { PracticeSetting } from './practice/types';
-import { useCompany } from '../../../contexts/CompanyContext';
+import { useAppSelector } from '../../../redux/store';
 import { ROUTES } from '../../../const/constants';
 
 interface SettingsViewProps {
@@ -17,7 +17,7 @@ interface SettingsViewProps {
 const STORAGE_KEY = 'organization_settings';
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ isDarkMode }) => {
-  const { company } = useCompany();
+  const company = useAppSelector((state) => state.company.company);
   const theme = getThemeColors(isDarkMode);
   const [organizationModalOpen, setOrganizationModalOpen] = useState(false);
   const [organizationData, setOrganizationData] = useState<Partial<PracticeSetting> | null>(null);
