@@ -2,11 +2,10 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (email: string, password: string, token: string) => void;
-  signup: (email: string, password: string, name: string, token: string) => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  signup: (email: string, password: string, name: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
-  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,17 +24,14 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is authenticated on app start
     const checkAuth = () => {
       const authStatus = localStorage.getItem('isAuthenticated');
-      const storedToken = localStorage.getItem('token');
-      if (authStatus === 'true' && storedToken) {
+      if (authStatus === 'true') {
         setIsAuthenticated(true);
-        setToken(storedToken);
       }
       setLoading(false);
     };
@@ -43,30 +39,56 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = (email: string, password: string, token: string) => {
-    setIsAuthenticated(true);
-    setToken(token);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('token', token);
+  const login = async (email: string, password: string): Promise<boolean> => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // For demo purposes, accept any email/password
+      if (email && password) {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true');
+        setLoading(false);
+        return true;
+      }
+      setLoading(false);
+      return false;
+    } catch (error) {
+      setLoading(false);
+      return false;
+    }
   };
 
-  const signup = (email: string, password: string, name: string, token: string) => {
-    setIsAuthenticated(true);
-    setToken(token);
-    localStorage.setItem('isAuthenticated', 'true');
-    localStorage.setItem('token', token);
+  const signup = async (email: string, password: string, name: string): Promise<boolean> => {
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // For demo purposes, accept any valid inputs
+      if (email && password && name) {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true');
+        setLoading(false);
+        return true;
+      }
+      setLoading(false);
+      return false;
+    } catch (error) {
+      setLoading(false);
+      return false;
+    }
   };
 
   const logout = () => {
     setIsAuthenticated(false);
-    setToken(null);
     localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('token');
+    localStorage.removeItem('token'); // Keep it clean
   };
 
   const value: AuthContextType = {
     isAuthenticated,
-    token,
     login,
     signup,
     logout,

@@ -5,12 +5,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, UtensilsCrossed, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { AuthMode } from '../../lib/types';
 import toast from 'react-hot-toast';
-import axiosInstance from '../../lib/axios';
 
 interface AuthViewProps {
   mode: AuthMode;
   onSwitchMode: (mode: AuthMode) => void;
-  onSuccess: (data: { email: string; password: string; name?: string; token?: string }) => void;
+  onSuccess: (data: { email: string; password: string; name?: string }) => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
@@ -21,54 +20,19 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
 
   const onSubmit = async (data: any) => {
     try {
+      // Simulation delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       if (mode === AuthMode.SIGNUP) {
-        // Prepare registration data according to backend requirements
-        const registerData = {
-          fullName: data.name,
-          email: data.email,
-          password: data.password,
-        };
-
-        const response = await axiosInstance.post('auth/register', registerData);
-
-        if (response.data?.isSuccess) {
-          toast.success('Account created successfully!');
-          const token = response.data?.data?.accessToken || response.data?.data?.token;
-          onSuccess({ ...data, token });
-        } else {
-          toast.error(response.data?.message || 'Registration failed');
-        }
+        toast.success('Account created successfully!');
+        onSuccess(data);
       } else {
-        // Login logic
-        const response = await axiosInstance.post('auth/login', {
-          email: data.email,
-          password: data.password,
-        });
-
-        if (response.data?.isSuccess) {
-          toast.success('Welcome back!');
-          const token = response.data?.data?.accessToken || response.data?.data?.token;
-          onSuccess({ ...data, token });
-        } else {
-          toast.error(response.data?.message || 'Invalid email or password');
-        }
+        toast.success('Welcome back!');
+        onSuccess(data);
       }
     } catch (error: any) {
-      console.error('Backend Auth Error (Full):', {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers
-      });
-      
-      // Try to extract the most descriptive message from the backend
-      const responseData = error.response?.data;
-      const errorMessage = responseData?.message || 
-                         responseData?.error ||
-                         (Array.isArray(responseData?.errors) ? responseData.errors[0] : null) ||
-                         (typeof responseData === 'string' ? responseData : null) ||
-                         'Registration failed. Please check your details.';
-                         
-      toast.error(errorMessage);
+      console.error('Simulated Auth Error:', error);
+      toast.error('An error occurred. Please try again.');
     }
   };
 
@@ -165,7 +129,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 : 'Enter your credentials to create your restaurant account.'}
             </p>
           </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <AnimatePresence mode="wait">
               {mode === AuthMode.SIGNUP && (
