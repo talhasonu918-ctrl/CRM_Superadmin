@@ -90,7 +90,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
     isDarkMode
       ? 'bg-slate-800 border-slate-700 text-white'
       : 'bg-white border-slate-200 text-slate-900'
-  } focus:outline-none focus:ring-2 focus:ring-orange-500`;
+  } focus:outline-none focus:ring-2 focus:ring-primary`;
 
   const isValid = useMemo(() => {
     if (!currentGroup.name.trim()) return false;
@@ -190,7 +190,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
 
           <button
             onClick={handleAdd}
-            className="bg-priamry hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-primary hover:bg-primary/10 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <Plus size={16} />
             Add Group

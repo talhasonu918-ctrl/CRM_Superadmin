@@ -5,19 +5,17 @@ import {
   FileText, Bike, Receipt, Clock, ChefHat, 
   Users, DollarSign, User, Layers
 } from 'lucide-react';
-import ItemWiseReport from './reports/ItemWiseReport';
-import RiderWiseReport from './reports/RiderWiseReport';
-import TransactionReport from './reports/TransactionReport';
+import ItemWiseReport from './reports/item-wise-sale';
+import RiderWiseReport from './reports/rider-report';
+import TransactionReport from './reports/transaction';
 import { HiOutlineArrowLeft } from "react-icons/hi";
-import KitchenWiseReport from './reports/KitchenWiseReport';
-import KitchenOrderReadyTimeReport from './reports/KitchenOrderReadyTimeReport';
-
+import KitchenWiseReport from './reports/kitchen-wise-sale';
+import KitchenOrderReadyTimeReport from './reports/kitchen-order-ready-time';
 // Placeholder component for other reports
 const ComingSoonReport: React.FC<{ isDarkMode: boolean; title: string }> = ({ isDarkMode, title }) => {
   const cardStyle = isDarkMode ? 'bg-[#1e2836]' : 'bg-white';
   const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
-
   return (
     <div className="space-y-4">
       <div className={`${cardStyle} rounded-lg p-8 border ${borderStyle} text-center`}>
@@ -45,30 +43,8 @@ export const ReportsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
   const reportCards = [
     { id: 'item-wise', name: 'Item Wise Sale Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary' },
     { id: 'transaction', name: 'Transaction Report', icon: Receipt, color: 'text-white', bgColor: 'bg-primary' },
-    // { id: 'category-wise', name: 'Category Wise Sale Report', icon: Layers, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'customer-ledger', name: 'Customer Ledger', icon: User, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'supplier-ledger', name: 'Supplier Ledger', icon: User, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'waiter', name: 'Waiter Report', icon: Users, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'user-wise-sale', name: 'User Wise Sale Report', icon: User, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'supplier-wise-purchase', name: 'Supplier Wise Purchase Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'item-location-transfer', name: 'Item Wise Location Transfer Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'location-item-transfer', name: 'Location Wise Item Transfer Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'sales-summary', name: 'Sales Summary', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'discount', name: 'Discount Report', icon: DollarSign, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'customer-wise-sale', name: 'Customer Wise Sale Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'item-recipe-consumption', name: 'Item Wise Recipe Consumption Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'item-sale-details', name: 'Item Wise Sale Details Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'gross-profit', name: 'Gross Profit Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'payment-mode-wise', name: 'Payment Mode Wise Sale Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'invoice-type-wise', name: 'Invoice Type Wise Sale Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'user-item-sale', name: 'User Wise Item Sale Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'item-wise-purchase', name: 'Item Wise Purchase Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
     { id: 'kitchen-wise', name: 'Kitchen Wise Sale Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary' },
-    // { id: 'hourly-wise', name: 'Hourly Wise Sale Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'deals', name: 'Deals Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
-    // { id: 'cancellation', name: 'Cancellation Report', icon: FileText, color: 'text-primary', bgColor: 'bg-primary/10' },
     { id: 'kitchen-ready-time', name: 'Kitchen Order Ready Time Report', icon: FileText, color: 'text-white', bgColor: 'bg-primary' },
-    // { id: 'pl', name: 'P&L Report', icon: Layers, color: 'text-primary', bgColor: 'bg-primary/10' },
     { id: 'rider-wise', name: 'Rider Report', icon: Bike, color: 'text-white', bgColor: 'bg-primary' },
   ];
 
@@ -104,10 +80,6 @@ export const ReportsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
             onClick={() => setSelectedReport(null)}
             className={`px-2 py-1 sm:px-4 sm:py-2 rounded-lg border ${borderStyle} ${cardStyle} hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center gap-1 sm:gap-2 text-xs sm:text-base`}
           >
-            {/* <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg> */}
-
             <HiOutlineArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             <span className="text-[10px] sm:text-base ">Back to Reports</span>
           </button>

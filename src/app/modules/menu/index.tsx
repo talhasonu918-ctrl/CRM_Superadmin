@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import { DashboardCard } from '../settings/components/DashboardCard';
 import { VariantsView } from './VariantsView';
 import { AddOnsView } from './AddOnsView';
-import { DealsView } from './DealsView';
+import { DealsView } from './deals/DealsView';
 import {ArrowLeft } from 'lucide-react';
-import { MenuProductsView } from './MenuProductsView';
+import { ProductsView } from './products/ProductsView';
 import {
   LayoutGrid,
   Users2,
@@ -64,7 +64,7 @@ export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
       id: 'menu-products',
       title: 'Menu Products',
       icon: Package,
-      component: <MenuProductsView isDarkMode={isDarkMode} />,
+      component: <ProductsView isDarkMode={isDarkMode} />,
     },
   ];
 

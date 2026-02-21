@@ -252,7 +252,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
             {/* Bulk Discount */}
             <button
               onClick={handleBulkDiscount}
-              className="w-full lg:w-auto rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-sm hover:shadow-md"
+              className="w-full lg:w-auto rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary/10 shadow-sm hover:shadow-md"
             >
               Bulk Discount
             </button>
@@ -260,7 +260,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
             {/* Sort Categories */}
             <button
               onClick={handleSortCategories}
-              className="w-full lg:w-auto rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-sm hover:shadow-md"
+              className="w-full lg:w-auto rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary/10 shadow-sm hover:shadow-md"
             >
               Sort Categories {isSortedByNewest ? '(Newest)' : ''}
             </button>
@@ -268,7 +268,7 @@ export const ProductCategoriesView: React.FC<ProductCategoriesViewProps> = ({ is
             {/* Add Category */}
             <button
               onClick={() => setAddModalOpen(true)}
-              className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-orange-700 shadow-lg shadow-primary/30 hover:shadow-primary/40"
+              className="w-full lg:w-auto flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary/10 shadow-lg shadow-primary/30 hover:shadow-primary/40"
             >
               <Plus size={18} />
               Add Category
