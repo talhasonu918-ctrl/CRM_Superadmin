@@ -1,5 +1,5 @@
 import React from 'react';
-import { InventoryManagementView } from '@/src/app/modules/InventoryManagement';
+import { InventoryManagementView } from '@/src/app/modules/inventory-management';
 import { Layout } from '@/src/components/NavigationLayout';
 import { useTheme } from '@/src/contexts/ThemeContext';
 

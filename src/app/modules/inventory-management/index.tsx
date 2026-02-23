@@ -1,12 +1,12 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Package, AlertTriangle, Plus, Search, Download, BarChart3, TrendingUp, RotateCcw, X, Upload, Image as ImageIcon, MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
-import { Modal } from '../../components/Modal';
-import InfiniteTable from '../../components/InfiniteTable';
-import { useReactTable, getCoreRowModel, createColumnHelper } from '@tanstack/react-table';
-import { mockInventory, InventoryItem } from './pos/mockData';
-import { SearchableDropdown } from '../../components/SearchableDropdown';
+'use client';
 
-const columnHelper = createColumnHelper<InventoryItem>();
+import React, { useState, useMemo, useEffect } from 'react';
+import { Package, AlertTriangle, BarChart3, TrendingUp, RotateCcw, X, Upload, Image as ImageIcon, Trash2, Trophy } from 'lucide-react';
+import { Modal } from '@/src/components/Modal';
+import { mockInventory, InventoryItem } from '@/src/app/modules/pos/mockData';
+import { SearchableDropdown } from '@/src/components/SearchableDropdown';
+import { InventoryForm as InventoryFilterForm } from './form/InventoryForm';
+import { InventoryTable } from './table/InventoryTable';
 
 // Categories for dropdown
 const CATEGORIES = [
@@ -23,6 +23,8 @@ const CATEGORIES = [
 
 export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [search, setSearch] = useState('');
+  const [startDate, setStartDate] = useState<string>('2026-01-01');
+  const [endDate, setEndDate] = useState<string>('2026-03-31');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -42,6 +44,39 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
   // Save to localStorage whenever inventory changes
   useEffect(() => {
     localStorage.setItem('inventory', JSON.stringify(inventory));
+  }, [inventory]);
+
+  // Ensure items have dates and sales data for filtering (Auto-migration)
+  useEffect(() => {
+    const needsMigration = inventory.some(item => 
+      !item.lastUpdated || 
+      item.sales === undefined || 
+      item.salesCount === undefined
+    );
+
+    if (inventory.length > 0 && needsMigration) {
+      const updatedInventory = inventory.map(item => {
+        const updated = { ...item };
+        if (!item.lastUpdated) {
+          const months = ['01', '02', '03'];
+          const randomMonth = months[Math.floor(Math.random() * months.length)];
+          const randomDay = Math.floor(Math.random() * 25) + 1;
+          const formattedDay = randomDay < 10 ? `0${randomDay}` : randomDay;
+          updated.lastUpdated = `2026-${randomMonth}-${formattedDay}`;
+        }
+        if (item.sales === undefined || item.sales === 0) {
+          updated.sales = Math.floor(Math.random() * 5000) + 1000;
+        }
+        if (item.salesCount === undefined || item.salesCount === 0) {
+          // Generate a varied sales count based on price or randomly
+          updated.salesCount = item.price > 0 
+            ? Math.max(1, Math.floor(updated.sales / (item.price * 0.8 / 10))) 
+            : Math.floor(Math.random() * 50) + 10;
+        }
+        return updated;
+      });
+      setInventory(updatedInventory);
+    }
   }, [inventory]);
 
   const [formData, setFormData] = useState({
@@ -161,150 +196,51 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
   };
 
   const filteredInventory = useMemo(() => {
-    return inventory.filter((item: InventoryItem) =>
-      item.name.toLowerCase().includes(search.toLowerCase()) ||
-      item.category.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [search, inventory]);
+    return inventory.filter((item: InventoryItem) => {
+      const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase()) ||
+        item.category.toLowerCase().includes(search.toLowerCase());
 
-  const columns = useMemo(() => [
-    columnHelper.accessor('name', {
-      id: 'product',
-      header: 'Product',
-      cell: (info) => {
-        const item = info.row.original;
-        return (
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-              {item.image ? (
-                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-              ) : (
-                <Package size={20} className="text-slate-400" />
-              )}
-            </div>
-            <span className="font-medium text-sm">{info.getValue()}</span>
-          </div>
-        );
-      },
-      size: 250,
-    }),
-    columnHelper.accessor('category', {
-      id: 'category',
-      header: 'Category',
-      cell: (info) => <span className="text-sm">{info.getValue()}</span>,
-      size: 150,
-    }),
-    columnHelper.accessor('stock', {
-      id: 'stock',
-      header: 'Stock',
-      cell: (info) => <span className="text-sm font-medium">{info.getValue()}</span>,
-      size: 80,
-    }),
-    columnHelper.accessor('minStock', {
-      id: 'minStock',
-      header: 'Min. Stock',
-      cell: (info) => <span className="text-sm">{info.getValue()}</span>,
-      size: 100,
-    }),
-    columnHelper.accessor('price', {
-      id: 'price',
-      header: 'Price',
-      cell: (info) => <span className="text-sm">Rs. {info.getValue()}</span>,
-      size: 100,
-    }),
-    columnHelper.accessor('sales', {
-      id: 'sales',
-      header: 'Sales',
-      cell: (info) => <span className="text-sm">Rs. {info.getValue().toLocaleString()}</span>,
-      size: 100,
-    }),
-    columnHelper.accessor('status', {
-      id: 'status',
-      header: 'Status',
-      cell: (info) => {
-        const status = info.getValue() as 'In Stock' | 'Low Stock' | 'Out of Stock';
-        const statusStyles: Record<'In Stock' | 'Low Stock' | 'Out of Stock', string> = {
-          'In Stock': 'bg-emerald-500/10 text-emerald-500',
-          'Low Stock': 'bg-orange-500/10 text-orange-500',
-          'Out of Stock': 'bg-rose-500/10 text-rose-500'
-        };
-        return (
-          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${statusStyles[status]}`}>
-            {status}
-          </span>
-        );
-      },
-      size: 120,
-    }),
-    columnHelper.display({
-      id: 'actions',
-      header: 'Actions',
-      cell: (info) => {
-        const [isOpen, setIsOpen] = useState(false);
-        const dropdownRef = useRef<HTMLDivElement>(null);
+      const itemDate = item.lastUpdated; // YYYY-MM-DD
+      const start = startDate; // YYYY-MM-DD
+      const end = endDate; // YYYY-MM-DD
 
-        useEffect(() => {
-          const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-              setIsOpen(false);
-            }
-          };
-          document.addEventListener('mousedown', handleClickOutside);
-          return () => document.removeEventListener('mousedown', handleClickOutside);
-        }, []);
+      let matchesDate = true;
+      if (start || end) {
+        if (!itemDate) {
+          matchesDate = false; 
+        } else {
+          // Reliable alphabetical string comparison for YYYY-MM-DD
+          if (start && end) {
+            matchesDate = itemDate >= start && itemDate <= end;
+          } else if (start) {
+            matchesDate = itemDate >= start;
+          } else if (end) {
+            matchesDate = itemDate <= end;
+          }
+        }
+      }
 
-        return (
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={(e) => { e.stopPropagation(); setIsOpen(!isOpen); }}
-              className={`p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors ${isOpen ? 'bg-slate-100 dark:bg-slate-800' : ''}`}
-            >
-              <MoreVertical size={16} className="text-slate-400" />
-            </button>
-
-            {isOpen && (
-              <div className={`absolute right-0 mt-2 w-32 rounded-lg shadow-xl border z-50 overflow-hidden ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
-                }`}>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsOpen(false); handleView(info.row.original); }}
-                  className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors`}
-                >
-                  <Eye size={14} className="text-slate-400" /> View
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsOpen(false); handleEdit(info.row.original); }}
-                  className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors`}
-                >
-                  <Edit size={14} className="text-slate-400" /> Edit
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setIsOpen(false); confirmDelete(info.row.original); }}
-                  className={`w-full px-4 py-2.5 text-left text-sm flex items-center gap-2 hover:bg-rose-50 text-rose-500 dark:hover:bg-rose-900/20 transition-colors`}
-                >
-                  <Trash2 size={14} /> Delete
-                </button>
-              </div>
-            )}
-          </div>
-        );
-      },
-      size: 80,
-    }),
-  ], [isDarkMode, inventory]);
-
-  const table = useReactTable({
-    data: filteredInventory,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
+      return matchesSearch && matchesDate;
+    });
+  }, [search, inventory, startDate, endDate]);
 
   const stats = useMemo(() => {
-    const total = inventory.length;
-    const active = inventory.filter((item: InventoryItem) => item.status === 'In Stock').length;
-    const outOfStock = inventory.filter((item: InventoryItem) => item.status === 'Out of Stock').length;
-    const returned = inventory.filter((item: InventoryItem) => item.status === 'Low Stock').length;
-    return { total, active, outOfStock, returned };
-  }, [inventory]);
+    const total = filteredInventory.length;
+    const active = filteredInventory.filter((item: InventoryItem) => item.status === 'In Stock').length;
+    const outOfStock = filteredInventory.filter((item: InventoryItem) => item.status === 'Out of Stock').length;
+    const returned = filteredInventory.filter((item: InventoryItem) => item.status === 'Low Stock').length;
+    
+    // Find top selling product from filtered list using weighted score (salesCount and sales)
+    const topProduct = filteredInventory.length > 0 
+      ? [...filteredInventory].sort((a, b) => {
+          const scoreA = (a.salesCount || 0) * 1000 + (a.sales || 0);
+          const scoreB = (b.salesCount || 0) * 1000 + (b.sales || 0);
+          return scoreB - scoreA;
+        })[0]
+      : null;
+    
+    return { total, active, outOfStock, returned, topProduct };
+  }, [filteredInventory]);
 
   const cardStyle = `rounded-xl border shadow-sm transition-all ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100'}`;
 
@@ -313,84 +249,86 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
       {/* Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Inventory</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Inventory</h2>
           <p className="text-slate-400 text-sm mt-1">Monitor, manage, and update all your product stock in one place</p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <div className={`${cardStyle} p-6`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold">Total Product</div>
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Product</div>
             <BarChart3 size={20} className="text-orange-500" />
           </div>
-          <div className="text-3xl font-bold mb-2">{stats.total} Items</div>
-          <div className="text-xs text-slate-400">Updated in last month</div>
+          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.total} Items</div>
+          <div className="text-xs text-slate-400 font-medium">Updated in last month</div>
         </div>
 
-        <div className={`${cardStyle} p-6`}>
+        <div className={`${cardStyle} p-6 border-l-4 border-l-green-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold">Active Product</div>
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Active Product</div>
             <TrendingUp size={20} className="text-green-500" />
           </div>
-          <div className="text-3xl font-bold mb-2">{stats.active} Items</div>
-          <div className="text-xs text-slate-400">Available in stock</div>
+          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.active} Items</div>
+          <div className="text-xs text-slate-400 font-medium italic">Available in stock</div>
         </div>
 
-        <div className={`${cardStyle} p-6`}>
+        <div className={`${cardStyle} p-6 border-l-4 border-l-rose-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold">Out of Stock</div>
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Out of Stock</div>
             <AlertTriangle size={20} className="text-rose-500" />
           </div>
-          <div className="text-3xl font-bold mb-2">{stats.outOfStock} Items</div>
-          <div className="text-xs text-slate-400">Need to restock</div>
+          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.outOfStock} Items</div>
+          <div className="text-xs text-slate-400 font-medium italic text-rose-400/80">Need to restock</div>
         </div>
 
-        <div className={`${cardStyle} p-6`}>
+        <div className={`${cardStyle} p-6 border-l-4 border-l-blue-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold">Low Stock Products</div>
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Low Stock</div>
             <RotateCcw size={20} className="text-blue-500" />
           </div>
-          <div className="text-3xl font-bold mb-2">{stats.returned} Items</div>
-          <div className="text-xs text-slate-400">Compared to last month</div>
+          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.returned} Items</div>
+          <div className="text-xs text-slate-400 font-medium italic">Compared to last month</div>
+        </div>
+
+        <div className={`${cardStyle} p-6 border-l-4 border-l-amber-500 bg-gradient-to-br from-amber-500/5 to-transparent`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider line-clamp-1">Top Selling</div>
+            <Trophy size={20} className="text-amber-500 animate-pulse" />
+          </div>
+          <div className={`text-lg font-bold mb-1 truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            {stats.topProduct?.name || 'N/A'}
+          </div>
+          <div className="text-xs font-bold text-amber-500 flex items-center gap-1">
+            <span>{stats.topProduct?.salesCount || 0} Sales</span>
+            <span className="text-slate-400 font-normal">this month</span>
+          </div>
         </div>
       </div>
 
       {/* Table Section */}
       <div className={cardStyle}>
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="text-lg font-bold">Product List</div>
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className={`pl-10 pr-4 py-2.5 rounded-lg text-sm outline-none transition-all min-w-[240px] ${isDarkMode ? 'bg-slate-800 border border-slate-700' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500'
-                    }`}
-                />
-              </div>
-              <button className={`px-4 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                <Download size={16} /> Export
-              </button>
-              <button
-                onClick={openAddModal}
-                className="bg-primary text-white px-4 py-2.5 rounded-lg font-medium text-sm flex items-center gap-2 shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
-              >
-                <Plus size={18} /> Add Product
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <InfiniteTable
-          table={table}
+        <InventoryFilterForm
           isDarkMode={isDarkMode}
-          noDataMessage="No products found. Add your first product to get started."
+          search={search}
+          onSearchChange={setSearch}
+          onAddClick={openAddModal}
+          filteredData={filteredInventory}
+          startDate={startDate}
+          onStartDateChange={setStartDate}
+          endDate={endDate}
+          onEndDateChange={setEndDate}
+        />
+
+        <InventoryTable
+          isDarkMode={isDarkMode}
+          data={filteredInventory}
+          total={filteredInventory.length}
+          itemName="inventory records"
+          onView={handleView}
+          onEdit={handleEdit}
+          onDelete={confirmDelete}
         />
       </div>
 
@@ -407,8 +345,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
             <h3 className="text-xl font-bold">{formData.id ? "Edit Product" : "Add New Product"}</h3>
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}
             >
               <X size={20} className="text-slate-400" />
             </button>
@@ -457,7 +394,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
               value={formData.name}
               onChange={handleInputChange}
               placeholder="e.g. Chicken Tikka Pizza"
-              className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500'
+              className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500 text-slate-900'
                 }`}
             />
           </div>
@@ -482,7 +419,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
                 value={formData.stock}
                 onChange={handleInputChange}
                 placeholder="0"
-                className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500'
+                className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500 text-slate-900'
                   }`}
               />
             </div>
@@ -494,7 +431,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
                 value={formData.minStock}
                 onChange={handleInputChange}
                 placeholder="0"
-                className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500'
+                className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500 text-slate-900'
                   }`}
               />
             </div>
@@ -508,7 +445,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
               value={formData.price}
               onChange={handleInputChange}
               placeholder="0.00"
-              className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500'
+              className={`w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all ${isDarkMode ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 focus:bg-white focus:border-orange-500 text-slate-900'
                 }`}
             />
           </div>
@@ -516,14 +453,14 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
           <div className="flex gap-3 pt-4">
             <button
               onClick={() => setIsModalOpen(false)}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
+              className={`flex-1 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
                 }`}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="flex-1 px-4 py-3 bg-primary text-white rounded-lg font-medium text-sm shadow-lg shadow-orange-500/20 hover:bg-orange-600 transition-all"
+              className="flex-1 px-4 py-3 bg-primary text-white rounded-lg font-medium text-sm shadow-lg shadow-orange-500/20 hover:bg-primary/10 transition-all"
             >
               {formData.id ? "Update Product" : "Add Product"}
             </button>
@@ -543,15 +480,14 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
             <h3 className="text-xl font-bold">Product Details</h3>
             <button
               onClick={() => setIsViewModalOpen(false)}
-              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}
             >
               <X size={20} className="text-slate-400" />
             </button>
           </div>
 
           {selectedItem && (
-            <div className="space-y-6">
+            <div className="space-y-6 text-slate-900 dark:text-white">
               <div className="flex justify-center">
                 <div className={`w-32 h-32 rounded-2xl flex items-center justify-center overflow-hidden border-2 ${isDarkMode ? 'border-slate-700 bg-slate-800' : 'border-slate-200 bg-slate-50'}`}>
                   {selectedItem.image ? (
@@ -599,7 +535,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
           <div className="pt-4">
             <button
               onClick={() => setIsViewModalOpen(false)}
-              className={`w-full px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
+              className={`w-full px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
                 }`}
             >
               Close
@@ -622,8 +558,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
             </h3>
             <button
               onClick={() => setIsDeleteModalOpen(false)}
-              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'
-                }`}
+              className={`p-2 rounded-lg transition-colors ${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`}
             >
               <X size={20} className="text-slate-400" />
             </button>
@@ -635,11 +570,10 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
               This action cannot be undone.
             </p>
           </div>
-
-          <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 pt-2">
             <button
               onClick={() => setIsDeleteModalOpen(false)}
-              className={`flex-1 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-100 hover:bg-slate-200'
+              className={`flex-1 px-4 py-3 rounded-lg font-medium text-sm transition-all ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-900'
                 }`}
             >
               Cancel
@@ -656,3 +590,5 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
     </div>
   );
 };
+
+export default InventoryManagementView;

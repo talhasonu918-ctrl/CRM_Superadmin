@@ -180,33 +180,29 @@ export const KitchenOrderTable: React.FC<KitchenOrderTableProps> = ({
   const renderSubComponent = ({ row }: { row: any }) => {
     const items = row.original.items;
     return (
-      <tr>
-        <td colSpan={10} className="p-0">
-          <div className={`border-t-2 ${borderStyle} p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-            <h4 className={`text-xs font-bold mb-3 ${textStyle} uppercase tracking-wider`}>Order Items Checklist</h4>
-            <div className={`rounded-lg border ${borderStyle} overflow-hidden`}>
-              <table className="w-full  text-sm text-left">
-                <thead className={`text-xs uppercase font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
-                  <tr>
-                    <th className="px-4 py-3 w-1/3">Product Name</th>
-                    <th className="px-4 py-3 text-center w-1/3">Quantity</th>
-                    <th className="px-4 py-3 text-right w-1/3">Ready Time</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {items.map((item: any, idx: number) => (
-                    <tr key={idx} className={isDarkMode ? 'bg-gray-800/30 hover:bg-gray-800/50' : 'bg-white hover:bg-gray-50'}>
-                      <td className={`px-4 py-3 font-medium ${textStyle}`}>{item.productName}</td>
-                      <td className="px-4 py-3 text-center text-textSecondary">{item.quantity}</td>
-                      <td className="px-4 py-3 text-right text-primary font-semibold">{item.readyTime}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </td>
-      </tr>
+      <div className={`border-t-2 ${borderStyle} p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+        <h4 className={`text-xs font-bold mb-3 ${textStyle} uppercase tracking-wider`}>Order Items Checklist</h4>
+        <div className={`rounded-lg border ${borderStyle} overflow-hidden`}>
+          <table className="w-full  text-sm text-left">
+            <thead className={`text-xs uppercase font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
+              <tr>
+                <th className="px-4 py-3 w-1/3">Product Name</th>
+                <th className="px-4 py-3 text-center w-1/3">Quantity</th>
+                <th className="px-4 py-3 text-right w-1/3">Ready Time</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {items.map((item: any, idx: number) => (
+                <tr key={idx} className={isDarkMode ? 'bg-gray-800/30 hover:bg-gray-800/50' : 'bg-white hover:bg-gray-50'}>
+                  <td className={`px-4 py-3 font-medium ${textStyle}`}>{item.productName}</td>
+                  <td className="px-4 py-3 text-center text-textSecondary">{item.quantity}</td>
+                  <td className="px-4 py-3 text-right text-primary font-semibold">{item.readyTime}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   };
 

@@ -179,39 +179,35 @@ export const KitchenWiseTable: React.FC<KitchenWiseTableProps> = ({
   const renderSubComponent = ({ row }: { row: any }) => {
     const transactions = row.original.transactions as KitchenSaleTransaction[];
     return (
-      <tr>
-        <td colSpan={10} className="p-0">
-          <div className={`border-t-2 ${borderStyle} p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-            <h4 className={`text-xs font-bold mb-3 ${textStyle} uppercase tracking-wider`}>Product Breakdown: {row.original.kdsName}</h4>
-            <div className={`rounded-lg border ${borderStyle} overflow-hidden`}>
-              <table className="w-full text-sm text-left">
-                <thead className={`text-xs uppercase font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
-                  <tr>
-                    <th className="px-4 py-3">Product Name</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3 text-right">Quantity</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3 text-right">Tax</th>
-                    <th className="px-4 py-3 text-right">Discount</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {transactions.map((t, idx) => (
-                    <tr key={idx} className={isDarkMode ? 'bg-gray-800/30 hover:bg-gray-800/50' : 'bg-white hover:bg-gray-50'}>
-                      <td className={`px-4 py-3 font-medium ${textStyle}`}>{t.productName}</td>
-                      <td className="px-4 py-3 text-textSecondary">{t.date}</td>
-                      <td className="px-4 py-3 text-right text-textPrimary">{t.quantity}</td>
-                      <td className="px-4 py-3 text-right text-primary font-bold">PKR {t.amount.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right text-textSecondary">PKR {t.tax.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right text-textSecondary">PKR {t.discount.toFixed(2)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </td>
-      </tr>
+      <div className={`border-t-2 ${borderStyle} p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+        <h4 className={`text-xs font-bold mb-3 ${textStyle} uppercase tracking-wider`}>Product Breakdown: {row.original.kdsName}</h4>
+        <div className={`rounded-lg border ${borderStyle} overflow-hidden`}>
+          <table className="w-full text-sm text-left">
+            <thead className={`text-xs uppercase font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
+              <tr>
+                <th className="px-4 py-3">Product Name</th>
+                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3 text-right">Quantity</th>
+                <th className="px-4 py-3 text-right">Amount</th>
+                <th className="px-4 py-3 text-right">Tax</th>
+                <th className="px-4 py-3 text-right">Discount</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              {transactions.map((t, idx) => (
+                <tr key={idx} className={isDarkMode ? 'bg-gray-800/30 hover:bg-gray-800/50' : 'bg-white hover:bg-gray-50'}>
+                  <td className={`px-4 py-3 font-medium ${textStyle}`}>{t.productName}</td>
+                  <td className="px-4 py-3 text-textSecondary">{t.date}</td>
+                  <td className="px-4 py-3 text-right text-textPrimary">{t.quantity}</td>
+                  <td className="px-4 py-3 text-right text-primary font-bold">PKR {t.amount.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right text-textSecondary">PKR {t.tax.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right text-textSecondary">PKR {t.discount.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     );
   };
   const columns = React.useMemo(() => [

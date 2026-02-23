@@ -738,7 +738,10 @@ export interface InventoryItem {
   minStock: number;
   price: number;
   sales: number;
-  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock' ;
+  isPopular?: boolean;
+  salesCount?: number;
+  lastUpdated?: string;
 }
 
 // Kitchen Wise Sale Report Data
@@ -830,6 +833,7 @@ export const mockKitchenSales: KitchenSaleTransaction[] = [
 
 
 export const mockInventory: InventoryItem[] = [
+  // March 2026
   {
     id: 'INV-001',
     name: 'Chicken Tikka Pizza',
@@ -839,7 +843,10 @@ export const mockInventory: InventoryItem[] = [
     price: 950,
     sales: 8500,
     image: 'https://4xs9fttk0t.ucarecd.net/a8e33779-ec04-4f48-9608-5b1a7daf60ec/pizza1.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 154,
+    lastUpdated: '2026-03-05'
   },
   {
     id: 'INV-002',
@@ -850,8 +857,26 @@ export const mockInventory: InventoryItem[] = [
     price: 460,
     sales: 6200,
     image: 'https://www.kfcpakistan.com/images/19b05560-bc56-11ee-97d6-7187fd7553de-Zingeratha_variant_0-2024-01-26142047.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 120,
+    lastUpdated: '2026-03-10'
   },
+  {
+    id: 'INV-007',
+    name: 'Loaded Fries',
+    category: 'Fries & Sides',
+    stock: 55,
+    minStock: 30,
+    price: 550,
+    sales: 12000,
+    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=300&auto=format&fit=crop',
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 180,
+    lastUpdated: '2026-03-01'
+  },
+  // February 2026
   {
     id: 'INV-003',
     name: 'Peri Peri Wings (10pcs)',
@@ -861,7 +886,10 @@ export const mockInventory: InventoryItem[] = [
     price: 580,
     sales: 4350,
     image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
+    status: 'Low Stock',
+    isPopular: false,
+    salesCount: 45,
+    lastUpdated: '2026-02-15'
   },
   {
     id: 'INV-004',
@@ -872,84 +900,24 @@ export const mockInventory: InventoryItem[] = [
     price: 1150,
     sales: 9200,
     image: 'https://4xs9fttk0t.ucarecd.net/8e9b60e9-5905-4b67-bdb2-228728df8b32/slazzerpreviewtbn5f.png',
-    status: 'In Stock'
-  },
-  {
-    id: 'INV-005',
-    name: 'Fillet Burger',
-    category: 'Burger',
-    stock: 8,
-    minStock: 20,
-    price: 410,
-    sales: 2800,
-    image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png',
-    status: 'Low Stock'
-  },
-  {
-    id: 'INV-006',
-    name: 'BBQ Wings (10pcs)',
-    category: 'Wings',
-    stock: 0,
-    minStock: 25,
-    price: 580,
-    sales: 3500,
-    image: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?q=80&w=300&auto=format&fit=crop',
-    status: 'Out of Stock'
-  },
-  {
-    id: 'INV-007',
-    name: 'Cheese Lover Pizza',
-    category: 'Pizza',
-    stock: 28,
-    minStock: 15,
-    price: 1050,
-    sales: 7200,
-    image: 'https://4xs9fttk0t.ucarecd.net/125001e8-76d9-4494-b327-cfbd573866f3/slazzerpreviewzu6z01.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 88,
+    lastUpdated: '2026-02-20'
   },
   {
     id: 'INV-008',
-    name: 'Loaded Fries',
-    category: 'Fries & Sides',
-    stock: 55,
-    minStock: 30,
-    price: 550,
-    sales: 5500,
-    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=300&auto=format&fit=crop',
-    status: 'In Stock'
-  },
-  {
-    id: 'INV-009',
-    name: 'Fun Nuggets (10pcs)',
-    category: 'Fries & Sides',
-    stock: 12,
-    minStock: 25,
-    price: 580,
-    sales: 3200,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
-  },
-  {
-    id: 'INV-010',
-    name: 'Pepsi 1.5 Liter',
-    category: 'Drinks',
-    stock: 0,
-    minStock: 50,
-    price: 220,
-    sales: 4400,
-    image: 'https://www.kfcpakistan.com/images/0a68d020-73c8-11f0-9aa3-ad226d559836-Pepsiltr_variant_0-2025-08-07195225.png',
-    status: 'Out of Stock'
-  },
-  {
-    id: 'INV-011',
-    name: 'HNY Special Pizza',
-    category: 'Pizza',
-    stock: 22,
-    minStock: 15,
-    price: 1350,
-    sales: 8100,
-    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
-    status: 'In Stock'
+    name: 'Club Sandwich',
+    category: 'Rolls & Wraps',
+    stock: 25,
+    minStock: 10,
+    price: 520,
+    sales: 4500,
+    image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?q=80&w=300&auto=format&fit=crop',
+    status: 'In Stock',
+    isPopular: false,
+    salesCount: 65,
+    lastUpdated: '2026-02-28'
   },
   {
     id: 'INV-012',
@@ -960,7 +928,67 @@ export const mockInventory: InventoryItem[] = [
     price: 720,
     sales: 6300,
     image: 'https://www.kfcpakistan.com/images/32258900-7592-11f0-8081-2946661625ed-1pc-2025-08-10041432.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 92,
+    lastUpdated: '2026-02-05'
+  },
+  // January 2026
+  {
+    id: 'INV-005',
+    name: 'Cheese Lover Pizza',
+    category: 'Pizza',
+    stock: 0,
+    minStock: 15,
+    price: 1050,
+    sales: 10500,
+    image: 'https://4xs9fttk0t.ucarecd.net/125001e8-76d9-4494-b327-cfbd573866f3/slazzerpreviewzu6z01.png',
+    status: 'Out of Stock',
+    isPopular: true,
+    salesCount: 210,
+    lastUpdated: '2026-01-10'
+  },
+  {
+    id: 'INV-006',
+    name: 'Fillet Burger',
+    category: 'Burger',
+    stock: 12,
+    minStock: 20,
+    price: 410,
+    sales: 3200,
+    image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png',
+    status: 'Low Stock',
+    isPopular: false,
+    salesCount: 32,
+    lastUpdated: '2026-01-25'
+  },
+  {
+    id: 'INV-010',
+    name: 'Pepsi 1.5 Liter',
+    category: 'Drinks',
+    stock: 0,
+    minStock: 50,
+    price: 220,
+    sales: 4400,
+    image: 'https://www.kfcpakistan.com/images/0a68d020-73c8-11f0-9aa3-ad226d559836-Pepsiltr_variant_0-2025-08-07195225.png',
+    status: 'Out of Stock',
+    isPopular: false,
+    salesCount: 150,
+    lastUpdated: '2026-01-15'
+  },
+  {
+    id: 'INV-011',
+    name: 'HNY Special Pizza',
+    category: 'Pizza',
+    stock: 22,
+    minStock: 15,
+    price: 1350,
+    sales: 8100,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 75,
+    lastUpdated: '2026-01-05'
   },
   {
     id: 'INV-013',
@@ -969,20 +997,25 @@ export const mockInventory: InventoryItem[] = [
     stock: 18,
     minStock: 25,
     price: 480,
-    sales: 3840,
-    image: 'https://images.unsplash.com/photo-1509482560494-4126f8225994?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
+    salesCount: 110,
+    sales: 5280,
+    status: 'Low Stock',
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    lastUpdated: '2026-03-20',
+    isPopular: true
   },
   {
     id: 'INV-014',
     name: 'Economy Deal',
     category: 'Deals',
-    stock: 25,
+    stock: 10,
     minStock: 15,
     price: 1500,
-    sales: 12000,
-    image: 'https://www.kfcpakistan.com/images/98cb5e60-7688-11f0-b6cc-7b8f56c77b94-WowBoxcopy-2025-08-11075549.png',
-    status: 'In Stock'
+    salesCount: 45,
+    sales: 12500,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'Low Stock',
+    lastUpdated: '2026-02-12'
   },
   {
     id: 'INV-015',
@@ -991,10 +1024,13 @@ export const mockInventory: InventoryItem[] = [
     stock: 120,
     minStock: 80,
     price: 60,
-    sales: 2400,
-    image: 'https://www.dominos.com.pk/images/561f7ee0-9c0c-11ef-8241-d70815871548-Aquafina_variant_0-2024-11-06065707.jpg',
-    status: 'In Stock'
-  },
+    salesCount: 320,
+    sales: 1920,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'In Stock',
+    lastUpdated: '2026-01-25',
+    isPopular: true
+  }
 ];
 
 export const mockTakeawayOrders: TakeawayOrder[] = [
