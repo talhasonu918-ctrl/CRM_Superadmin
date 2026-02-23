@@ -7,8 +7,8 @@ import { TransactionForm } from './form/TransactionForm';
 import { TransactionTable } from './table/TransactionTable';
 
 const TransactionReport: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-  const [dateFrom, setDateFrom] = useState('2026-02-18');
-  const [dateTo, setDateTo] = useState('2026-02-16');
+  const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
+  const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [showTaxCompliant, setShowTaxCompliant] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searchTable, setSearchTable] = useState('');

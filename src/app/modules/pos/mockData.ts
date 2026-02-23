@@ -18,13 +18,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '1',
     invoiceId: '5482043',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-1',
+    orderNo: '001',
     waiter: 'John Doe',
     rider: '-',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Chicken Tikka Pizza', quantity: 1, readyTime: '10:15 AM' },
       { productName: 'Pepsi 1.5L', quantity: 1, readyTime: '10:12 AM' }
@@ -34,13 +34,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '2',
     invoiceId: '5482171',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-2',
+    orderNo: '202',
     waiter: 'Sarah Smith',
     rider: '-',
     tableNo: '-',
     delayTime: '00:05:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Zinger Burger', quantity: 2, readyTime: '10:35 AM' }
     ]
@@ -49,13 +49,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '3',
     invoiceId: '5482285',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-3',
+    orderNo: '203',
     waiter: 'Alex Wong',
     rider: '-',
     tableNo: 'T-5',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Beef Burger Combo', quantity: 1, readyTime: '11:05 AM' }
     ]
@@ -64,13 +64,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '4',
     invoiceId: '5482390',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-4',
+    orderNo: '2104',
     waiter: 'Admin',
     rider: 'Mike Ross',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Large Combo Deal', quantity: 1, readyTime: '11:30 AM' }
     ]
@@ -79,13 +79,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '5',
     invoiceId: '5482450',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-5',
+    orderNo: '2105',
     waiter: 'John Doe',
     rider: '-',
     tableNo: '-',
     delayTime: '00:10:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-24',
     items: [
       { productName: 'Hot Wings (10pcs)', quantity: 1, readyTime: '12:15 PM' }
     ]
@@ -94,13 +94,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '6',
     invoiceId: '5482560',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-6',
+    orderNo: '2016',
     waiter: 'Sarah Smith',
     rider: '-',
     tableNo: 'T-12',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Chicken Euro Pizza', quantity: 1, readyTime: '01:05 PM' }
     ]
@@ -109,13 +109,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '7',
     invoiceId: '5482670',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-7',
+    orderNo: '207',
     waiter: 'Admin',
     rider: 'James Bond',
     tableNo: '-',
     delayTime: '00:15:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-26',
     items: [
       { productName: 'Family Festival Deal', quantity: 1, readyTime: '01:45 PM' }
     ]
@@ -124,13 +124,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '8',
     invoiceId: '5482780',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-8',
+    orderNo: '2108',
     waiter: 'Alex Wong',
     rider: '-',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-24',
     items: [
       { productName: 'Student Deal', quantity: 3, readyTime: '02:05 PM' }
     ]
@@ -139,13 +139,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '9',
     invoiceId: '5482890',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-9',
+    orderNo: '21099',
     waiter: 'John Doe',
     rider: '-',
     tableNo: 'T-2',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Mellow Wrap', quantity: 2, readyTime: '02:45 PM' }
     ]
@@ -154,13 +154,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '10',
     invoiceId: '5482900',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-10',
+    orderNo: '210',
     waiter: 'Admin',
     rider: 'Mike Ross',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Club Sandwich', quantity: 4, readyTime: '03:15 PM' }
     ]
@@ -2214,6 +2214,8 @@ export interface TransactionData {
   status: string;
 }
 
+const today = new Date().toISOString().split('T')[0];
+
 export const mockTransactions: TransactionData[] = [
   {
     id: 1,
@@ -2233,10 +2235,10 @@ export const mockTransactions: TransactionData[] = [
     netSale: 2862.50,
     paid: 2862.50,
     paymentMode: 'Cash',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 10:30 AM',
+    createdAt: `${today} 10:30 AM`,
     status: 'Completed'
   },
   {
@@ -2257,16 +2259,16 @@ export const mockTransactions: TransactionData[] = [
     netSale: 2205.00,
     paid: 2205.00,
     paymentMode: 'Card',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 11:15 AM',
+    createdAt: `${today} 11:15 AM`,
     status: 'Completed'
   },
   {
     id: 3,
     orderNo: 'ORD-2026-003',
-    waiter: 'N/A',
+    waiter: 'Ahmed Ali',
     table: 'N/A',
     floorNo: 'N/A',
     type: 'delivery',
@@ -2281,10 +2283,10 @@ export const mockTransactions: TransactionData[] = [
     netSale: 3430.00,
     paid: 3430.00,
     paymentMode: 'Online',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 12:00 PM',
+    createdAt: `${today} 12:00 PM`,
     status: 'Completed'
   },
   {

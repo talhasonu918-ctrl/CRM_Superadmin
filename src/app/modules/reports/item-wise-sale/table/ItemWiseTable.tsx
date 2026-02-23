@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Eye, Trash2, X, AlertTriangle, Package, ShoppingBag, TrendingUp
 } from 'lucide-react';
@@ -75,6 +76,13 @@ const ProductCard: React.FC<{
   );
 };
 
+// Portal Component
+const Portal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? createPortal(children, document.body) : null;
+};
+
 // View Detail Modal
 const ViewDetailModal: React.FC<{
   item: ItemWiseSalesData | null;
@@ -88,65 +96,69 @@ const ViewDetailModal: React.FC<{
   const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className={`${cardStyle} w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border ${borderStyle} max-h-[95vh] flex flex-col`}>
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 shrink-0">
-          <h2 className={`text-lg sm:text-xl font-bold ${textStyle}`}>Product Sales Detail</h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-all">
-            <X size={20} className="text-textSecondary" />
-          </button>
-        </div>
-        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
-              <Package size={28} className="text-primary sm:w-8 sm:h-8" />
+    <Portal>
+      <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/30 backdrop-blur-sm px-4">
+        <div className={`${cardStyle} w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border ${borderStyle} max-h-[95vh] flex flex-col`}>
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 shrink-0">
+            <h2 className={`text-lg sm:text-xl font-bold   ${textStyle}`}>Product Sales Detail</h2>
+            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-all">
+              <X size={20} className="text-textSecondary" />
+            </button>
+          </div>
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 overflow-y-auto">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+                <Package size={28} className="text-primary sm:w-8 sm:h-8" />
+              </div>
+              <div className="min-w-0">
+                <h3 className={`text-base sm:text-lg font-bold truncate ${textStyle}`}>{item.productName}</h3>
+                <p className="text-sm text-textSecondary truncate">{item.category} • {item.date}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <h3 className={`text-base sm:text-lg font-bold truncate ${textStyle}`}>{item.productName}</h3>
-              <p className="text-sm text-textSecondary truncate">{item.category} • {item.date}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className={`p-3 sm:p-4 rounded-xl border ${borderStyle}`}>
+                <span className="text-[10px] sm:text-xs text-textSecondary uppercase font-bold tracking-wider">Sold Quantity</span>
+                <p className={`text-lg sm:text-xl font-black ${textStyle}`}>{item.soldQuantity}</p>
+              </div>
+              <div className={`p-3 sm:p-4 rounded-xl border ${borderStyle}`}>
+                <span className="text-[10px] sm:text-xs text-textSecondary uppercase font-bold tracking-wider">Order Channel</span>
+                <p className={`text-lg sm:text-xl font-black capitalize ${textStyle}`}>{item.channel}</p>
+              </div>
+            </div>
+            <div className="space-y-3 sm:space-y-4 text-sm sm:text-base">
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Cost Price (Unit)</span>
+                <span className={`font-bold ${textStyle}`}>PKR {item.costPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Retail Price (Unit)</span>
+                <span className={`font-bold ${textStyle}`}>PKR {item.retailPrice.toFixed(2)}</span>
+              </div>
+              <div className="h-px bg-gray-200" />
+              <div className="flex justify-between items-center text-base sm:text-lg">
+                <span className="text-textSecondary">Total Revenue</span>
+                <span className="font-bold text-success">PKR {item.revenue.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-base sm:text-lg">
+                <span className="text-textSecondary">Total Profit</span>
+                <span className={`font-bold ${item.profit >= 0 ? 'text-success' : 'text-error'}`}>PKR {item.profit.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Profit Margin</span>
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-bold text-sm sm:text-base">{item.margin.toFixed(2)}%</span>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <div className={`p-3 sm:p-4 rounded-xl border ${borderStyle}`}>
-              <span className="text-[10px] sm:text-xs text-textSecondary uppercase font-bold tracking-wider">Sold Quantity</span>
-              <p className={`text-lg sm:text-xl font-black ${textStyle}`}>{item.soldQuantity}</p>
-            </div>
-            <div className={`p-3 sm:p-4 rounded-xl border ${borderStyle}`}>
-              <span className="text-[10px] sm:text-xs text-textSecondary uppercase font-bold tracking-wider">Order Channel</span>
-              <p className={`text-lg sm:text-xl font-black capitalize ${textStyle}`}>{item.channel}</p>
-            </div>
+          <div className="p-4 sm:p-6 bg-gray-50/50 flex justify-end shrink-0">
+            <button onClick={onClose} className="w-full sm:w-auto px-6 py-2 sm:py-3 bg-primary text-white rounded-xl font-bold hover:shadow-lg transition-all">Close</button>
           </div>
-          <div className="space-y-3 sm:space-y-4 text-sm sm:text-base">
-            <div className="flex justify-between items-center">
-              <span className="text-textSecondary">Cost Price (Unit)</span>
-              <span className={`font-bold ${textStyle}`}>PKR {item.costPrice.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-textSecondary">Retail Price (Unit)</span>
-              <span className={`font-bold ${textStyle}`}>PKR {item.retailPrice.toFixed(2)}</span>
-            </div>
-            <div className="h-px bg-gray-200" />
-            <div className="flex justify-between items-center text-base sm:text-lg">
-              <span className="text-textSecondary">Total Revenue</span>
-              <span className="font-bold text-success">PKR {item.revenue.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center text-base sm:text-lg">
-              <span className="text-textSecondary">Total Profit</span>
-              <span className={`font-bold ${item.profit >= 0 ? 'text-success' : 'text-error'}`}>PKR {item.profit.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-textSecondary">Profit Margin</span>
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-lg font-bold text-sm sm:text-base">{item.margin.toFixed(2)}%</span>
-            </div>
-          </div>
-        </div>
-        <div className="p-4 sm:p-6 bg-gray-50/50 flex justify-end shrink-0">
-          <button onClick={onClose} className="w-full sm:w-auto px-6 py-2 sm:py-3 bg-primary text-white rounded-xl font-bold hover:shadow-lg transition-all">Close</button>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 };
+//   );
+// };
 
 // Delete Confirm Modal
 const DeleteConfirmModal: React.FC<{
@@ -161,24 +173,28 @@ const DeleteConfirmModal: React.FC<{
   const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className={`${cardStyle} w-full max-w-md rounded-2xl shadow-2xl p-6 sm:p-8 text-center`}>
-        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
-          <AlertTriangle size={32} className="text-error sm:w-10 sm:h-10" />
-        </div>
-        <h2 className={`text-xl sm:text-2xl font-black mb-2 ${textStyle}`}>Are you sure?</h2>
-        <p className="text-textSecondary mb-6 sm:mb-8 text-sm sm:text-lg">
-          You are about to delete the sales record for{' '}
-          <span className={`font-bold ${textStyle}`}>{item.productName}</span>.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button onClick={onClose} className="flex-1 order-2 sm:order-1 py-3 px-6 rounded-xl border border-gray-200 font-bold text-textSecondary hover:bg-gray-50 transition-all">Cancel</button>
-          <button onClick={onConfirm} className="flex-1 order-1 sm:order-2 py-3 px-6 rounded-xl bg-error text-white font-bold hover:bg-error/90 transition-all">Delete Record</button>
+    <Portal>
+      <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/30 backdrop-blur-sm px-4">
+        <div className={`${cardStyle} w-full max-w-md rounded-2xl shadow-2xl p-6 sm:p-8 text-center`}>
+          <div className="w-16 h-16 sm:w-20 sm:h-20 bg-error/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+            <AlertTriangle size={32} className="text-error sm:w-10 sm:h-10" />
+          </div>
+          <h2 className={`text-xl sm:text-2xl font-black mb-2 ${textStyle}`}>Are you sure?</h2>
+          <p className="text-textSecondary mb-6 sm:mb-8 text-sm sm:text-lg">
+            You are about to delete the sales record for{' '}
+            <span className={`font-bold ${textStyle}`}>{item.productName}</span>.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={onClose} className="flex-1 order-2 sm:order-1 py-3 px-6 rounded-xl border border-gray-200 font-bold text-textSecondary hover:bg-gray-50 transition-all">Cancel</button>
+            <button onClick={onConfirm} className="flex-1 order-1 sm:order-2 py-3 px-6 rounded-xl bg-error text-white font-bold hover:bg-error/90 transition-all">Delete Record</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 };
+//   );
+// };
 
 interface ItemWiseTableProps {
   isDarkMode: boolean;

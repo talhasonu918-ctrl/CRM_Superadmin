@@ -7,8 +7,8 @@ import { KitchenOrderForm } from './form/KitchenOrderForm';
 import { KitchenOrderTable } from './table/KitchenOrderTable';
 
 const KitchenOrderReadyTimeReport: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-  const [dateFrom, setDateFrom] = useState('2026-02-16');
-  const [dateTo, setDateTo] = useState('2026-02-16');
+  const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
+  const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrderType, setSelectedOrderType] = useState('all');
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');

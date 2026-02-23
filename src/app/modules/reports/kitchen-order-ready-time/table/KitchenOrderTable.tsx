@@ -1,16 +1,94 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
-  Eye, Trash2, ChevronUp, Clock, LayoutGrid, List as ListIcon,
+  Eye, Trash2, ChevronUp, ChevronDown, Clock, LayoutGrid, List as ListIcon, X,
 } from 'lucide-react';
 import {
-  createColumnHelper, useReactTable, getCoreRowModel, getExpandedRowModel,
+  createColumnHelper, useReactTable, getCoreRowModel, getExpandedRowModel, ExpandedState,
 } from '@tanstack/react-table';
 import InfiniteTable from '@/src/components/InfiniteTable';
 import type { KitchenOrderReadyTimeData } from '@/src/app/modules/pos/mockData';
 
 const columnHelper = createColumnHelper<KitchenOrderReadyTimeData>();
+
+// Portal Component
+const Portal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  return mounted ? createPortal(children, document.body) : null;
+};
+
+// Detail Modal Component
+const KitchenOrderDetailModal: React.FC<{
+  item: KitchenOrderReadyTimeData | null;
+  isOpen: boolean;
+  onClose: () => void;
+  isDarkMode: boolean;
+}> = ({ item, isOpen, onClose, isDarkMode }) => {
+  if (!isOpen || !item) return null;
+  const cardStyle = isDarkMode ? 'bg-[#1e2836]' : 'bg-white';
+  const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
+  const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+
+  return (
+    <Portal>
+      <div className="fixed inset-0 z-[100000] flex items-center justify-center bg-black/30 backdrop-blur-sm px-4">
+        <div className={`${cardStyle} w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border ${borderStyle} max-h-[95vh] flex flex-col`}>
+          <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 shrink-0">
+            <h2 className={`text-base sm:text-lg font-bold ${textStyle}`}>Order Details</h2>
+            <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-full transition-all">
+              <X size={18} className="text-textSecondary" />
+            </button>
+          </div>
+          <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${item.status === 'Late' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                <Clock size={24} className="sm:w-6 sm:h-6" />
+              </div>
+              <div className="min-w-0">
+                <h3 className={`text-sm sm:text-base font-bold truncate ${textStyle}`}>INV: {item.invoiceId}</h3>
+                <p className="text-xs text-textSecondary truncate">Order {item.orderNo}</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+              <div className={`p-2 sm:p-3 rounded-lg border ${borderStyle}`}>
+                <span className="text-[9px] sm:text-[10px] text-textSecondary uppercase font-bold tracking-wider">Order Type</span>
+                <p className={`text-base sm:text-lg font-black ${textStyle}`}>{item.orderType}</p>
+              </div>
+              <div className={`p-2 sm:p-3 rounded-lg border ${borderStyle}`}>
+                <span className="text-[9px] sm:text-[10px] text-textSecondary uppercase font-bold tracking-wider">Delay Time</span>
+                <p className={`text-base sm:text-lg font-black ${item.status === 'Late' ? 'text-red-500' : 'text-primary'}`}>{item.delayTime || '00:00:00'}</p>
+              </div>
+            </div>
+            <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Waiter</span>
+                <span className={`font-bold ${textStyle}`}>{item.waiter}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Rider</span>
+                <span className={`font-bold ${textStyle}`}>{item.rider || 'N/A'}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-textSecondary">Table No</span>
+                <span className={`font-bold ${textStyle}`}>{item.tableNo}</span>
+              </div>
+              <div className="h-px bg-gray-200" />
+              <div className="flex justify-between items-center text-sm sm:text-base">
+                <span className="text-textSecondary">Status</span>
+                <span className={`px-2 py-1 rounded text-xs font-bold uppercase ${item.status === 'Late' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                  {item.status}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Portal>
+  );
+};
 
 // Grid view card
 const KitchenOrderCard: React.FC<{ item: KitchenOrderReadyTimeData; isDarkMode: boolean }> = ({ item, isDarkMode }) => {
@@ -95,40 +173,58 @@ export const KitchenOrderTable: React.FC<KitchenOrderTableProps> = ({
   const cardStyle = isDarkMode ? 'bg-[#1e2836]' : 'bg-white';
   const textStyle = isDarkMode ? 'text-white' : 'text-gray-900';
   const borderStyle = isDarkMode ? 'border-gray-700' : 'border-gray-200';
+  const [expanded, setExpanded] = useState<ExpandedState>({});
+  const [selectedItem, setSelectedItem] = useState<KitchenOrderReadyTimeData | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const renderSubComponent = ({ row }: { row: any }) => {
     const items = row.original.items;
     return (
-      <div className={`p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-        <h4 className={`text-sm font-bold mb-3 ${textStyle}`}>Order Items Checklist</h4>
-        <div className={`rounded-lg border ${borderStyle} overflow-hidden bg-white dark:bg-gray-800`}>
-          <table className="w-full text-sm text-left">
-            <thead className={`text-xs uppercase ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
-              <tr>
-                <th className="px-4 py-3">Product Name</th>
-                <th className="px-4 py-3 text-center">Quantity</th>
-                <th className="px-4 py-3 text-right">Ready Time</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {items.map((item: any, idx: number) => (
-                <tr key={idx}>
-                  <td className={`px-4 py-2 font-medium ${textStyle}`}>{item.productName}</td>
-                  <td className="px-4 py-2 text-center text-textSecondary">{item.quantity}</td>
-                  <td className="px-4 py-2 text-right text-primary font-semibold">{item.readyTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <tr>
+        <td colSpan={10} className="p-0">
+          <div className={`border-t-2 ${borderStyle} p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+            <h4 className={`text-xs font-bold mb-3 ${textStyle} uppercase tracking-wider`}>Order Items Checklist</h4>
+            <div className={`rounded-lg border ${borderStyle} overflow-hidden`}>
+              <table className="w-full  text-sm text-left">
+                <thead className={`text-xs uppercase font-semibold ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'}`}>
+                  <tr>
+                    <th className="px-4 py-3 w-1/3">Product Name</th>
+                    <th className="px-4 py-3 text-center w-1/3">Quantity</th>
+                    <th className="px-4 py-3 text-right w-1/3">Ready Time</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {items.map((item: any, idx: number) => (
+                    <tr key={idx} className={isDarkMode ? 'bg-gray-800/30 hover:bg-gray-800/50' : 'bg-white hover:bg-gray-50'}>
+                      <td className={`px-4 py-3 font-medium ${textStyle}`}>{item.productName}</td>
+                      <td className="px-4 py-3 text-center text-textSecondary">{item.quantity}</td>
+                      <td className="px-4 py-3 text-right text-primary font-semibold">{item.readyTime}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </td>
+      </tr>
     );
   };
 
   const columns = React.useMemo(() => [
     columnHelper.accessor('invoiceId', {
       header: 'Invoice ID',
-      cell: (info) => <span className="font-semibold text-primary">{info.getValue()}</span>,
+      cell: (info) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => info.row.toggleExpanded()}
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors shrink-0"
+            title={info.row.getIsExpanded() ? 'Collapse' : 'Expand'}
+          >
+            {info.row.getIsExpanded() ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+          </button>
+          <span className="font-semibold text-primary">{info.getValue()}</span>
+        </div>
+      ),
     }),
     columnHelper.accessor('orderType', {
       header: 'Order Type',
@@ -159,13 +255,16 @@ export const KitchenOrderTable: React.FC<KitchenOrderTableProps> = ({
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => row.toggleExpanded()}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 transition-colors"
-            title={row.getIsExpanded() ? 'Hide Items' : 'View Items'}
+            onClick={() => {
+              setSelectedItem(row.original);
+              setIsDetailOpen(true);
+            }}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors"
+            title="View Details"
           >
-            {row.getIsExpanded() ? <ChevronUp size={18} /> : <Eye size={18} />}
+            <Eye size={18} />
           </button>
-          <button className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors">
+          <button className="p-2 rounded-lg hover:bg-red-50 text-red-500 hover:text-red-600 transition-colors" title="Delete Record">
             <Trash2 size={18} />
           </button>
         </div>
@@ -179,6 +278,8 @@ export const KitchenOrderTable: React.FC<KitchenOrderTableProps> = ({
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getRowCanExpand: () => true,
+    state: { expanded },
+    onExpandedChange: setExpanded,
   });
 
   return (
@@ -225,6 +326,13 @@ export const KitchenOrderTable: React.FC<KitchenOrderTableProps> = ({
           )}
         </div>
       )}
+
+      <KitchenOrderDetailModal
+        item={selectedItem}
+        isOpen={isDetailOpen}
+        onClose={() => setIsDetailOpen(false)}
+        isDarkMode={isDarkMode}
+      />
     </>
   );
 };
