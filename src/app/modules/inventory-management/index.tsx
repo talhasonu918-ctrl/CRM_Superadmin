@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Package, AlertTriangle, BarChart3, TrendingUp, RotateCcw, X, Upload, Image as ImageIcon, Trash2, Trophy } from 'lucide-react';
+import { Package, AlertTriangle, BarChart3, TrendingUp, RotateCcw, X, Upload, Image as ImageIcon, Trash2, Trophy, MoreVertical, Eye, Edit, Info } from 'lucide-react';
 import { Modal } from '@/src/components/Modal';
 import { mockInventory, InventoryItem } from '@/src/app/modules/pos/mockData';
 import { SearchableDropdown } from '@/src/components/SearchableDropdown';
@@ -29,6 +29,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [viewType, setViewType] = useState<'grid' | 'list'>('list');
 
   // Initialize inventory from localStorage or mock data
   const [inventory, setInventory] = useState<InventoryItem[]>(() => {
@@ -247,60 +248,60 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Inventory</h2>
-          <p className="text-slate-400 text-sm mt-1">Monitor, manage, and update all your product stock in one place</p>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Inventory</h2>
+          <p className="text-slate-400 text-[10px] sm:text-xs md:text-sm mt-0.5 sm:mt-1">Monitor, manage, and update all your product stock in one place</p>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <div className={`${cardStyle} p-6`}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
+        <div className={`${cardStyle} p-4 sm:p-6`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Product</div>
+            <div className="text-slate-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Total Product</div>
             <BarChart3 size={20} className="text-orange-500" />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.total} Items</div>
+          <div className={`text-xl sm:text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.total} Items</div>
           <div className="text-xs text-slate-400 font-medium">Updated in last month</div>
         </div>
 
-        <div className={`${cardStyle} p-6 border-l-4 border-l-green-500`}>
+        <div className={`${cardStyle} p-4 sm:p-6 border-l-4 border-l-green-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Active Product</div>
+            <div className="text-slate-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Active Product</div>
             <TrendingUp size={20} className="text-green-500" />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.active} Items</div>
+          <div className={`text-xl sm:text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.active} Items</div>
           <div className="text-xs text-slate-400 font-medium italic">Available in stock</div>
         </div>
 
-        <div className={`${cardStyle} p-6 border-l-4 border-l-rose-500`}>
+        <div className={`${cardStyle} p-4 sm:p-6 border-l-4 border-l-rose-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Out of Stock</div>
+            <div className="text-slate-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Out of Stock</div>
             <AlertTriangle size={20} className="text-rose-500" />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.outOfStock} Items</div>
+          <div className={`text-xl sm:text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.outOfStock} Items</div>
           <div className="text-xs text-slate-400 font-medium italic text-rose-400/80">Need to restock</div>
         </div>
 
-        <div className={`${cardStyle} p-6 border-l-4 border-l-blue-500`}>
+        <div className={`${cardStyle} p-4 sm:p-6 border-l-4 border-l-blue-500`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Low Stock</div>
+            <div className="text-slate-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider">Low Stock</div>
             <RotateCcw size={20} className="text-blue-500" />
           </div>
-          <div className={`text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.returned} Items</div>
+          <div className={`text-xl sm:text-2xl font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{stats.returned} Items</div>
           <div className="text-xs text-slate-400 font-medium italic">Compared to last month</div>
         </div>
 
-        <div className={`${cardStyle} p-6 border-l-4 border-l-amber-500 bg-gradient-to-br from-amber-500/5 to-transparent`}>
+        <div className={`${cardStyle} p-4 sm:p-6 border-l-4 border-l-amber-500 bg-gradient-to-br from-amber-500/5 to-transparent sm:col-span-2 lg:col-span-2 xl:col-span-1`}>
           <div className="flex items-center justify-between mb-4">
-            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider line-clamp-1">Top Selling</div>
+            <div className="text-slate-400 text-[10px] sm:text-xs font-semibold uppercase tracking-wider line-clamp-1">Top Selling</div>
             <Trophy size={20} className="text-amber-500 animate-pulse" />
           </div>
-          <div className={`text-lg font-bold mb-1 truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <div className={`text-base sm:text-lg font-bold mb-1 truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             {stats.topProduct?.name || 'N/A'}
           </div>
-          <div className="text-xs font-bold text-amber-500 flex items-center gap-1">
+          <div className="text-[10px] sm:text-xs font-bold text-amber-500 flex items-center gap-1">
             <span>{stats.topProduct?.salesCount || 0} Sales</span>
             <span className="text-slate-400 font-normal">this month</span>
           </div>
@@ -319,17 +320,89 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
           onStartDateChange={setStartDate}
           endDate={endDate}
           onEndDateChange={setEndDate}
+          viewType={viewType}
+          onViewTypeChange={setViewType}
         />
 
-        <InventoryTable
-          isDarkMode={isDarkMode}
-          data={filteredInventory}
-          total={filteredInventory.length}
-          itemName="inventory records"
-          onView={handleView}
-          onEdit={handleEdit}
-          onDelete={confirmDelete}
-        />
+        {viewType === 'list' ? (
+          <InventoryTable
+            isDarkMode={isDarkMode}
+            data={filteredInventory}
+            total={filteredInventory.length}
+            itemName="inventory records"
+            onView={handleView}
+            onEdit={handleEdit}
+            onDelete={confirmDelete}
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-6">
+            {filteredInventory.map((item) => (
+              <div 
+                key={item.id}
+                className={`group relative rounded-xl border p-4 transition-all duration-300 hover:shadow-lg ${
+                  isDarkMode ? 'bg-[#1C1F26] border-slate-800 hover:border-slate-700' : 'bg-slate-50 border-slate-200 hover:border-primary/30'
+                }`}
+              >
+                {/* Actions Menu */}
+                <div className="absolute top-3 right-0.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => handleView(item)}
+                    className={`p-1.5 rounded-lg transition-colors ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-white hover:bg-slate-100 text-slate-600'}`}
+                  >
+                    <Info size={16} />
+                  </button>
+                  <button 
+                    onClick={() => handleEdit(item)}
+                    className={`p-1.5 rounded-lg transition-colors ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-white' : 'bg-white hover:bg-slate-100 text-slate-600'}`}
+                  >
+                    <Edit size={16} />
+                  </button>
+                  <button 
+                    onClick={() => confirmDelete(item)}
+                    className={`p-1.5 rounded-lg transition-colors ${isDarkMode ? 'bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white' : 'bg-rose-50 hover:bg-rose-500 text-rose-500 hover:text-white'}`}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+
+                <div className="flex flex-col items-center text-center">
+                  <div className={`w-20 h-20 rounded-2xl flex items-center justify-center overflow-hidden mb-4 ${isDarkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+                    {item.image ? (
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Package size={32} className="text-slate-400" />
+                    )}
+                  </div>
+                  <h3 className={`font-bold text-sm mb-1 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{item.name}</h3>
+                  <span className="text-xs text-slate-400 mb-3">{item.category}</span>
+                  
+                  <div className="grid grid-cols-2 gap-4 w-full pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div className="text-left">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Stock</div>
+                      <div className={`text-sm font-bold ${item.stock <= item.minStock ? 'text-rose-500' : isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {item.stock} Units
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">Price</div>
+                      <div className="text-sm font-bold text-primary">Rs. {item.price}</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 w-full">
+                    <div className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border text-center ${
+                      item.status === 'In Stock' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
+                      item.status === 'Low Stock' ? 'bg-orange-500/10 text-orange-500 border-orange-500/20' :
+                      'bg-rose-500/10 text-rose-500 border-rose-500/20'
+                    }`}>
+                      {item.status}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Product Modal */}
@@ -498,22 +571,22 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4 sm:gap-y-6">
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Product Name</div>
-                  <div className="font-medium">{selectedItem.name}</div>
+                  <div className="font-medium text-sm sm:text-base">{selectedItem.name}</div>
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Category</div>
-                  <div className="font-medium">{selectedItem.category}</div>
+                  <div className="font-medium text-sm sm:text-base">{selectedItem.category}</div>
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Price</div>
-                  <div className="font-medium">Rs. {selectedItem.price}</div>
+                  <div className="font-medium text-sm sm:text-base">Rs. {selectedItem.price}</div>
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Status</div>
-                  <div className={`inline-block px-2 py-1 rounded text-xs font-bold ${selectedItem.status === 'In Stock' ? 'bg-emerald-500/10 text-emerald-500' :
+                  <div className={`inline-block px-2 py-1 rounded text-[10px] sm:text-xs font-bold ${selectedItem.status === 'In Stock' ? 'bg-emerald-500/10 text-emerald-500' :
                       selectedItem.status === 'Low Stock' ? 'bg-orange-500/10 text-orange-500' :
                         'bg-rose-500/10 text-rose-500'
                     }`}>
@@ -522,11 +595,11 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Current Stock</div>
-                  <div className="font-medium">{selectedItem.stock}</div>
+                  <div className="font-medium text-sm sm:text-base">{selectedItem.stock}</div>
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Min. Stock</div>
-                  <div className="font-medium">{selectedItem.minStock}</div>
+                  <div className="font-medium text-sm sm:text-base">{selectedItem.minStock}</div>
                 </div>
               </div>
             </div>

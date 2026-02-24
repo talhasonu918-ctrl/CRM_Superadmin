@@ -6,6 +6,8 @@ import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
 import { ThemeProvider } from '@/src/contexts/ThemeContext';
 import { BrandingProvider, useBranding } from '@/src/contexts/BrandingContext';
 import { CompanyProvider } from '@/src/contexts/CompanyContext';
+import { OrderProvider } from '@/src/contexts/OrderContext';
+import { NotificationProvider } from '@/src/contexts/NotificationContext';
 import toast, { Toaster } from 'react-hot-toast';
 import '../styles/globals.css';
 
@@ -103,31 +105,35 @@ function MyApp({ Component, pageProps }: AppProps) {
         <ThemeProvider>
           <BrandingProvider>
             <CompanyProvider>
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                  success: {
-                    duration: 3000,
-                    iconTheme: {
-                      primary: 'var(--color-primary)',
-                      secondary: '#fff',
-                    },
-                  },
-                  error: {
-                    duration: 4000,
-                    iconTheme: {
-                      primary: 'var(--color-error)',
-                      secondary: '#fff',
-                    },
-                  },
-                }}
-              />
-              <AppContent Component={Component} pageProps={pageProps} />
+              <OrderProvider>
+                <NotificationProvider>
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 3000,
+                      style: {
+                        background: '#363636',
+                        color: '#fff',
+                      },
+                      success: {
+                        duration: 3000,
+                        iconTheme: {
+                          primary: 'var(--color-primary)',
+                          secondary: '#fff',
+                        },
+                      },
+                      error: {
+                        duration: 4000,
+                        iconTheme: {
+                          primary: 'var(--color-error)',
+                          secondary: '#fff',
+                        },
+                      },
+                    }}
+                  />
+                  <AppContent Component={Component} pageProps={pageProps} />
+                </NotificationProvider>
+              </OrderProvider>
             </CompanyProvider>
           </BrandingProvider>
         </ThemeProvider>

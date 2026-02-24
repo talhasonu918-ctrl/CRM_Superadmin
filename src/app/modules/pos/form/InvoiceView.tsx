@@ -334,8 +334,8 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
 
                             {/* Grand Total */}
                             <div className="flex justify-between items-center mb-8 px-2">
-                                <span className="text-base font-black tracking-tighter text-textPrimary uppercase">Amount Due :</span>
-                                <span className="text-lg font-black text-textPrimary">PKR {totals.total.toFixed(2)}</span>
+                                <span className="text-[10px] sm:text-base font-black tracking-tighter text-textPrimary uppercase">Amount Due :</span>
+                                <span className=" text-[12px] sm:text-lg font-black text-textPrimary">PKR {totals.total.toFixed(2)}</span>
                             </div>
 
                             <div className="text-center">

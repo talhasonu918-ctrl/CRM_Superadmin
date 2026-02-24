@@ -504,6 +504,46 @@ export const mockRiderReport: RiderSaleReportData[] = [
 
 export const mockNotifications = [
   {
+    id: 5,
+    title: 'KDS: Order Ready',
+    message: 'Order #2104 is ready in kitchen',
+    time: '5 min ago',
+    unread: true,
+    type: 'kds',
+    orderDetails: {
+      orderId: '#2104',
+      customerName: 'Mike Ross',
+      phoneNumber: '+92 345 6789012',
+      address: 'Delivery Order',
+      orderDate: '2026-02-23',
+      orderTime: '11:30 AM',
+      totalAmount: 2100.0,
+      items: [
+        { name: 'Large Combo Deal', quantity: 1, price: 2100 },
+      ],
+    },
+  },
+  {
+    id: 6,
+    title: 'Dispatch: Rider Assigned',
+    message: 'James Bond assigned to Order #207',
+    time: '10 min ago',
+    unread: true,
+    type: 'dispatch',
+    orderDetails: {
+      orderId: '#207',
+      customerName: 'Admin',
+      phoneNumber: '+92 312 3456789',
+      address: '7th Avenue, Islamabad',
+      orderDate: '2026-02-26',
+      orderTime: '01:45 PM',
+      totalAmount: 3500.0,
+      items: [
+        { name: 'Family Festival Deal', quantity: 1, price: 3500 },
+      ],
+    },
+  },
+  {
     id: 1,
     title: 'New Order #1234',
     message: 'Order received from John Doe',
@@ -526,6 +566,26 @@ export const mockNotifications = [
     },
   },
   {
+    id: 7,
+    title: 'KDS: New Order',
+    message: 'New order #2105 received in kitchen',
+    time: '12 min ago',
+    unread: true,
+    type: 'kds',
+    orderDetails: {
+      orderId: '#2105',
+      customerName: 'John Doe',
+      phoneNumber: '+92 300 1234567',
+      address: 'Takeaway',
+      orderDate: '2026-02-24',
+      orderTime: '12:15 PM',
+      totalAmount: 1150.0,
+      items: [
+        { name: 'Hot Wings (10pcs)', quantity: 1, price: 1150 },
+      ],
+    },
+  },
+  {
     id: 2,
     title: 'Low Stock Alert',
     message: 'Pizza dough running low',
@@ -542,6 +602,26 @@ export const mockNotifications = [
       totalAmount: 0,
       items: [
         { name: 'Pizza Dough', quantity: 5, price: 0, status: 'Low Stock - Reorder Required' },
+      ],
+    },
+  },
+  {
+    id: 8,
+    title: 'Dispatch: Out for Delivery',
+    message: 'Order #210 is out for delivery with Mike Ross',
+    time: '15 min ago',
+    unread: false,
+    type: 'dispatch',
+    orderDetails: {
+      orderId: '#210',
+      customerName: 'Admin',
+      phoneNumber: '+92 345 1234567',
+      address: 'Sector F-7, Islamabad',
+      orderDate: '2026-02-23',
+      orderTime: '03:15 PM',
+      totalAmount: 950.0,
+      items: [
+        { name: 'Club Sandwich', quantity: 4, price: 950 },
       ],
     },
   },
@@ -2613,4 +2693,208 @@ export const mockTransactions: TransactionData[] = [
     createdAt: '2026-02-16 04:15 PM',
     status: 'Pending'
   }
+];
+
+export interface DispatchOrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  completed: boolean;
+}
+
+export interface DispatchDeal {
+  name: string;
+  items: string[];
+  price?: number;
+}
+
+export interface DispatchOrder {
+  id: string;
+  orderNumber: string;
+  tableNumber: string;
+  tokenNumber?: string;
+  orderType: 'DineIn' | 'TakeAway' | 'Delivery';
+  waiterName: string;
+  elapsedTime: string;
+  items: DispatchOrderItem[];
+  deals?: DispatchDeal[];
+  status: 'ready' | 'dispatched';
+  customerName?: string;
+  customerPhone?: string;
+  timestamp?: number;
+  readyTime: number;
+  riderId?: string;
+  riderName?: string;
+  subtotal?: number;
+  tax?: number;
+  discount?: number;
+  grandTotal?: number;
+}
+
+export interface RiderStatus {
+  id: string;
+  name: string;
+  status: 'Available' | 'Busy' | 'Offline';
+  phone: string;
+}
+
+export const initialMockDispatchOrders: DispatchOrder[] = [
+  {
+    id: 'dispatch-1',
+    orderNumber: '# 243',
+    tableNumber: 'G3',
+    orderType: 'DineIn',
+    waiterName: 'POS System',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 30 * 60 * 1000,
+    readyTime: Date.now() - 12 * 60 * 1000, // 12 mins ago (Red)
+    items: [
+      { id: '1', name: 'EXTREME DEAL', quantity: 1, completed: true,price : 120.00  },
+    ],
+  },
+  {
+    id: 'dispatch-2',
+    orderNumber: '# 115',
+    tableNumber: 'G11',
+    orderType: 'DineIn',
+    waiterName: 'Ahmed Ali',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 23 * 60 * 1000,
+    readyTime: Date.now() - 6 * 60 * 1000, // 6 mins ago (Yellow)
+    items: [
+      { id: '1', name: 'Grilled Chicken', quantity: 2, completed: true,price : 100.00 },
+      { id: '2', name: 'Caesar Salad', quantity: 1, completed: true,price : 190.00 },
+      { id: '3', name: 'French Fries', quantity: 3, completed: true,price : 420.00 },
+    ],
+    deals: [
+      {
+        name: 'Family Deal',
+        items: ['2x Pizza', '1x Pasta', '4x Drinks']
+      }
+    ]
+  },
+  {
+    id: 'dispatch-3',
+    orderNumber: '# 114',
+    tableNumber: 'F8',
+    orderType: 'DineIn',
+    waiterName: 'Sara Khan',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 23 * 60 * 1000,
+    readyTime: Date.now() - 2 * 60 * 1000, // 2 mins ago (Green)
+    items: [
+      { id: '1', name: 'Beef Burger', quantity: 2, completed: true, price : 120.00 },
+      { id: '2', name: 'Chicken Wings', quantity: 1, completed: true,price : 120.00 },
+      { id: '3', name: 'Onion Rings', quantity: 2, completed: true, price : 220.00 },
+      { id: '4', name: 'Coca Cola', quantity: 2, completed: true, price : 120.00 },
+    ],
+  },
+  {
+    id: 'dispatch-4',
+    orderNumber: '# 112',
+    tableNumber: '-',
+    tokenNumber: 'TK-88',
+    orderType: 'TakeAway',
+    waiterName: 'Fatima Sheikh',
+    elapsedTime: '15:28',
+    status: 'ready',
+    timestamp: Date.now() - 15 * 60 * 1000,
+    readyTime: Date.now() - 4 * 60 * 1000,
+    customerName: 'Muhammad Usman',
+    customerPhone: '+92 300 1234567',
+    items: [
+      { id: '1', name: 'Loaded Fries', quantity: 1, completed: true, price : 120.00 },
+      { id: '2', name: 'HNY SPECIAL PIZZA', quantity: 1, completed: true, price : 120.00 },
+      { id: '3', name: 'Pizza Sandwich', quantity: 2, completed: true, price : 220.00 },
+      { id: '4', name: 'PAK DRINK', quantity: 1, completed: true, price : 190.00 },
+    ],
+    deals: [
+      {
+        name: 'Student Deal',
+        items: ['2x Crunch Craze Zinger', '2x PAK DRINK']
+      }
+    ]
+  },
+  {
+    id: 'dispatch-5',
+    orderNumber: '# 108',
+    tableNumber: '-',
+    tokenNumber: 'TK-92',
+    orderType: 'TakeAway',
+    waiterName: 'Ahmed Ali',
+    elapsedTime: '12:15',
+    status: 'ready',
+    timestamp: Date.now() - 12 * 60 * 1000,
+    readyTime: Date.now() - 8 * 60 * 1000,
+    customerName: 'Ali Hassan',
+    customerPhone: '+92 333 5554444',
+    items: [
+      { id: '1', name: 'Beef Burger', quantity: 2, completed: true, price : 220.00 },
+      { id: '2', name: 'Chicken Wings', quantity: 3, completed: true, price : 120.00 },
+      { id: '3', name: 'French Fries', quantity: 2, completed: true, price: 320.00 },
+      { id: '4', name: 'Coca Cola', quantity: 4, completed: true, price : 120.00 },
+    ],
+  },
+  {
+    id: 'dispatch-6',
+    orderNumber: '# 105',
+    tableNumber: '-',
+    orderType: 'Delivery',
+    waiterName: 'Hassan Raza',
+    elapsedTime: '18:42',
+    status: 'ready',
+    readyTime: Date.now() - 1 * 60 * 1000,
+    customerName: 'Sufyan Ahmed',
+    customerPhone: '+92 312 9988776',
+    items: [
+      { id: '1', name: 'Extreme Deal', quantity: 1, completed: true, price : 420.00 },
+    ]
+  },
+  {
+    id: 'dispatch-7',
+    orderNumber: '# 103',
+    tableNumber: '-',
+    orderType: 'Delivery',
+    waiterName: 'Sara Khan',
+    elapsedTime: '12:42',
+    status: 'ready',
+    timestamp: Date.now() - 18 * 60 * 1000,
+    readyTime: Date.now() - 6 * 60 * 1000,
+    customerName: 'Ayesha Khan',
+    customerPhone: '+92 321 9876543',
+    items: [
+      { id: '1', name: 'Margherita Pizza', quantity: 2, completed: true,price : 420.00 },
+      { id: '2', name: 'BBQ Wings', quantity: 1, completed: true, price : 420.00 },
+      { id: '3', name: 'Garlic Bread', quantity: 2, completed: true, price : 410.00 },
+      { id: '4', name: 'Pepsi', quantity: 4, completed: true, price : 420.00 },
+    ],
+  },
+  {
+    id: 'dispatch-8',
+    orderNumber: '# 102',
+    tableNumber: 'DEL-002',
+    orderType: 'Delivery',
+    waiterName: 'Sara Khan',
+    elapsedTime: '21:30',
+    status: 'ready',
+    timestamp: Date.now() - 21 * 60 * 1000,
+    readyTime: Date.now() - 10 * 60 * 1000,
+    customerName: 'Bilal Ahmed',
+    customerPhone: '+92 345 1112233',
+    items: [
+      { id: '1', name: 'Chicken Tikka Pizza', quantity: 1, completed: true, price : 1420.00 },
+      { id: '2', name: 'Spicy Wings', quantity: 2, completed: true, price : 120.00 },
+      { id: '3', name: 'Coleslaw', quantity: 1, completed: true ,price : 100.00},
+    ],
+    deals: [
+      {
+        name: 'Dinner Deal',
+        items: ['1x Large Pizza', '6x Wings', '2x Drinks']
+      }
+    ]
+  },
 ];

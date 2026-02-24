@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Package, MoreVertical, Eye, Edit, Trash2 } from 'lucide-react';
+import { Package, MoreVertical, Eye, Edit, Trash2, Info } from 'lucide-react';
 import { useReactTable, getCoreRowModel, createColumnHelper } from '@tanstack/react-table';
 import InfiniteTable from '@/src/components/InfiniteTable';
 import type { InventoryItem } from '@/src/app/modules/pos/mockData';
@@ -35,22 +35,31 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
         const item = info.row.original;
         return (
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+            <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center overflow-hidden ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
               {item.image ? (
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               ) : (
-                <Package size={20} className="text-slate-400" />
+                <Package size={16} className="text-slate-400" />
               )}
             </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-sm text-inherit">{info.getValue()}</span>
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="font-medium text-xs sm:text-sm text-inherit truncate">{info.getValue()}</span>
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onView(item); }}
+                  className="text-slate-400 hover:text-primary transition-colors"
+                  title="View Details"
+                >
+                  {/* <Info size={14} /> */}
+                </button>
+              </div>
               {item.isPopular && (
-                <div className="flex gap-1.5 mt-1">
-                  <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                <div className="flex flex-wrap gap-1 mt-0.5 sm:mt-1">
+                  <span className="px-1 py-0.5 rounded text-[8px] sm:text-[10px] font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20">
                     Popular
                   </span>
                   {(item.salesCount || 0) > 100 && (
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-500/10 text-purple-500 border border-purple-500/20">
+                    <span className="px-1 py-0.5 rounded text-[8px] sm:text-[10px] font-bold bg-purple-500/10 text-purple-500 border border-purple-500/20">
                       Top Seller
                     </span>
                   )}
@@ -65,32 +74,32 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
     columnHelper.accessor('category', {
       id: 'category',
       header: 'Category',
-      cell: (info) => <span className="text-sm text-inherit">{info.getValue()}</span>,
-      size: 150,
+      cell: (info) => <span className="text-xs sm:text-sm text-inherit">{info.getValue()}</span>,
+      size: 130,
     }),
     columnHelper.accessor('stock', {
       id: 'stock',
       header: 'Stock',
-      cell: (info) => <span className="text-sm font-medium text-inherit">{info.getValue()}</span>,
+      cell: (info) => <span className="text-xs sm:text-sm font-medium text-inherit">{info.getValue()}</span>,
       size: 80,
     }),
     columnHelper.accessor('minStock', {
       id: 'minStock',
       header: 'Min. Stock',
-      cell: (info) => <span className="text-sm text-inherit">{info.getValue()}</span>,
+      cell: (info) => <span className="text-xs sm:text-sm text-inherit">{info.getValue()}</span>,
       size: 100,
     }),
     columnHelper.accessor('price', {
       id: 'price',
       header: 'Price',
-      cell: (info) => <span className="text-sm text-inherit">Rs. {info.getValue()}</span>,
+      cell: (info) => <span className="text-xs sm:text-sm text-inherit whitespace-nowrap">Rs. {info.getValue()}</span>,
       size: 100,
     }),
     columnHelper.accessor('sales', {
       id: 'sales',
       header: 'Sales',
-      cell: (info) => <span className="text-sm text-inherit">Rs. {(info.getValue() || 0).toLocaleString()}</span>,
-      size: 100,
+      cell: (info) => <span className="text-xs sm:text-sm text-inherit whitespace-nowrap">Rs. {(info.getValue() || 0).toLocaleString()}</span>,
+      size: 110,
     }),
     columnHelper.accessor('status', {
       id: 'status',
@@ -98,17 +107,17 @@ export const InventoryTable: React.FC<InventoryTableProps> = ({
       cell: (info) => {
         const status = info.getValue() as 'In Stock' | 'Low Stock' | 'Out of Stock';
         const statusStyles: Record<'In Stock' | 'Low Stock' | 'Out of Stock', string> = {
-          'In Stock': 'bg-emerald-500/10 text-emerald-500',
-          'Low Stock': 'bg-orange-500/10 text-orange-500',
-          'Out of Stock': 'bg-rose-500/10 text-rose-500'
+          'In Stock': 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+          'Low Stock': 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+          'Out of Stock': 'bg-rose-500/10 text-rose-500 border-rose-500/20'
         };
         return (
-          <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${statusStyles[status]}`}>
+          <span className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-[10px]  sm:whitespace-nowrap sm:text-xs font-bold border ${statusStyles[status]}`}>
             {status}
           </span>
         );
       },
-      size: 120,
+      size: 110,
     }),
     columnHelper.accessor('lastUpdated', {
       id: 'lastUpdated',

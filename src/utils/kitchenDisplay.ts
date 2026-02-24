@@ -14,6 +14,10 @@ export const sendToKitchen = (order: Partial<KitchenOrder>) => {
     customerPhone: order.customerPhone,
     customerAddress: order.customerAddress,
     timestamp: Date.now(),
+    subtotal: order.subtotal,
+    tax: order.tax,
+    discount: order.discount,
+    grandTotal: order.grandTotal,
   };
 
   // Save to localStorage
