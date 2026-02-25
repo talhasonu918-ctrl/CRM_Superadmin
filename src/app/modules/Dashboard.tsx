@@ -76,7 +76,7 @@ export const DashboardView: React.FC = () => {
       if (savedKitchenOrders) {
         try {
           const kitchenOrders = JSON.parse(savedKitchenOrders);
-          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 5).map((ko: any) => {
+          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 15).map((ko: any) => {
             const itemTexts = (ko.items || []).map((it: any) => `${it.quantity}x ${it.name}`);
             const dealTexts = (ko.deals || []).map((d: any) => `Deal: ${d.name}`);
             const combinedItems = [...itemTexts, ...dealTexts].join(', ');
@@ -93,13 +93,14 @@ export const DashboardView: React.FC = () => {
           });
           
           setLiveOrders(prev => {
-            // Keep the mock data if no real orders exist, else merge
+            // Keep real orders and sort by latest first
             const combined = [...mappedOrders];
             // Add mock orders that aren't replaced by real orders (optional)
             prev.forEach(mock => {
               if (!combined.find(o => o.id === mock.id)) combined.push(mock);
             });
-            return combined.slice(0, 5);
+            // Ensure latest record is first based on timestamp
+            return combined.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
           });
         } catch (e) {
           console.error('Error loading dashboard orders:', e);
@@ -135,12 +136,14 @@ export const DashboardView: React.FC = () => {
 
       setLiveOrders(prev => {
         const existingIndex = prev.findIndex(o => o.id === newLiveOrder.id);
+        let updated;
         if (existingIndex !== -1) {
-          const updated = [...prev];
+          updated = [...prev];
           updated[existingIndex] = { ...updated[existingIndex], ...newLiveOrder };
-          return updated;
+        } else {
+          updated = [newLiveOrder, ...prev];
         }
-        return [newLiveOrder, ...prev].slice(0, 5);
+        return updated.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
       });
     };
 
@@ -174,7 +177,7 @@ export const DashboardView: React.FC = () => {
           timestamp: Date.now()
         };
         
-        return [newReadyOrder, ...prev].slice(0, 5);
+        return [newReadyOrder, ...prev].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
       });
     };
 
@@ -187,7 +190,7 @@ export const DashboardView: React.FC = () => {
       if (e.key === 'kitchenOrders' && e.newValue) {
         try {
           const kitchenOrders = JSON.parse(e.newValue);
-          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 5).map((ko: any) => ({
+          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 15).map((ko: any) => ({
             id: ko.orderNumber,
             customer: ko.customerName || ko.waiterName || 'Guest',
             items: ko.items ? ko.items.map((it: any) => `${it.quantity}x ${it.name}`).join(', ') : 'Order Detail',
@@ -199,15 +202,16 @@ export const DashboardView: React.FC = () => {
           
           setLiveOrders(prev => {
             const result = [...mappedOrders];
-            // Preserve mock data if results are fewer than 5
-            if (result.length < 5) {
+            // Preserve mock data if results are fewer than 15
+            if (result.length < 15) {
               prev.forEach(mock => {
-                if (result.length < 5 && !result.find(o => o.id === mock.id)) {
+                if (result.length < 15 && !result.find(o => o.id === mock.id)) {
                   result.push(mock);
                 }
               });
             }
-            return result.slice(0, 5);
+            // Latest record first
+            return result.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 15);
           });
         } catch (err) {
           console.error('Error syncing storage in dashboard:', err);
@@ -320,9 +324,9 @@ export const DashboardView: React.FC = () => {
               <Loader2 className="w-3 h-3 animate-spin" /> Real-time
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 max-h-[340px] overflow-y-auto pr-0 scrollbar-hidden scroll-smooth">
             {liveOrders.map((order, i) => (
-              <div key={i} className={`p-4 rounded-xl border ${isDarkMode ? 'border-slate-800 bg-slate-800/20' : 'border-slate-50 bg-slate-50/50'} hover:border-orange-200 transition-colors cursor-pointer`}>
+              <div key={i} className={`p-4 rounded-xl border ${isDarkMode ? 'border-slate-800 bg-slate-800/20' : 'border-slate-50 bg-slate-50/50'} hover:border-orange-200 transition-all duration-300 cursor-pointer animate-in fade-in slide-in-from-right-4`}>
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-xs">{order.id} • {order.customer}</span>
                   <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider ${

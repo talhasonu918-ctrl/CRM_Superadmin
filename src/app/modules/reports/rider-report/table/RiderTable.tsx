@@ -29,7 +29,7 @@ export const RiderTable: React.FC<RiderTableProps> = ({ isDarkMode, filteredData
       cell: (info) => <span className="text-primary font-medium cursor-pointer hover:underline">{info.getValue()}</span>,
     }),
     columnHelper.accessor('totalInvoices', {
-      header: 'No of Deliveries',
+      header: 'Total Deliveries',
       cell: (info) => <span className={isDarkMode ? 'text-gray-300' : 'text-gray-700'}>{info.getValue()}</span>,
     }),
     columnHelper.accessor('totalDistance', {
