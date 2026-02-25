@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area,
   Cell, PieChart, Pie
@@ -53,6 +54,7 @@ const POPULAR_ITEMS = [
 
 
 export const DashboardView: React.FC = () => {
+  const router = useRouter();
   const { isDarkMode } = useTheme();
   const [timeframe, setTimeframe] = useState<'today' | 'weekly' | 'monthly'>('today');
   const [liveOrders, setLiveOrders] = useState<DashboardLiveOrder[]>(mockLiveOrders);
@@ -319,7 +321,7 @@ export const DashboardView: React.FC = () => {
         {/* Live Tracking */}
         <div className={`col-span-12 lg:col-span-4 ${cardStyle} p-6`}>
           <div className="flex items-center justify-between mb-6">
-            <h4 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest">Live Operations</h4>
+            <h4 className="text-sm font-extrabold text-primary dark:text-white uppercase tracking-widest">Live Operations</h4>
             <div className="flex items-center gap-1 text-[10px] font-bold text-primary uppercase">
               <Loader2 className="w-3 h-3 animate-spin" /> Real-time
             </div>
@@ -349,7 +351,10 @@ export const DashboardView: React.FC = () => {
               </div>
             ))}
           </div>
-          <button className="w-full mt-6 py-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+          <button 
+            onClick={() => router.push('/pos?tab=queue')}
+            className="w-full mt-6 py-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+          >
             View All Orders
           </button>
         </div>
