@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Plus, Edit3, Trash2 } from 'lucide-react';
 import { ReusableModal } from '../../../components/ReusableModal';
+import { SearchableDropdown } from '../../../components/SearchableDropdown';
 
 interface VariantsViewProps {
   isDarkMode: boolean;
@@ -117,7 +118,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
     isDarkMode
       ? 'bg-slate-800 border-slate-700 text-white'
       : 'bg-white border-slate-200 text-slate-900'
-  } focus:outline-none focus:ring-2 focus:ring-orange-500`;
+  } focus:outline-none focus:ring-2 focus:ring-primary`;
 
   const isValid = useMemo(() => {
     if (!currentVariant.name.trim()) return false;
@@ -209,7 +210,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
 
           <button
             onClick={handleAdd}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-primary hover:bg-primary/10 text-white px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <Plus size={16} />
             Add Variant
@@ -231,7 +232,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
                 className="p-1 rounded-full hover:bg-orange-100"
                 title="Edit"
               >
-                <Edit3 size={18} className="text-orange-500" />
+                <Edit3 size={18} className="text-primary" />
               </button>
               <button
                 onClick={() => handleDelete(variant.id)}
@@ -318,22 +319,21 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
 
           {/* Selection Type */}
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Selection Type
-            </label>
-            <select
+            <SearchableDropdown
+              label="Selection Type"
+              options={[
+                { value: 'single', label: 'Single Choice' },
+                { value: 'multiple', label: 'Multiple Choice' }
+              ]}
               value={currentVariant.selectionType}
-              onChange={e =>
+              onChange={(value) =>
                 setCurrentVariant({
                   ...currentVariant,
-                  selectionType: e.target.value as SelectionType
+                  selectionType: value as SelectionType
                 })
               }
-              className={inputClass}
-            >
-              <option value="single">Single Choice</option>
-              <option value="multiple">Multiple Choice</option>
-            </select>
+              isDarkMode={isDarkMode}
+            />
           </div>
 
           {/* Required Toggle */}
@@ -384,7 +384,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
           <div>
             <div className="flex justify-between mb-2">
               <span className="font-medium">Options</span>
-              <button onClick={addOption} className="text-orange-500 text-sm">
+              <button onClick={addOption} className="text-primary text-sm">
                 + Add Option
               </button>
             </div>
@@ -429,7 +429,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
               onClick={handleSave}
               className={`px-4 py-2 rounded-lg text-white ${
                 isValid
-                  ? 'bg-orange-500 hover:bg-orange-600'
+                  ? 'bg-primary hover:bg-orange-600'
                   : 'bg-gray-400 cursor-not-allowed'
               }`}
             >

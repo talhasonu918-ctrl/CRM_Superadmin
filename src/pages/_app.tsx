@@ -1,10 +1,15 @@
-import { useAppSelector } from '../redux/store';
+import { useAppSelector, store } from '../redux/store';
+import { Provider as ReduxProvider } from 'react-redux';
 import React from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { Provider } from 'react-redux';
-import { store } from '../redux/store';
+import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
+import { ThemeProvider } from '@/src/contexts/ThemeContext';
+import { BrandingProvider, useBranding } from '@/src/contexts/BrandingContext';
+import { CompanyProvider } from '@/src/contexts/CompanyContext';
+import { OrderProvider } from '@/src/contexts/OrderContext';
+import { NotificationProvider } from '@/src/contexts/NotificationContext';
 import toast, { Toaster } from 'react-hot-toast';
 import '../styles/globals.css';
 
@@ -105,7 +110,7 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Provider store={store}>
+    <ReduxProvider store={store}>
       <>
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -136,36 +141,49 @@ function MyApp({ Component, pageProps }: AppProps) {
                   }
                 }
               }
-            `
-          }} />
-        </Head>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: 'var(--color-primary)',
-                secondary: '#fff',
-              },
-            },
-            error: {
-              duration: 4000,
-              iconTheme: {
-                primary: 'var(--color-error)',
-                secondary: '#fff',
-              },
-            },
-          }}
-        />
-        <AppContent Component={Component} pageProps={pageProps} />
-      </>
-    </Provider>
+            }
+          `
+        }} />
+      </Head>
+      <AuthProvider>
+        <ThemeProvider>
+          <BrandingProvider>
+            <CompanyProvider>
+              <OrderProvider>
+                <NotificationProvider>
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 3000,
+                      style: {
+                        background: '#363636',
+                        color: '#fff',
+                      },
+                      success: {
+                        duration: 3000,
+                        iconTheme: {
+                          primary: 'var(--color-primary)',
+                          secondary: '#fff',
+                        },
+                      },
+                      error: {
+                        duration: 4000,
+                        iconTheme: {
+                          primary: 'var(--color-error)',
+                          secondary: '#fff',
+                        },
+                      },
+                    }}
+                  />
+                  <AppContent Component={Component} pageProps={pageProps} />
+                </NotificationProvider>
+              </OrderProvider>
+            </CompanyProvider>
+          </BrandingProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </>
+    </ReduxProvider>
   );
 }
 

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, UtensilsCrossed, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { AuthMode } from '../../lib/types';
+import toast from 'react-hot-toast';
 
 interface AuthViewProps {
   mode: AuthMode;
@@ -18,10 +19,21 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: any) => {
-    // Simulated auth delay
-    await new Promise(resolve => setTimeout(resolve, 1200));
-    console.log('Auth data:', data);
-    onSuccess(data);
+    try {
+      // Simulation delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      if (mode === AuthMode.SIGNUP) {
+        toast.success('Account created successfully!');
+        onSuccess(data);
+      } else {
+        toast.success('Welcome back!');
+        onSuccess(data);
+      }
+    } catch (error: any) {
+      console.error('Simulated Auth Error:', error);
+      toast.error('An error occurred. Please try again.');
+    }
   };
 
   const bgColor = isDarkMode ? 'bg-[#0F1115]' : 'bg-white';
@@ -117,7 +129,6 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 : 'Enter your credentials to create your restaurant account.'}
             </p>
           </div>
-
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <AnimatePresence mode="wait">
               {mode === AuthMode.SIGNUP && (
@@ -174,7 +185,11 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 <input 
                   {...register('password', { 
                     required: 'Password is required',
-                    minLength: { value: 6, message: 'Minimum 6 characters' }
+                    minLength: { value: 8, message: 'Minimum 8 characters' },
+                    pattern: {
+                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      message: "Must include Uppercase, Lowercase, Number & Special Character"
+                    }
                   })}
                   type={showPassword ? 'text' : 'password'} 
                   placeholder="••••••••"

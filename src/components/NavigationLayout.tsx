@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, ChevronDown, Search, MessageSquare, ShoppingCart, Maximize, Minimize, Package, User, Phone, Home } from 'lucide-react';
+import { 
+  Moon, Sun, LogOut, ChevronLeft, ChevronRight, Menu, X, Bell, MapPin, 
+  ChevronDown, Search, MessageSquare, ShoppingCart, Maximize, Minimize, 
+  Package, User, Phone, Home, Truck, UtensilsCrossed, AlertCircle, Star, CreditCard 
+} from 'lucide-react';
 import { LuMaximize, LuMinimize } from "react-icons/lu";
 import { CgMaximizeAlt } from "react-icons/cg";
 import { navigationItems } from '../const';
-import { useAppSelector, useAppDispatch } from '../redux/store';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { useBranding } from '../contexts/BrandingContext';
+import { useNotifications } from '../contexts/NotificationContext';
+import { ReusableModal } from './ReusableModal';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 import { toggleTheme } from '../redux/themeSlice';
 import { logout } from '../redux/authSlice';
-import { ReusableModal } from './ReusableModal';
-import { mockNotifications } from '../app/modules/pos/mockData';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,6 +34,7 @@ export function Layout({ children }: LayoutProps) {
   const [selectedBranch, setSelectedBranch] = useState('Main Branch');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   // Load branch from localStorage on mount
   React.useEffect(() => {
@@ -43,11 +51,6 @@ export function Layout({ children }: LayoutProps) {
     { id: 3, name: 'Multan Brnach', location: 'Kot Town Multan', phone: '+92 333 9876543' },
     { id: 4, name: 'Islamabad Branch', location: 'Sector 3 ISlamabad', phone: '+92 345 5432109' },
   ];
-
-  // Use mock notifications from mockData
-  const notifications = mockNotifications;
-
-  const unreadCount = notifications.filter(n => n.unread).length;
 
   const handleLogout = () => {
     dispatch(logout());
@@ -68,6 +71,7 @@ export function Layout({ children }: LayoutProps) {
     if (notif.orderDetails) {
       setSelectedOrder({ ...notif.orderDetails, notifType: notif.type });
       setIsOrderModalOpen(true);
+      markAsRead(notif.id);
       setIsNotificationOpen(false);
     }
   };
@@ -172,7 +176,20 @@ export function Layout({ children }: LayoutProps) {
                       <div className="flex items-center justify-between">
                         <div>
                           <h3 className="font-bold text-slate-800 dark:text-white">Notifications</h3>
-                          <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-0.5">{unreadCount} unread messages</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">{unreadCount} unread messages</p>
+                            {unreadCount > 0 && (
+                              <>
+                                <span className="text-slate-300">•</span>
+                                <button 
+                                  onClick={markAllAsRead}
+                                  className="text-[11px] font-bold text-primary hover:underline"
+                                >
+                                  Mark all as read
+                                </button>
+                              </>
+                            )}
+                          </div>
                         </div>
                         <button
                           onClick={() => setIsNotificationOpen(false)}
@@ -187,34 +204,57 @@ export function Layout({ children }: LayoutProps) {
                         <div
                           key={notif.id}
                           onClick={() => handleNotificationClick(notif)}
-                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${notif.unread ? 'bg-primary/5 dark:bg-primary/5' : ''
+                          className={`p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer border-l-4 ${notif.unread ? 'bg-primary/5 dark:bg-primary/10 border-primary' : 'border-transparent'
                             }`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${notif.unread ? 'bg-primary' : 'bg-slate-300'}`} />
+                          <div className="flex items-start gap-4">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
+                              notif.type === 'order' ? 'bg-blue-100 text-blue-600' :
+                              notif.type === 'kds' ? 'bg-orange-100 text-orange-600' :
+                              notif.type === 'dispatch' ? 'bg-purple-100 text-purple-600' :
+                              notif.type === 'alert' ? 'bg-red-100 text-red-600' :
+                              notif.type === 'review' ? 'bg-yellow-100 text-yellow-600' :
+                              notif.type === 'payment' ? 'bg-green-100 text-green-600' :
+                              'bg-primary/10 text-primary'
+                            }`}>
+                              {notif.type === 'order' && <Package className="w-5 h-5" />}
+                              {notif.type === 'kds' && <UtensilsCrossed className="w-5 h-5" />}
+                              {notif.type === 'dispatch' && <Truck className="w-5 h-5" />}
+                              {notif.type === 'alert' && <AlertCircle className="w-5 h-5" />}
+                              {notif.type === 'review' && <Star className="w-5 h-5" />}
+                              {notif.type === 'payment' && <CreditCard className="w-5 h-5" />}
+                              {!['order', 'kds', 'dispatch', 'alert', 'review', 'payment'].includes(notif.type) && <Bell className="w-5 h-5" />}
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-semibold text-sm text-slate-800 dark:text-white">{notif.title}</h4>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{notif.message}</p>
+                              <div className="flex items-center justify-between mb-0.5">
+                                <h4 className="font-bold text-sm text-slate-800 dark:text-white truncate">{notif.title}</h4>
+                                <span className="text-[10px] font-medium text-slate-400 whitespace-nowrap ml-2">{notif.time}</span>
+                              </div>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">{notif.message}</p>
 
                               {/* Order Details Preview */}
                               {notif.orderDetails && (
-                                <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 space-y-1.5">
-                                  <div className="flex items-center gap-1.5 text-xs">
-                                    <User className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                                    <span className="text-slate-700 dark:text-slate-300 font-medium truncate">{notif.orderDetails.customerName}</span>
+                                <div className="mt-3 p-2.5 bg-slate-50 dark:bg-slate-800/80 rounded-lg border border-slate-100 dark:border-slate-700/50 space-y-2">
+                                  <div className="flex items-center gap-2 text-[11px]">
+                                    <div className="w-5 h-5 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                      <User className="w-3 h-3 text-slate-400" />
+                                    </div>
+                                    <span className="text-slate-700 dark:text-slate-200 font-semibold truncate">{notif.orderDetails.customerName}</span>
                                   </div>
-                                  <div className="flex items-center gap-1.5 text-xs">
-                                    <Phone className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                                    <span className="text-slate-600 dark:text-slate-400 truncate">{notif.orderDetails.phoneNumber}</span>
+                                  <div className="flex items-center gap-2 text-[11px]">
+                                    <div className="w-5 h-5 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 shadow-sm">
+                                      <Phone className="w-3 h-3 text-slate-400" />
+                                    </div>
+                                    <span className="text-slate-600 dark:text-slate-400 font-medium">{notif.orderDetails.phoneNumber}</span>
                                   </div>
-                                  <div className="flex items-start gap-1.5 text-xs">
-                                    <Home className="w-3 h-3 text-slate-400 flex-shrink-0 mt-0.5" />
-                                    <span className="text-slate-600 dark:text-slate-400 line-clamp-2">{notif.orderDetails.address}</span>
+                                  <div className="flex items-start gap-2 text-[11px]">
+                                    <div className="w-5 h-5 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                                      <MapPin className="w-3 h-3 text-slate-400" />
+                                    </div>
+                                    <span className="text-slate-500 dark:text-slate-500 leading-tight">{notif.orderDetails.address}</span>
                                   </div>
                                 </div>
                               )}
-
-                              <p className="text-xs text-primary dark:text-primary mt-2 font-medium">{notif.time}</p>
                             </div>
                           </div>
                         </div>

@@ -8,14 +8,28 @@ import * as XLSX from 'xlsx';
  * @param headers Headers for the table (string[])
  * @param data Body data for the table (any[][])
  * @param title Title of the report (string)
+ * @param fillColor Color for the header (string, e.g., '#10b981')
  */
 export const exportToPDF = (
   filename: string,
   headers: string[],
   data: any[][],
-  title?: string
+  title?: string,
+  fillColor?: string
 ) => {
   const doc = new jsPDF();
+
+  // Helper to hex to RGB
+  const hexToRgb = (hex: string): [number, number, number] => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+      parseInt(result[1], 16),
+      parseInt(result[2], 16),
+      parseInt(result[3], 16)
+    ] : [16, 185, 129]; // Default primary
+  };
+
+  const headerColor: [number, number, number] = fillColor ? hexToRgb(fillColor) : [16, 185, 129];
   
   if (title) {
     // Add Title
@@ -41,7 +55,7 @@ export const exportToPDF = (
     body: data,
     startY: 35,
     theme: 'grid',
-    headStyles: { fillColor: [16, 185, 129] }, // Primary color roughly (Emerald 500)
+    headStyles: { fillColor: headerColor }, 
     styles: { fontSize: 8 },
   });
   

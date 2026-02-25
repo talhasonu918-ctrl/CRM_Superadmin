@@ -367,6 +367,7 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
         id: `${Date.now()}-${index}`,
         name: item.product.name,
         quantity: item.quantity,
+        price: item.product.price,
         completed: false,
         addedAt: Date.now(),
       }));
@@ -377,8 +378,11 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
         id: `${Date.now()}-deal-${index}`,
         name: item.product.name,
         items: item.product.dealItems || [],
+        price: item.product.price,
         completed: false
       }));
+
+    const totals = calculateTotals();
 
     sendToKitchen({
       orderNumber,
@@ -390,6 +394,10 @@ export const POSView: React.FC<POSViewProps> = ({ isDarkMode = false, onViewRide
       customerAddress: orderType === 'Delivery' ? selectedCustomerData?.address : undefined,
       items: kitchenItems,
       deals: kitchenDeals,
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      discount: totals.discount,
+      grandTotal: totals.total,
     });
     // Play beep sound
     playBeep();
