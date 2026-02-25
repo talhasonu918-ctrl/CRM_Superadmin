@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area,
   Cell, PieChart, Pie
@@ -9,6 +9,7 @@ import {
   Clock, TrendingUp, CheckCircle2, Loader2
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { mockLiveOrders, DashboardLiveOrder } from './pos/mockData';
 
 const REVENUE_DATA = {
   today: [
@@ -50,16 +51,178 @@ const POPULAR_ITEMS = [
   { name: 'Belgian Choco Shake', sold: 450, revenue: 4500, rating: 4.7, img: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?q=80&w=200&auto=format&fit=crop' },
 ];
 
-const LIVE_ORDERS = [
-  { id: '#ORD-9821', customer: 'Emma S.', items: '2x Pepperoni Pizza', status: 'Preparing', time: '12m ago', total: 42.00 },
-  { id: '#ORD-9822', customer: 'John D.', items: '1x Veggie Burger', status: 'Ready', time: '5m ago', total: 15.50 },
-  { id: '#ORD-9823', customer: 'Sarah L.', items: '3x Soft Drinks', status: 'Pending', time: 'Just now', total: 9.00 },
-];
 
 export const DashboardView: React.FC = () => {
   const { isDarkMode } = useTheme();
   const [timeframe, setTimeframe] = useState<'today' | 'weekly' | 'monthly'>('today');
+  const [liveOrders, setLiveOrders] = useState<DashboardLiveOrder[]>(mockLiveOrders);
+
   const cardStyle = `rounded-2xl border transition-all ${isDarkMode ? 'bg-[#16191F] border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`;
+
+  useEffect(() => {
+    // Helper to format time
+    const formatTime = (timestamp: number) => {
+      const diff = Date.now() - timestamp;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      return `${hrs}h ago`;
+    };
+
+    // Load existing kitchen orders on mount
+    if (typeof window !== 'undefined') {
+      const savedKitchenOrders = localStorage.getItem('kitchenOrders');
+      if (savedKitchenOrders) {
+        try {
+          const kitchenOrders = JSON.parse(savedKitchenOrders);
+          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 5).map((ko: any) => {
+            const itemTexts = (ko.items || []).map((it: any) => `${it.quantity}x ${it.name}`);
+            const dealTexts = (ko.deals || []).map((d: any) => `Deal: ${d.name}`);
+            const combinedItems = [...itemTexts, ...dealTexts].join(', ');
+
+            return {
+              id: ko.orderNumber,
+              customer: ko.customerName || ko.waiterName || 'Guest',
+              items: combinedItems || 'Order Detail',
+              status: ko.status === 'ready' ? 'Ready' : 'Preparing',
+              time: formatTime(ko.timestamp || Date.now()),
+              total: ko.grandTotal || 0,
+              timestamp: ko.timestamp || Date.now()
+            };
+          });
+          
+          setLiveOrders(prev => {
+            // Keep the mock data if no real orders exist, else merge
+            const combined = [...mappedOrders];
+            // Add mock orders that aren't replaced by real orders (optional)
+            prev.forEach(mock => {
+              if (!combined.find(o => o.id === mock.id)) combined.push(mock);
+            });
+            return combined.slice(0, 5);
+          });
+        } catch (e) {
+          console.error('Error loading dashboard orders:', e);
+        }
+      }
+    }
+
+    // Update times every minute
+    const interval = setInterval(() => {
+      setLiveOrders(prev => prev.map(order => ({
+        ...order,
+        time: order.timestamp ? formatTime(order.timestamp) : order.time
+      })));
+    }, 30000);
+
+    // Listen for new orders from POS
+    const handleNewOrder = (event: any) => {
+      const kitchenOrder = event.detail;
+      
+      const itemTexts = (kitchenOrder.items || []).map((it: any) => `${it.quantity}x ${it.name}`);
+      const dealTexts = (kitchenOrder.deals || []).map((d: any) => `Deal: ${d.name}`);
+      const itemsString = [...itemTexts, ...dealTexts].join(', ') || 'New Order';
+
+      const newLiveOrder: DashboardLiveOrder = {
+        id: kitchenOrder.orderNumber || `#${Math.floor(Math.random() * 9000) + 1000}`,
+        customer: kitchenOrder.customerName || kitchenOrder.waiterName || 'Guest',
+        items: itemsString,
+        status: 'Preparing',
+        time: 'Just now',
+        total: kitchenOrder.grandTotal || 0,
+        timestamp: Date.now()
+      };
+
+      setLiveOrders(prev => {
+        const existingIndex = prev.findIndex(o => o.id === newLiveOrder.id);
+        if (existingIndex !== -1) {
+          const updated = [...prev];
+          updated[existingIndex] = { ...updated[existingIndex], ...newLiveOrder };
+          return updated;
+        }
+        return [newLiveOrder, ...prev].slice(0, 5);
+      });
+    };
+
+    // Listen for order status updates from Kitchen Display
+    const handleOrderReady = (event: any) => {
+      const readyOrder = event.detail;
+      setLiveOrders(prev => {
+        // If order exists, update status
+        const existingIndex = prev.findIndex(o => o.id === readyOrder.orderNumber);
+        if (existingIndex !== -1) {
+          const updated = [...prev];
+          updated[existingIndex] = { 
+            ...updated[existingIndex], 
+            status: 'Ready' 
+          };
+          return updated;
+        }
+        
+        // If order doesn't exist (e.g. refresh), add it
+        const itemTexts = (readyOrder.items || []).map((it: any) => `${it.quantity}x ${it.name}`);
+        const dealTexts = (readyOrder.deals || []).map((d: any) => `Deal: ${d.name}`);
+        const itemsString = [...itemTexts, ...dealTexts].join(', ') || 'Ready for Collection';
+
+        const newReadyOrder: DashboardLiveOrder = {
+          id: readyOrder.orderNumber,
+          customer: readyOrder.customerName || readyOrder.waiterName || 'Guest',
+          items: itemsString,
+          status: 'Ready',
+          time: 'Just now',
+          total: readyOrder.grandTotal || 0,
+          timestamp: Date.now()
+        };
+        
+        return [newReadyOrder, ...prev].slice(0, 5);
+      });
+    };
+
+    // Listen for custom events
+    window.addEventListener('sendToKitchen', handleNewOrder);
+    window.addEventListener('orderReady', handleOrderReady);
+
+    // Sync across tabs via localStorage
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'kitchenOrders' && e.newValue) {
+        try {
+          const kitchenOrders = JSON.parse(e.newValue);
+          const mappedOrders: DashboardLiveOrder[] = kitchenOrders.slice(0, 5).map((ko: any) => ({
+            id: ko.orderNumber,
+            customer: ko.customerName || ko.waiterName || 'Guest',
+            items: ko.items ? ko.items.map((it: any) => `${it.quantity}x ${it.name}`).join(', ') : 'Order Detail',
+            status: ko.status === 'ready' ? 'Ready' : (ko.status === 'preparing' ? 'Preparing' : 'Pending'),
+            time: formatTime(ko.timestamp || Date.now()),
+            total: ko.grandTotal || 0,
+            timestamp: ko.timestamp || Date.now()
+          }));
+          
+          setLiveOrders(prev => {
+            const result = [...mappedOrders];
+            // Preserve mock data if results are fewer than 5
+            if (result.length < 5) {
+              prev.forEach(mock => {
+                if (result.length < 5 && !result.find(o => o.id === mock.id)) {
+                  result.push(mock);
+                }
+              });
+            }
+            return result.slice(0, 5);
+          });
+        } catch (err) {
+          console.error('Error syncing storage in dashboard:', err);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('sendToKitchen', handleNewOrder);
+      window.removeEventListener('orderReady', handleOrderReady);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const currentStats = useMemo(() => {
     const data = REVENUE_DATA[timeframe];
@@ -158,23 +321,26 @@ export const DashboardView: React.FC = () => {
             </div>
           </div>
           <div className="space-y-4">
-            {LIVE_ORDERS.map((order, i) => (
+            {liveOrders.map((order, i) => (
               <div key={i} className={`p-4 rounded-xl border ${isDarkMode ? 'border-slate-800 bg-slate-800/20' : 'border-slate-50 bg-slate-50/50'} hover:border-orange-200 transition-colors cursor-pointer`}>
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-xs">{order.id} • {order.customer}</span>
                   <span className={`px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider ${
-                    order.status === 'Ready' ? 'bg-emerald-500/10 text-emerald-500' : 
-                    order.status === 'Preparing' ? 'bg-orange-500/10 text-primary' : 'bg-slate-500/10 text-slate-500'
+                    order.status === 'Ready' 
+                      ? 'bg-emerald-500/10 text-emerald-500' 
+                      : order.status === 'Preparing'
+                        ? 'bg-orange-500/10 text-primary' 
+                        : 'bg-slate-500/10 text-slate-500'
                   }`}>
                     {order.status}
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-400 font-medium mb-2">{order.items}</p>
+                <p className="text-[11px] text-slate-400 font-medium mb-2 truncate" title={order.items}>{order.items}</p>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                     <Clock size={12} /> {order.time}
                   </div>
-                  <span className="font-bold text-xs text-primary">${order.total.toFixed(2)}</span>
+                  <span className="font-bold text-xs text-primary">${typeof order.total === 'number' ? order.total.toFixed(2) : '0.00'}</span>
                 </div>
               </div>
             ))}

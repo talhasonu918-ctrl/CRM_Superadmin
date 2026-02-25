@@ -135,37 +135,37 @@ export const DealsView: React.FC<DealsViewProps> = ({ isDarkMode }) => {
   return (
     <div className="space-y-6">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-lg md:text-2xl p-1 md:p-0 font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className={`text-xl md:text-2xl font-bold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
             Deals & Offers
           </h1>
-          <p className={`text-sm p-1 md:p-0 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
             Manage promotional offers and discounts
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               placeholder="Search deals..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 pr-4 py-2 rounded-lg border text-[10px] md:text-sm 
+              className={`pl-10 pr-4 py-2.5 rounded-lg border text-sm w-full
                 ${isDarkMode
                   ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-orange-500'
                   : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-orange-500'
                 }
-                w-40 md:w-64 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all
+                focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all
               `}
             />
           </div>
 
           <button
             onClick={handleAdd}
-            className="bg-primary hover:bg-orange-600 text-white px-3 py-2 md:px-4 md:py-2.5 text-[12px] md:text-sm rounded-lg font-medium flex items-center gap-2 transition-colors shadow-md shadow-orange-500/10"
+            className="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white px-4 py-2.5 text-sm rounded-lg font-medium flex items-center justify-center gap-2 transition-colors shadow-md shadow-orange-500/10 whitespace-nowrap"
           >
             <Plus className="w-4 h-4" />
             <span>Create Deal</span>

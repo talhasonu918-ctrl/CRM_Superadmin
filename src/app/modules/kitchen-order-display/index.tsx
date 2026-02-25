@@ -526,6 +526,11 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
         quantity: item.quantity,
         price: item.price || 0 
       })),
+      deals: order.deals?.map(deal => ({
+        name: deal.name,
+        items: deal.items,
+        price: deal.price
+      })),
       subtotal: order.subtotal,
       tax: order.tax,
       discount: order.discount,
@@ -545,7 +550,10 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
         orderDate: new Date().toLocaleDateString(),
         orderTime: new Date().toLocaleTimeString(),
         totalAmount: order.grandTotal || 0,
-        items: order.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price }))
+        items: [
+          ...order.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+          ...(order.deals?.map(deal => ({ name: `[DEAL] ${deal.name}`, quantity: 1, price: deal.price })) || [])
+        ]
       }
     });
   };

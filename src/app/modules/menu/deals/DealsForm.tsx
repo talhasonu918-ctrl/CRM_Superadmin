@@ -27,10 +27,10 @@ const DealsForm: React.FC<DealsFormProps> = ({
     setCurrentDeal(initialDeal);
   }, [initialDeal]);
 
-  const inputClass = `w-full px-4 py-2 rounded-lg border ${isDarkMode
+  const inputClass = `w-full px-4 py-2.5 rounded-lg border ${isDarkMode
     ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-400 focus:border-orange-500 hover:border-orange-500/50'
     : 'bg-white border-slate-200 text-slate-900 placeholder-slate-400 focus:border-orange-500 hover:border-orange-500/50'
-    } focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all`;
+    } focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all text-sm`;
 
   const handleSave = () => {
     // Validate required fields
@@ -85,27 +85,27 @@ const DealsForm: React.FC<DealsFormProps> = ({
       size="xl"
       isDarkMode={isDarkMode}
     >
-      <div className="space-y-8 animate-in fade-in zoom-in duration-300 max-h-[80vh] overflow-y-auto scrollbar-hidden">
+      <div className="space-y-6 sm:space-y-8 animate-in fade-in zoom-in duration-300 max-h-[80vh] overflow-y-auto px-0.5 sm:px-1 pb-6 scrollbar-hidden">
         {/* Basic Information */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="md:col-span-1">
-            <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Name</label>
-            <input type="text" value={currentDeal.name} onChange={e => setCurrentDeal({ ...currentDeal, name: e.target.value })} className={inputClass} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-y-5 gap-x-4">
+          <div className="col-span-1">
+            <label className={`block text-xs font-black uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Name</label>
+            <input type="text" value={currentDeal.name} onChange={e => setCurrentDeal({ ...currentDeal, name: e.target.value })} placeholder="e.g. Family Feast" className={inputClass} />
           </div>
-          <div className="md:col-span-1">
-            <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Display Name</label>
-            <input type="text" value={currentDeal.displayName} onChange={e => setCurrentDeal({ ...currentDeal, displayName: e.target.value })} className={inputClass} />
+          <div className="col-span-1">
+            <label className={`block text-xs font-black uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Display Name</label>
+            <input type="text" value={currentDeal.displayName} onChange={e => setCurrentDeal({ ...currentDeal, displayName: e.target.value })} placeholder="Display Name" className={inputClass} />
           </div>
-          <div className="md:col-span-2">
-            <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Description</label>
-            <input type="text" value={currentDeal.description} onChange={e => setCurrentDeal({ ...currentDeal, description: e.target.value })} className={inputClass} />
+          <div className="sm:col-span-2 lg:col-span-1">
+            <label className={`block text-xs font-black uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Description</label>
+            <input type="text" value={currentDeal.description} onChange={e => setCurrentDeal({ ...currentDeal, description: e.target.value })} placeholder="Deal description" className={inputClass} />
           </div>
-          <div className="md:col-span-1">
-            <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Price</label>
+          <div className="col-span-1">
+            <label className={`block text-xs font-black uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Price</label>
             <input type="number" value={currentDeal.price} onChange={e => setCurrentDeal({ ...currentDeal, price: Number(e.target.value) })} className={inputClass} />
           </div>
 
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <SearchableDropdown
               label="Category"
               options={[
@@ -116,10 +116,10 @@ const DealsForm: React.FC<DealsFormProps> = ({
               value={currentDeal.category}
               onChange={(value: string) => setCurrentDeal({ ...currentDeal, category: value })}
               isDarkMode={isDarkMode}
-              placeholder="Select Category"
+              placeholder="Select"
             />
           </div>
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <SearchableDropdown
               label="Sub Category"
               options={[
@@ -130,10 +130,10 @@ const DealsForm: React.FC<DealsFormProps> = ({
               value={currentDeal.subCategory}
               onChange={(value: string) => setCurrentDeal({ ...currentDeal, subCategory: value })}
               isDarkMode={isDarkMode}
-              placeholder="Select Sub Category"
+              placeholder="Select"
             />
           </div>
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <SearchableDropdown
               label="Main Branch"
               options={[
@@ -145,10 +145,10 @@ const DealsForm: React.FC<DealsFormProps> = ({
               value={currentDeal.mainBranch}
               onChange={(value: string) => setCurrentDeal({ ...currentDeal, mainBranch: value })}
               isDarkMode={isDarkMode}
-              placeholder="Select Branch"
+              placeholder="Select"
             />
           </div>
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <SearchableDropdown
               label="Status"
               options={[
@@ -158,12 +158,12 @@ const DealsForm: React.FC<DealsFormProps> = ({
               value={currentDeal.status}
               onChange={(value: string) => setCurrentDeal({ ...currentDeal, status: value as 'Active' | 'Inactive' })}
               isDarkMode={isDarkMode}
-              placeholder="Select Status"
+              placeholder="Status"
             />
           </div>
-          <div className="md:col-span-1">
+          <div className="col-span-1">
             <SearchableDropdown
-              label="Show In POS Only"
+              label="POS Only"
               options={[
                 { value: 'true', label: 'Yes' },
                 { value: 'false', label: 'No' },
@@ -171,30 +171,30 @@ const DealsForm: React.FC<DealsFormProps> = ({
               value={currentDeal.showInPOSOnly ? 'true' : 'false'}
               onChange={(value: string) => setCurrentDeal({ ...currentDeal, showInPOSOnly: value === 'true' })}
               isDarkMode={isDarkMode}
-              placeholder="Select POS Option"
+              placeholder="POS?"
             />
           </div>
-          <div className="md:col-span-1">
-            <label className={`block text-xs font-black uppercase mb-1.5 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Order Types</label>
-            <input type="text" placeholder="e.g. Dine In, Take Away" value={currentDeal.orderTypes.join(', ')} onChange={e => setCurrentDeal({ ...currentDeal, orderTypes: e.target.value.split(',').map(s => s.trim()) })} className={inputClass} />
+          <div className="sm:col-span-1">
+            <label className={`block text-xs font-black uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Order Types</label>
+            <input type="text" placeholder="Dine In, Take Away" value={currentDeal.orderTypes.join(', ')} onChange={e => setCurrentDeal({ ...currentDeal, orderTypes: e.target.value.split(',').map(s => s.trim()) })} className={inputClass} />
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-6 items-center">
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input type="checkbox" checked={currentDeal.isTimeSpecific} onChange={e => setCurrentDeal({ ...currentDeal, isTimeSpecific: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 items-start sm:items-center py-2">
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked={currentDeal.isTimeSpecific} onChange={e => setCurrentDeal({ ...currentDeal, isTimeSpecific: e.target.checked })} className="w-5 h-5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
             <span className={`text-sm font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Is Time Specific</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input type="checkbox" checked={currentDeal.showOnMobile} onChange={e => setCurrentDeal({ ...currentDeal, showOnMobile: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked={currentDeal.showOnMobile} onChange={e => setCurrentDeal({ ...currentDeal, showOnMobile: e.target.checked })} className="w-5 h-5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
             <span className={`text-sm font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Show on Mobile App</span>
           </label>
-          <label className="flex items-center gap-2 cursor-pointer group">
-            <input type="checkbox" checked={currentDeal.showOnWeb} onChange={e => setCurrentDeal({ ...currentDeal, showOnWeb: e.target.checked })} className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary" />
+          <label className="flex items-center gap-3 cursor-pointer group">
+            <input type="checkbox" checked={currentDeal.showOnWeb} onChange={e => setCurrentDeal({ ...currentDeal, showOnWeb: e.target.checked })} className="w-5 h-5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary focus:ring-primary transition-colors" />
             <span className={`text-sm font-bold ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Show on Web App</span>
           </label>
-          <div className="flex items-center gap-2">
-            <label htmlFor="dealImage-form" className="cursor-pointer">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <label htmlFor="dealImage-form" className="cursor-pointer flex-1 sm:flex-none">
               <input
                 id="dealImage-form"
                 type="file"
@@ -209,18 +209,18 @@ const DealsForm: React.FC<DealsFormProps> = ({
                     reader.readAsDataURL(file);
                   }
                 }}
-                className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
+                className="text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
               />
             </label>
             {currentDeal.image && (
-              <div className="flex items-center gap-2">
-                <img src={currentDeal.image} alt="Deal preview" className="w-8 h-8 rounded object-cover" />
+              <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-lg">
+                <img src={currentDeal.image} alt="Deal preview" className="w-8 h-8 rounded object-cover shadow-sm" />
                 <button
                   type="button"
                   onClick={() => setCurrentDeal({ ...currentDeal, image: undefined })}
-                  className="text-xs text-red-500 hover:text-red-600"
+                  className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-full transition-colors"
                 >
-                  Remove
+                  <Trash2 size={14} />
                 </button>
               </div>
             )}
@@ -230,83 +230,100 @@ const DealsForm: React.FC<DealsFormProps> = ({
         <hr className={isDarkMode ? 'border-slate-700' : 'border-slate-200'} />
 
         {/* Products Section */}
-        <div className="space-y-4">
-          <h3 className={`text-xs font-black uppercase tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Products <PlusCircle size={14} className="cursor-pointer text-primary" onClick={addProduct} />
-          </h3>
-          <div className="space-y-3">
+        <div className="space-y-5">
+          <div className="flex items-center justify-between">
+            <h3 className={`text-[10px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+              Deal Products
+            </h3>
+            <button
+              onClick={addProduct}
+              className="text-primary hover:text-orange-600 flex items-center gap-1.5 text-[10px] sm:text-xs font-bold uppercase transition-colors"
+            >
+              <PlusCircle size={14} />
+              <span>Add More</span>
+            </button>
+          </div>
+          
+          <div className="space-y-4">
             {currentDeal.products.map((p, idx) => (
-              <div key={idx} className="grid grid-cols-12 gap-3 items-end group animate-in slide-in-from-left-2 duration-300">
-                <div className="col-span-1">
-                  <label className="block text-[10px] font-bold mb-1 opacity-60">Sequence</label>
-                  <input type="text" readOnly value={p.sequence} className={`${inputClass} !py-1.5 !px-2 bg-slate-100/50 dark:bg-slate-800/50`} />
+              <div key={idx} className={`relative p-3 sm:p-4 rounded-xl border ${isDarkMode ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50/50 border-slate-200'} animate-in slide-in-from-left-2 duration-300 shadow-sm`}>
+                <div className="absolute -top-2.5 left-4 px-2 py-0.5 rounded bg-primary text-white text-[10px] sm:text-xs font-bold uppercase">
+                  Item #{p.sequence}
                 </div>
-                <div className="col-span-4">
-                  <label className="block text-[10px] font-bold mb-1 opacity-60">Product Name</label>
-                  <div className="relative">
+                
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-end pt-2">
+                  <div className="hidden sm:block sm:col-span-1">
+                    <label className="block text-[10px] font-bold mb-1.5 opacity-60 uppercase">Seq</label>
+                    <input type="text" readOnly value={p.sequence} className={`${inputClass} !py-1.5 !px-2 bg-slate-100/50 dark:bg-slate-800/50 text-center text-xs`} />
+                  </div>
+                  <div className="sm:col-span-5">
+                    <label className="block text-[10px] sm:text-xs font-bold mb-1.5 opacity-60 uppercase">Product Name</label>
                     <input
                       type="text"
                       value={p.name}
                       onChange={e => updateProduct(idx, { name: e.target.value })}
-                      className={inputClass}
-                      placeholder="Search product..."
+                      className={`${inputClass} !py-2 sm:!py-2.5 shadow-none`}
+                      placeholder="e.g. Burger"
                     />
                   </div>
-                </div>
-                <div className="col-span-3">
-                  <label className="block text-[10px] font-bold mb-1 opacity-60">Price Contribution</label>
-                  <input
-                    type="number"
-                    value={p.priceContribution}
-                    onChange={e => updateProduct(idx, { priceContribution: Number(e.target.value) })}
-                    className={inputClass}
-                  />
-                </div>
-                <div className="col-span-3">
-                  <SearchableDropdown
-                    label="Allow AddOns"
-                    options={[
-                      { value: 'true', label: 'Yes' },
-                      { value: 'false', label: 'No' },
-                    ]}
-                    value={p.allowAddOns ? 'true' : 'false'}
-                    onChange={(value: string) => updateProduct(idx, { allowAddOns: value === 'true' })}
-                    isDarkMode={isDarkMode}
-                    placeholder="Allow AddOns?"
-                  />
-                </div>
-                <div className="col-span-1 pb-1 text-center">
-                  <Trash2
-                    size={16}
-                    className="text-red-400 hover:text-red-600 cursor-pointer transition-colors"
-                    onClick={() => removeProduct(idx)}
-                  />
+                  <div className="sm:col-span-3">
+                    <label className="block text-[10px] sm:text-xs font-bold mb-1.5 opacity-60 uppercase">Contribution</label>
+                    <input
+                      type="number"
+                      value={p.priceContribution}
+                      onChange={e => updateProduct(idx, { priceContribution: Number(e.target.value) })}
+                      className={`${inputClass} !py-2 sm:!py-2.5 shadow-none`}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <SearchableDropdown
+                      label="AddOns"
+                      options={[
+                        { value: 'true', label: 'Yes' },
+                        { value: 'false', label: 'No' },
+                      ]}
+                      value={p.allowAddOns ? 'true' : 'false'}
+                      onChange={(value: string) => updateProduct(idx, { allowAddOns: value === 'true' })}
+                      isDarkMode={isDarkMode}
+                      placeholder="Add-ons?"
+                    />
+                  </div>
+                  <div className="sm:col-span-1 flex justify-end pb-1.5 px-1">
+                    <button
+                      onClick={() => removeProduct(idx)}
+                      className="p-2 text-red-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                      title="Remove"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
+            
             <button
               onClick={addProduct}
-              className="w-full py-2.5 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-lg text-slate-400 hover:text-orange-500 hover:border-orange-500 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3.5 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl text-slate-400 hover:text-orange-500 hover:border-orange-500 transition-all flex items-center justify-center gap-2 bg-transparent group"
             >
-              <Plus size={16} />
-              <span className="text-sm font-medium">Add Product</span>
+              <Plus size={18} className="group-hover:scale-110 transition-transform" />
+              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider">Add Item to Deal</span>
             </button>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-700 sticky bottom-0 bg-white dark:bg-slate-900 pb-2">
+        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-200 dark:border-slate-700 sticky bottom-0 bg-white dark:bg-slate-900 pb-2 z-10 mx-[-4px]">
           <button
             onClick={onClose}
-            className={`px-6 py-2.5 rounded-lg font-black uppercase text-xs tracking-widest transition-all ${isDarkMode
-              ? 'bg-slate-800 text-slate-300 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500 border border-transparent'
-              : 'bg-slate-100 text-slate-600 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-500 border border-transparent'
+            className={`flex-1 sm:flex-none  px-3 py-2  sm:px-6 sm:py-2.5 rounded-lg font-black uppercase text-xs tracking-widest transition-all ${isDarkMode
+              ? 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
               }`}
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="px-8 py-2.5 bg-primary hover:from-orange-600 hover:to-orange-700 text-white rounded-lg font-black uppercase text-xs tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all"
+            className="flex-[2] sm:flex-none px-4 py-2 sm:px-10 sm:py-2.5 bg-primary hover:bg-orange-600 text-white rounded-lg font-black uppercase text-xs tracking-widest shadow-lg shadow-orange-500/20 active:scale-95 transition-all text-center"
           >
             Save Deal
           </button>

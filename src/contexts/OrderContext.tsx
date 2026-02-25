@@ -9,6 +9,7 @@ export interface OrderReadyPayload {
   readyTime: number;
   tableNumber?: string;
   items: Array<{ name: string; quantity: number; price: number }>;
+  deals?: Array<{ name: string; items: string[]; price: number }>;
   waiterName?: string;
   customerPhone?: string;
   subtotal?: number;

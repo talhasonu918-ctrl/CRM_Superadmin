@@ -2704,9 +2704,11 @@ export interface DispatchOrderItem {
 }
 
 export interface DispatchDeal {
+  id?: string;
   name: string;
   items: string[];
   price?: number;
+  completed?: boolean;
 }
 
 export interface DispatchOrder {
@@ -2731,6 +2733,22 @@ export interface DispatchOrder {
   discount?: number;
   grandTotal?: number;
 }
+
+export interface DashboardLiveOrder {
+  id: string;
+  customer: string;
+  items: string;
+  status: 'Preparing' | 'Ready' | 'Pending' | 'Dispatched';
+  time: string;
+  total: number;
+  timestamp?: number;
+}
+
+export const mockLiveOrders: DashboardLiveOrder[] = [
+  { id: '#ORD-9821', customer: 'Emma S.', items: '2x Pepperoni Pizza', status: 'Preparing', time: '12m ago', total: 42.00, timestamp: Date.now() - 12 * 60 * 1000 },
+  { id: '#ORD-9822', customer: 'John D.', items: '1x Veggie Burger', status: 'Ready', time: '5m ago', total: 15.50, timestamp: Date.now() - 5 * 60 * 1000 },
+  { id: '#ORD-9823', customer: 'Sarah L.', items: '3x Soft Drinks', status: 'Pending', time: 'Just now', total: 9.00, timestamp: Date.now() },
+];
 
 export interface RiderStatus {
   id: string;

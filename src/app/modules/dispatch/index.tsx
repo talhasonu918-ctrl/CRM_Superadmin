@@ -54,11 +54,20 @@ const DispatchView: React.FC<DispatchViewProps> = ({ isDarkMode = false }) => {
       customerPhone: order.customerPhone,
       status: 'Ready', 
       type: order.orderType,
-      items: order.items.map(item => ({
-        name: item.name,
-        price: item.price || 0, 
-        quantity: item.quantity
-      })),
+      items: [
+        ...order.items.map(item => ({
+          name: item.name,
+          price: item.price || 0, 
+          quantity: item.quantity
+        })),
+        ...(order.deals?.map(deal => ({
+          name: `[DEAL] ${deal.name}`,
+          price: deal.price || 0,
+          quantity: 1,
+          isDeal: true,
+          dealItems: deal.items
+        })) || [])
+      ],
       subtotal: calculatedSubtotal,
       tax: calculatedTax,
       discount: order.discount || 0,
@@ -103,7 +112,13 @@ const DispatchView: React.FC<DispatchViewProps> = ({ isDarkMode = false }) => {
           discount: readyOrder.discount,
           grandTotal: readyOrder.grandTotal,
           elapsedTime: '0m',
-          deals: [],
+          deals: readyOrder.deals?.map((deal, dIdx) => ({
+            id: `${readyOrder.orderId}-deal-${dIdx}`,
+            name: deal.name,
+            items: deal.items,
+            price: deal.price,
+            completed: true
+          })) || [],
           riderId: undefined,
           riderName: undefined,
         };
@@ -165,32 +180,33 @@ const DispatchView: React.FC<DispatchViewProps> = ({ isDarkMode = false }) => {
   };
 
   const handleRiderAssign = (orderId: string, rider: Rider) => {
+    const orderToUpdate = orders.find(o => o.id === orderId);
+    
+    if (orderToUpdate) {
+      // Add Rider Assignment Notification (Move outside setOrders to prevent double call)
+      addNotification({
+        title: 'Dispatch: Rider Assigned',
+        message: `${rider.name} has been assigned to Order #${orderToUpdate.orderNumber}.`,
+        type: 'dispatch',
+        orderDetails: {
+          orderId: orderToUpdate.orderNumber,
+          customerName: orderToUpdate.customerName || 'Guest',
+          phoneNumber: orderToUpdate.customerPhone || 'N/A',
+          address: orderToUpdate.tableNumber === '-' ? orderToUpdate.orderType : `Table ${orderToUpdate.tableNumber}`,
+          orderDate: new Date().toLocaleDateString(),
+          orderTime: new Date().toLocaleTimeString(),
+          totalAmount: orderToUpdate.grandTotal || 0,
+          items: orderToUpdate.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price }))
+        }
+      });
+    }
+
     setOrders(prev => {
       const updated = prev.map(o => o.id === orderId ? { ...o, riderId: rider.id, riderName: rider.name } : o);
       localStorage.setItem('dispatchOrders', JSON.stringify(updated));
-      
-      const updatedOrder = updated.find(o => o.id === orderId);
-      if (updatedOrder) {
-        // Add Rider Assignment Notification
-        addNotification({
-          title: 'Dispatch: Rider Assigned',
-          message: `${rider.name} has been assigned to Order #${updatedOrder.orderNumber}.`,
-          type: 'dispatch',
-          orderDetails: {
-            orderId: updatedOrder.orderNumber,
-            customerName: updatedOrder.customerName || 'Guest',
-            phoneNumber: updatedOrder.customerPhone || 'N/A',
-            address: updatedOrder.tableNumber === '-' ? updatedOrder.orderType : `Table ${updatedOrder.tableNumber}`,
-            orderDate: new Date().toLocaleDateString(),
-            orderTime: new Date().toLocaleTimeString(),
-            totalAmount: updatedOrder.grandTotal || 0,
-            items: updatedOrder.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price }))
-          }
-        });
-      }
-      
       return updated;
     });
+    
     notify.success(`${rider.name} assigned to order`);
   };
 
@@ -211,39 +227,45 @@ const DispatchView: React.FC<DispatchViewProps> = ({ isDarkMode = false }) => {
   };
 
   const handleDispatch = (orderId: string) => {
-    setOrders(prev => {
-      const orderToDispatch = prev.find(o => o.id === orderId);
-      if (orderToDispatch) {
-        addNotification({
-          title: 'Dispatch: Out for Delivery',
-          message: `Order #${orderToDispatch.orderNumber} is now out for delivery.`,
-          type: 'dispatch',
-          orderDetails: {
-            orderId: orderToDispatch.orderNumber,
-            customerName: orderToDispatch.customerName || 'Guest',
-            phoneNumber: orderToDispatch.customerPhone || 'N/A',
-            address: orderToDispatch.tableNumber === '-' ? orderToDispatch.orderType : `Table ${orderToDispatch.tableNumber}`,
-            orderDate: new Date().toLocaleDateString(),
-            orderTime: new Date().toLocaleTimeString(),
-            totalAmount: orderToDispatch.grandTotal || 0,
-            items: orderToDispatch.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price }))
-          }
-        });
-      }
+    const orderToDispatch = orders.find(o => o.id === orderId);
+    
+    if (orderToDispatch) {
+      // Add dispatch notification outside state setter to prevent duplication (Strict Mode safe)
+      addNotification({
+        title: 'Dispatch: Out for Delivery',
+        message: `Order #${orderToDispatch.orderNumber} is now out for delivery.`,
+        type: 'dispatch',
+        orderDetails: {
+          orderId: orderToDispatch.orderNumber,
+          customerName: orderToDispatch.customerName || 'Guest',
+          phoneNumber: orderToDispatch.customerPhone || 'N/A',
+          address: orderToDispatch.tableNumber === '-' ? orderToDispatch.orderType : `Table ${orderToDispatch.tableNumber}`,
+          orderDate: new Date().toLocaleDateString(),
+          orderTime: new Date().toLocaleTimeString(),
+          totalAmount: orderToDispatch.grandTotal || 0,
+          items: orderToDispatch.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price }))
+        }
+      });
+    }
 
+    setOrders(prev => {
       const updatedOrders = prev.map(order => 
         order.id === orderId ? { ...order, status: 'dispatched' as const } : order
       );
       localStorage.setItem('dispatchOrders', JSON.stringify(updatedOrders));
-      setTimeout(() => {
-        setOrders(current => {
-          const filtered = current.filter(o => o.id !== orderId);
-          localStorage.setItem('dispatchOrders', JSON.stringify(filtered));
-          return filtered;
-        });
-      }, 1000);
       return updatedOrders;
     });
+
+    // Handle removal after animation/delay
+    setTimeout(() => {
+      setOrders(current => {
+        const filtered = current.filter(o => o.id !== orderId);
+        localStorage.setItem('dispatchOrders', JSON.stringify(filtered));
+        return filtered;
+      });
+      // Also remove from order context if applicable
+      removeFromContext(orderId);
+    }, 1000);
   };
 
   const filteredOrders = useMemo(() => {

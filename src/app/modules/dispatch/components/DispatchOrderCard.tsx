@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, User, Phone, Printer, CheckCircle, ShoppingBag, CheckSquare, Square, Send } from 'lucide-react';
+import { Clock, User, Phone, Printer, CheckCircle, ShoppingBag, CheckSquare, Square, Send, Star } from 'lucide-react';
 import { getThemeColors } from '../../../../theme/colors';
 import { DispatchOrder } from '../../pos/mockData';
 import { Rider } from '../../pos/types';
@@ -29,7 +29,9 @@ export const DispatchOrderCard: React.FC<DispatchOrderCardProps> = ({
   const [isSelectingRider, setIsSelectingRider] = useState(false);
   const agingClassName = useAgingColor(order.readyTime);
 
-  const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalDealsCount = order.deals?.length || 0;
+  const totalDisplayCount = totalItemsCount + totalDealsCount;
 
   const formatReadyTime = (ms: number) => {
     const mins = Math.floor((Date.now() - ms) / 60000);
@@ -159,18 +161,60 @@ export const DispatchOrderCard: React.FC<DispatchOrderCardProps> = ({
       <div className="relative z-0 flex-1 mb-4">
         <div className="flex items-center gap-2 mb-2">
           <ShoppingBag size={12} className={theme.text.tertiary} />
-          <span className={`text-xs font-bold ${theme.text.tertiary}`}>ITEMS ({totalItems})</span>
+          <span className={`text-xs font-bold ${theme.text.tertiary}`}>ITEMS ({totalDisplayCount})</span>
         </div>
-        <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1 custom-scrollbar">
-          {order.items.map(item => (
-            <div key={item.id} className={`flex items-center justify-between p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-200/50'}`}>
-              <span className="text-xs font-medium truncate flex-1 pr-2">
-                {item.quantity}x {item.name}
-              </span>
-              <CheckCircle size={12} className="text-green-500 shrink-0" />
+        {order.items.length > 0 && (
+          <>
+            <div className="space-y-1.5 max-h-[120px] overflow-y-auto pr-1 custom-scrollbar">
+              {order.items.map(item => (
+                <div key={item.id} className={`flex items-center justify-between p-2 rounded-lg ${isDarkMode ? 'bg-gray-700/30' : 'bg-gray-200/50'}`}>
+                  <span className="text-xs font-medium truncate flex-1 pr-2">
+                    {item.quantity}x {item.name}
+                  </span>
+                  <CheckCircle size={12} className="text-green-500 shrink-0" />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
+
+        {/* Deals Section */}
+        {order.deals && order.deals.length > 0 && (
+          <div className={`${order.items.length > 0 ? 'mt-4' : ''}`}>
+            <div className="flex items-center gap-2 mb-2">
+              <Star size={12} className="text-yellow-400" />
+              <span className={`text-xs font-bold ${theme.text.tertiary}`}>DEALS ({order.deals.length})</span>
+            </div>
+            <div className="space-y-2 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+              {order.deals.map((deal, idx) => (
+                <div
+                  key={deal.id || idx}
+                  className={`relative overflow-hidden rounded-xl p-3 border-l-4 border-green-500 ${isDarkMode ? 'bg-green-500/5' : 'bg-green-50/50'}`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-tight bg-green-500 text-white">
+                        DEAL
+                      </span>
+                      <span className={`text-[13px] font-black ${theme.text.primary}`}>
+                        {deal.name}
+                      </span>
+                    </div>
+                    <CheckCircle size={12} className="text-green-500" />
+                  </div>
+                  <div className={`text-[11px] font-bold pl-1 flex flex-wrap gap-x-2 gap-y-1 ${theme.text.tertiary}`}>
+                    {deal.items.map((it, i) => (
+                      <span key={i} className="flex items-center gap-1">
+                        {i > 0 && <span className="opacity-30">•</span>}
+                        {it}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Dispatch Button */}

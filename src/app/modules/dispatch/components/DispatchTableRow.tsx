@@ -32,6 +32,9 @@ export const DispatchTableRow: React.FC<DispatchTableRowProps> = ({
   const theme = getThemeColors(isDarkMode);
   const agingClassName = useAgingColor(order.readyTime);
 
+  const totalItemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalDealsCount = order.deals?.length || 0;
+
   const formatReadyTime = (ms: number) => {
     const mins = Math.floor((Date.now() - ms) / 60000);
     return mins === 0 ? 'Just now' : `${mins}m ago`;
@@ -104,7 +107,7 @@ export const DispatchTableRow: React.FC<DispatchTableRowProps> = ({
             <div className="flex items-center gap-2 mb-1">
               <ShoppingBag size={14} className="text-green-500" />
               <span className={`text-xs font-bold ${theme.text.primary}`}>
-                {order.items.length} Items {order.deals && order.deals.length > 0 && `+ ${order.deals.length} Deal(s)`}
+                {totalItemsCount + totalDealsCount} Items {totalDealsCount > 0 && `(incl. ${totalDealsCount} Deal(s))`}
               </span>
               {isExpanded ? (
                 <ChevronUp size={12} className={theme.text.tertiary} />
@@ -161,13 +164,43 @@ export const DispatchTableRow: React.FC<DispatchTableRowProps> = ({
       {isExpanded && (
         <tr>
           <td colSpan={7} className={`px-8 py-4 ${isDarkMode ? 'bg-gray-800/10' : 'bg-gray-50/50'}`}>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-in slide-in-from-top-2">
-              {order.items.map(item => (
-                <div key={item.id} className={`flex items-center justify-between p-2 rounded-lg border ${theme.border.secondary}`}>
-                  <span className="text-xs font-medium">{item.quantity}x {item.name}</span>
-                  <Check size={14} className="text-green-500" />
+            <div className="flex flex-col gap-4 animate-in slide-in-from-top-2">
+              {/* Items Grid */}
+              {order.items.length > 0 && (
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  {order.items.map(item => (
+                    <div key={item.id} className={`flex items-center justify-between p-2 rounded-lg border ${theme.border.secondary} bg-surface`}>
+                      <span className="text-xs font-medium">{item.quantity}x {item.name}</span>
+                      <Check size={14} className="text-green-500" />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+              
+              {/* Deals Grid */}
+              {order.deals && order.deals.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {order.deals.map((deal, idx) => (
+                    <div key={deal.id || idx} className="flex flex-col p-3 rounded-lg border-l-4 border-yellow-400 bg-surface shadow-sm overflow-hidden">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-yellow-400 text-yellow-950 uppercase">DEAL</span>
+                          <span className="text-sm font-bold">{deal.name}</span>
+                        </div>
+                        <Check size={14} className="text-green-500" />
+                      </div>
+                      <div className="text-[11px] font-medium text-textSecondary flex flex-wrap gap-x-2 gap-y-1">
+                        {deal.items.map((it, i) => (
+                          <span key={i} className="flex items-center gap-1">
+                            {i > 0 && <span className="opacity-30">•</span>}
+                            {it}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </td>
         </tr>
