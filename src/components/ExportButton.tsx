@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { Download, FileText, Table, ChevronDown } from 'lucide-react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
+import { useBranding } from '../contexts/BrandingContext';
 
 interface ExportButtonProps {
   filename?: string;
@@ -22,15 +23,18 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
 }) => {
   const finalFilename = fileName || filename || 'export';
   const finalTitle = title || finalFilename.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  const { config } = useBranding();
+  const primaryColor = config.colors?.primary;
 
   return (
     <div className="relative inline-block text-left">
       <Menu as="div" className="relative inline-block text-left">
         <div>
-          <Menu.Button className="px-4 py-2 sm:px-2 sm:py-1.5 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 shadow-lg shadow-primary/30 transition-all flex items-center gap-2">
-            <Download size={18} />
-            Export Results
-            <ChevronDown size={14} className="ml-1 opacity-70" />
+          <Menu.Button className="px-1 py-1.5  sm:px-4 sm:py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 bg-primary text-white shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+            <Download className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 ml-1 opacity-70" />
+            <span className="text-[10px] sm:text-sm hidden sm:inline">Export</span>
+            <span className=" text-[10px] sm:text-sm sm:hidden">Export</span>
+          <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 ml-1 opacity-70" />
           </Menu.Button>
         </div>
      <Transition
@@ -49,7 +53,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
               <Menu.Item>
                 {({ active }) => (
                   <button
-                    onClick={() => exportToPDF(finalFilename, headers, data, finalTitle)}
+                    onClick={() => exportToPDF(finalFilename, headers, data, finalTitle, primaryColor)}
                     className={`${
                       active 
                         ? 'bg-primary/10 text-primary' 
@@ -83,3 +87,4 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
     </div>
   );
 };
+

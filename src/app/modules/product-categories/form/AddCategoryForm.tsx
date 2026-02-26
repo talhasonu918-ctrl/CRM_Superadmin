@@ -98,7 +98,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                   <input
                     {...field}
                     placeholder="Category Name"
-                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+                    className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm ${isDarkMode
                       ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
                       : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
                       } ${fieldState.error ? 'border-red-500' : ''
@@ -117,7 +117,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
             <input
               {...register('preparationTime')}
               placeholder="Preparation Time"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm ${isDarkMode
                 ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
                 : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
                 }`}
@@ -163,7 +163,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               type="checkbox"
               id="showOnMobile"
               {...register('showOnMobile' as const)}
-              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-orange-600 rounded focus:ring-primary"
             />
             <label htmlFor="showOnMobile" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
               Show On Mobile App
@@ -176,7 +176,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
               type="checkbox"
               id="showOnWeb"
               {...register('showOnWeb' as const)}
-              className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+              className="w-4 h-4 text-orange-600 rounded focus:ring-primary"
             />
             <label htmlFor="showOnWeb" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
               Show On Web App
@@ -214,7 +214,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
             id="showOnPOS"
             {...register('showOnPOS' as const)}
             defaultChecked
-            className="w-4 h-4 text-orange-600 rounded focus:ring-orange-500"
+            className="w-4 h-4 text-orange-600 rounded focus:ring-primary"
           />
           <label htmlFor="showOnPOS" className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
             Show On POS
@@ -236,7 +236,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
                 value={subCat}
                 onChange={(e) => handleSubCategoryChange(index, e.target.value)}
                 placeholder="SubCategory Name"
-                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-orange-500 transition-all text-sm ${isDarkMode
+                className={`flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-primary transition-all text-sm ${isDarkMode
                   ? 'bg-slate-800 border-slate-700 text-white placeholder:text-slate-500'
                   : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-400'
                   }`}
@@ -281,7 +281,7 @@ export const AddCategoryForm: React.FC<AddCategoryFormProps> = ({
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition-colors text-sm"
+          className="px-6 py-2 bg-primary text-white rounded-md font-medium hover:bg-orange-600 transition-colors text-sm"
         >
           Save Category
         </button>

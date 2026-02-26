@@ -232,93 +232,105 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
     }, [isMapModalOpen]);
 
     const GridView = (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 mt-6">
             {filteredRiders.map(rider => (
                 <div
                     key={rider.id}
-                    className="p-4 rounded-xl border border-border transition-all hover:shadow-md bg-surface"
+                    className="p-4 rounded-xl border border-border transition-all hover:shadow-md bg-surface flex flex-col h-full"
                 >
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="relative">
-                            <Avatar src={rider.avatar} name={rider.name} className="w-12 h-12 rounded-lg object-cover ring-2 ring-primary/5 shadow-sm" />
-                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${isDarkMode ? 'border-gray-900' : 'border-white'} ${getStatusColor(rider.status)}`} />
+                    <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="relative">
+                                <Avatar src={rider.avatar} name={rider.name} className="w-12 h-12 rounded-lg object-cover ring-2 ring-primary/5 shadow-sm" />
+                                <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 ${isDarkMode ? 'border-gray-900' : 'border-white'} ${getStatusColor(rider.status)}`} />
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-base text-textPrimary leading-none mb-1">{rider.name}</h3>
+                                <div className="text-[10px] font-semibold text-textSecondary uppercase tracking-wider">
+                                    {rider.id}
+                                </div>
+                            </div>
                         </div>
-                        <h3 className="font-bold text-base text-textPrimary mb-1">{rider.name}</h3>
-                        <div className="text-xs font-semibold text-textSecondary mb-0.5">
-                            {rider.id}
-                        </div>
+                        <Badge variant="flat" className={`rounded-full uppercase text-[9px] font-bold tracking-widest px-2 py-0.5 ${rider.status === 'available' ? 'bg-success/10 text-success' :
+                            rider.status === 'busy' ? 'bg-primary/10 text-primary' :
+                                'bg-textSecondary/10 text-textSecondary'
+                            }`}>
+                            {rider.status}
+                        </Badge>
                     </div>
 
-                    <div>
-                        <div className="text-xs flex items-center font-semibold text-textSecondary mb-0.5">
-                            <Phone size={12} className="mr-1" />
+                    <div className="space-y-2 mb-4">
+                        <div className="text-xs flex items-center font-semibold text-textSecondary">
+                            <Phone size={12} className="mr-2 text-primary/60" />
                             {rider.phone}
                         </div>
-                        <div className="text-xs flex items-center font-medium opacity-60 text-textSecondary mb-4">
-                            <MapPin size={12} className="mr-1" />
+                        <div className="text-xs flex items-center font-medium text-textSecondary opacity-80">
+                            <MapPin size={12} className="mr-2 text-primary/60" />
                             {rider.cityArea}
                         </div>
                     </div>
 
                     {/* Active Task Section - Grid View */}
-                    {rider.status === 'busy' && rider.activeTask ? (
-                        <div
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleRiderExpansion(rider.id);
-                            }}
-                            className={`mb-4 p-3 rounded-xl border cursor-pointer transition-all duration-300 bg-primary/5 border-primary/20 ${expandedRiderId === rider.id ? 'ring-1 ring-primary/30' : 'hover:border-primary/20'}`}
-                        >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-1.5">
-                                    <span className="text-[9px] font-black uppercase tracking-tighter text-primary opacity-70">Active Task</span>
-                                    {expandedRiderId === rider.id ? <ChevronUp size={10} className="text-primary" /> : <ChevronDown size={10} className="text-primary" />}
-                                </div>
-                                <DropdownMenu
-                                    isDarkMode={isDarkMode}
-                                    trigger={
-                                        <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
-                                            <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
-                                            <ChevronDown size={8} />
-                                        </Badge>
-                                    }
-                                    items={[
-                                        { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
-                                        { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
-                                    ]}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[11px] font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
-                                    <span className="text-[9px] font-medium text-textSecondary opacity-60">{rider.activeTask.itemsCount} Items</span>
-                                </div>
-                                <span className="text-xs font-black text-primary">PKR {rider.activeTask.totalAmount.toLocaleString()}</span>
-                            </div>
-
-                            {/* Expanded Items List in Grid */}
-                            {expandedRiderId === rider.id && rider.activeTask.items && (
-                                <div className="mt-3 pt-3 border-t border-primary/10 space-y-2 animate-in slide-in-from-top-1 duration-200">
-                                    <div className="grid grid-cols-10 gap-1 text-[8px] font-black uppercase tracking-widest opacity-40 mb-1">
-                                        <div className="col-span-6 text-primary">Item Name</div>
-                                        <div className="col-span-1 text-center text-primary">Qty</div>
-                                        <div className="col-span-3 text-right text-primary">Price</div>
+                    <div className="flex-1">
+                        {rider.status === 'busy' && rider.activeTask ? (
+                            <div
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleRiderExpansion(rider.id);
+                                }}
+                                className={`mb-4 p-3 rounded-xl border cursor-pointer transition-all duration-300 bg-primary/5 border-primary/20 ${expandedRiderId === rider.id ? 'ring-1 ring-primary/30' : 'hover:border-primary/20'}`}
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="text-[9px] font-black uppercase tracking-tighter text-primary opacity-70">Active Task</span>
+                                        {expandedRiderId === rider.id ? <ChevronUp size={10} className="text-primary" /> : <ChevronDown size={10} className="text-primary" />}
                                     </div>
-                                    {rider.activeTask.items.map((item, idx) => (
-                                        <div key={idx} className="grid grid-cols-10 gap-1 text-[10px] items-center">
-                                            <div className="col-span-6 font-bold truncate text-textPrimary">{item.product.name}</div>
-                                            <div className="col-span-1 text-center font-black text-textPrimary">{item.quantity}</div>
-                                            <div className="col-span-3 text-right font-black text-primary">PKR {item.product.price.toLocaleString()}</div>
-                                        </div>
-                                    ))}
+                                    <DropdownMenu
+                                        isDarkMode={isDarkMode}
+                                        trigger={
+                                            <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
+                                                <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
+                                                <ChevronDown size={8} />
+                                            </Badge>
+                                        }
+                                        items={[
+                                            { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
+                                            { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
+                                        ]}
+                                    />
                                 </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="mb-4 p-3 rounded-xl border border-dashed border-border flex items-center justify-center opacity-40">
-                            <span className="text-[10px] font-bold uppercase tracking-widest italic text-textSecondary">Waiting for Task</span>
-                        </div>
-                    )}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex flex-col">
+                                        <span className="text-[11px] font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
+                                        <span className="text-[9px] font-medium text-textSecondary opacity-60">{rider.activeTask.itemsCount} Items</span>
+                                    </div>
+                                    <span className="text-xs font-black text-primary">PKR {rider.activeTask.totalAmount.toLocaleString()}</span>
+                                </div>
+
+                                {/* Expanded Items List in Grid */}
+                                {expandedRiderId === rider.id && rider.activeTask.items && (
+                                    <div className="mt-3 pt-3 border-t border-primary/10 space-y-2 animate-in slide-in-from-top-1 duration-200">
+                                        <div className="grid grid-cols-10 gap-1 text-[8px] font-black uppercase tracking-widest opacity-40 mb-1">
+                                            <div className="col-span-6 text-primary">Item Name</div>
+                                            <div className="col-span-1 text-center text-primary">Qty</div>
+                                            <div className="col-span-3 text-right text-primary">Price</div>
+                                        </div>
+                                        {rider.activeTask.items.map((item, idx) => (
+                                            <div key={idx} className="grid grid-cols-10 gap-1 text-[10px] items-center">
+                                                <div className="col-span-6 font-bold truncate text-textPrimary">{item.product.name}</div>
+                                                <div className="col-span-1 text-center font-black text-textPrimary">{item.quantity}</div>
+                                                <div className="col-span-3 text-right font-black text-primary">PKR {item.product.price.toLocaleString()}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="mb-4 p-3 rounded-xl border border-dashed border-border flex items-center justify-center opacity-40">
+                                <span className="text-[10px] font-bold uppercase tracking-widest italic text-textSecondary">Waiting for Task</span>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="flex items-center justify-between mb-4">
                         <button
@@ -330,7 +342,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                         </button>
                     </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-border">
+                    <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
                         <div className="flex flex-col">
                             <span className="text-[9px] uppercase font-bold opacity-30 text-textSecondary">Today</span>
                             <span className="text-xs font-bold text-primary">{rider.performance.completedToday} Orders</span>
@@ -346,155 +358,160 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
     );
 
     const ListView = (
-        <div className="rounded-xl border border-border overflow-hidden shadow-sm mt-6 bg-surface">
-            <table className="w-full text-left border-collapse">
-                <thead>
-                    <tr className="bg-background/50 border-b border-border">
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Rider Info</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Orders</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">InProgress</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Order Tasks</th>
-                        <th className="px-4 py-3 text-xs uppercase tracking-widest text-textSecondary">Status</th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-border/10">
-                    {filteredRiders.map(rider => (
-                        <tr key={rider.id} className="group hover:bg-surface/50 transition-colors">
-                            <td className="px-4 py-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="relative">
-                                        <Avatar src={rider.avatar} name={rider.name} className="w-10 h-10 rounded-lg object-cover" />
-                                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 ${isDarkMode ? 'border-gray-900' : 'border-white'} ${getStatusColor(rider.status)}`} />
-                                    </div>
-                                    <div>
-                                        <div className="text-sm text-textPrimary">{rider.name}</div>
-                                        <div className="text-xs font-medium text-textSecondary opacity-60">{rider.id} • {rider.phone}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="px-4 py-3">
-                                <Badge size="sm" variant="flat" className="bg-textSecondary/10 text-textSecondary text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
-                                    {rider.performance.completedToday} Orders Today
-                                </Badge>
-                            </td>
-                            <td className="px-4 py-3">
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="flex flex-col min-w-0">
-                                        <div className="text-sm font-bold text-textPrimary truncate">
-                                            {rider.activeTask?.orderNumber || rider.vehicleNumber || 'N/A'}
-                                        </div>
-                                        <div className="text-[10px] font-medium text-textSecondary opacity-70 truncate max-w-[150px]">
-                                            {rider.activeTask?.customerAddress || rider.cityArea}
-                                        </div>
-                                    </div>
-                                    <ActionIcon
-                                        variant="flat"
-                                        size="sm"
-                                        onClick={() => handleOpenMap(rider)}
-                                        className="rounded-lg bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
-                                    >
-                                        <MapPin size={14} />
-                                    </ActionIcon>
-                                </div>
-                            </td>
-                            <td className="px-4 py-3">
-                                {rider.status === 'busy' && rider.activeTask ? (
-                                    <div
-                                        className="flex flex-col cursor-pointer hover:bg-primary/5 p-2 rounded-lg transition-all"
-                                        onClick={() => toggleRiderExpansion(rider.id)}
-                                    >
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="text-xs font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
-                                            <DropdownMenu
-                                                isDarkMode={isDarkMode}
-                                                trigger={
-                                                    <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
-                                                        <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
-                                                        <ChevronDown size={8} />
-                                                    </Badge>
-                                                }
-                                                items={[
-                                                    { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
-                                                    { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
-                                                ]}
-                                            />
-                                            {expandedRiderId === rider.id ? <ChevronUp size={12} className="text-primary" /> : <ChevronDown size={12} className="text-primary" />}
-                                        </div>
-
-                                        {/* Itemized List - Refined for better visibility */}
-                                        <div className="flex flex-col gap-1.5 mt-2">
-                                            {(expandedRiderId === rider.id ? rider.activeTask.items : rider.activeTask.items?.slice(0, 1))?.map((item, idx) => (
-                                                <div key={idx} className="grid grid-cols-5 gap-2 text-[11px] animate-in fade-in duration-300">
-                                                    <span className="col-span-3 truncate font-bold text-textPrimary">
-                                                        {item.product.name}
-                                                    </span>
-                                                    <span className="col-span-1 text-center font-black text-textPrimary">
-                                                        x{item.quantity}
-                                                    </span>
-                                                    <span className="col-span-1 text-right font-black text-primary">
-                                                        PKR {item.product.price.toLocaleString()}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                            {rider.activeTask.items && rider.activeTask.items.length > (expandedRiderId === rider.id ? 0 : 1) && (
-                                                <div className="text-[10px] font-black text-orange-500 mt-1 flex items-center gap-1 group-hover:text-orange-600">
-                                                    {expandedRiderId === rider.id ? (
-                                                        <span className="flex items-center gap-1 opacity-60">Show less <ChevronUp size={10} /></span>
-                                                    ) : (
-                                                        <span className="flex items-center gap-1">+{rider.activeTask.items.length - 1} more items <ChevronDown size={10} /></span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <span className="text-[10px] font-medium text-textSecondary italic opacity-50">Waiting for task...</span>
-                                )}
-                            </td>
-
-                            <td className="px-4 py-3">
-                                <Badge variant="flat" className={`rounded-full uppercase text-[9px] font-bold tracking-widest px-2 py-0.5 ${rider.status === 'available' ? 'bg-success/10 text-success' :
-                                    rider.status === 'busy' ? 'bg-primary/10 text-primary' :
-                                        'bg-textSecondary/10 text-textSecondary'
-                                    }`}>
-                                    {rider.status}
-                                </Badge>
-                            </td>
+        <div className="rounded-xl border border-border mt-6 bg-surface">
+            <div className="overflow-x-auto custom-scrollbar">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                    <thead>
+                        <tr className="bg-background/30 border-b border-border">
+                            <th className="px-6 py-4 text-xs uppercase tracking-widest text-textSecondary font-bold">Rider Info</th>
+                            <th className="px-6 py-4 text-xs uppercase tracking-widest text-textSecondary font-bold">Orders</th>
+                            <th className="px-6 py-4 text-xs uppercase tracking-widest text-textSecondary font-bold">Location Info</th>
+                            <th className="px-6 py-4 text-xs uppercase tracking-widest text-textSecondary font-bold">Active Tasks</th>
+                            <th className="px-6 py-4 text-xs uppercase tracking-widest text-textSecondary font-bold">Status</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody className="divide-y divide-border/10">
+                        {filteredRiders.map(rider => (
+                            <tr key={rider.id} className="group hover:bg-surface/50 transition-colors">
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative">
+                                            <Avatar src={rider.avatar} name={rider.name} className="w-10 h-10 rounded-lg object-cover" />
+                                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 ${isDarkMode ? 'border-gray-900' : 'border-white'} ${getStatusColor(rider.status)}`} />
+                                        </div>
+                                        <div>
+                                            <div className="text-sm font-bold text-textPrimary leading-none mb-1">{rider.name}</div>
+                                            <div className="text-[10px] font-medium text-textSecondary opacity-60 uppercase">{rider.id} • {rider.phone}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <Badge size="sm" variant="flat" className="bg-primary/10 text-primary text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap">
+                                        {rider.performance.completedToday} Orders Today
+                                    </Badge>
+                                </td>
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="flex flex-col min-w-0">
+                                            <div className="text-[11px] font-bold text-textPrimary truncate mb-0.5">
+                                                {rider.cityArea}
+                                            </div>
+                                            <div className="text-[10px] font-medium text-textSecondary opacity-70 truncate max-w-[150px]">
+                                                {rider.activeTask?.customerAddress || 'Standby'}
+                                            </div>
+                                        </div>
+                                        <ActionIcon
+                                            variant="flat"
+                                            size="sm"
+                                            onClick={() => handleOpenMap(rider)}
+                                            className="rounded-lg bg-primary/10 text-primary hover:bg-primary/20 shrink-0"
+                                        >
+                                            <MapPin size={14} />
+                                        </ActionIcon>
+                                    </div>
+                                </td>
+                                <td className="px-6 py-4">
+                                    {rider.status === 'busy' && rider.activeTask ? (
+                                        <div
+                                            className="flex flex-col cursor-pointer hover:bg-primary/5 p-2 rounded-lg transition-all"
+                                            onClick={() => toggleRiderExpansion(rider.id)}
+                                        >
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="text-xs font-bold text-textPrimary">{rider.activeTask.orderNumber}</span>
+                                                <DropdownMenu
+                                                    isDarkMode={isDarkMode}
+                                                    trigger={
+                                                        <Badge size="sm" variant="flat" className={`cursor-pointer transition-all hover:opacity-80 flex items-center gap-1 px-2 py-0.5 rounded-full ${rider.activeTask.paymentStatus === 'received' ? 'bg-success/10 text-success' : 'bg-primary/10 text-primary'}`}>
+                                                            <span className="text-[8px] font-bold">{rider.activeTask.paymentStatus.toUpperCase()}</span>
+                                                            <ChevronDown size={8} />
+                                                        </Badge>
+                                                    }
+                                                    items={[
+                                                        { label: 'PENDING', onClick: () => handleUpdateTaskStatus(rider.id, 'pending'), disabled: rider.activeTask.paymentStatus === 'pending' },
+                                                        { label: 'RECEIVED', onClick: () => handleUpdateTaskStatus(rider.id, 'received'), disabled: rider.activeTask.paymentStatus === 'received' },
+                                                    ]}
+                                                />
+                                                {expandedRiderId === rider.id ? <ChevronUp size={12} className="text-primary" /> : <ChevronDown size={12} className="text-primary" />}
+                                            </div>
+
+                                            {/* Itemized List - Refined for better visibility */}
+                                            <div className="flex flex-col gap-1.5 mt-2">
+                                                {(expandedRiderId === rider.id ? rider.activeTask.items : rider.activeTask.items?.slice(0, 1))?.map((item, idx) => (
+                                                    <div key={idx} className="grid grid-cols-5 gap-2 text-[11px] animate-in fade-in duration-300">
+                                                        <span className="col-span-3 truncate font-bold text-textPrimary">
+                                                            {item.product.name}
+                                                        </span>
+                                                        <span className="col-span-1 text-center font-black text-textPrimary">
+                                                            x{item.quantity}
+                                                        </span>
+                                                        <span className="col-span-1 text-right font-black text-primary">
+                                                            PKR {item.product.price.toLocaleString()}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                                {rider.activeTask.items && rider.activeTask.items.length > (expandedRiderId === rider.id ? 0 : 1) && (
+                                                    <div className="text-[10px] font-black text-orange-500 mt-1 flex items-center gap-1 group-hover:text-orange-600">
+                                                        {expandedRiderId === rider.id ? (
+                                                            <span className="flex items-center gap-1 opacity-60">Show less <ChevronUp size={10} /></span>
+                                                        ) : (
+                                                            <span className="flex items-center gap-1">+{rider.activeTask.items.length - 1} more items <ChevronDown size={10} /></span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <span className="text-[10px] font-medium text-textSecondary italic opacity-50 uppercase tracking-widest">Waiting for task</span>
+                                    )}
+                                </td>
+
+                                <td className="px-6 py-4">
+                                    <Badge variant="flat" className={`rounded-full uppercase text-[9px] font-bold tracking-widest px-2 py-1 ${rider.status === 'available' ? 'bg-success/10 text-success' :
+                                        rider.status === 'busy' ? 'bg-primary/10 text-primary' :
+                                            'bg-textSecondary/10 text-textSecondary'
+                                        }`}>
+                                        {rider.status}
+                                    </Badge>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </div>
     );
 
     return (
-        <div className="min-h-[calc(100vh-12rem)] flex flex-col bg-background p-3 sm:p-4 lg:p-6">
+        <div className="min-h-[calc(100vh-5rem)] flex flex-col bg-background p-3 sm:p-5 lg:p-7">
             {/* Standardized Header Box (Matching Tables Management) */}
-            <div className="p-4 sm:p-5 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 lg:mb-6 gap-4">
+            <div className="p-4 sm:p-6 rounded-2xl border border-border mb-6 shadow-sm bg-surface">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-6">
                     <div>
-                        <h1 className="text-lg sm:text-xl font-bold text-textPrimary mb-1">
+                        <h1 className="text-xl sm:text-2xl font-black text-textPrimary mb-1 lg:mb-2 tracking-tight">
                             Rider Management
                         </h1>
-                        <p className="text-[10px] sm:text-xs text-textSecondary">
-                            Fleet Status • {riders.length} riders
+                        <p className="text-xs sm:text-sm text-textSecondary font-medium opacity-70">
+                            Monitor and manage your delivery fleet in real-time.
                         </p>
                     </div>
 
                     {/* Quick Stats in Header */}
-                    <div className="flex gap-2 lg:gap-3 w-full sm:w-auto overflow-x-auto scrollbar-hidden ml-auto">
+                    <div className="flex gap-3 w-full lg:w-auto overflow-x-auto scrollbar-hidden pb-1 lg:pb-0">
                         {[
-                            { label: 'Available', key: 'available', color: 'bg-success' },
-                            { label: 'Busy', key: 'busy', color: 'bg-primary' },
+                            { label: 'Total Riders', key: 'all', count: stats.all, color: 'bg-textSecondary' },
+                            { label: 'Available', key: 'available', count: stats.available, color: 'bg-success' },
+                            { label: 'Busy Now', key: 'busy', count: stats.busy, color: 'bg-primary' },
                         ].map((stat) => (
-                            <div key={stat.key} className="px-3 lg:px-4 py-2 rounded-lg bg-surface shadow-sm border border-border flex-shrink-0 transition-all hover:shadow-md">
-                                <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${stat.color} ${stat.key === 'available' ? 'animate-pulse' : ''}`} />
-                                    <div>
-                                        <div className="text-[9px] font-medium uppercase tracking-wider text-textSecondary">{stat.label}</div>
-                                        <div className="text-sm lg:text-base font-bold text-textPrimary">
-                                            {stats[stat.key as keyof typeof stats] || 0}
-                                        </div>
+                            <div key={stat.key} className="px-4 py-3 rounded-xl bg-background/50 border border-border flex-shrink-0 transition-all hover:bg-background min-w-[120px]">
+                                <div className="flex flex-col gap-1">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-1.5 h-1.5 rounded-full ${stat.color} ${stat.key === 'available' ? 'animate-pulse' : ''}`} />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-textSecondary whitespace-nowrap opacity-60">
+                                            {stat.label}
+                                        </span>
+                                    </div>
+                                    <div className="text-xl font-black text-textPrimary">
+                                        {stat.count}
                                     </div>
                                 </div>
                             </div>
@@ -502,9 +519,9 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                     </div>
                 </div>
 
-                {/* Unified Search and Filters Row - PERFECTLY ALIGNED IN ONE LINE */}
-                <div className="flex flex-row items-center justify-between  gap-4">
-                    <div className="flex-shrink-0 mt-4">
+                {/* Unified Search and Filters Row */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-border/10">
+                    <div className="flex items-center gap-3 overflow-x-auto scrollbar-hidden pb-1 md:pb-0 order-2 md:order-1">
                         <Tabs
                             variant="pills"
                             size="sm"
@@ -513,56 +530,58 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                             defaultActiveTab={statusFilter}
                             className="mt-0"
                             items={[
-                                { id: 'all', name: 'All', content: null },
+                                { id: 'all', name: 'All Status', content: null },
                                 { id: 'available', name: 'Available', content: null },
-                                { id: 'busy', name: 'Busy', content: null },
+                                { id: 'busy', name: 'On Duty', content: null },
                             ]}
                         />
                     </div>
 
-                    <div className="flex items-center gap-3 flex-1 max-w-2xl px-4">
+                    <div className="flex items-center gap-3 flex-1 w-full md:max-w-md order-1 md:order-2">
                         {/* Search */}
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary pointer-events-none" size={14} />
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-textSecondary/50 pointer-events-none" size={16} />
                             <input
                                 type="text"
-                                placeholder="Search riders..."
+                                placeholder="Search by name, ID or phone..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-9 pr-3 py-2 rounded-lg border border-border bg-surface text-textPrimary text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-background/50 text-textPrimary text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-textSecondary/40"
                             />
                         </div>
-                    </div>
 
-                    {/* View Mode Toggle */}
-                    <div className="flex items-center p-1 rounded-lg border border-border flex-shrink-0 bg-surface">
-
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`py-1 px-2 rounded-md text-[10px] transition-all flex items-center justify-center ${viewMode === 'list'
-                                ? 'bg-primary text-white shadow-sm'
-                                : 'text-textSecondary hover:bg-surface/10'
-                                }`}
-                        >
-                            <List size={16} />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-1.5 rounded-md text-[10px] transition-all flex items-center justify-center ${viewMode === 'grid'
-                                ? 'bg-primary text-white shadow-sm'
-                                : 'text-textSecondary hover:bg-surface/10'
-                                }`}
-                        >
-                            <LayoutGrid size={16} />
-                        </button>
+                        {/* View Mode Toggle */}
+                        <div className="flex items-center p-1.5 rounded-xl border border-border bg-background/50 shrink-0">
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-1.5 rounded-lg transition-all ${viewMode === 'list'
+                                    ? 'bg-primary text-white shadow-md'
+                                    : 'text-textSecondary hover:bg-surface/50'
+                                    }`}
+                                title="List View"
+                            >
+                                <List size={18} />
+                            </button>
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-1.5 rounded-lg transition-all ${viewMode === 'grid'
+                                    ? 'bg-primary text-white shadow-md'
+                                    : 'text-textSecondary hover:bg-surface/50'
+                                    }`}
+                                title="Grid View"
+                            >
+                                <LayoutGrid size={18} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Content Area */}
-            <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
                 {viewMode === 'grid' ? GridView : ListView}
             </div>
+
             {/* Live Location Tracking Modal */}
             <ReusableModal
                 isOpen={isMapModalOpen}

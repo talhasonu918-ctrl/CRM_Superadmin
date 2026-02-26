@@ -287,8 +287,87 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
     const displayedItems = isExpanded ? order.items : order.items?.slice(0, 2);
 
     return (
-      <div className="px-4 py-3 border-b border-border transition-all hover:bg-surface/50 bg-surface">
-        <div className="grid grid-cols-12 gap-4 items-center">
+      <div className="px-2 sm:px-4 py-3 border-t border-border transition-all hover:bg-surface/50 bg-surface">
+        {/* Mobile Layout */}
+        <div className="flex lg:hidden flex-col gap-3">
+          {/* Header Row: ID, Time, Actions */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-textPrimary">#{order.orderNumber.split('-').pop()}</h3>
+              <Badge variant="flat" className={`py-0.5 px-2 rounded-full text-[9px] font-black uppercase tracking-widest ${getStatusBadgeColor(order.status)}`}>
+                {order.status}
+              </Badge>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-[10px] flex items-center gap-1 text-textSecondary font-bold">
+                <Clock size={12} />
+                <span>{order.createdAt.split(' ').slice(1).join(' ')}</span>
+              </div>
+              <OrderActionsDropdown
+                isDarkMode={isDarkMode}
+                onViewDetails={() => handleViewDetails(order)}
+                onMarkAsReady={() => handleMarkAsReady(order.id)}
+                onPrintReceipt={() => handlePrintReceipt(order)}
+                onCancelOrder={() => handleCancelOrder(order.id)}
+              />
+            </div>
+          </div>
+
+          {/* Customer & Delivery */}
+          <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-background/50 border border-border/50">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-textPrimary">
+                <User size={12} className="text-primary" />
+                <span className="truncate">{order.customerName || 'N/A'}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[10px] text-textSecondary">
+                <Phone size={10} />
+                <span>{order.customerPhone || 'N/A'}</span>
+              </div>
+            </div>
+            {order.deliveryAddress && (
+              <div className="flex items-start gap-1.5 text-[10px] text-textSecondary border-l border-border pl-2">
+                <MapPin size={10} className="mt-0.5 flex-shrink-0" />
+                <span className="line-clamp-2">{order.deliveryAddress}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Items Section */}
+          <div className="space-y-1">
+            {displayedItems && displayedItems.map((item, idx) => (
+              <div key={idx} className="flex items-center justify-between text-xs py-1 border-b border-border/30 last:border-0">
+                <span className="font-medium text-textSecondary truncate max-w-[150px]">{item.product.name}</span>
+                <div className="flex items-center gap-4">
+                  <span className="font-bold">x{item.quantity}</span>
+                  <span className="font-bold text-textPrimary w-[80px] text-right">PKR {(item.product.price * item.quantity).toFixed(2)}</span>
+                </div>
+              </div>
+            ))}
+            {order.items && order.items.length > 2 && (
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-[10px] font-black hover:underline mt-1 flex items-center gap-1 text-primary uppercase"
+              >
+                {isExpanded ? <>Show less <ChevronUp size={10} /></> : <>+{order.items.length - 2} more... <ChevronDown size={10} /></>}
+              </button>
+            )}
+          </div>
+
+          {/* Footer: Order Type & Total */}
+          <div className="flex items-center justify-between pt-2 border-t border-border">
+            <span className="text-[10px] font-black uppercase tracking-tight text-textSecondary/60 bg-surface px-2 py-0.5 rounded border border-border">
+              🛵 Online Order
+            </span>
+            <div className="text-right">
+              <span className="text-[10px] font-bold text-textSecondary block -mb-1">TOTAL</span>
+              <span className="text-base font-black text-primary">PKR {order.grandTotal.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Layout (Existing) */}
+        <div className="hidden lg:grid grid-cols-12 gap-4 items-center">
           {/* Order / Time */}
           <div className="col-span-2 flex flex-col gap-0.5">
             <h3 className="font-bold text-sm text-textPrimary">
@@ -406,7 +485,7 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
           {title}
         </h2>
         {viewMode === 'list' && (
-          <div className="grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
+          <div className="hidden lg:grid grid-cols-12 gap-4 px-4 mb-2 text-[10px] font-bold uppercase tracking-widest text-textSecondary">
             <div className="col-span-2">Order / Category / Time</div>
             <div className="col-span-1">Status</div>
             <div className="col-span-3 pl-5">Item</div>
@@ -456,7 +535,6 @@ export const OnlineOrdersView: React.FC<OnlineOrdersViewProps> = ({ isDarkMode =
       )}
     </div>
   );
-
   return (
     <div className="min-h-[calc(100vh-12rem)] flex flex-col bg-background p-3 sm:p-4 lg:p-6">
       {/* Header Box */}

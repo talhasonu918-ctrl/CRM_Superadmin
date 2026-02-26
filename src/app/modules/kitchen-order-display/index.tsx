@@ -2,12 +2,16 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Clock, Printer, CheckCircle, User, ShoppingBag, Star, Search } from 'lucide-react';
 import { getThemeColors } from '../../../theme/colors';
 import { useAppSelector } from '../../../redux/store';
+// import { useBranding } from '../../../contexts/BrandingContext';
+import { useOrderContext } from '../../../contexts/OrderContext';
+import { useNotifications } from '../../../contexts/NotificationContext';
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 interface OrderItem {
   id: string;
   name: string;
   quantity: number;
+  price: number;
   completed: boolean;
   addedAt?: number;
 }
@@ -16,6 +20,7 @@ interface Deal {
   id: string;
   name: string;
   items: string[];
+  price: number;
   completed: boolean;
 }
 
@@ -34,6 +39,10 @@ export interface KitchenOrder {
   customerAddress?: string;
   timestamp?: number;
   subCategories?: string[]; // Added for filtering
+  subtotal?: number;
+  tax?: number;
+  discount?: number;
+  grandTotal?: number;
 }
 
 interface KDSProfile {
@@ -64,18 +73,23 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 5 * 1000,
     subCategories: ['BROAST', 'Fries & Nuggets-FRIES'],
     items: [
-      { id: '1', name: 'Grilled Chicken', quantity: 2, completed: false, addedAt: Date.now() - 5 * 1000 },
-      { id: '2', name: 'Caesar Salad', quantity: 1, completed: true, addedAt: Date.now() - 5 * 1000 },
-      { id: '3', name: 'French Fries', quantity: 3, completed: false, addedAt: Date.now() - 2 * 1000 },
+      { id: '1', name: 'Grilled Chicken', quantity: 2, price: 750, completed: false, addedAt: Date.now() - 5 * 1000 },
+      { id: '2', name: 'Caesar Salad', quantity: 1, price: 450, completed: true, addedAt: Date.now() - 5 * 1000 },
+      { id: '3', name: 'French Fries', quantity: 3, price: 250, completed: false, addedAt: Date.now() - 2 * 1000 },
     ],
     deals: [
       {
         id: 'd1',
         name: 'Family Deal',
         items: ['2x Pizza', '1x Pasta', '4x Drinks'],
+        price: 2500,
         completed: false
       }
-    ]
+    ],
+    subtotal: 3950,
+    tax: 632,
+    discount: 0,
+    grandTotal: 4582
   },
   {
     id: '2',
@@ -88,9 +102,13 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 60 * 1000,
     subCategories: ['BURGER', 'Fries & Nuggets-WINGS'],
     items: [
-      { id: '1', name: 'Beef Burger', quantity: 2, completed: true, addedAt: Date.now() - 60 * 1000 },
-      { id: '2', name: 'Chicken Wings', quantity: 1, completed: false, addedAt: Date.now() - 30 * 1000 },
+      { id: '1', name: 'Beef Burger', quantity: 2, price: 450, completed: true, addedAt: Date.now() - 60 * 1000 },
+      { id: '2', name: 'Chicken Wings', quantity: 1, price: 580, completed: false, addedAt: Date.now() - 30 * 1000 },
     ],
+    subtotal: 1480,
+    tax: 236.8,
+    discount: 0,
+    grandTotal: 1716.8
   },
   {
     id: '3',
@@ -103,8 +121,12 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 120 * 1000,
     subCategories: ['PIZZA-TRADITIONAL'],
     items: [
-      { id: '1', name: 'Margherita Pizza', quantity: 1, completed: true, addedAt: Date.now() - 120 * 1000 },
+      { id: '1', name: 'Margherita Pizza', quantity: 1, price: 900, completed: true, addedAt: Date.now() - 120 * 1000 },
     ],
+    subtotal: 900,
+    tax: 144,
+    discount: 0,
+    grandTotal: 1044
   },
 
 
@@ -119,18 +141,23 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 12 * 60 * 1000,
     subCategories: ['BURGER', 'Fries & Nuggets-WINGS', 'DRINKS-BEVERAGES'],
     items: [
-      { id: '1', name: 'Zinger Burger', quantity: 2, completed: true, addedAt: Date.now() - 12 * 60 * 1000 },
-      { id: '2', name: 'Chicken Nuggets', quantity: 1, completed: true, addedAt: Date.now() - 10 * 60 * 1000 },
-      { id: '3', name: 'Pepsi 500ml', quantity: 2, completed: true, addedAt: Date.now() - 8 * 60 * 1000 },
+      { id: '1', name: 'Zinger Burger', quantity: 2, price: 420, completed: true, addedAt: Date.now() - 12 * 60 * 1000 },
+      { id: '2', name: 'Chicken Nuggets', quantity: 1, price: 350, completed: true, addedAt: Date.now() - 10 * 60 * 1000 },
+      { id: '3', name: 'Pepsi 500ml', quantity: 2, price: 120, completed: true, addedAt: Date.now() - 8 * 60 * 1000 },
     ],
     deals: [
       {
         id: 'd2',
         name: 'Snack Combo',
         items: ['2x Zinger Burger', '1x Nuggets', '2x Pepsi'],
+        price: 1200,
         completed: true
       }
-    ]
+    ],
+    subtotal: 2630,
+    tax: 420.8,
+    discount: 0,
+    grandTotal: 3050.8
   },
 
   {
@@ -144,18 +171,23 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 3 * 60 * 1000,
     subCategories: ['PIZZA-SPECIAL', 'DEALS', 'DRINKS-BEVERAGES'],
     items: [
-      { id: '1', name: 'BBQ Pizza Large', quantity: 1, completed: false, addedAt: Date.now() - 3 * 60 * 1000 },
-      { id: '2', name: 'Garlic Bread', quantity: 2, completed: false, addedAt: Date.now() - 2 * 60 * 1000 },
-      { id: '3', name: 'Mint Margarita', quantity: 1, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
+      { id: '1', name: 'BBQ Pizza Large', quantity: 1, price: 1450, completed: false, addedAt: Date.now() - 3 * 60 * 1000 },
+      { id: '2', name: 'Garlic Bread', quantity: 2, price: 180, completed: false, addedAt: Date.now() - 2 * 60 * 1000 },
+      { id: '3', name: 'Mint Margarita', quantity: 1, price: 250, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
     ],
     deals: [
       {
         id: 'd3',
         name: 'Weekend Special',
         items: ['1x BBQ Pizza Large', '2x Garlic Bread', '1x Mint Margarita'],
+        price: 1800,
         completed: false
       }
-    ]
+    ],
+    subtotal: 3860,
+    tax: 617.6,
+    discount: 0,
+    grandTotal: 4477.6
   },
 
   {
@@ -169,9 +201,13 @@ const initialMockOrders: KitchenOrder[] = [
     timestamp: Date.now() - 1 * 60 * 1000,
     subCategories: ['Fries & Nuggets-WINGS', 'Fries & Nuggets-FRIES'],
     items: [
-      { id: '1', name: 'Chicken Wings', quantity: 2, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
-      { id: '2', name: 'Potato Wedges', quantity: 1, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
+      { id: '1', name: 'Chicken Wings', quantity: 2, price: 580, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
+      { id: '2', name: 'Potato Wedges', quantity: 1, price: 300, completed: false, addedAt: Date.now() - 1 * 60 * 1000 },
     ],
+    subtotal: 1460,
+    tax: 233.6,
+    discount: 0,
+    grandTotal: 1693.6
   }
 
 
@@ -381,7 +417,8 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
         </button>
         <button
           onClick={() => onReady(order)}
-          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all ${isAllCompleted ? 'bg-primary text-white hover:bg-orange-600' : `border-2 ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary}`
+          disabled={!isAllCompleted}
+          className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-xs transition-all ${isAllCompleted ? 'bg-primary text-white hover:bg-primary/10 cursor-pointer shadow-md' : `border-2 ${theme.border.main} ${isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'} ${theme.text.primary} opacity-50 cursor-not-allowed`
             }`}
         >
           <CheckCircle size={14} /> Ready
@@ -394,9 +431,11 @@ const KitchenOrderCard: React.FC<{ order: KitchenOrder; isDarkMode: boolean; onR
     </div>
   );
 };
-
 export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMode = false, activeProfile: propActiveProfile, onBackToTable }) => {
   const config = useAppSelector((state) => state.branding.config);
+  // const { config } = useBranding();
+  const { addReadyOrder } = useOrderContext();
+  const { addNotification } = useNotifications();
   const theme = getThemeColors(isDarkMode);
   const [activeKDSProfile, setActiveKDSProfile] = useState<KDSProfile | null>(propActiveProfile || null);
   const [orders, setOrders] = useState<KitchenOrder[]>(() => {
@@ -473,6 +512,52 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
     dispatchOrders.unshift(updatedOrder);
     localStorage.setItem('dispatchOrders', JSON.stringify(dispatchOrders));
     window.dispatchEvent(new CustomEvent('orderReady', { detail: updatedOrder }));
+
+    // Add to OrderContext for real-time notification
+    addReadyOrder({
+      orderId: order.id,
+      orderNumber: parseInt(order.orderNumber.replace('#', '')),
+      orderType: order.orderType as 'DineIn' | 'TakeAway' | 'Delivery',
+      customerName: order.customerName || 'Guest',
+      readyTime: updatedOrder.readyTime,
+      tableNumber: order.tableNumber,
+      waiterName: order.waiterName,
+      customerPhone: order.customerPhone,
+      items: order.items.map(item => ({ 
+        name: item.name, 
+        quantity: item.quantity,
+        price: item.price || 0 
+      })),
+      deals: order.deals?.map(deal => ({
+        name: deal.name,
+        items: deal.items,
+        price: deal.price
+      })),
+      subtotal: order.subtotal,
+      tax: order.tax,
+      discount: order.discount,
+      grandTotal: order.grandTotal,
+    });
+
+    // Add KDS Notification
+    addNotification({
+      title: 'KDS: Order Ready',
+      message: `Order ${order.orderNumber} is now ready in the kitchen.`,
+      type: 'kds',
+      orderDetails: {
+        orderId: order.orderNumber,
+        customerName: order.customerName || 'Guest',
+        phoneNumber: order.customerPhone || 'N/A',
+        address: order.orderType === 'DineIn' ? `Table ${order.tableNumber}` : order.orderType,
+        orderDate: new Date().toLocaleDateString(),
+        orderTime: new Date().toLocaleTimeString(),
+        totalAmount: order.grandTotal || 0,
+        items: [
+          ...order.items.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
+          ...(order.deals?.map(deal => ({ name: `[DEAL] ${deal.name}`, quantity: 1, price: deal.price })) || [])
+        ]
+      }
+    });
   };
 
   const handlePrint = (order: KitchenOrder) => {
@@ -728,8 +813,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
                   </div>
                   <span className={`text-xl font-black ${theme.text.primary}`}>{statusCounts.preparing}</span>
                 </div>
-
-                <div className={`flex flex-col items-center min-w-[70px] px-3 py-1.5 rounded-xl ${theme.neutral.card} border ${theme.border.secondary} shadow-sm group hover:border-green-500/30 transition-all`}>
+           <div className={`flex flex-col items-center min-w-[70px] px-3 py-1.5 rounded-xl ${theme.neutral.card} border ${theme.border.secondary} shadow-sm group hover:border-green-500/30 transition-all`}>
                   <div className="flex items-center gap-2 mb-0.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                     <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.text.tertiary}`}>Ready</span>
@@ -739,8 +823,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
               </div>
             </div>
           </div>
-
-          <div className="flex flex-wrap gap-2">
+     <div className="flex flex-wrap gap-2">
             <div className={`flex gap-1 p-1 rounded-xl ${theme.neutral.card} shadow-sm`}>
               {['all', 'preparing', 'ready'].map((key) => (
                 <button
@@ -766,8 +849,7 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
                   className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${filterType === key
                     ? isDarkMode ? 'bg-gray-700 text-white shadow-sm' : 'bg-gray-200 text-gray-900 shadow-sm'
                     : `${theme.text.muted} ${isDarkMode ? 'hover:text-white hover:bg-gray-700' : 'hover:bg-gray-100'}`
-                    }`}
-                >
+                    }`}   >
                   {key === 'all' ? 'All Types' : key.replace(/([A-Z])/g, ' $1').trim()}
                 </button>
               ))}
@@ -798,10 +880,8 @@ export const KitchenDisplayView: React.FC<KitchenDisplayViewProps> = ({ isDarkMo
             <div className="thermal-location">{branches.find((b: { id: number; name: string; location: string; phone: string }) => b.name === branchInfo.name)?.location}</div>
             <div className="thermal-branch">KITCHEN ORDER</div>
           </div>
-
           <div className="thermal-divider"></div>
-
-          <div className="thermal-info-row">
+      <div className="thermal-info-row">
             <div className="thermal-info-label"></div>
             <div className="thermal-info-value">{date} {time}</div>
           </div>

@@ -128,7 +128,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
     onSubmit(Array.from(selectedProducts), discount);
   };
 
-  const inputStyle = `w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 ${
+  const inputStyle = `w-full px-4 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary ${
     isDarkMode
       ? 'bg-slate-800 border-slate-700 text-white'
       : 'bg-white border-slate-300 text-slate-900'
@@ -175,7 +175,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
                   setSelectedSubCategory('');
                   setCategoryOpen(false);
                 }}
-                className="px-3 py-2 cursor-pointer hover:bg-orange-500 hover:text-white"
+                className="px-3 py-2 cursor-pointer hover:bg-primary hover:text-white"
               >
                 All Categories
               </div>
@@ -188,7 +188,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
                     setSelectedSubCategory('');
                     setCategoryOpen(false);
                   }}
-                  className="px-3 py-2 cursor-pointer hover:bg-orange-500 hover:text-white"
+                  className="px-3 py-2 cursor-pointer hover:bg-primary hover:text-white"
                 >
                   {cat}
                 </div>
@@ -225,7 +225,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
                   setSubSearch('');
                   setSubOpen(false);
                 }}
-                className="px-3 py-2 cursor-pointer hover:bg-orange-500 hover:text-white"
+                className="px-3 py-2 cursor-pointer hover:bg-primary hover:text-white"
               >
                 All Sub Categories
               </div>
@@ -237,7 +237,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
                     setSubSearch('');
                     setSubOpen(false);
                   }}
-                  className="px-3 py-2 cursor-pointer hover:bg-orange-500 hover:text-white"
+                  className="px-3 py-2 cursor-pointer hover:bg-primary hover:text-white"
                 >
                   {sub}
                 </div>
@@ -253,7 +253,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
           Discount %
         </label>
         <div className="relative">
-          <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-orange-500" />
+          <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-primary" />
           <input
             type="number"
             min="1"
@@ -274,7 +274,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
           <button
             type="button"
             onClick={toggleAll}
-            className="text-sm text-orange-500 font-medium"
+            className="text-sm text-primary font-medium"
           >
             {selectedProducts.size === filteredProducts.length
               ? 'Deselect All'
@@ -317,7 +317,7 @@ export const BulkDiscountForm: React.FC<BulkDiscountFormProps> = ({
         </button>
         <button
           type="submit"
-          className="px-5 py-2 bg-orange-500 text-white rounded-lg"
+          className="px-5 py-2 bg-primary text-white rounded-lg"
         >
           Apply Discount
         </button>

@@ -111,14 +111,12 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
             reader.readAsDataURL(file);
         }
     };
-
     const sizeClasses = {
         small: 'h-12 md:h-16',
         medium: 'h-24 md:h-32',
         large: 'h-32 md:h-48'
     };
-
-    return (
+   return (
         <div className="mb-4 md:mb-6">
             <label className={`block ${theme.text.secondary} text-xs md:text-sm font-semibold mb-2 md:mb-3`}>{label}</label>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4">
@@ -313,7 +311,6 @@ const FontSelector = () => {
         </div>
     );
 };
-
 export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode }) => {
     // Use the passed prop if provided, otherwise fallback to Redux
     const reduxDarkMode = useAppSelector((state) => state.theme.isDarkMode);

@@ -13,13 +13,21 @@ import KitchenDisplayView from '../kitchen-order-display';
 
 interface POSModuleProps {
   isDarkMode?: boolean;
+  initialTab?: string;
 }
 
-export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false }) => {
+export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false, initialTab = 'pos' }) => {
   const [showNotifications, setShowNotifications] = useState(false);
-  const [activeTab, setActiveTab] = useState('pos');
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [targetRiderId, setTargetRiderId] = useState<string | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
+
+  // Sync activeTab with initialTab prop
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   const notifications = [
     { id: 1, title: 'New Online Order #102', time: '2m ago' },

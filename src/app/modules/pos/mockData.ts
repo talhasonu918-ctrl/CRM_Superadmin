@@ -18,13 +18,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '1',
     invoiceId: '5482043',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-1',
+    orderNo: '001',
     waiter: 'John Doe',
     rider: '-',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Chicken Tikka Pizza', quantity: 1, readyTime: '10:15 AM' },
       { productName: 'Pepsi 1.5L', quantity: 1, readyTime: '10:12 AM' }
@@ -34,13 +34,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '2',
     invoiceId: '5482171',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-2',
+    orderNo: '202',
     waiter: 'Sarah Smith',
     rider: '-',
     tableNo: '-',
     delayTime: '00:05:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Zinger Burger', quantity: 2, readyTime: '10:35 AM' }
     ]
@@ -49,13 +49,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '3',
     invoiceId: '5482285',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-3',
+    orderNo: '203',
     waiter: 'Alex Wong',
     rider: '-',
     tableNo: 'T-5',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Beef Burger Combo', quantity: 1, readyTime: '11:05 AM' }
     ]
@@ -64,13 +64,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '4',
     invoiceId: '5482390',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-4',
+    orderNo: '2104',
     waiter: 'Admin',
     rider: 'Mike Ross',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Large Combo Deal', quantity: 1, readyTime: '11:30 AM' }
     ]
@@ -79,13 +79,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '5',
     invoiceId: '5482450',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-5',
+    orderNo: '2105',
     waiter: 'John Doe',
     rider: '-',
     tableNo: '-',
     delayTime: '00:10:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-24',
     items: [
       { productName: 'Hot Wings (10pcs)', quantity: 1, readyTime: '12:15 PM' }
     ]
@@ -94,13 +94,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '6',
     invoiceId: '5482560',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-6',
+    orderNo: '2016',
     waiter: 'Sarah Smith',
     rider: '-',
     tableNo: 'T-12',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Chicken Euro Pizza', quantity: 1, readyTime: '01:05 PM' }
     ]
@@ -109,13 +109,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '7',
     invoiceId: '5482670',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-7',
+    orderNo: '207',
     waiter: 'Admin',
     rider: 'James Bond',
     tableNo: '-',
     delayTime: '00:15:00',
     status: 'Late',
-    date: '2026-02-16',
+    date: '2026-02-26',
     items: [
       { productName: 'Family Festival Deal', quantity: 1, readyTime: '01:45 PM' }
     ]
@@ -124,13 +124,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '8',
     invoiceId: '5482780',
     orderType: 'TakeAway',
-    orderNo: '2/16/2026-8',
+    orderNo: '2108',
     waiter: 'Alex Wong',
     rider: '-',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-24',
     items: [
       { productName: 'Student Deal', quantity: 3, readyTime: '02:05 PM' }
     ]
@@ -139,13 +139,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '9',
     invoiceId: '5482890',
     orderType: 'DineIn',
-    orderNo: '2/16/2026-9',
+    orderNo: '21099',
     waiter: 'John Doe',
     rider: '-',
     tableNo: 'T-2',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Mellow Wrap', quantity: 2, readyTime: '02:45 PM' }
     ]
@@ -154,13 +154,13 @@ export const mockKitchenOrderReadyTime: KitchenOrderReadyTimeData[] = [
     id: '10',
     invoiceId: '5482900',
     orderType: 'Delivery',
-    orderNo: '2/16/2026-10',
+    orderNo: '210',
     waiter: 'Admin',
     rider: 'Mike Ross',
     tableNo: '-',
     delayTime: '00:00:00',
     status: 'On Time',
-    date: '2026-02-16',
+    date: '2026-02-23',
     items: [
       { productName: 'Club Sandwich', quantity: 4, readyTime: '03:15 PM' }
     ]
@@ -504,6 +504,46 @@ export const mockRiderReport: RiderSaleReportData[] = [
 
 export const mockNotifications = [
   {
+    id: 5,
+    title: 'KDS: Order Ready',
+    message: 'Order #2104 is ready in kitchen',
+    time: '5 min ago',
+    unread: true,
+    type: 'kds',
+    orderDetails: {
+      orderId: '#2104',
+      customerName: 'Mike Ross',
+      phoneNumber: '+92 345 6789012',
+      address: 'Delivery Order',
+      orderDate: '2026-02-23',
+      orderTime: '11:30 AM',
+      totalAmount: 2100.0,
+      items: [
+        { name: 'Large Combo Deal', quantity: 1, price: 2100 },
+      ],
+    },
+  },
+  {
+    id: 6,
+    title: 'Dispatch: Rider Assigned',
+    message: 'James Bond assigned to Order #207',
+    time: '10 min ago',
+    unread: true,
+    type: 'dispatch',
+    orderDetails: {
+      orderId: '#207',
+      customerName: 'Admin',
+      phoneNumber: '+92 312 3456789',
+      address: '7th Avenue, Islamabad',
+      orderDate: '2026-02-26',
+      orderTime: '01:45 PM',
+      totalAmount: 3500.0,
+      items: [
+        { name: 'Family Festival Deal', quantity: 1, price: 3500 },
+      ],
+    },
+  },
+  {
     id: 1,
     title: 'New Order #1234',
     message: 'Order received from John Doe',
@@ -526,6 +566,26 @@ export const mockNotifications = [
     },
   },
   {
+    id: 7,
+    title: 'KDS: New Order',
+    message: 'New order #2105 received in kitchen',
+    time: '12 min ago',
+    unread: true,
+    type: 'kds',
+    orderDetails: {
+      orderId: '#2105',
+      customerName: 'John Doe',
+      phoneNumber: '+92 300 1234567',
+      address: 'Takeaway',
+      orderDate: '2026-02-24',
+      orderTime: '12:15 PM',
+      totalAmount: 1150.0,
+      items: [
+        { name: 'Hot Wings (10pcs)', quantity: 1, price: 1150 },
+      ],
+    },
+  },
+  {
     id: 2,
     title: 'Low Stock Alert',
     message: 'Pizza dough running low',
@@ -542,6 +602,26 @@ export const mockNotifications = [
       totalAmount: 0,
       items: [
         { name: 'Pizza Dough', quantity: 5, price: 0, status: 'Low Stock - Reorder Required' },
+      ],
+    },
+  },
+  {
+    id: 8,
+    title: 'Dispatch: Out for Delivery',
+    message: 'Order #210 is out for delivery with Mike Ross',
+    time: '15 min ago',
+    unread: false,
+    type: 'dispatch',
+    orderDetails: {
+      orderId: '#210',
+      customerName: 'Admin',
+      phoneNumber: '+92 345 1234567',
+      address: 'Sector F-7, Islamabad',
+      orderDate: '2026-02-23',
+      orderTime: '03:15 PM',
+      totalAmount: 950.0,
+      items: [
+        { name: 'Club Sandwich', quantity: 4, price: 950 },
       ],
     },
   },
@@ -738,7 +818,10 @@ export interface InventoryItem {
   minStock: number;
   price: number;
   sales: number;
-  status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  status: 'In Stock' | 'Low Stock' | 'Out of Stock' ;
+  isPopular?: boolean;
+  salesCount?: number;
+  lastUpdated?: string;
 }
 
 // Kitchen Wise Sale Report Data
@@ -830,6 +913,7 @@ export const mockKitchenSales: KitchenSaleTransaction[] = [
 
 
 export const mockInventory: InventoryItem[] = [
+  // March 2026
   {
     id: 'INV-001',
     name: 'Chicken Tikka Pizza',
@@ -839,7 +923,10 @@ export const mockInventory: InventoryItem[] = [
     price: 950,
     sales: 8500,
     image: 'https://4xs9fttk0t.ucarecd.net/a8e33779-ec04-4f48-9608-5b1a7daf60ec/pizza1.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 154,
+    lastUpdated: '2026-03-05'
   },
   {
     id: 'INV-002',
@@ -850,8 +937,26 @@ export const mockInventory: InventoryItem[] = [
     price: 460,
     sales: 6200,
     image: 'https://www.kfcpakistan.com/images/19b05560-bc56-11ee-97d6-7187fd7553de-Zingeratha_variant_0-2024-01-26142047.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 120,
+    lastUpdated: '2026-03-10'
   },
+  {
+    id: 'INV-007',
+    name: 'Loaded Fries',
+    category: 'Fries & Sides',
+    stock: 55,
+    minStock: 30,
+    price: 550,
+    sales: 12000,
+    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=300&auto=format&fit=crop',
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 180,
+    lastUpdated: '2026-03-01'
+  },
+  // February 2026
   {
     id: 'INV-003',
     name: 'Peri Peri Wings (10pcs)',
@@ -861,7 +966,10 @@ export const mockInventory: InventoryItem[] = [
     price: 580,
     sales: 4350,
     image: 'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
+    status: 'Low Stock',
+    isPopular: false,
+    salesCount: 45,
+    lastUpdated: '2026-02-15'
   },
   {
     id: 'INV-004',
@@ -872,84 +980,24 @@ export const mockInventory: InventoryItem[] = [
     price: 1150,
     sales: 9200,
     image: 'https://4xs9fttk0t.ucarecd.net/8e9b60e9-5905-4b67-bdb2-228728df8b32/slazzerpreviewtbn5f.png',
-    status: 'In Stock'
-  },
-  {
-    id: 'INV-005',
-    name: 'Fillet Burger',
-    category: 'Burger',
-    stock: 8,
-    minStock: 20,
-    price: 410,
-    sales: 2800,
-    image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png',
-    status: 'Low Stock'
-  },
-  {
-    id: 'INV-006',
-    name: 'BBQ Wings (10pcs)',
-    category: 'Wings',
-    stock: 0,
-    minStock: 25,
-    price: 580,
-    sales: 3500,
-    image: 'https://images.unsplash.com/photo-1608039755401-742074f0548d?q=80&w=300&auto=format&fit=crop',
-    status: 'Out of Stock'
-  },
-  {
-    id: 'INV-007',
-    name: 'Cheese Lover Pizza',
-    category: 'Pizza',
-    stock: 28,
-    minStock: 15,
-    price: 1050,
-    sales: 7200,
-    image: 'https://4xs9fttk0t.ucarecd.net/125001e8-76d9-4494-b327-cfbd573866f3/slazzerpreviewzu6z01.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 88,
+    lastUpdated: '2026-02-20'
   },
   {
     id: 'INV-008',
-    name: 'Loaded Fries',
-    category: 'Fries & Sides',
-    stock: 55,
-    minStock: 30,
-    price: 550,
-    sales: 5500,
-    image: 'https://images.unsplash.com/photo-1585109649139-366815a0d713?q=80&w=300&auto=format&fit=crop',
-    status: 'In Stock'
-  },
-  {
-    id: 'INV-009',
-    name: 'Fun Nuggets (10pcs)',
-    category: 'Fries & Sides',
-    stock: 12,
-    minStock: 25,
-    price: 580,
-    sales: 3200,
-    image: 'https://images.unsplash.com/photo-1562967914-608f82629710?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
-  },
-  {
-    id: 'INV-010',
-    name: 'Pepsi 1.5 Liter',
-    category: 'Drinks',
-    stock: 0,
-    minStock: 50,
-    price: 220,
-    sales: 4400,
-    image: 'https://www.kfcpakistan.com/images/0a68d020-73c8-11f0-9aa3-ad226d559836-Pepsiltr_variant_0-2025-08-07195225.png',
-    status: 'Out of Stock'
-  },
-  {
-    id: 'INV-011',
-    name: 'HNY Special Pizza',
-    category: 'Pizza',
-    stock: 22,
-    minStock: 15,
-    price: 1350,
-    sales: 8100,
-    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
-    status: 'In Stock'
+    name: 'Club Sandwich',
+    category: 'Rolls & Wraps',
+    stock: 25,
+    minStock: 10,
+    price: 520,
+    sales: 4500,
+    image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?q=80&w=300&auto=format&fit=crop',
+    status: 'In Stock',
+    isPopular: false,
+    salesCount: 65,
+    lastUpdated: '2026-02-28'
   },
   {
     id: 'INV-012',
@@ -960,7 +1008,67 @@ export const mockInventory: InventoryItem[] = [
     price: 720,
     sales: 6300,
     image: 'https://www.kfcpakistan.com/images/32258900-7592-11f0-8081-2946661625ed-1pc-2025-08-10041432.png',
-    status: 'In Stock'
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 92,
+    lastUpdated: '2026-02-05'
+  },
+  // January 2026
+  {
+    id: 'INV-005',
+    name: 'Cheese Lover Pizza',
+    category: 'Pizza',
+    stock: 0,
+    minStock: 15,
+    price: 1050,
+    sales: 10500,
+    image: 'https://4xs9fttk0t.ucarecd.net/125001e8-76d9-4494-b327-cfbd573866f3/slazzerpreviewzu6z01.png',
+    status: 'Out of Stock',
+    isPopular: true,
+    salesCount: 210,
+    lastUpdated: '2026-01-10'
+  },
+  {
+    id: 'INV-006',
+    name: 'Fillet Burger',
+    category: 'Burger',
+    stock: 12,
+    minStock: 20,
+    price: 410,
+    sales: 3200,
+    image: 'https://www.kfcpakistan.com/images/87ef3cb0-7be7-11f0-a76e-319aa2038f18-1-2025-08-18035759.png',
+    status: 'Low Stock',
+    isPopular: false,
+    salesCount: 32,
+    lastUpdated: '2026-01-25'
+  },
+  {
+    id: 'INV-010',
+    name: 'Pepsi 1.5 Liter',
+    category: 'Drinks',
+    stock: 0,
+    minStock: 50,
+    price: 220,
+    sales: 4400,
+    image: 'https://www.kfcpakistan.com/images/0a68d020-73c8-11f0-9aa3-ad226d559836-Pepsiltr_variant_0-2025-08-07195225.png',
+    status: 'Out of Stock',
+    isPopular: false,
+    salesCount: 150,
+    lastUpdated: '2026-01-15'
+  },
+  {
+    id: 'INV-011',
+    name: 'HNY Special Pizza',
+    category: 'Pizza',
+    stock: 22,
+    minStock: 15,
+    price: 1350,
+    sales: 8100,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'In Stock',
+    isPopular: true,
+    salesCount: 75,
+    lastUpdated: '2026-01-05'
   },
   {
     id: 'INV-013',
@@ -969,20 +1077,25 @@ export const mockInventory: InventoryItem[] = [
     stock: 18,
     minStock: 25,
     price: 480,
-    sales: 3840,
-    image: 'https://images.unsplash.com/photo-1509482560494-4126f8225994?q=80&w=300&auto=format&fit=crop',
-    status: 'Low Stock'
+    salesCount: 110,
+    sales: 5280,
+    status: 'Low Stock',
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    lastUpdated: '2026-03-20',
+    isPopular: true
   },
   {
     id: 'INV-014',
     name: 'Economy Deal',
     category: 'Deals',
-    stock: 25,
+    stock: 10,
     minStock: 15,
     price: 1500,
-    sales: 12000,
-    image: 'https://www.kfcpakistan.com/images/98cb5e60-7688-11f0-b6cc-7b8f56c77b94-WowBoxcopy-2025-08-11075549.png',
-    status: 'In Stock'
+    salesCount: 45,
+    sales: 12500,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'Low Stock',
+    lastUpdated: '2026-02-12'
   },
   {
     id: 'INV-015',
@@ -991,10 +1104,13 @@ export const mockInventory: InventoryItem[] = [
     stock: 120,
     minStock: 80,
     price: 60,
-    sales: 2400,
-    image: 'https://www.dominos.com.pk/images/561f7ee0-9c0c-11ef-8241-d70815871548-Aquafina_variant_0-2024-11-06065707.jpg',
-    status: 'In Stock'
-  },
+    salesCount: 320,
+    sales: 1920,
+    image: 'https://4xs9fttk0t.ucarecd.net/43e4bd81-7b67-4452-a217-f73f0ac6589d/slazzerpreview0sos71.png',
+    status: 'In Stock',
+    lastUpdated: '2026-01-25',
+    isPopular: true
+  }
 ];
 
 export const mockTakeawayOrders: TakeawayOrder[] = [
@@ -2214,6 +2330,8 @@ export interface TransactionData {
   status: string;
 }
 
+const today = new Date().toISOString().split('T')[0];
+
 export const mockTransactions: TransactionData[] = [
   {
     id: 1,
@@ -2233,10 +2351,10 @@ export const mockTransactions: TransactionData[] = [
     netSale: 2862.50,
     paid: 2862.50,
     paymentMode: 'Cash',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 10:30 AM',
+    createdAt: `${today} 10:30 AM`,
     status: 'Completed'
   },
   {
@@ -2257,16 +2375,16 @@ export const mockTransactions: TransactionData[] = [
     netSale: 2205.00,
     paid: 2205.00,
     paymentMode: 'Card',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 11:15 AM',
+    createdAt: `${today} 11:15 AM`,
     status: 'Completed'
   },
   {
     id: 3,
     orderNo: 'ORD-2026-003',
-    waiter: 'N/A',
+    waiter: 'Ahmed Ali',
     table: 'N/A',
     floorNo: 'N/A',
     type: 'delivery',
@@ -2281,10 +2399,10 @@ export const mockTransactions: TransactionData[] = [
     netSale: 3430.00,
     paid: 3430.00,
     paymentMode: 'Online',
-    paymentDate: '2026-02-17',
+    paymentDate: today,
     due: 0.00,
     cashback: 0.00,
-    createdAt: '2026-02-17 12:00 PM',
+    createdAt: `${today} 12:00 PM`,
     status: 'Completed'
   },
   {
@@ -2575,4 +2693,226 @@ export const mockTransactions: TransactionData[] = [
     createdAt: '2026-02-16 04:15 PM',
     status: 'Pending'
   }
+];
+
+export interface DispatchOrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  completed: boolean;
+}
+
+export interface DispatchDeal {
+  id?: string;
+  name: string;
+  items: string[];
+  price?: number;
+  completed?: boolean;
+}
+
+export interface DispatchOrder {
+  id: string;
+  orderNumber: string;
+  tableNumber: string;
+  tokenNumber?: string;
+  orderType: 'DineIn' | 'TakeAway' | 'Delivery';
+  waiterName: string;
+  elapsedTime: string;
+  items: DispatchOrderItem[];
+  deals?: DispatchDeal[];
+  status: 'ready' | 'dispatched';
+  customerName?: string;
+  customerPhone?: string;
+  timestamp?: number;
+  readyTime: number;
+  riderId?: string;
+  riderName?: string;
+  subtotal?: number;
+  tax?: number;
+  discount?: number;
+  grandTotal?: number;
+}
+
+export interface DashboardLiveOrder {
+  id: string;
+  customer: string;
+  items: string;
+  status: 'Preparing' | 'Ready' | 'Pending' | 'Dispatched';
+  time: string;
+  total: number;
+  timestamp?: number;
+}
+
+export const mockLiveOrders: DashboardLiveOrder[] = [
+  { id: '#ORD-9821', customer: 'Emma S.', items: '2x Pepperoni Pizza', status: 'Preparing', time: '12m ago', total: 42.00, timestamp: Date.now() - 12 * 60 * 1000 },
+  { id: '#ORD-9822', customer: 'John D.', items: '1x Veggie Burger', status: 'Ready', time: '5m ago', total: 15.50, timestamp: Date.now() - 5 * 60 * 1000 },
+  { id: '#ORD-9823', customer: 'Sarah L.', items: '3x Soft Drinks', status: 'Pending', time: 'Just now', total: 9.00, timestamp: Date.now() },
+];
+
+export interface RiderStatus {
+  id: string;
+  name: string;
+  status: 'Available' | 'Busy' | 'Offline';
+  phone: string;
+}
+
+export const initialMockDispatchOrders: DispatchOrder[] = [
+  {
+    id: 'dispatch-1',
+    orderNumber: '# 243',
+    tableNumber: 'G3',
+    orderType: 'DineIn',
+    waiterName: 'POS System',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 30 * 60 * 1000,
+    readyTime: Date.now() - 12 * 60 * 1000, // 12 mins ago (Red)
+    items: [
+      { id: '1', name: 'EXTREME DEAL', quantity: 1, completed: true,price : 120.00  },
+    ],
+  },
+  {
+    id: 'dispatch-2',
+    orderNumber: '# 115',
+    tableNumber: 'G11',
+    orderType: 'DineIn',
+    waiterName: 'Ahmed Ali',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 23 * 60 * 1000,
+    readyTime: Date.now() - 6 * 60 * 1000, // 6 mins ago (Yellow)
+    items: [
+      { id: '1', name: 'Grilled Chicken', quantity: 2, completed: true,price : 100.00 },
+      { id: '2', name: 'Caesar Salad', quantity: 1, completed: true,price : 190.00 },
+      { id: '3', name: 'French Fries', quantity: 3, completed: true,price : 420.00 },
+    ],
+    deals: [
+      {
+        name: 'Family Deal',
+        items: ['2x Pizza', '1x Pasta', '4x Drinks']
+      }
+    ]
+  },
+  {
+    id: 'dispatch-3',
+    orderNumber: '# 114',
+    tableNumber: 'F8',
+    orderType: 'DineIn',
+    waiterName: 'Sara Khan',
+    elapsedTime: '23:20',
+    status: 'ready',
+    timestamp: Date.now() - 23 * 60 * 1000,
+    readyTime: Date.now() - 2 * 60 * 1000, // 2 mins ago (Green)
+    items: [
+      { id: '1', name: 'Beef Burger', quantity: 2, completed: true, price : 120.00 },
+      { id: '2', name: 'Chicken Wings', quantity: 1, completed: true,price : 120.00 },
+      { id: '3', name: 'Onion Rings', quantity: 2, completed: true, price : 220.00 },
+      { id: '4', name: 'Coca Cola', quantity: 2, completed: true, price : 120.00 },
+    ],
+  },
+  {
+    id: 'dispatch-4',
+    orderNumber: '# 112',
+    tableNumber: '-',
+    tokenNumber: 'TK-88',
+    orderType: 'TakeAway',
+    waiterName: 'Fatima Sheikh',
+    elapsedTime: '15:28',
+    status: 'ready',
+    timestamp: Date.now() - 15 * 60 * 1000,
+    readyTime: Date.now() - 4 * 60 * 1000,
+    customerName: 'Muhammad Usman',
+    customerPhone: '+92 300 1234567',
+    items: [
+      { id: '1', name: 'Loaded Fries', quantity: 1, completed: true, price : 120.00 },
+      { id: '2', name: 'HNY SPECIAL PIZZA', quantity: 1, completed: true, price : 120.00 },
+      { id: '3', name: 'Pizza Sandwich', quantity: 2, completed: true, price : 220.00 },
+      { id: '4', name: 'PAK DRINK', quantity: 1, completed: true, price : 190.00 },
+    ],
+    deals: [
+      {
+        name: 'Student Deal',
+        items: ['2x Crunch Craze Zinger', '2x PAK DRINK']
+      }
+    ]
+  },
+  {
+    id: 'dispatch-5',
+    orderNumber: '# 108',
+    tableNumber: '-',
+    tokenNumber: 'TK-92',
+    orderType: 'TakeAway',
+    waiterName: 'Ahmed Ali',
+    elapsedTime: '12:15',
+    status: 'ready',
+    timestamp: Date.now() - 12 * 60 * 1000,
+    readyTime: Date.now() - 8 * 60 * 1000,
+    customerName: 'Ali Hassan',
+    customerPhone: '+92 333 5554444',
+    items: [
+      { id: '1', name: 'Beef Burger', quantity: 2, completed: true, price : 220.00 },
+      { id: '2', name: 'Chicken Wings', quantity: 3, completed: true, price : 120.00 },
+      { id: '3', name: 'French Fries', quantity: 2, completed: true, price: 320.00 },
+      { id: '4', name: 'Coca Cola', quantity: 4, completed: true, price : 120.00 },
+    ],
+  },
+  {
+    id: 'dispatch-6',
+    orderNumber: '# 105',
+    tableNumber: '-',
+    orderType: 'Delivery',
+    waiterName: 'Hassan Raza',
+    elapsedTime: '18:42',
+    status: 'ready',
+    readyTime: Date.now() - 1 * 60 * 1000,
+    customerName: 'Sufyan Ahmed',
+    customerPhone: '+92 312 9988776',
+    items: [
+      { id: '1', name: 'Extreme Deal', quantity: 1, completed: true, price : 420.00 },
+    ]
+  },
+  {
+    id: 'dispatch-7',
+    orderNumber: '# 103',
+    tableNumber: '-',
+    orderType: 'Delivery',
+    waiterName: 'Sara Khan',
+    elapsedTime: '12:42',
+    status: 'ready',
+    timestamp: Date.now() - 18 * 60 * 1000,
+    readyTime: Date.now() - 6 * 60 * 1000,
+    customerName: 'Ayesha Khan',
+    customerPhone: '+92 321 9876543',
+    items: [
+      { id: '1', name: 'Margherita Pizza', quantity: 2, completed: true,price : 420.00 },
+      { id: '2', name: 'BBQ Wings', quantity: 1, completed: true, price : 420.00 },
+      { id: '3', name: 'Garlic Bread', quantity: 2, completed: true, price : 410.00 },
+      { id: '4', name: 'Pepsi', quantity: 4, completed: true, price : 420.00 },
+    ],
+  },
+  {
+    id: 'dispatch-8',
+    orderNumber: '# 102',
+    tableNumber: 'DEL-002',
+    orderType: 'Delivery',
+    waiterName: 'Sara Khan',
+    elapsedTime: '21:30',
+    status: 'ready',
+    timestamp: Date.now() - 21 * 60 * 1000,
+    readyTime: Date.now() - 10 * 60 * 1000,
+    customerName: 'Bilal Ahmed',
+    customerPhone: '+92 345 1112233',
+    items: [
+      { id: '1', name: 'Chicken Tikka Pizza', quantity: 1, completed: true, price : 1420.00 },
+      { id: '2', name: 'Spicy Wings', quantity: 2, completed: true, price : 120.00 },
+      { id: '3', name: 'Coleslaw', quantity: 1, completed: true ,price : 100.00},
+    ],
+    deals: [
+      {
+        name: 'Dinner Deal',
+        items: ['1x Large Pizza', '6x Wings', '2x Drinks']
+      }
+    ]
+  },
 ];

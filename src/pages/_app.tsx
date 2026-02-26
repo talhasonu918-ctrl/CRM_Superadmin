@@ -5,8 +5,14 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
+// import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
+// import { ThemeProvider } from '@/src/contexts/ThemeContext';
+// import { BrandingProvider, useBranding } from '@/src/contexts/BrandingContext';
+// import { CompanyProvider } from '@/src/contexts/CompanyContext';
+import { OrderProvider } from '@/src/contexts/OrderContext';
+import { NotificationProvider } from '@/src/contexts/NotificationContext';
 import toast, { Toaster } from 'react-hot-toast';
-import '../styles/globals.css';
+import '../styles/globals.css'; // Corrected path to src/styles/globals.css
 
 import { tenantConfig } from '@/src/config/tenant-color';
 
@@ -22,6 +28,7 @@ import { useAppDispatch } from '../redux/store';
 import { checkAuth } from '../redux/authSlice';
 import { syncBrandingFromStorage, applyBrandColors } from '../redux/brandingSlice';
 import { syncThemeFromStorage } from '../redux/themeSlice';
+import { ThemeProvider } from '@/src/contexts/ThemeContext';
 
 const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -106,65 +113,71 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
-      <>
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-          <script src="https://cdn.tailwindcss.com"></script>
-          <script dangerouslySetInnerHTML={{
-            __html: `
-              window.tailwind = window.tailwind || {};
-              window.tailwind.config = {
-                darkMode: 'class',
-                theme: {
-                  extend: {
-                    fontFamily: {
-                      sans: ['var(--font-tenant)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                      primary: 'var(--color-primary)',
-                      secondary: 'var(--color-secondary)',
-                      accent: 'var(--color-accent)',
-                      background: 'var(--color-background)',
-                      surface: 'var(--color-surface)',
-                      textPrimary: 'var(--color-text-primary)',
-                      textSecondary: 'var(--color-text-secondary)',
-                      border: 'var(--color-border)',
-                      success: 'var(--color-success)',
-                      warning: 'var(--color-warning)',
-                      error: 'var(--color-error)',
+      <NotificationProvider>
+        <OrderProvider>
+          <ThemeProvider> {/* Ensure ThemeProvider wraps the app */}
+            <>
+              <Head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <script src="https://cdn.tailwindcss.com"></script>
+                <script dangerouslySetInnerHTML={{
+                  __html: `
+                    window.tailwind = window.tailwind || {};
+                    window.tailwind.config = {
+                      darkMode: 'class',
+                      theme: {
+                        extend: {
+                          fontFamily: {
+                            sans: ['var(--font-tenant)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                          },
+                          colors: {
+                            primary: 'var(--color-primary)',
+                            secondary: 'var(--color-secondary)',
+                            accent: 'var(--color-accent)',
+                            background: 'var(--color-background)',
+                            surface: 'var(--color-surface)',
+                            textPrimary: 'var(--color-text-primary)',
+                            textSecondary: 'var(--color-text-secondary)',
+                            border: 'var(--color-border)',
+                            success: 'var(--color-success)',
+                            warning: 'var(--color-warning)',
+                            error: 'var(--color-error)',
+                          }
+                        }
+                      }
                     }
-                  }
-                }
-              }
-            `
-          }} />
-        </Head>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-            success: {
-              duration: 3000,
-              iconTheme: {
-                primary: 'var(--color-primary)',
-                secondary: '#fff',
-              },
-            },
-            error: {
-              duration: 4000,
-              iconTheme: {
-                primary: 'var(--color-error)',
-                secondary: '#fff',
-              },
-            },
-          }}
-        />
-        <AppContent Component={Component} pageProps={pageProps} />
-      </>
+                  `
+                }} />
+              </Head>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                  success: {
+                    duration: 3000,
+                    iconTheme: {
+                      primary: 'var(--color-primary)',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    duration: 4000,
+                    iconTheme: {
+                      primary: 'var(--color-error)',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+              <AppContent Component={Component} pageProps={pageProps} />
+            </>
+          </ThemeProvider>
+        </OrderProvider>
+      </NotificationProvider>
     </Provider>
   );
 }

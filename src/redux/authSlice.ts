@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import * as authApi from '../api/auth';
+// import * as authApi from '../api/auth';
 
 interface AuthState {
 	isAuthenticated: boolean;
@@ -21,20 +21,20 @@ export const login = createAsyncThunk(
 			let result;
 			if (payload.fullName) {
 				// Use the new grant-access flow
-				result = await authApi.grantAccess({ email: payload.email, fullName: payload.fullName });
+				// result = await authApi.grantAccess({ email: payload.email, fullName: payload.fullName });
 			} else {
 				// Use the standard password login flow
-				result = await authApi.login({ email: payload.email, password: payload.password! });
+				// result = await authApi.login({ email: payload.email, password: payload.password! });
 			}
 
-			if (result.isSuccess || result.accessToken || result.token) {
-				localStorage.setItem('isAuthenticated', 'true');
-				// Store user data if present
-				const userData = result.data ?? result;
-				localStorage.setItem('user', JSON.stringify(userData));
-				return userData;
-			}
-			return rejectWithValue(result.message || 'Login failed');
+			// if (result.isSuccess || result.accessToken || result.token) {
+			// 	localStorage.setItem('isAuthenticated', 'true');
+			// 	// Store user data if present
+			// 	const userData = result.data ?? result;
+			// 	localStorage.setItem('user', JSON.stringify(userData));
+			// 	return userData;
+			// }
+			// return rejectWithValue(result.message || 'Login failed');
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
 		}
@@ -63,7 +63,7 @@ const authSlice = createSlice({
 			state.user = null;
 			localStorage.removeItem('isAuthenticated');
 			localStorage.removeItem('user');
-			authApi.logout(); // Call the API logout as well
+			// authApi.logout(); // Call the API logout as well
 		},
 		checkAuth(state) {
 			const authStatus = localStorage.getItem('isAuthenticated');

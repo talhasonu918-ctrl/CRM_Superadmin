@@ -18,6 +18,16 @@
   --color-error: #ef4444;
 }
 
+.hide-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE & Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari */
+}
+
 .dark {
   --color-background: #0f1115;
   --color-surface: #16191F;

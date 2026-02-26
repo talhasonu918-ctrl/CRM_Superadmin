@@ -1,18 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { DashboardCard } from '../settings/components/DashboardCard';
 import { VariantsView } from './VariantsView';
 import { AddOnsView } from './AddOnsView';
-import { DealsView } from './DealsView';
-import {ArrowLeft } from 'lucide-react';
-import { MenuProductsView } from './MenuProductsView';
+import { DealsView } from './deals/DealsView';
 import {
   LayoutGrid,
+  List,
   Users2,
   Plus,
   Tag,
-  Package
+  Package,
+  ArrowLeft,
+  ChevronRight
 } from 'lucide-react';
+import { ProductsView } from './products/ProductsView';
+import {
+  useReactTable,
+  getCoreRowModel,
+} from '@tanstack/react-table';
+import { getThemeColors } from '../../../theme/colors';
+import { GridView } from '../../../components/GridView';
 
 interface MenuModuleProps {
   isDarkMode: boolean;
@@ -21,9 +29,11 @@ interface MenuModuleProps {
 export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
   const router = useRouter();
   const [activeView, setActiveView] = useState<string>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   // Get company from route if it exists
   const company = router.query.company as string | undefined;
+  const theme = getThemeColors(isDarkMode);
 
   const handleCardClick = (viewId: string, href?: string) => {
     if (href) {
@@ -35,7 +45,7 @@ export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
     }
   };
 
-  const menuItems = [
+  const menuItems = useMemo(() => [
     {
       id: 'categories',
       title: 'Categories',
@@ -64,9 +74,43 @@ export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
       id: 'menu-products',
       title: 'Menu Products',
       icon: Package,
-      component: <MenuProductsView isDarkMode={isDarkMode} />,
+      component: <ProductsView isDarkMode={isDarkMode} />,
     },
-  ];
+  ], [isDarkMode]);
+
+  const columns = useMemo(() => [
+    {
+      accessorKey: 'title',
+      header: 'Module Name',
+      cell: ({ row }: any) => {
+        const item = row.original;
+        return (
+          <div className="flex items-center">
+            <div className={`p-2 rounded-lg mr-4 ${isDarkMode ? 'bg-slate-800' : 'bg-slate-100'}`}>
+              <item.icon size={18} className={theme.primary.text} />
+            </div>
+            <span className={`text-sm font-medium ${theme.text.primary}`}>{item.title}</span>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      header: () => <div className="text-right">Action</div>,
+      cell: () => (
+        <div className="flex justify-end items-center gap-2">
+          <span className={`text-xs font-semibold ${theme.primary.text}`}>Open Module</span>
+          <ChevronRight size={16} className={theme.primary.text} />
+        </div>
+      ),
+    },
+  ], [isDarkMode, theme]);
+
+  const table = useReactTable({
+    data: menuItems,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   // Find the active component based on state
   const activeItem = menuItems.find((item) => item.id === activeView);
@@ -74,17 +118,17 @@ export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
   return (
     <div className="h-full space-y-6">
       {activeView === 'grid' ? (
-        <div className="grid gap-4 grid-cols-1 p-5 md:p-0 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {menuItems.map((item) => (
-            <DashboardCard
-              key={item.id}
-              icon={item.icon}
-              title={item.title}
-              isDarkMode={isDarkMode}
-              onClick={() => handleCardClick(item.id, item.href)}
-            />
-          ))}
-        </div>
+        <GridView
+          title="Menu Management"
+          subtitle="Configure products, variants, add-ons and deals"
+          isDarkMode={isDarkMode}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          items={menuItems.map(m => ({ ...m, iconColor: theme.primary.text }))}
+          onItemClick={(item) => handleCardClick(item.id, item.href)}
+          table={table}
+          itemName="records"
+        />
       ) : (
         <div className="space-y-4">
           <button

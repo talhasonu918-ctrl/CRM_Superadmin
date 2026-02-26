@@ -34,6 +34,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    "src/styles/**/*.css", // Added to include CSS files
     ".next/types/**/*.ts"
   ],
   "exclude": [

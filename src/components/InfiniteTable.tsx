@@ -141,7 +141,7 @@ function InfiniteTable<T = any>({
                         style={{
                           width: header.getSize(),
                         }}
-                        className={`!text-start !font-semibold px-2 sm:px-6 ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
+                        className={`!font-semibold px-2 sm:px-6 ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -170,7 +170,8 @@ function InfiniteTable<T = any>({
               (rows || table.getRowModel().rows).map((row: any) => (
                 <React.Fragment key={row.id}>
                   <Table.Row
-                    className={`transition-colors ${theme.neutral.hoverLight}`}
+                    onClick={() => row.onClick?.()}
+                    className={`transition-colors ${theme.neutral.hoverLight} ${row.onClick ? 'cursor-pointer' : ''}`}
                   >
                     {row.getVisibleCells().map((cell: any) => {
                       // Check column visibility
