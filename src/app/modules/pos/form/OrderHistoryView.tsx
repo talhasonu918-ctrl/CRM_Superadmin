@@ -369,7 +369,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
               {order.items.length > 3 && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-[10px] text-center italic pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
+                  className="text-[10px] text-center  pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
                 >
                   {isExpanded ? (
                     <>Show less <ChevronUp size={12} /></>
@@ -380,7 +380,7 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
               )}
             </div>
           ) : (
-            <div className="text-[10px] text-center italic py-2 text-textSecondary">No items</div>
+            <div className="text-[10px] text-center  py-2 text-textSecondary">No items</div>
           )}
         </div>
 
@@ -564,12 +564,12 @@ export const OrderHistoryView: React.FC<OrderHistoryViewProps> = ({ isDarkMode =
                   </div>
                 ))
               ) : (
-                <div className="text-[10px] text-center italic py-2 text-textSecondary">No items</div>
+                <div className="text-[10px] text-center  py-2 text-textSecondary">No items</div>
               )}
               {order.items && order.items.length > 2 && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-[10px] text-center italic pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
+                  className="text-[10px] text-center pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
                 >
                   {isExpanded ? (
                     <>Show less <ChevronUp size={12} /></>

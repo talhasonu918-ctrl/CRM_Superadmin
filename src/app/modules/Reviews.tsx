@@ -21,7 +21,7 @@ export const ReviewsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
             <Star className="w-12 h-12 text-[#FECB00] fill-current" />
             <h3 className="text-6xl font-black">4.8</h3>
           </div>
-          <p className="text-sm font-bold text-gray-400">Based on 12,480 reviews</p>
+          <p className="text-sm font-medium text-gray-400">Based on 12,480 reviews</p>
         </div>
         
         <div className={`${cardBg} p-10 rounded-[3.5rem] border ${borderCol} flex flex-col justify-center gap-4`}>
@@ -40,7 +40,7 @@ export const ReviewsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
            <div>
               <ThumbsUp size={48} className="text-[#FF6B35] mx-auto mb-4" />
               <h4 className="text-3xl font-black">98% Recommendation</h4>
-              <p className="text-sm font-bold text-gray-400">Customers love your food!</p>
+              <p className="text-sm font-medium text-gray-400">Customers love your food!</p>
            </div>
         </div>
       </div>
@@ -62,14 +62,14 @@ export const ReviewsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
                   </div>
                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{rev.date}</span>
                </div>
-               <p className="text-[15px] font-medium text-gray-500 leading-relaxed italic">"{rev.comment}"</p>
+               <p className="text-[15px] font-medium text-gray-500 leading-relaxed ">"{rev.comment}"</p>
                
                {rev.reply && (
                  <div className="mt-6 p-6 bg-gray-50/50 rounded-2xl flex gap-4 items-start">
                     <CornerDownRight size={18} className="text-gray-300 mt-1" />
                     <div>
                        <p className="text-[10px] font-black text-[#FF6B35] uppercase tracking-widest mb-1">Admin Reply</p>
-                       <p className="text-sm font-bold text-gray-600">{rev.reply}</p>
+                       <p className="text-sm font-medium text-gray-600">{rev.reply}</p>
                     </div>
                  </div>
                )}

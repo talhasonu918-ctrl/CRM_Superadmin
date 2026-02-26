@@ -327,7 +327,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                             </div>
                         ) : (
                             <div className="mb-4 p-3 rounded-xl border border-dashed border-border flex items-center justify-center opacity-40">
-                                <span className="text-[10px] font-bold uppercase tracking-widest italic text-textSecondary">Waiting for Task</span>
+                                <span className="text-[10px] font-bold uppercase tracking-widest  text-textSecondary">Waiting for Task</span>
                             </div>
                         )}
                     </div>
@@ -461,7 +461,7 @@ export const RiderManagementView: React.FC<RiderManagementViewProps> = ({ isDark
                                             </div>
                                         </div>
                                     ) : (
-                                        <span className="text-[10px] font-medium text-textSecondary italic opacity-50 uppercase tracking-widest">Waiting for task</span>
+                                        <span className="text-[10px] font-medium text-textSecondary  opacity-50 uppercase tracking-widest">Waiting for task</span>
                                     )}
                                 </td>
 

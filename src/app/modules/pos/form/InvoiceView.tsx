@@ -297,7 +297,7 @@ export const InvoiceView: React.FC<InvoiceViewProps> = ({
                                             {item.product.dealItems && item.product.dealItems.length > 0 && (
                                                 <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5">
                                                     {item.product.dealItems.map((detail, dIdx) => (
-                                                        <span key={dIdx} className="text-[10px] text-textSecondary font-semibold italic flex items-center gap-1">
+                                                        <span key={dIdx} className="text-[10px] text-textSecondary font-semibold  flex items-center gap-1">
                                                             • {detail}
                                                         </span>
                                                     ))}

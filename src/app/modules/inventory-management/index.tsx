@@ -16,7 +16,7 @@ import { PurchaseOrderView } from './purchase-order';
 import { DemandView } from './demand';
 import { StockReportView } from './stock-report';
 import { StockMovementReportView } from './stock-movement-report';
-import { InventoryProductsView } from './inventory-products';
+import InventoryProductsView from './inventory-products';
 
 type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer' | 'stock-adjustment' | 'stock-variance' | 'purchase-order' | 'demand' | 'stock-report' | 'stock-movement-report' | 'inventory-products';
 
@@ -144,7 +144,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
         <div className="p-4 flex items-center gap-4 bg-transparent">
           <button 
             onClick={() => setActiveView('dashboard')}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold transition-all ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
               isDarkMode ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-white text-slate-600 shadow-sm hover:bg-slate-50'
             }`}
           >

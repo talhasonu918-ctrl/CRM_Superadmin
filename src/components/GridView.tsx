@@ -51,17 +51,17 @@ export interface GridViewItem {
 }
 
 interface GridViewProps {
-    title: string;
+    title?: string;
     subtitle?: string;
     isDarkMode: boolean;
     viewMode: 'grid' | 'list';
     onViewModeChange: (mode: 'grid' | 'list') => void;
     items: GridViewItem[];
-    onItemClick: (item: GridViewItem) => void;
+    onItemClick?: (item: GridViewItem) => void;
     table?: any;
     itemName?: string;
     gridClassName?: string;
-    renderCustomCard?: (item: GridViewItem) => React.ReactNode;
+    renderCustomCard?: (item: any) => React.ReactNode;
 }
 
 export const GridView: React.FC<GridViewProps> = ({
@@ -71,10 +71,10 @@ export const GridView: React.FC<GridViewProps> = ({
     viewMode,
     onViewModeChange,
     items,
-    onItemClick,
+    onItemClick = () => {},
     table,
     itemName = 'items',
-    gridClassName = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4",
+    gridClassName = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4",
     renderCustomCard
 }) => {
     const theme = getThemeColors(isDarkMode);
@@ -84,17 +84,19 @@ export const GridView: React.FC<GridViewProps> = ({
 
     return (
         <div className="space-y-6">
-            <div className="flex items-start justify-between">
-                <div>
-                    <h2 className="text-xl sm:text-3xl font-medium tracking-tight whitespace-nowrap">{title}</h2>
-                    {subtitle && <p className="text-slate-400 text-sm font-medium">{subtitle}</p>}
+            {title && (
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h2 className="text-xl sm:text-3xl font-medium tracking-tight whitespace-nowrap">{title}</h2>
+                        {subtitle && <p className="text-slate-400 text-sm font-medium">{subtitle}</p>}
+                    </div>
+                    <ViewToggle
+                        viewMode={viewMode}
+                        onViewModeChange={onViewModeChange}
+                        isDarkMode={isDarkMode}
+                    />
                 </div>
-                <ViewToggle
-                    viewMode={viewMode}
-                    onViewModeChange={onViewModeChange}
-                    isDarkMode={isDarkMode}
-                />
-            </div>
+            )}
 
             {viewMode === 'grid' ? (
                 <div className={gridClassName}>

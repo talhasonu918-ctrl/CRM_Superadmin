@@ -220,7 +220,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               {order.items.length > 3 && (
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-[10px] text-center italic pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
+                  className="text-[10px] text-center pt-1 w-full hover:underline text-primary font-bold flex items-center justify-center gap-1"
                 >
                   {isExpanded ? (
                     <>Show less <ChevronUp size={10} /></>
@@ -231,7 +231,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
               )}
             </div>
           ) : (
-            <div className="text-[10px] text-center italic py-2 text-textSecondary">No items</div>
+            <div className="text-[10px] text-center  py-2 text-textSecondary">No items</div>
           )}
         </div>
 
@@ -415,7 +415,7 @@ export const OrderQueueView: React.FC<OrderQueueViewProps> = ({ isDarkMode = fal
                   )}
                 </>
               ) : (
-                <div className="text-[11px] italic pl-0 sm:pl-5 text-textSecondary">No Items</div>
+                <div className="text-[11px]  pl-0 sm:pl-5 text-textSecondary">No Items</div>
               )}
             </div>
           </div>

@@ -467,7 +467,7 @@ export const CMSView = () => {
 
                                     <div
                                         className={`prose prose-lg dark:prose-invert max-w-none website-preview ${theme.text.primary}`}
-                                        dangerouslySetInnerHTML={{ __html: pages[selectedPage].content || '<p class="text-gray-400 italic">No content to preview.</p>' }}
+                                        dangerouslySetInnerHTML={{ __html: pages[selectedPage].content || '<p class="text-gray-400 ">No content to preview.</p>' }}
                                     />
                                 </div>
                             </div>

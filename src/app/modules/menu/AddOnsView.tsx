@@ -260,7 +260,7 @@ export const AddOnsView: React.FC<AddOnsViewProps> = ({ isDarkMode }) => {
                 </span>
               ))}
               {group.addOns.length === 0 && (
-                <span className="text-xs italic text-slate-400">No add-ons added</span>
+                <span className="text-xs  text-slate-400">No add-ons added</span>
               )}
             </div>
           </div>
