@@ -92,13 +92,16 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   }
 
   // Redirect to dashboard if authenticated and trying to access auth page
-  if (currentRouter.pathname === '/auth' && isAuthenticated) {
-    if (typeof window !== 'undefined') {
-      const lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
-      currentRouter.push(`/${lastCompany}/dashboard`);
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated && currentRouter.pathname !== '/auth') {
+        currentRouter.replace('/auth');
+      } else if (isAuthenticated && currentRouter.pathname === '/auth') {
+        const lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
+        currentRouter.replace(`/${lastCompany}/dashboard`);
+      }
     }
-    return null;
-  }
+  }, [isAuthenticated, loading, currentRouter]);
 
   return (
     <>

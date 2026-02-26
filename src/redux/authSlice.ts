@@ -8,9 +8,9 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	isAuthenticated: false,
+	isAuthenticated: typeof window !== 'undefined' && JSON.parse(localStorage.getItem('isAuthenticated') || 'false'),
 	loading: false,
-	user: null,
+	user: typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user') || 'null'),
 };
 
 // Async thunks for login and signup
@@ -27,14 +27,11 @@ export const login = createAsyncThunk(
 				// result = await authApi.login({ email: payload.email, password: payload.password! });
 			}
 
-			// if (result.isSuccess || result.accessToken || result.token) {
-			// 	localStorage.setItem('isAuthenticated', 'true');
-			// 	// Store user data if present
-			// 	const userData = result.data ?? result;
-			// 	localStorage.setItem('user', JSON.stringify(userData));
-			// 	return userData;
-			// }
-			// return rejectWithValue(result.message || 'Login failed');
+			// Simulate successful login for demonstration
+			const userData = { email: payload.email, name: payload.fullName || 'User' };
+			localStorage.setItem('isAuthenticated', 'true');
+			localStorage.setItem('user', JSON.stringify(userData));
+			return userData;
 		} catch (error: any) {
 			return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
 		}
