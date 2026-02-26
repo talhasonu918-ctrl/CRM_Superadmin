@@ -4,22 +4,23 @@ import { DashboardCard } from '../settings/components/DashboardCard';
 import { VariantsView } from './VariantsView';
 import { AddOnsView } from './AddOnsView';
 import { DealsView } from './deals/DealsView';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
-import { ProductsView } from './products/ProductsView';
-import {
-  useReactTable,
-  getCoreRowModel,
-} from '@tanstack/react-table';
-import InfiniteTable from '../../../components/InfiniteTable';
 import {
   LayoutGrid,
   List,
   Users2,
   Plus,
   Tag,
-  Package
+  Package,
+  ArrowLeft,
+  ChevronRight
 } from 'lucide-react';
+import { ProductsView } from './products/ProductsView';
+import {
+  useReactTable,
+  getCoreRowModel,
+} from '@tanstack/react-table';
 import { getThemeColors } from '../../../theme/colors';
+import { GridView } from '../../../components/GridView';
 
 interface MenuModuleProps {
   isDarkMode: boolean;
@@ -117,58 +118,17 @@ export const MenuModule: React.FC<MenuModuleProps> = ({ isDarkMode }) => {
   return (
     <div className="h-full space-y-6">
       {activeView === 'grid' ? (
-        <div className="space-y-4">
-          <div className="flex justify-end gap-2 mb-4">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 rounded-lg border-2 transition-all duration-200 ${viewMode === 'grid' 
-                ? `${theme.primary.text} ${theme.primary.border} ${theme.neutral.card} shadow-sm` 
-                : `${theme.text.tertiary} ${theme.border.main} ${theme.neutral.card} opacity-60 hover:opacity-100`
-              }`}
-              title="Grid View"
-            >
-              <LayoutGrid size={20} />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 rounded-lg border-2 transition-all duration-200 ${viewMode === 'list' 
-                ? `${theme.primary.text} ${theme.primary.border} ${theme.neutral.card} shadow-sm` 
-                : `${theme.text.tertiary} ${theme.border.main} ${theme.neutral.card} opacity-60 hover:opacity-100`
-              }`}
-              title="List View"
-            >
-              <List size={20} />
-            </button>
-          </div>
-
-          {viewMode === 'grid' ? (
-            <div className="grid gap-4 grid-cols-1 p-5 md:p-0 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {menuItems.map((item) => (
-                <DashboardCard
-                  key={item.id}
-                  icon={item.icon}
-                  title={item.title}
-                  isDarkMode={isDarkMode}
-                  onClick={() => handleCardClick(item.id, item.href)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className={`overflow-hidden rounded-xl  ${theme.primary.border}`}>
-              <InfiniteTable
-                table={table}
-                isDarkMode={isDarkMode}
-                className="max-h-none"
-                total={menuItems.length}
-                itemName="records"
-                rows={table.getRowModel().rows.map(row => ({
-                  ...row,
-                  onClick: () => handleCardClick(row.original.id, row.original.href)
-                } as any))}
-              />
-            </div>
-          )}
-        </div>
+        <GridView
+          title="Menu Management"
+          subtitle="Configure products, variants, add-ons and deals"
+          isDarkMode={isDarkMode}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          items={menuItems.map(m => ({ ...m, iconColor: theme.primary.text }))}
+          onItemClick={(item) => handleCardClick(item.id, item.href)}
+          table={table}
+          itemName="records"
+        />
       ) : (
         <div className="space-y-4">
           <button

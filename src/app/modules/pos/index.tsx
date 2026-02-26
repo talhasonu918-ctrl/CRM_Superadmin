@@ -22,6 +22,13 @@ export const POSModule: React.FC<POSModuleProps> = ({ isDarkMode = false, initia
   const [targetRiderId, setTargetRiderId] = useState<string | null>(null);
   const notifRef = useRef<HTMLDivElement | null>(null);
 
+  // Sync activeTab with initialTab prop
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
   const notifications = [
     { id: 1, title: 'New Online Order #102', time: '2m ago' },
     { id: 2, title: 'New Online Order #103', time: '10m ago' },

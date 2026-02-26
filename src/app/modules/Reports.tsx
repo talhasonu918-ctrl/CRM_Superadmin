@@ -15,8 +15,8 @@ import {
   useReactTable,
   getCoreRowModel,
 } from '@tanstack/react-table';
-import InfiniteTable from '../../components/InfiniteTable';
 import { getThemeColors } from '../../theme/colors';
+import { GridView } from '../../components/GridView';
 
 // Placeholder component for other reports
 const ComingSoonReport: React.FC<{ isDarkMode: boolean; title: string }> = ({ isDarkMode, title }) => {
@@ -140,69 +140,16 @@ export const ReportsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
 
   // Grid view of all reports
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-xl sm:text-3xl font-medium tracking-tight">Reports</h2>
-          <p className="text-slate-400 text-sm font-medium">Comprehensive business analytics and insights</p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg border-2 transition-all duration-200 ${viewMode === 'grid' 
-              ? `${theme.primary.text} ${theme.primary.border} ${theme.neutral.card} shadow-sm` 
-              : `${theme.text.tertiary} ${theme.border.main} ${theme.neutral.card} opacity-60 hover:opacity-100`
-            }`}
-            title="Grid View"
-          >
-            <LayoutGrid size={20} />
-          </button>
-          <button
-            onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg border-2 transition-all duration-200 ${viewMode === 'list' 
-              ? `${theme.primary.text} ${theme.primary.border} ${theme.neutral.card} shadow-sm` 
-              : `${theme.text.tertiary} ${theme.border.main} ${theme.neutral.card} opacity-60 hover:opacity-100`
-            }`}
-            title="List View"
-          >
-            <List size={20} />
-          </button>
-        </div>
-      </div>
-
-      {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          {reportCards.map((report) => {
-            const Icon = report.icon;
-            return (
-              <div
-                key={report.id}
-                onClick={() => setSelectedReport(report.id)}
-                className={`${cardStyle} rounded-lg p-6 border ${borderStyle} hover:shadow-lg transition-all cursor-pointer hover:scale-105 flex flex-col items-center justify-center text-center gap-3 min-h-[140px]`}
-              >
-                <div className={`w-12 h-12 rounded-lg ${report.bgColor} flex items-center justify-center`}>
-                  <Icon className={`w-6 h-6 ${report.color}`} />
-                </div>
-                <h3 className={`text-sm font-medium ${textStyle}`}>{report.name}</h3>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className={`overflow-hidden rounded-xl border ${theme.border.main} ${theme.neutral.card}`}>
-          <InfiniteTable
-            table={table}
-            isDarkMode={isDarkMode}
-            className="max-h-none"
-            total={reportCards.length}
-            itemName="reports"
-            rows={table.getRowModel().rows.map(row => ({
-              ...row,
-              onClick: () => setSelectedReport(row.original.id)
-            } as any))}
-          />
-        </div>
-      )}
-    </div>
+    <GridView
+      title="Reports"
+      subtitle="Comprehensive business analytics and insights"
+      isDarkMode={isDarkMode}
+      viewMode={viewMode}
+      onViewModeChange={setViewMode}
+      items={reportCards.map(r => ({ ...r, iconColor: r.color }))}
+      onItemClick={(report) => setSelectedReport(report.id)}
+      table={table}
+      itemName="reports"
+    />
   );
 };

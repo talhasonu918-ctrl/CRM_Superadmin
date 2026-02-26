@@ -1,4 +1,227 @@
 // Kitchen Order Ready Time Report Data
+export interface StockLocation {
+  id: string;
+  name: string;
+  type: string;
+  categoryName?: string;
+  parentId?: string;
+  stockItems?: { itemName: string; quantity: number; unit: string }[];
+  createdAt: string;
+  status: 'Active' | 'Inactive';
+}
+
+export const INITIAL_LOCATIONS: StockLocation[] = [
+  { id: '837', name: 'Main Store', type: 'Main Store', categoryName: '', createdAt: '23-12-2025 3:54 PM', status: 'Active' },
+  { id: '838', name: 'Kitchen', type: 'Kitchen', categoryName: 'BROAST,WRAPS,ROLL & SANDWICHES,DEALS,PIZZA,BURGER,PASTA,SIDE ORDERS,Sauces', createdAt: '23-12-2025 3:55 PM', status: 'Active' },
+  { id: '882', name: 'Warehouse', type: 'Warehouse', categoryName: 'Frozen chicken cartons,Oil cartons,Flour bags,Soft drink cartons', createdAt: '30-12-2024 9:45 PM', status: 'Active' },
+  { id: '883', name: 'Branch 1', type: 'Dry Store', categoryName: 'Cheese,Wrap sheets,Spices, Buns', createdAt: '30-2-2026 9:45 PM', status: 'Active' },
+  { id: '884', name: 'Branch 2', type: 'Cold Storage', categoryName: 'Frozen fries,Frozen chicken,Frozen patties', createdAt: '30-12-2024 9:45 PM', status: 'Active' }, 
+  { id: '885', name: 'Branch 3', type: 'Beverage Store', categoryName: 'Soft drinks,Mineral water,Juices', createdAt: '30-1-2024 9:45 PM', status: 'Active' },
+];
+
+export interface InventoryProduct {
+  id: string;
+  name: string;
+  manufacturerName: string;
+  barcode: string;
+  category: string;
+  subCategory: string;
+  rack: string;
+  supplier: string;
+  costPrice: number;
+  meanPrice: number;
+  retailPrice: number;
+  salePrice: number;
+  grossMargin: number;
+  saleTax: number;
+  discount: number;
+  genericName: string;
+  procurementClass: string;
+  status: 'Active' | 'Inactive';
+  description?: string;
+  showOnPos?: boolean;
+  pctCode?: string;
+  productType?: string;
+  assignedBranches?: string[];
+  isAutoReady?: boolean;
+  uomConfig?: { uom: string; convUnit: number; isDefault: boolean }[];
+  discountType?: 'Value' | 'Percentage';
+  saleTaxType?: 'Value' | 'Percentage';
+  image?: string;
+  createdAt?: string;
+}
+
+export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
+  {
+    id: '1',
+    name: 'WATER DOUGH',
+    manufacturerName: '-',
+    barcode: 'WD-001',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 0,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '25-02-2026 10:00 AM'
+  },
+  {
+    id: '2',
+    name: 'CHRIST CHILLI',
+    manufacturerName: '-',
+    barcode: 'CC-002',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 0,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '25-02-2026 10:30 AM'
+  },
+  {
+    id: '3',
+    name: 'CHICKEN POWDER',
+    manufacturerName: '-',
+    barcode: 'CP-003',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 1.0416,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '25-02-2026 11:00 AM'
+  },
+  {
+    id: '4',
+    name: 'BASIL',
+    manufacturerName: '-',
+    barcode: 'BSL-004',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 1.44,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 09:00 AM'
+  },
+  {
+    id: '5',
+    name: 'ORIGANO',
+    manufacturerName: '-',
+    barcode: 'ORG-005',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 1.2,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 10:00 AM'
+  },
+  {
+    id: '6',
+    name: 'COCONUT MILK',
+    manufacturerName: '-',
+    barcode: 'CM-006',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 1.5833,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 11:00 AM'
+  },
+  {
+    id: '7',
+    name: 'SALT',
+    manufacturerName: '-',
+    barcode: 'SLT-007',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 0,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 12:00 PM'
+  },
+  {
+    id: '8',
+    name: 'SUGAR',
+    manufacturerName: '-',
+    barcode: 'SGR-008',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 0.22,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 01:00 PM'
+  }
+];
+
 export interface KitchenOrderReadyTimeData {
   id: string;
   invoiceId: string;

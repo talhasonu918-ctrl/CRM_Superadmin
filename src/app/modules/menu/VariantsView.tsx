@@ -273,7 +273,7 @@ export const VariantsView: React.FC<VariantsViewProps> = ({ isDarkMode }) => {
                 <span>Max: {variant.maximumSelection}</span>
               </div>
               {variant.instructions && (
-                <div className={`text-xs italic mb-2 ${
+                <div className={`text-xs  mb-2 ${
                   isDarkMode ? 'text-slate-500' : 'text-slate-400'
                 }`}>{variant.instructions}</div>
               )}

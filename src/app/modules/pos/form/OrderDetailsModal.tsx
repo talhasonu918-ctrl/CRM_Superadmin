@@ -145,7 +145,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                             <div className="font-bold text-textPrimary text-sm">{(price * quantity).toFixed(2)}</div>
                                         </div>
                                         {dealItems && (
-                                            <div className="text-[10px] text-textSecondary italic mb-2">
+                                            <div className="text-[10px] text-textSecondary mb-2">
                                                 {dealItems.join(', ')}
                                             </div>
                                         )}
@@ -177,7 +177,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                                             <div className="col-span-6 font-medium text-textPrimary">
                                                 {name}
                                                 {dealItems && (
-                                                    <div className="text-[10px] text-textSecondary mt-1 italic">
+                                                    <div className="text-[10px] text-textSecondary mt-1 ">
                                                         {dealItems.join(', ')}
                                                     </div>
                                                 )}

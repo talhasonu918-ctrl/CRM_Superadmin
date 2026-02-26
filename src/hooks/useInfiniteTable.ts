@@ -53,18 +53,18 @@ export function useInfiniteTable<T extends { id: string }>({
   // Lock to prevent duplicate API calls
   const isFetchingRef = useRef(false);
 
-  // Stable reference to the initial data IDs to prevent unnecessary resets
-  const lastPropDataIds = useRef(JSON.stringify(propData.map(d => d.id)));
+  // Stable reference to the initial data to detect changes (including updates)
+  const lastPropDataJson = useRef(JSON.stringify(propData));
 
   useEffect(() => {
-    const currentIds = JSON.stringify(propData.map(d => d.id));
-    if (currentIds !== lastPropDataIds.current) {
+    const currentJson = JSON.stringify(propData);
+    if (currentJson !== lastPropDataJson.current) {
       setData(propData);
       // Calculate the next page based on current data length
       const nextPage = Math.floor(propData.length / pageSize) + 1;
       setCurrentPage(propData.length > 0 ? (nextPage > 1 ? nextPage : 2) : 1);
       setHasNextPage(propData.length >= pageSize);
-      lastPropDataIds.current = currentIds;
+      lastPropDataJson.current = currentJson;
 
       // Also reset fetching lock if data is reset externally
       isFetchingRef.current = false;
