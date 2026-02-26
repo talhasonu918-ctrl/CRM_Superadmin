@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import PurchaseOrderTable from './table/purchaseorder.Table'; // Changed to default import
+import { UserTable as PurchaseOrderTable } from './table/table'; // Changed to default import
 
 const PurchaseOrderPage: React.FC = () => {
   const [purchaseOrders, setPurchaseOrders] = useState([
@@ -32,7 +32,7 @@ const PurchaseOrderPage: React.FC = () => {
   return (
     <div className="purchase-order-page">
       <h1 className="text-2xl font-bold mb-4">Purchase Order</h1>
-      <PurchaseOrderTable data={purchaseOrders} />
+      <PurchaseOrderTable isDarkMode={false} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
     </div>
   );
 };
@@ -41,7 +41,7 @@ export const PurchaseOrderView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMod
   return (
     <div className={`purchase-order-view ${isDarkMode ? 'dark-mode' : ''}`}>
       {/* <h1 className="text-2xl font-bold mb-4">Purchase Order</h1> */}
-      <PurchaseOrderTable />
+      <PurchaseOrderTable isDarkMode={isDarkMode} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
     </div>
   );
 };
