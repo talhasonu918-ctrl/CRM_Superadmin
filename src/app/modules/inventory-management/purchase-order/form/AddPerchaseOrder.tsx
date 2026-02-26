@@ -4,19 +4,21 @@ import { Button } from 'rizzui';
 import { getThemeColors } from '../../../../../theme/colors';
 
 interface PurchaseOrderFormProps {
+  initialData?: Partial<any>;
   onSubmit: (data: Partial<any>) => void;
   onCancel: () => void;
   isDarkMode?: boolean;
 }
 
-export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
+export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
+  initialData,
   onSubmit,
   onCancel,
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  const { control, handleSubmit, watch, setValue } = useForm<Partial<any>>({
-    defaultValues: {
+  const { control, handleSubmit, watch, setValue, reset } = useForm<Partial<any>>({
+    defaultValues: initialData || {
       productName: '',
       uom: '',
       convUnit: 1,
@@ -29,6 +31,12 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
       netCost: 0,
     },
   });
+
+  React.useEffect(() => {
+    if (initialData) {
+      reset(initialData);
+    }
+  }, [initialData, reset]);
 
   const quantity = watch('quantity') ?? 0;
   const convUnit = watch('convUnit') ?? 1;
@@ -57,7 +65,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
                 <input
                   {...field}
                   placeholder="Enter product name"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${fieldState.error
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
                     ? theme.status.error.border
                     : `${theme.border.input} focus:border-orange-500`
                     }`}
@@ -76,7 +84,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="uom"
             control={control}
             render={({ field }) => (
-              <input {...field} placeholder="e.g. kg, liters" className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} placeholder="e.g. kg, liters" className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -87,7 +95,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="convUnit"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -98,7 +106,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="quantity"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -109,7 +117,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="bonusQty"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -120,7 +128,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="costPrice"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -131,7 +139,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="saleTax"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -142,7 +150,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="totalCost"
             control={control}
             render={({ field }) => (
-              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 ${theme.text.primary}`} />
+              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -153,7 +161,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="discount"
             control={control}
             render={({ field }) => (
-              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg ${theme.border.input} ${theme.text.primary}`} />
+              <input {...field} type="number" min={0} step="0.01" className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -164,7 +172,7 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="netCost"
             control={control}
             render={({ field }) => (
-              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 ${theme.text.primary}`} />
+              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none ${theme.text.primary}`} />
             )}
           />
         </div>
@@ -184,11 +192,12 @@ export const AddPurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
           size="lg"
           className={`h-10 rounded-lg ${theme.button.primary}`}
         >
-          Add Purchase Order
+          {initialData ? 'Update Purchase Order' : 'Add Purchase Order'}
         </Button>
       </div>
     </form>
   );
 };
 
-export default AddPurchaseOrderForm;
+export default PurchaseOrderForm;
+

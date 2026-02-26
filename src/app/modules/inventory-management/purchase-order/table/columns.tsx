@@ -37,12 +37,12 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 90,
       cell: ({ getValue }) => <span>{(getValue() as string) ?? '-'}</span>,
     },
-    {
-      accessorKey: 'convUnit',
-      header: 'Conv Unit',
-      size: 100,
-      cell: ({ getValue }) => <span>{(getValue() as number) ?? '-'}</span>,
-    },
+    // {
+    //   accessorKey: 'convUnit',
+    //   header: 'Conv Unit',
+    //   size: 100,
+    //   cell: ({ getValue }) => <span>{(getValue() as number) ?? '-'}</span>,
+    // },
     {
       accessorKey: 'quantity',
       header: 'Quantity',
@@ -51,8 +51,8 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
     },
     {
       accessorKey: 'bonusQty',
-      header: 'Bonus Qty',
-      size: 100,
+      header: () => <span className="whitespace-nowrap">Bonus Qty</span>,
+      size: 120,
       cell: ({ getValue }) => <span>{(getValue() as number) ?? '-'}</span>,
     },
     {
@@ -61,7 +61,7 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 120,
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
-        return <span>{typeof v === 'number' ? `$${v.toFixed(2)}` : '-'}</span>;
+        return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : '-'}</span>;
       },
     },
     {
@@ -70,7 +70,7 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 100,
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
-        return <span>{typeof v === 'number' ? `$${v.toFixed(2)}` : '-'}</span>;
+        return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : '-'}</span>;
       },
     },
     {
@@ -79,7 +79,7 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 120,
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
-        return <span>{typeof v === 'number' ? `$${v.toFixed(2)}` : '-'}</span>;
+        return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : '-'}</span>;
       },
     },
     {
@@ -88,7 +88,7 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 100,
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
-        return <span>{typeof v === 'number' ? `$${v.toFixed(2)}` : '-'}</span>;
+        return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : '-'}</span>;
       },
     },
     {
@@ -97,7 +97,7 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 120,
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
-        return <span>{typeof v === 'number' ? `$${v.toFixed(2)}` : '-'}</span>;
+        return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : '-'}</span>;
       },
     },
     {

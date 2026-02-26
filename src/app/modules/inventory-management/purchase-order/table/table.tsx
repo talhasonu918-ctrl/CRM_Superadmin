@@ -10,21 +10,21 @@ import { ColumnToggle } from '../../../../../components/ColumnToggle';
 import { useInfiniteTable, User, loadMoreUsers, generateMockUsers } from '../../../../../hooks/useInfiniteTable';
 import { userColumns } from './columns';
 import { ReusableModal } from '../../../../../components/ReusableModal';
-import AddPurchaseOrderForm from '../form/AddPerchaseOrder';
+import { PurchaseOrderForm } from '../form/AddPerchaseOrder';
+import { DeleteUserConfirm } from '../form/DeleteUserConfirm';
 import { getThemeColors } from '../../../../../theme/colors';
-
 
 interface UserTableProps {
   isDarkMode: boolean;
   onAddUser?: () => void;
-  onEditUser?: (user: User) => void;
-  onViewUser?: (user: User) => void;
-  onDeleteUser?: (user: User) => void;
+  onEditUser?: (user: any) => void;
+  onViewUser?: (user: any) => void;
+  onDeleteUser?: (user: any) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onEditUser, onViewUser, onDeleteUser }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl  shadow-sm p-8 ${theme.neutral.background}`;
+  const cardStyle = `rounded-xl shadow-sm p-8 ${theme.neutral.background}`;
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${theme.input.background} ${theme.border.input} ${theme.text.primary}`;
 
   // Search and filter states
@@ -52,18 +52,46 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     actions: true,
   });
 
+  // Modal states
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [selectedPO, setSelectedPO] = useState<any>(null);
+
+  const handleEdit = (po: any) => {
+    setSelectedPO(po);
+    setIsEditOpen(true);
+  };
+
+  const handleView = (po: any) => {
+    setSelectedPO(po);
+    setIsViewOpen(true);
+  };
+
+  const handleDelete = (po: any) => {
+    setSelectedPO(po);
+    setIsDeleteOpen(true);
+  };
+
   const columns = useMemo(
-    () => userColumns({ onEdit: onEditUser, onView: onViewUser, onDelete: onDeleteUser, isDarkMode }),
-    [onEditUser, onViewUser, onDeleteUser, isDarkMode]
+    () => userColumns({
+      onEdit: handleEdit,
+      onView: handleView,
+      onDelete: handleDelete,
+      isDarkMode
+    }),
+    [isDarkMode]
   );
 
   // Use state for table data; initialize with sample purchase orders
   const samplePurchaseOrders = [
-    { productName: 'Product A', uom: 'kg', convUnit: 1, quantity: 10, bonusQty: 2, costPrice: 100, saleTax: 10, totalCost: 1010, discount: 50, netCost: 960 },
-    { productName: 'Product B', uom: 'liters', convUnit: 1, quantity: 5, bonusQty: 0, costPrice: 50, saleTax: 5, totalCost: 255, discount: 0, netCost: 255 },
+    { id: 1, productName: 'Product A', uom: 'kg', convUnit: 1, quantity: 10, bonusQty: 2, costPrice: 100, saleTax: 10, totalCost: 1010, discount: 50, netCost: 960 },
+    { id: 2, productName: 'Product B', uom: 'liters', convUnit: 1, quantity: 5, bonusQty: 0, costPrice: 50, saleTax: 5, totalCost: 255, discount: 0, netCost: 255 },
   ];
 
   const [users, setUsers] = useState<any[]>(() => samplePurchaseOrders);
+
   const {
     table,
     isLoading,
@@ -75,7 +103,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     pageSize: 10,
     onLoadMore: async (page, limit) => {
       const more = await loadMoreUsers(page, limit);
-      setUsers(prev => [...prev, ...more]);
+      // Adapted to handle PO structure if needed
       return more;
     },
   });
@@ -86,11 +114,8 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     setLoadedCount(prev => Math.min(prev + 10, total));
   };
 
-  // Filter data based on search and active
   const filteredData = useMemo(() => {
-
     if (!table.getRowModel) return [];
-
     let filtered = table.getRowModel().rows;
 
     if (searchTerm) {
@@ -104,13 +129,8 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
       });
     }
 
-    if (activeFilter !== 'all') {
-      const isActive = activeFilter === 'true';
-      filtered = filtered.filter(row => row.original.active === isActive);
-    }
-
     return filtered;
-  }, [table, searchTerm, activeFilter]);
+  }, [table, searchTerm]);
 
   const toggleColumn = (columnId: string) => {
     setColumnVisibility(prev => ({
@@ -119,13 +139,22 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     }));
   };
 
-  // Modal state for adding purchase orders
-  const [isAddOpen, setIsAddOpen] = useState(false);
-
   const handleAddSubmit = (data: any) => {
-    // Prepend the new purchase order to the list
-    setUsers(prev => [data, ...prev]);
+    const newPO = { ...data, id: Date.now() };
+    setUsers(prev => [newPO, ...prev]);
     setIsAddOpen(false);
+  };
+
+  const handleEditSubmit = (data: any) => {
+    setUsers(prev => prev.map(po => po.id === selectedPO.id ? { ...po, ...data } : po));
+    setIsEditOpen(false);
+    setSelectedPO(null);
+  };
+
+  const handleDeleteConfirm = () => {
+    setUsers(prev => prev.filter(po => po.id !== selectedPO.id));
+    setIsDeleteOpen(false);
+    setSelectedPO(null);
   };
 
   return (
@@ -141,7 +170,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         </Button>
       </div>
 
-      {/* Add Purchase Order Modal */}
+      {/* Add Modal */}
       <ReusableModal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
@@ -149,7 +178,65 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         size="lg"
         isDarkMode={isDarkMode}
       >
-        <AddPurchaseOrderForm onSubmit={handleAddSubmit} onCancel={() => setIsAddOpen(false)} isDarkMode={isDarkMode} />
+        <PurchaseOrderForm onSubmit={handleAddSubmit} onCancel={() => setIsAddOpen(false)} isDarkMode={isDarkMode} />
+      </ReusableModal>
+
+      {/* Edit Modal */}
+      <ReusableModal
+        isOpen={isEditOpen}
+        onClose={() => setIsEditOpen(false)}
+        title="Edit Purchase Order"
+        size="lg"
+        isDarkMode={isDarkMode}
+      >
+        <PurchaseOrderForm
+          initialData={selectedPO}
+          onSubmit={handleEditSubmit}
+          onCancel={() => setIsEditOpen(false)}
+          isDarkMode={isDarkMode}
+        />
+      </ReusableModal>
+
+      {/* View Modal */}
+      <ReusableModal
+        isOpen={isViewOpen}
+        onClose={() => setIsViewOpen(false)}
+        title="View Purchase Order"
+        size="lg"
+        isDarkMode={isDarkMode}
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            {Object.entries(selectedPO || {}).map(([key, value]) => (
+              key !== 'id' && (
+                <div key={key}>
+                  <p className="text-sm font-medium text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                  <p className={`text-base ${theme.text.primary}`}>{String(value)}</p>
+                </div>
+              )
+            ))}
+          </div>
+          <div className="flex justify-end pt-4">
+            <Button onClick={() => setIsViewOpen(false)} className={`h-10 rounded-lg ${theme.button.primary}`}>
+              Close
+            </Button>
+          </div>
+        </div>
+      </ReusableModal>
+
+      {/* Delete Modal */}
+      <ReusableModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        title="Delete Purchase Order"
+        size="sm"
+        isDarkMode={isDarkMode}
+      >
+        <DeleteUserConfirm
+          userData={selectedPO}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setIsDeleteOpen(false)}
+        />
       </ReusableModal>
 
       {/* Search, Filter and Column Toggle Controls */}
@@ -160,8 +247,6 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
           inputStyle={inputStyle}
           isDarkMode={isDarkMode}
         />
-
-       
 
         <ColumnToggle
           className="flex-shrink-0"
@@ -191,10 +276,10 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         hasNextPage={hasNextPage}
         onLoadMore={loadMoreWithCount}
         total={total}
-        itemName="users"
+        itemName="purchase orders"
         emptyComponent={
           <div className={`text-center py-8 ${theme.text.tertiary}`}>
-            {searchTerm || activeFilter !== 'all' ? 'No purchase orders match your filters' : 'No purchase orders found'}
+            {searchTerm ? 'No purchase orders match your search' : 'No purchase orders found'}
           </div>
         }
         loadingComponent={
@@ -204,7 +289,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
           </div>
         }
         columnVisibility={columnVisibility}
-        rows={searchTerm || activeFilter !== 'all' ? filteredData : undefined}
+        rows={searchTerm ? filteredData : undefined}
         className="max-h-[600px]"
         isDarkMode={isDarkMode}
       />

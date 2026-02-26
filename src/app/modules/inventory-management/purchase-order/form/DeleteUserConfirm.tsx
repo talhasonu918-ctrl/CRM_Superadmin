@@ -17,7 +17,7 @@ export const DeleteUserConfirm: React.FC<DeleteUserConfirmProps> = ({
     <DeleteConfirmContent
       title="Delete this purchase order?"
      
-      confirmButtonText="Delete Purchase Order"
+      confirmButtonText="Delete Order"
       onConfirm={onConfirm}
       onCancel={onCancel}
     />
