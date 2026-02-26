@@ -177,7 +177,7 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
             rules={{ required: 'Gender is required' }}
             render={({ field, fieldState }) => (
               <>
-                <Select
+                {/* <Select
                   options={genderOptions}
                   placeholder="Select gender"
                   {...field}
@@ -202,7 +202,7 @@ export const EditUserForm: React.FC<EditUserFormProps> = ({
                       <ChevronDown size={18} className="text-gray-400 transition-transform duration-200 chevron" />
                     </div>
                   }
-                />
+                /> */}
                 {fieldState.error && (
                   <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
                 )}
