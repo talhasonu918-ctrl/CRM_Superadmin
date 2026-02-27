@@ -2,7 +2,7 @@
 import { Search, Plus, LayoutGrid, List, MoreVertical, Edit2, Trash2, MapPin, Eye } from 'lucide-react';
 import { StockLocationTable } from './table/StockLocationTable';
 import { StockLocationForm } from './form/StockLocationForm';
-import { StockLocationViewModal } from './components/StockLocationViewModal';
+import { StockLocationViewModal } from './form/StockLocationViewModal';
 import { StockLocation, INITIAL_LOCATIONS } from '../../pos/mockData';
 import { getThemeColors } from '../../../../theme/colors';
 

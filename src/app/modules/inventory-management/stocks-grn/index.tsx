@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Grid3x3, List, X } from 'lucide-react';
 import { StocksGRNTable, GRNEntry } from './table/stocksgrn.Table';
 import { StocksGRNForm } from './form/stocksgrn.Form';
@@ -11,6 +11,25 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [selectedGRN, setSelectedGRN] = useState<GRNEntry | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [grnData, setGrnData] = useState<GRNEntry[]>([]);
+
+  // Load GRN data from localStorage on mount
+  useEffect(() => {
+    loadGRNData();
+  }, []);
+
+  const loadGRNData = () => {
+    const savedGRNs = localStorage.getItem('grn_entries');
+    if (savedGRNs) {
+      setGrnData(JSON.parse(savedGRNs));
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    // Reload data from localStorage when modal closes
+    loadGRNData();
+  };
 
   const handleViewGRN = (entry: GRNEntry) => {
     setSelectedGRN(entry);
@@ -21,6 +40,17 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
   };
 
   const confirmDelete = () => {
+    if (!deletingId) return;
+
+    // Remove from localStorage
+    const savedGRNs = localStorage.getItem('grn_entries');
+    if (savedGRNs) {
+      const grnsList = JSON.parse(savedGRNs);
+      const updatedList = grnsList.filter((grn: GRNEntry) => grn.id !== deletingId);
+      localStorage.setItem('grn_entries', JSON.stringify(updatedList));
+      setGrnData(updatedList);
+    }
+
     setDeletingId(null);
   };
 
@@ -84,12 +114,13 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
         viewMode={viewMode}
         onView={handleViewGRN}
         onDelete={handleDeleteGRN}
+        data={grnData}
       />
 
       {isModalOpen && (
         <StocksGRNForm
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
           isDarkMode={isDarkMode}
         />
       )}
@@ -97,7 +128,7 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
       {/* View Modal */}
       {selectedGRN && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className={`rounded-2xl p-6 max-w-md w-full ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'} relative`}>
+          <div className={`rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto ${isDarkMode ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'} relative`}>
             <button
               onClick={() => setSelectedGRN(null)}
               className={`absolute top-4 right-4 p-1.5 rounded-lg transition-all ${isDarkMode
@@ -111,26 +142,37 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
             
             <h3 className="text-lg font-bold mb-4 pr-8">GRN Details</h3>
             
-            <div className="space-y-3 mb-6">
-              <div>
-                <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Stock ID</span>
-                <p className="text-sm font-bold text-primary">{selectedGRN.grnNumber}</p>
-              </div>
-              
-              <div>
-                <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Supplier</span>
-                <p className="text-sm">{selectedGRN.supplier}</p>
-              </div>
-
-              <div>
-                <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Date</span>
-                <p className="text-sm">{selectedGRN.date}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-4 mb-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Items</span>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Stock ID</span>
+                  <p className="text-sm font-bold text-primary">{selectedGRN.grnNumber}</p>
+                </div>
+                
+                <div>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Supplier</span>
+                  <p className="text-sm">{selectedGRN.supplier}</p>
+                </div>
+
+                <div>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Date</span>
+                  <p className="text-sm">{selectedGRN.date}</p>
+                </div>
+
+                <div>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Location</span>
+                  <p className="text-sm">{selectedGRN.location || '-'}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                <div>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Total Items</span>
                   <p className="text-sm font-medium">{selectedGRN.totalItems}</p>
+                </div>
+                <div>
+                  <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Total Quantity</span>
+                  <p className="text-sm font-medium">{selectedGRN.totalQuantity || 0}</p>
                 </div>
                 <div>
                   <span className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Total Amount</span>
@@ -156,6 +198,39 @@ export const StocksGRNView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode })
                   })()}
                 </div>
               </div>
+
+              {/* Items Detail Table */}
+              {selectedGRN.items && selectedGRN.items.length > 0 && (
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                  <h4 className={`text-sm font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Items Details</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className={`border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+                          <th className="text-left py-2 px-2 font-semibold">Product</th>
+                          <th className="text-left py-2 px-2 font-semibold">UOM</th>
+                          <th className="text-right py-2 px-2 font-semibold">Qty</th>
+                          <th className="text-right py-2 px-2 font-semibold">Bonus</th>
+                          <th className="text-right py-2 px-2 font-semibold">Cost</th>
+                          <th className="text-right py-2 px-2 font-semibold">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {selectedGRN.items.map((item, idx) => (
+                          <tr key={idx} className={`border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-100'}`}>
+                            <td className="py-2 px-2">{item.productName}</td>
+                            <td className="py-2 px-2">{item.uom}</td>
+                            <td className="text-right py-2 px-2">{item.quantity}</td>
+                            <td className="text-right py-2 px-2">{item.bonusQuantity}</td>
+                            <td className="text-right py-2 px-2">{item.costPrice.toLocaleString()}</td>
+                            <td className="text-right py-2 px-2 font-bold text-emerald-600">{item.totalCost.toLocaleString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

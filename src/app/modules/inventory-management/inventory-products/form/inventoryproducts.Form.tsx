@@ -3,6 +3,7 @@ import { Package, Tag, Hash, Layout, Info, CheckCircle2, XCircle, DollarSign, Bo
 import { ReusableModal } from '../../../../../components/ReusableModal';
 import { InventoryProduct } from '../../../pos/mockData';
 import { SearchableDropdown } from '../../../../../components/SearchableDropdown';
+import { notify } from '../../../../../utils/toast';
 
 interface InventoryProductFormProps {
   isOpen: boolean;
@@ -49,10 +50,44 @@ export const InventoryProductForm: React.FC<InventoryProductFormProps> = ({
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 2 * 1024 * 1024) { // 2MB Check
+        notify.error('File too large. Please select an image under 2MB.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setCurrentProduct(prev => ({ ...prev, image: reader.result as string }));
+        const img = new Image();
+        img.onload = () => {
+          // Compress image to standard 400x400 max
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 400;
+
+          if (width > height) {
+            if (width > maxDim) {
+              height *= maxDim / width;
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width *= maxDim / height;
+              height = maxDim;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Get compressed Base64
+          const compressedData = canvas.toDataURL('image/jpeg', 0.6); // 60% quality JPEG
+          setImagePreview(compressedData);
+          setCurrentProduct(prev => ({ ...prev, image: compressedData }));
+        };
+        img.src = reader.result as string;
       };
       reader.readAsDataURL(file);
     }

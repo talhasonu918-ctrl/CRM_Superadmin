@@ -9,7 +9,7 @@ interface ReusableModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
   isDarkMode?: boolean;
 }
 
@@ -22,29 +22,26 @@ export const ReusableModal: React.FC<ReusableModalProps> = ({
   isDarkMode = false,
 }) => {
   const theme = getThemeColors(isDarkMode);
-  // Map size prop to Tailwind max-width classes for consistent control
-  const sizeClass =
-    size === 'sm' ? 'max-w-sm' :
-      size === 'md' ? 'max-w-md' :
-        size === 'lg' ? 'max-w-lg' :
-          size === 'xl' ? 'max-w-4xl' :
-            size === 'full' ? 'max-w-full' : 'max-w-lg';
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={size} title={title}>
-      <div className={`relative m-auto px-6  pb-6 rounded-lg w-full ${sizeClass} overflow-visible ${theme.neutral.background}`}>
-        {/* Absolute close button (single) */}
+      <div className="relative h-full flex flex-col overflow-visible">
+        {/* Absolute close button */}
         <button
           onClick={onClose}
           aria-label="Close"
-          className={`sticky top-2 right-4 float-right z-10 rounded-md ${theme.neutral.hoverLight} transition-colors`}
+          className={`absolute -top-1 -right-1 z-50 p-1 rounded-md ${theme.neutral.hoverLight} transition-colors`}
         >
-          <XMarkIcon className={`h-5 w-5 ${theme.text.muted}`} strokeWidth={1.6} />
+          <XMarkIcon className={`h-5 w-5 ${theme.text.muted}`} strokeWidth={2} />
         </button>
 
-        <div className={`mb-5 flex items-center justify-start border-b pb-3 pt-2 ${theme.border.main}`}>
-          <Title as="h3" className={`${theme.text.primary} text-xl font-semibold`}>{title}</Title>
+        <div className={`mb-4 flex items-center justify-start border-b pb-3 ${theme.border.main}`}>
+          <Title as="h3" className={`${theme.text.primary} text-xl font-bold uppercase tracking-tight`}>
+            {title}
+          </Title>
         </div>
-        <div className={`${theme.text.secondary} space-y-4`}>
+        
+        <div className="flex-1 overflow-visible">
           {children}
         </div>
       </div>

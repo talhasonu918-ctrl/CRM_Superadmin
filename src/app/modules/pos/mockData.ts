@@ -52,8 +52,30 @@ export interface InventoryProduct {
 }
 
 export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
-  {
+
+      {
     id: '1',
+    name: 'All Chicken Materials',
+    manufacturerName: '-',
+    barcode: 'SGR-108',
+    category: 'Inventory',
+    subCategory: 'Inventory',
+    rack: '-',
+    supplier: '-',
+    costPrice: 0.22,
+    meanPrice: 0,
+    retailPrice: 0,
+    salePrice: 0,
+    grossMargin: 0,
+    saleTax: 0,
+    discount: 0,
+    genericName: '-',
+    procurementClass: 'Inventory',
+    status: 'Active',
+    createdAt: '24-02-2026 01:00 PM'
+  },
+  {
+    id: '2',
     name: 'WATER DOUGH',
     manufacturerName: '-',
     barcode: 'WD-001',
@@ -74,7 +96,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '25-02-2026 10:00 AM'
   },
   {
-    id: '2',
+    id: '3',
     name: 'CHRIST CHILLI',
     manufacturerName: '-',
     barcode: 'CC-002',
@@ -95,7 +117,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '25-02-2026 10:30 AM'
   },
   {
-    id: '3',
+    id: '4',
     name: 'CHICKEN POWDER',
     manufacturerName: '-',
     barcode: 'CP-003',
@@ -116,7 +138,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '25-02-2026 11:00 AM'
   },
   {
-    id: '4',
+    id: '5',
     name: 'BASIL',
     manufacturerName: '-',
     barcode: 'BSL-004',
@@ -137,7 +159,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '24-02-2026 09:00 AM'
   },
   {
-    id: '5',
+    id: '6',
     name: 'ORIGANO',
     manufacturerName: '-',
     barcode: 'ORG-005',
@@ -158,7 +180,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '24-02-2026 10:00 AM'
   },
   {
-    id: '6',
+    id: '7',
     name: 'COCONUT MILK',
     manufacturerName: '-',
     barcode: 'CM-006',
@@ -179,7 +201,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '24-02-2026 11:00 AM'
   },
   {
-    id: '7',
+    id: '8',
     name: 'SALT',
     manufacturerName: '-',
     barcode: 'SLT-007',
@@ -200,7 +222,7 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     createdAt: '24-02-2026 12:00 PM'
   },
   {
-    id: '8',
+    id: '9',
     name: 'SUGAR',
     manufacturerName: '-',
     barcode: 'SGR-008',
@@ -3139,3 +3161,128 @@ export const initialMockDispatchOrders: DispatchOrder[] = [
     ]
   },
 ];
+
+export interface StockAdjustment {
+  id: string;
+  adjustmentNo: string;
+  date: string;
+  type: 'Increase' | 'Decrease';
+  reason: 'Damage' | 'Loss' | 'Theft' | 'Expiry' | 'Correction' | 'Found' | 'Other';
+  productId: string;
+  productName: string;
+  currentStock: number;
+  adjustmentQty: number;
+  newStock: number;
+  remarks: string;
+  adjustedBy: string;
+  status: 'Completed' | 'Pending';
+}
+
+export const INITIAL_STOCK_ADJUSTMENTS: StockAdjustment[] = [
+  {
+    id: 'adj_1',
+    adjustmentNo: 'ADJ-1021',
+    date: '2026-02-27',
+    type: 'Decrease',
+    reason: 'Damage',
+    productId: '1',
+    productName: 'All Chicken Materials',
+    currentStock: 150,
+    adjustmentQty: 10,
+    newStock: 140,
+    remarks: 'Water damage in storage',
+    adjustedBy: 'Admin',
+    status: 'Completed'
+  },
+  {
+    id: 'adj_2',
+    adjustmentNo: 'ADJ-1022',
+    date: '2026-02-27',
+    type: 'Increase',
+    reason: 'Found',
+    productId: '4',
+    productName: 'CHICKEN POWDER',
+    currentStock: 45,
+    adjustmentQty: 5,
+    newStock: 50,
+    remarks: 'Uncounted box found during audit',
+    adjustedBy: 'Admin',
+    status: 'Completed'
+  },
+  {
+    id: 'adj_3',
+    adjustmentNo: 'ADJ-1023',
+    date: '2026-02-26',
+    type: 'Decrease',
+    reason: 'Expiry',
+    productId: '7',
+    productName: 'COCONUT MILK',
+    currentStock: 24,
+    adjustmentQty: 4,
+    newStock: 20,
+    remarks: 'Expired batch removed',
+    adjustedBy: 'Manager',
+    status: 'Completed'
+  }
+];
+
+export interface StockMovement {
+  id: string;
+  date: string;
+  productId: string;
+  productName: string;
+  transactionType: 'Adjustment' | 'GRN' | 'Sale' | 'Transfer' | 'Variance';
+  referenceNo: string;
+  quantityIn: number;
+  quantityOut: number;
+  openingBalance: number;
+  closingBalance: number;
+  location: string;
+  remarks: string;
+}
+
+export const INITIAL_STOCK_MOVEMENTS: StockMovement[] = [
+  {
+    id: 'mov_1',
+    date: '2026-02-27',
+    productId: '1',
+    productName: 'All Chicken Materials',
+    transactionType: 'Adjustment',
+    referenceNo: 'ADJ-1021',
+    quantityIn: 0,
+    quantityOut: 10,
+    openingBalance: 150,
+    closingBalance: 140,
+    location: 'Main Store',
+    remarks: 'Water damage in storage'
+  },
+  {
+    id: 'mov_2',
+    date: '2026-02-27',
+    productId: '4',
+    productName: 'CHICKEN POWDER',
+    transactionType: 'Adjustment',
+    referenceNo: 'ADJ-1022',
+    quantityIn: 5,
+    quantityOut: 0,
+    openingBalance: 45,
+    closingBalance: 50,
+    location: 'Main Store',
+    remarks: 'Uncounted box found during audit'
+  },
+  {
+    id: 'mov_3',
+    date: '2026-02-26',
+    productId: '7',
+    productName: 'COCONUT MILK',
+    transactionType: 'Adjustment',
+    referenceNo: 'ADJ-1023',
+    quantityIn: 0,
+    quantityOut: 4,
+    openingBalance: 24,
+    closingBalance: 20,
+    location: 'Main Store',
+    remarks: 'Expired batch removed'
+  }
+];
+

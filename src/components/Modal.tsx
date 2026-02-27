@@ -10,7 +10,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   isDarkMode?: boolean;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
 }
 
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDarkMode = false, size = 'lg' }) => {
@@ -21,7 +21,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, 
       size === 'md' ? 'max-w-md' :
         size === 'lg' ? 'max-w-lg' :
           size === 'xl' ? 'max-w-4xl' :
-            size === 'full' ? 'max-w-full' : 'max-w-lg';
+            size === '2xl' ? 'max-w-5xl' :
+              size === '3xl' ? 'max-w-7xl' :
+                size === 'full' ? 'max-w-full' : 'max-w-lg';
 
   // prevent body scroll when modal is open
   React.useEffect(() => {

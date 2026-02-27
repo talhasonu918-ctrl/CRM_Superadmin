@@ -4,6 +4,18 @@ import { Eye, Trash2 } from 'lucide-react';
 import InfiniteTable from '../../../../../components/InfiniteTable';
 import { useInfiniteTable } from '../../../../../hooks/useInfiniteTable';
 
+export interface GRNRow {
+  id: string;
+  productId: string;
+  productName: string;
+  uom: string;
+  quantity: number;
+  bonusQuantity: number;
+  costPrice: number;
+  totalCost: number;
+  batchName: string;
+}
+
 export interface GRNEntry {
   id: string;
   grnNumber: string;
@@ -12,6 +24,13 @@ export interface GRNEntry {
   totalItems: number;
   totalAmount: number;
   status: 'Draft' | 'Completed' | 'Cancelled';
+  flowType?: 'purchase' | 'direct';
+  invoiceNo?: string;
+  location?: string;
+  reason?: string;
+  items?: GRNRow[];
+  totalQuantity?: number;
+  totalProducts?: number;
 }
 
 const mockGRNs: GRNEntry[] = [
@@ -78,15 +97,19 @@ interface StocksGRNTableProps {
   viewMode: 'list' | 'grid';
   onView?: (entry: GRNEntry) => void;
   onDelete?: (id: string) => void;
+  data?: GRNEntry[];
 }
 
-export const StocksGRNTable: React.FC<StocksGRNTableProps> = ({ isDarkMode, searchTerm, viewMode, onView, onDelete }) => {
+export const StocksGRNTable: React.FC<StocksGRNTableProps> = ({ isDarkMode, searchTerm, viewMode, onView, onDelete, data = [] }) => {
+  // Combine localStorage data with mock data - show both together
+  const allData = [...(data || []), ...mockGRNs];
+
   const filteredData = useMemo(() => {
-    return mockGRNs.filter(item =>
+    return allData.filter(item =>
       item.grnNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.supplier.toLowerCase().includes(searchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [searchTerm, allData]);
 
   const columns = useMemo<ColumnDef<GRNEntry>[]>(() => [
     {
@@ -109,9 +132,19 @@ export const StocksGRNTable: React.FC<StocksGRNTableProps> = ({ isDarkMode, sear
       cell: ({ row }) => <span className="text-xs text-slate-500">{row.original.date}</span>,
     },
     {
-      accessorKey: 'totalItems',
+      accessorKey: 'items',
       header: 'Items',
-      cell: ({ row }) => <span className="text-xs">{row.original.totalItems}</span>,
+      cell: ({ row }) => {
+        const items = row.original.items || [];
+        if (items.length === 0) return <span className="text-xs text-slate-500">No items</span>;
+        
+        const itemNames = items.map(item => item.productName).join(', ');
+        return (
+          <span className="text-xs font-medium" title={itemNames}>
+            {itemNames.length > 40 ? itemNames.substring(0, 40) + '...' : itemNames}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'totalAmount',
