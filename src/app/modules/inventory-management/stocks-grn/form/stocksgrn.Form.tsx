@@ -364,10 +364,10 @@ export const StocksGRNForm: React.FC<StocksGRNFormProps> = ({ isOpen, onClose, i
                   isDarkMode={isDarkMode}
                 />
               </div>
-              <div className={`p-3 rounded-xl border border-dashed flex flex-col justify-center ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              {/* <div className={`p-3 rounded-xl border border-dashed flex flex-col justify-center ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                 <p className={`text-[10px] font-bold uppercase ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Supplier</p>
                 <p className={`text-xs font-bold ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Optional Flow</p>
-              </div>
+              </div> */}
             </>
           )}
         </div>

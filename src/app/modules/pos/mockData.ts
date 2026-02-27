@@ -72,7 +72,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 01:00 PM'
+    createdAt: '24-02-2026 01:00 PM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }, { uom: 'Gram', convUnit: 1000, isDefault: false }]
   },
   {
     id: '2',
@@ -93,7 +94,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '25-02-2026 10:00 AM'
+    createdAt: '25-02-2026 10:00 AM',
+    uomConfig: [{ uom: 'Liter', convUnit: 1, isDefault: true }, { uom: 'Kilogram', convUnit: 1, isDefault: false }]
   },
   {
     id: '3',
@@ -114,7 +116,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '25-02-2026 10:30 AM'
+    createdAt: '25-02-2026 10:30 AM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }]
   },
   {
     id: '4',
@@ -135,7 +138,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '25-02-2026 11:00 AM'
+    createdAt: '25-02-2026 11:00 AM',
+    uomConfig: [{ uom: 'Gram', convUnit: 1, isDefault: true }]
   },
   {
     id: '5',
@@ -156,7 +160,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 09:00 AM'
+    createdAt: '24-02-2026 09:00 AM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }]
   },
   {
     id: '6',
@@ -177,7 +182,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 10:00 AM'
+    createdAt: '24-02-2026 10:00 AM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }]
   },
   {
     id: '7',
@@ -198,7 +204,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 11:00 AM'
+    createdAt: '24-02-2026 11:00 AM',
+    uomConfig: [{ uom: 'Liter', convUnit: 1, isDefault: true }]
   },
   {
     id: '8',
@@ -219,7 +226,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 12:00 PM'
+    createdAt: '24-02-2026 12:00 PM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }]
   },
   {
     id: '9',
@@ -240,7 +248,8 @@ export const INITIAL_INVENTORY_PRODUCTS: InventoryProduct[] = [
     genericName: '-',
     procurementClass: 'Inventory',
     status: 'Active',
-    createdAt: '24-02-2026 01:00 PM'
+    createdAt: '24-02-2026 01:00 PM',
+    uomConfig: [{ uom: 'Kilogram', convUnit: 1, isDefault: true }]
   }
 ];
 

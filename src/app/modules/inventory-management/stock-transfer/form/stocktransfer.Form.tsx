@@ -87,14 +87,32 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
 
     setRows(prevRows => prevRows.map(row => {
       if (row.id !== id) return row;
+      const defaultUom = product.uomConfig?.find(u => u.isDefault) || product.uomConfig?.[0];
+      const unitCost = product.retailPrice || product.costPrice || 0;
       return {
         ...row,
         productId: product.id,
         productName: product.name,
         availableStock: 100, // Mock available stock
-        uom: (product as any).uomConfig?.[0]?.uom || 'Unit',
-        convUnit: (product as any).uomConfig?.[0]?.convUnit || 1,
-        unitCost: product.retailPrice || 0,
+        uom: defaultUom?.uom || 'Unit',
+        convUnit: defaultUom?.convUnit || 1,
+        unitCost: unitCost,
+        totalCost: row.quantity * unitCost,
+      };
+    }));
+  };
+
+  const handleUomChange = (rowId: string, uomName: string) => {
+    setRows(prevRows => prevRows.map(row => {
+      if (row.id !== rowId) return row;
+      const product = INITIAL_INVENTORY_PRODUCTS.find(p => p.id === row.productId);
+      const uomConfig = product?.uomConfig?.find(u => u.uom === uomName);
+      if (!uomConfig) return row;
+
+      return {
+        ...row,
+        uom: uomConfig.uom,
+        convUnit: uomConfig.convUnit,
       };
     }));
   };
@@ -204,12 +222,28 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
                     />
                   </td>
                   <td className="p-2">
-                    <input
-                      type="text"
-                      value={row.uom}
-                      readOnly
-                      className={`${inputClass} bg-slate-50/50 dark:bg-slate-800/50 cursor-not-allowed`}
-                    />
+                    {(() => {
+                      const product = INITIAL_INVENTORY_PRODUCTS.find(p => p.id === row.productId);
+                      if (product?.uomConfig && product.uomConfig.length > 0) {
+                        return (
+                          <SearchableDropdown
+                            options={product.uomConfig.map(u => ({ value: u.uom, label: u.uom }))}
+                            value={row.uom}
+                            onChange={(val: string) => handleUomChange(row.id, val)}
+                            placeholder="Unit"
+                            isDarkMode={isDarkMode}
+                          />
+                        );
+                      }
+                      return (
+                        <input
+                          type="text"
+                          value={row.uom || 'Unit'}
+                          readOnly
+                          className={`${inputClass} bg-slate-50/50 dark:bg-slate-800/50 cursor-not-allowed`}
+                        />
+                      );
+                    })()}
                   </td>
                   <td className="p-2">
                     <input

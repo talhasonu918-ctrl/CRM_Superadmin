@@ -198,42 +198,45 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
   return (
     <div className={`p-2 sm:p-3 min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-white'}`}>
       {/* Top Action Bar */}
-      <div className="flex justify-end items-center gap-3 mb-6 flex-wrap">
-        <ExportButton
-          headers={exportHeaders}
-          data={exportData}
-          fileName="inventory-products"
-          isDarkMode={isDarkMode}
-          onlyExcel={true}
-        />
-        <button
-          onClick={() => setIsBulkModalOpen(true)}
-          className={primaryButtonClass}
-        >
-          <RefreshCw size={16} /> Bulk Update
-        </button>
-        <button
-          onClick={() => setIsImportModalOpen(true)}
-          className={primaryButtonClass}
-        >
-          <Upload size={16} /> Import Product
-        </button>
-        <button
-          onClick={() => {
-            setCurrentProduct(emptyProduct);
-            setEditingId(null);
-            setIsModalOpen(true);
-          }}
-          className={primaryButtonClass}
-        >
-          <Plus size={16} /> Add Product
-        </button>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 lg:mb-4">
+        <h2 className={`text-lg sm:text-3xl font-black ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2>
+        <div className="flex items-center justify-end gap-3 flex-wrap w-full md:w-auto">
+          <ExportButton
+            headers={exportHeaders}
+            data={exportData}
+            fileName="inventory-products"
+            isDarkMode={isDarkMode}
+            onlyExcel={true}
+          />
+          <button
+            onClick={() => setIsBulkModalOpen(true)}
+            className={primaryButtonClass}
+          >
+            <RefreshCw size={16} /> Bulk Update
+          </button>
+          <button
+            onClick={() => setIsImportModalOpen(true)}
+            className={primaryButtonClass}
+          >
+            <Upload size={16} /> Import Product
+          </button>
+          <button
+            onClick={() => {
+              setCurrentProduct(emptyProduct);
+              setEditingId(null);
+              setIsModalOpen(true);
+            }}
+            className={primaryButtonClass}
+          >
+            <Plus size={16} /> Add Product
+          </button>
+        </div>
       </div>
 
       {/* Main Header & Search */}
-      <div className={`p-4 rounded-xl border flex flex-col md:flex-row items-center justify-between gap-4 mb-4 ${isDarkMode ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+      <div className={`p-4 rounded-xl border-2 flex flex-col md:flex-row items-center justify-between gap-4 mb-4 ${isDarkMode ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center gap-4 w-full md:w-auto">
-          <h2 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2>
+          {/* <h2 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2> */}
           <div className="relative flex-1 md:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
