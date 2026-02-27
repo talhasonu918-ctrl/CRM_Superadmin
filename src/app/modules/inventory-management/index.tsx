@@ -14,13 +14,13 @@ import { StockAdjustmentView } from './stock-adjustment';
 import { StockVarianceView } from './stock-variance';
 import { PurchaseOrderView } from './purchase-order';
 import { DemandView } from './demand';
-import { StockReportView } from './stock-report';
+import StockReportView  from './stock-report';
 import { StockMovementReportView } from './stock-movement-report';
 import InventoryProductsView from './inventory-products';
 
 type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer' | 'stock-adjustment' | 'stock-variance' | 'purchase-order' | 'demand' | 'stock-report' | 'stock-movement-report' | 'inventory-products';
 
-export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+ const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -114,7 +114,7 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
                   className={`flex flex-col items-center justify-center p-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg border ${
                     isDarkMode 
                       ? 'bg-[#16191F] border-slate-800 hover:border-primary/50 text-white' 
-                      : 'bg-white border-slate-100 hover:border-primary/50 text-slate-900 shadow-sm'
+                      : 'bg-white border-slate-100 hover:border-primary/50 text-slate-900  shadow-sm'
                   }`}
                 >
                   <div className={`w-8 h-8 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center mb-4 ${isDarkMode ? 'bg-slate-800/50' : 'bg-slate-50'}`}>

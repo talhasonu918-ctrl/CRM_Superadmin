@@ -4,12 +4,12 @@ import { ArrowLeft } from 'lucide-react';
 import { BranchesView } from '@/src/app/modules/settings/branches';
 import { Layout } from '@/src/components/NavigationLayout';
 import { getThemeColors } from '@/src/theme/colors';
-import { useCompany } from '@/src/contexts/CompanyContext';
+import { useAppSelector } from '@/src/redux/store';
 import { ROUTES } from '@/src/const/constants';
 
 export default function BranchesSettings() {
     const router = useRouter();
-    const { company } = useCompany();
+    const company = useAppSelector((state) => state.company.company);
     const isDarkMode = false;
     const theme = getThemeColors(isDarkMode);
 

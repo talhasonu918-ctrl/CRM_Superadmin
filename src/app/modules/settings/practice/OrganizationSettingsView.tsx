@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { OrganizationSettingsForm } from './form/OrganizationSettingsForm';
 import { PracticeSetting } from './types';
 import { getThemeColors } from '../../../../theme/colors';
-import { useCompany } from '../../../../contexts/CompanyContext';
+import { useAppSelector } from '../../../../redux/store';
 import { ROUTES } from '../../../../const/constants';
 
 interface OrganizationSettingsViewProps {
@@ -15,7 +15,7 @@ const STORAGE_KEY = 'organization_settings';
 
 export const OrganizationSettingsView: React.FC<OrganizationSettingsViewProps> = ({ isDarkMode }) => {
     const router = useRouter();
-    const { company } = useCompany();
+    const company = useAppSelector((state) => state.company.company);
     const theme = getThemeColors(isDarkMode);
     const [organizationData, setOrganizationData] = useState<Partial<PracticeSetting> | null>(null);
     const [tenantFont, setTenantFont] = useState<string | undefined>(undefined);

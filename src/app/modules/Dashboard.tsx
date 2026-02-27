@@ -9,7 +9,8 @@ import {
   ShoppingBag, Users, DollarSign, Star,
   Clock, TrendingUp, CheckCircle2, Loader2
 } from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAppSelector } from '../../redux/store';
+// import { useTheme } from '../../contexts/ThemeContext';
 import { mockLiveOrders, DashboardLiveOrder } from './pos/mockData';
 
 const REVENUE_DATA = {
@@ -54,8 +55,7 @@ const POPULAR_ITEMS = [
 
 
 export const DashboardView: React.FC = () => {
-  const router = useRouter();
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const [timeframe, setTimeframe] = useState<'today' | 'weekly' | 'monthly'>('today');
   const [liveOrders, setLiveOrders] = useState<DashboardLiveOrder[]>(mockLiveOrders);
 
@@ -242,7 +242,7 @@ export const DashboardView: React.FC = () => {
       { label: 'Order Acceptance', val: '98.5%', icon: CheckCircle2, color: 'text-primary', bg: 'bg-primary/5', trend: '+0.4%' },
     ];
   }, [timeframe]);
-
+ const  router = useRouter();
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">

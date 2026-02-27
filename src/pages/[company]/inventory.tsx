@@ -1,10 +1,10 @@
 import React from 'react';
-import { InventoryManagementView } from '@/src/app/modules/inventory-management';
+import InventoryManagementView  from '@/src/app/modules/inventory-management';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 
 export default function Inventory() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
   return (
     <Layout>

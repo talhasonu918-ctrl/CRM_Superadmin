@@ -4,7 +4,7 @@ import { MobileSettings, defaultMobileSettings } from './types';
 import { getThemeColors } from '../../../../theme/colors';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/router';
-import { useCompany } from '../../../../contexts/CompanyContext';
+import { useAppSelector } from '../../../../redux/store';
 import { ROUTES } from '../../../../const/constants';
 
 interface MobileSettingsViewProps {
@@ -15,7 +15,7 @@ export const MobileSettingsView: React.FC<MobileSettingsViewProps> = ({
     isDarkMode = false,
 }) => {
     const router = useRouter();
-    const { company } = useCompany();
+    const company = useAppSelector((state) => state.company.company);
     const theme = getThemeColors(isDarkMode);
     const [settings, setSettings] = React.useState<Partial<MobileSettings>>(defaultMobileSettings);
 

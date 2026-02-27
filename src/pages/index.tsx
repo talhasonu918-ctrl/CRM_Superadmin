@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '@/src/contexts/AuthContext';
+import { useAppSelector } from '@/src/redux/store';
 import { tenantConfig } from '@/src/config/tenant-color';
 
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuth();
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const loading = useAppSelector((state) => state.auth.loading);
 
   useEffect(() => {
     if (!loading) {

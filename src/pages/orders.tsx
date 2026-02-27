@@ -1,10 +1,10 @@
 import React from 'react';
 import { OrdersView } from '@/src/app/modules/Orders';
 import { Layout } from '@/src/components/NavigationLayout';
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useAppSelector } from '@/src/redux/store';
 
 export default function Orders() {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
   return (
     <Layout>

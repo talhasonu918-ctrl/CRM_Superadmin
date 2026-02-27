@@ -1,10 +1,10 @@
 import React from 'react';
 import { Layout } from '../../../components/NavigationLayout';
 import { WebSettingsView } from '../../modules/settings/mobile/WebSettingsView';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useAppSelector } from '../../../redux/store';
 
 export default function WebSettings() {
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
 
     return (
         <Layout>

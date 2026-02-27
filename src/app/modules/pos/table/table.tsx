@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Order } from '../types';
 import { Search, Grid, List, Calendar } from 'lucide-react';
-import { useTheme } from '../../../../contexts/ThemeContext';
+import { useAppSelector } from '../../../../redux/store';
 import { ColumnToggle } from '../../../../components/ColumnToggle';
 interface OrderQueueTableProps {
   orders: Order[];
@@ -30,7 +30,7 @@ export const OrderQueueTable: React.FC<OrderQueueTableProps> = ({
   onCancel,
   onPrint,
 }) => {
-  const { isDarkMode } = useTheme();
+  const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
 
