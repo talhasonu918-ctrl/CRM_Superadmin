@@ -14,13 +14,13 @@ import { StockAdjustmentView } from './stock-adjustment';
 import { StockVarianceView } from './stock-variance';
 import { PurchaseOrderView } from './purchase-order';
 import { DemandView } from './demand';
-import { StockReportView } from './stock-report';
+import StockReportView  from './stock-report';
 import { StockMovementReportView } from './stock-movement-report';
 import { InventoryProductsView } from './inventory-products';
 
 type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer' | 'stock-adjustment' | 'stock-variance' | 'purchase-order' | 'demand' | 'stock-report' | 'stock-movement-report' | 'inventory-products';
 
-export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+ const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
   const [activeView, setActiveView] = useState<ViewType>('dashboard');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 

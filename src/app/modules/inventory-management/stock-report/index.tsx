@@ -1,50 +1,37 @@
 ﻿import React, { useState } from 'react';
-import { UserTable as PurchaseOrderTable } from './table/table'; // Changed to default import
+import PurchaseOrderTable from './table/table'; // use default export from table
+import { ExportButton } from '../../../../components/ExportButton';
+import { stockReportColumns } from './table/columns';
 
-const PurchaseOrderPage: React.FC = () => {
-  const [purchaseOrders, setPurchaseOrders] = useState([
-    {
-      productName: 'Product A',
-      uom: 'kg',
-      convUnit: 1,
-      quantity: 10,
-      bonusQty: 2,
-      costPrice: 100,
-      saleTax: 10,
-      totalCost: 1100,
-      discount: 50,
-      netCost: 1050,
-    },
-    {
-      productName: 'Product B',
-      uom: 'liters',
-      convUnit: 1,
-      quantity: 5,
-      bonusQty: 1,
-      costPrice: 200,
-      saleTax: 20,
-      totalCost: 1020,
-      discount: 20,
-      netCost: 1000,
-    },
-  ]);
+const StockReportPage: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+  const [totals, setTotals] = React.useState({ totalRetail: 0, totalCost: 0 });
+  const [tableData, setTableData] = useState<any[]>([]); // State to hold table data
+
+  const headers = stockReportColumns().map((col) => col.header as string);
 
   return (
     <div className="purchase-order-page">
-      <h1 className="text-2xl font-bold mb-4">Purchase Order</h1>
-      <PurchaseOrderTable isDarkMode={false} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
+      <h1 className="text-2xl font-bold mb-4">Stock Report</h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="rounded-md p-4 bg-blue-50">
+          <p className="text-sm text-blue-700">Total Cost Price</p>
+          <p className="text-2xl font-semibold">{totals.totalCost.toFixed(2)} PKR</p>
+        </div>
+        <div className="rounded-md p-4 bg-blue-50">
+          <p className="text-sm text-blue-700">Total Retail Price</p>
+          <p className="text-2xl font-semibold">{totals.totalRetail.toFixed(2)} PKR</p>
+        </div>
+      </div>
+
+      <PurchaseOrderTable
+        isDarkMode={isDarkMode}
+        onTotalsChange={(t) => setTotals(t)}
+        onDataChange={(data) => setTableData(data)} // Pass data to state
+      />
     </div>
   );
 };
 
-export const PurchaseOrderView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
-  return (
-    <div className={`purchase-order-view ${isDarkMode ? 'dark-mode' : ''}`}>
-      {/* <h1 className="text-2xl font-bold mb-4">Purchase Order</h1> */}
-      <PurchaseOrderTable isDarkMode={isDarkMode} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
-    </div>
-  );
-};
-
-export default PurchaseOrderPage;
+export default StockReportPage;
 

@@ -312,6 +312,7 @@ export const getThemeColors = (isDarkMode: boolean) => {
       primary: 'bg-primary text-white hover:opacity-90 shadow-md ring-1 ring-transparent focus:ring-primary/20',
       secondary: 'border border-border hover:bg-surface/10 text-textSecondary',
       outline: 'border border-primary text-primary hover:bg-primary hover:text-white',
+      hover: 'hover:bg-primary/90', // Added hover property
     },
     // Dropdown/Menu colors
     dropdown: {

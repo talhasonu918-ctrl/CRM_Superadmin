@@ -14,9 +14,27 @@ const themeSlice = createSlice({
 	reducers: {
 		setDarkMode(state, action: PayloadAction<boolean>) {
 			state.isDarkMode = action.payload;
+			if (typeof window !== 'undefined') {
+				if (action.payload) {
+					document.documentElement.classList.add('dark');
+					localStorage.setItem('theme', 'dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+					localStorage.setItem('theme', 'light');
+				}
+			}
 		},
 		toggleTheme(state) {
 			state.isDarkMode = !state.isDarkMode;
+			if (typeof window !== 'undefined') {
+				if (state.isDarkMode) {
+					document.documentElement.classList.add('dark');
+					localStorage.setItem('theme', 'dark');
+				} else {
+					document.documentElement.classList.remove('dark');
+					localStorage.setItem('theme', 'light');
+				}
+			}
 		},
 	},
 });

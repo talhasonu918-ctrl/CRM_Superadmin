@@ -8,9 +8,10 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	isAuthenticated: typeof window !== 'undefined' && JSON.parse(localStorage.getItem('isAuthenticated') || 'false'),
-	loading: false,
-	user: typeof window !== 'undefined' && JSON.parse(localStorage.getItem('user') || 'null'),
+	// Server-safe deterministic defaults: assume not authenticated and wait for client hydration
+	isAuthenticated: false,
+	loading: true,
+	user: null,
 };
 
 // Async thunks for login and signup

@@ -656,3 +656,4 @@ export const InventoryManagementView: React.FC<{ isDarkMode: boolean }> = ({ isD
     </div>
   );
 };
+export default InventoryManagementView;

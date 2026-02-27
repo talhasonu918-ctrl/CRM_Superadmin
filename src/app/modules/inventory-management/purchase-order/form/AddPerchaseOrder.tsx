@@ -2,6 +2,8 @@ import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Button } from 'rizzui';
 import { getThemeColors } from '../../../../../theme/colors';
+import { FormSelect } from "@/components/ui/FormSelect";
+import { UOM_OPTIONS } from "@/constants/uom";
 
 interface PurchaseOrderFormProps {
   initialData?: Partial<any>;
@@ -83,8 +85,21 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
           <Controller
             name="uom"
             control={control}
-            render={({ field }) => (
-              <input {...field} placeholder="e.g. kg, liters" className={`w-full px-4 py-2 border rounded-lg focus:outline-none ${theme.input.background} ${theme.border.input} ${theme.text.primary}`} />
+            rules={{ required: "Unit is required" }}
+            render={({ field, fieldState }) => (
+              <>
+                <FormSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={UOM_OPTIONS}
+                  placeholder="Select Unit"
+                  theme={theme}
+                />
+
+                {fieldState.error && (
+                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                )}
+              </>
             )}
           />
         </div>
@@ -150,7 +165,12 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="totalCost"
             control={control}
             render={({ field }) => (
-              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none ${theme.text.primary}`} />
+              <input
+                {...field}
+                type="text"
+                readOnly
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-700 cursor-not-allowed ${theme.text.primary} ${theme.border.input}`}
+              />
             )}
           />
         </div>
@@ -172,28 +192,32 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             name="netCost"
             control={control}
             render={({ field }) => (
-              <input {...field} readOnly className={`w-full px-4 py-2 border rounded-lg bg-gray-50 focus:outline-none ${theme.text.primary}`} />
+              <input
+                {...field}
+                type="text"
+                readOnly
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none bg-gray-200 dark:bg-gray-700 cursor-not-allowed ${theme.text.primary} ${theme.border.input}`}
+              />
             )}
           />
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-2 pt-2">
-        <Button
+      <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
+        <button
           type="button"
-          variant="outline"
           onClick={onCancel}
-          className={`border h-10 rounded-lg ${theme.button.secondary}`}
+          className={`px-4 py-2 border rounded-lg text-sm font-medium focus:outline-none transition-colors
+            ${theme.input.background} ${theme.text.primary} ${theme.border.input} hover:bg-gray-100`}
         >
           Cancel
-        </Button>
-        <Button
+        </button>
+        <button
           type="submit"
-          size="lg"
-          className={`h-10 rounded-lg ${theme.button.primary}`}
+          className={`px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors`}
         >
           {initialData ? 'Update Purchase Order' : 'Add Purchase Order'}
-        </Button>
+        </button>
       </div>
     </form>
   );

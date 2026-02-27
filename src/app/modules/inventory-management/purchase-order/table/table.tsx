@@ -36,8 +36,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   });
   const searchTerm = watch('searchTerm');
   const activeFilter = watch('activeFilter');
-  const [loadedCount, setLoadedCount] = useState(10);
-  const total = 60;
+  
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
     productName: true,
     uom: true,
@@ -101,18 +100,11 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     columns,
     data: users,
     pageSize: 10,
-    onLoadMore: async (page, limit) => {
-      const more = await loadMoreUsers(page, limit);
-      // Adapted to handle PO structure if needed
-      return more;
-    },
+    // Do not provide a default onLoadMore here - avoid auto-loading mock data.
+    // Provide `onLoadMore` from higher-level code if real pagination is required.
   });
 
-  // Custom load more with count tracking
-  const loadMoreWithCount = async () => {
-    await loadMore();
-    setLoadedCount(prev => Math.min(prev + 10, total));
-  };
+  // If a remote loader is supplied, use `loadMore()` from the hook; otherwise pagination will be disabled.
 
   const filteredData = useMemo(() => {
     if (!table.getRowModel) return [];
@@ -159,16 +151,20 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
 
   return (
     <div className={cardStyle}>
-      <div className="flex items-center justify-between mb-6">
-        <h4 className={`text-lg font-semibold tracking-tight ${theme.text.primary}`}>View Purchase Orders</h4>
-        <Button
-          onClick={() => setIsAddOpen(true)}
-          className={`h-10 rounded-lg ${theme.button.primary}`}
-          size="lg"
-        >
-          + Add Purchase Order
-        </Button>
-      </div>
+     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+
+  <h4 className={`text-lg font-semibold tracking-tight ${theme.text.primary}`}>
+    View Purchase Orders
+  </h4>
+
+  <Button
+    onClick={() => setIsAddOpen(true)}
+    className={`h-10 w-full sm:w-auto rounded-lg ${theme.button.primary}`}
+  >
+    + Add Purchase Order
+  </Button>
+
+</div>
 
       {/* Add Modal */}
       <ReusableModal
@@ -274,8 +270,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         table={table}
         isLoading={isLoading}
         hasNextPage={hasNextPage}
-        onLoadMore={loadMoreWithCount}
-        total={total}
+        onLoadMore={undefined}
         itemName="purchase orders"
         emptyComponent={
           <div className={`text-center py-8 ${theme.text.tertiary}`}>

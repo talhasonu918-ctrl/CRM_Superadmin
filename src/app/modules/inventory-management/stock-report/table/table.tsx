@@ -1,55 +1,62 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Search, Filter, Eye } from 'lucide-react';
+import { Search, Filter, Eye, Printer, Download } from 'lucide-react';
 import { Select, Button } from 'rizzui';
 import { useForm, Controller } from 'react-hook-form';
+import { userColumns, stockReportColumns, mockStockReportData } from './columns';
 import { SearchInput } from '../../../../../components/SearchInput';
 import { FilterDropdown } from '../../../../../components/FilterDropdown';
 import InfiniteTable from '../../../../../components/InfiniteTable';
 import { ColumnToggle } from '../../../../../components/ColumnToggle';
 import { useInfiniteTable, User, loadMoreUsers, generateMockUsers } from '../../../../../hooks/useInfiniteTable';
-import { userColumns } from './columns';
 import { ReusableModal } from '../../../../../components/ReusableModal';
-// import { PurchaseOrderForm } from '../form/AddPerchaseOrder';
-// import { DeleteUserConfirm } from '../form/DeleteUserConfirm';
+import { ExportButton } from '../../../../../components/ExportButton';
+
 import { getThemeColors } from '../../../../../theme/colors';
 
-interface UserTableProps {
+interface StockReportTableProps {
   isDarkMode: boolean;
   onAddUser?: () => void;
   onEditUser?: (user: any) => void;
   onViewUser?: (user: any) => void;
   onDeleteUser?: (user: any) => void;
+  onTotalsChange?: (totals: { totalRetail: number; totalCost: number }) => void;
+  onDataChange?: (data: any) => void; // Added missing prop
 }
-
-export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onEditUser, onViewUser, onDeleteUser }) => {
+export const StockReportTable: React.FC<StockReportTableProps> = ({ isDarkMode, onAddUser, onEditUser, onViewUser, onDeleteUser, onTotalsChange, onDataChange }) => {
   const theme = getThemeColors(isDarkMode);
-  const cardStyle = `rounded-xl shadow-sm p-8 ${theme.neutral.background}`;
+  const cardStyle = `rounded-xl shadow-sm ${theme.neutral.background}`;
   const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${theme.input.background} ${theme.border.input} ${theme.text.primary}`;
 
   // Search and filter states
-  const { control, watch } = useForm({
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const { control, watch, setValue } = useForm({
     defaultValues: {
       searchTerm: '',
       activeFilter: 'all',
+      fromDate: todayStr,
+      toDate: todayStr,
     },
   });
   const searchTerm = watch('searchTerm');
   const activeFilter = watch('activeFilter');
+  const fromDate = watch('fromDate');
+  const toDate = watch('toDate');
   const [loadedCount, setLoadedCount] = useState(10);
   const total = 60;
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
-    productName: true,
-    uom: true,
-    convUnit: true,
-    quantity: true,
-    bonusQty: true,
+    productId: true,
+    product: true,
+    category: true,
+    subCategory: true,
     costPrice: true,
-    saleTax: true,
-    totalCost: true,
-    discount: true,
-    netCost: true,
-    actions: true,
+    salePrice: true,
+    retailPrice: true,
+    stockStatus: true,
+    uom: true,
+    availableStock: true,
+    totalRetailPrice: true,
+    totalCostPrice: true,
   });
 
   // Modal states
@@ -74,29 +81,55 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     setIsDeleteOpen(true);
   };
 
-  const columns = useMemo(
-    () => userColumns({
-      onEdit: handleEdit,
-      onView: handleView,
-      onDelete: handleDelete,
-      isDarkMode
-    }),
-    [isDarkMode]
-  );
+  // Use stock report columns and mock data for this table
+  const columns = useMemo(() => stockReportColumns(isDarkMode), [isDarkMode]);
 
-  // Use state for table data; initialize with sample purchase orders
-  const samplePurchaseOrders = [
-    { id: 1, productName: 'Product A', uom: 'kg', convUnit: 1, quantity: 10, bonusQty: 2, costPrice: 100, saleTax: 10, totalCost: 1010, discount: 50, netCost: 960 },
-    { id: 2, productName: 'Product B', uom: 'liters', convUnit: 1, quantity: 5, bonusQty: 0, costPrice: 50, saleTax: 5, totalCost: 255, discount: 0, netCost: 255 },
-  ];
+  // Initialize table data with the 10 sample rows
+  const [users, setUsers] = useState<any[]>(() => mockStockReportData);
 
-  const [users, setUsers] = useState<any[]>(() => samplePurchaseOrders);
+  // compute display rows by date and search
+  const displayData = useMemo(() => {
+    const from = fromDate ? new Date(fromDate) : null;
+    const to = toDate ? new Date(toDate) : null;
+
+    return users.filter((row) => {
+      // date filter
+      if (from && to && row.date) {
+        const d = new Date(row.date);
+        // normalize to dates only
+        d.setHours(0, 0, 0, 0);
+        const f = new Date(from);
+        f.setHours(0, 0, 0, 0);
+        const t = new Date(to);
+        t.setHours(0, 0, 0, 0);
+        if (d < f || d > t) return false;
+      }
+
+      // search filter (on product and uom)
+      if (searchTerm) {
+        const s = searchTerm.toLowerCase();
+        const matchesProduct = (row.product || '').toString().toLowerCase().includes(s);
+        const matchesUom = (row.uom || '').toString().toLowerCase().includes(s);
+        if (!matchesProduct && !matchesUom) return false;
+      }
+
+      return true;
+    });
+  }, [users, fromDate, toDate, searchTerm]);
+
+  // compute totals from displayData and notify parent
+  useEffect(() => {
+    const totalRetail = displayData.reduce((sum, r) => sum + (Number(r.totalRetailPrice) || 0), 0);
+    const totalCost = displayData.reduce((sum, r) => sum + (Number(r.totalCostPrice) || 0), 0);
+    if (typeof onTotalsChange === 'function') onTotalsChange({ totalRetail, totalCost });
+  }, [displayData]);
 
   const {
     table,
     isLoading,
     hasNextPage,
     loadMore,
+    setInitialData,
   } = useInfiniteTable<any>({
     columns,
     data: users,
@@ -108,166 +141,91 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
     },
   });
 
+  // When displayData (filtered by date/search) changes, update the table's data
+  useEffect(() => {
+    if (typeof setInitialData === 'function') {
+      setInitialData(displayData);
+    }
+  }, [displayData, setInitialData]);
+
   // Custom load more with count tracking
   const loadMoreWithCount = async () => {
     await loadMore();
     setLoadedCount(prev => Math.min(prev + 10, total));
   };
 
-  const filteredData = useMemo(() => {
-    if (!table.getRowModel) return [];
-    let filtered = table.getRowModel().rows;
+  // Build visible column order for export/print (use accessorKey if available)
+  const visibleColumns = columns.filter((c: any) => c.accessorKey || c.id);
 
-    if (searchTerm) {
-      const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(row => {
-        const po = row.original;
-        return (
-          (po.productName?.toLowerCase().includes(search) ?? false) ||
-          (po.uom?.toLowerCase().includes(search) ?? false)
-        );
-      });
-    }
-
-    return filtered;
-  }, [table, searchTerm]);
-
-  const toggleColumn = (columnId: string) => {
-    setColumnVisibility(prev => ({
-      ...prev,
-      [columnId]: !prev[columnId]
-    }));
-  };
-
-  const handleAddSubmit = (data: any) => {
-    const newPO = { ...data, id: Date.now() };
-    setUsers(prev => [newPO, ...prev]);
-    setIsAddOpen(false);
-  };
-
-  const handleEditSubmit = (data: any) => {
-    setUsers(prev => prev.map(po => po.id === selectedPO.id ? { ...po, ...data } : po));
-    setIsEditOpen(false);
-    setSelectedPO(null);
-  };
-
-  const handleDeleteConfirm = () => {
-    setUsers(prev => prev.filter(po => po.id !== selectedPO.id));
-    setIsDeleteOpen(false);
-    setSelectedPO(null);
-  };
+  const headers = columns.map((col) => col.header as string);
 
   return (
     <div className={cardStyle}>
-      <div className="flex items-center justify-between mb-6">
-        <h4 className={`text-lg font-semibold tracking-tight ${theme.text.primary}`}>View Purchase Orders</h4>
-        <Button
-          onClick={() => setIsAddOpen(true)}
-          className={`h-10 rounded-lg ${theme.button.primary}`}
-          size="lg"
-        >
-          + Add Purchase Order
-        </Button>
+      <div className="flex items-center gap-2 justify-between mb-6">
+        {/* Add any content or buttons here */}
       </div>
 
-      {/* Add Modal */}
-      <ReusableModal
-        isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
-        title="Add Purchase Order"
-        size="lg"
-        isDarkMode={isDarkMode}
-      >
-        <PurchaseOrderForm onSubmit={handleAddSubmit} onCancel={() => setIsAddOpen(false)} isDarkMode={isDarkMode} />
-      </ReusableModal>
+      <div className="flex flex-col gap-4 mb-6">
+        {/* DATE SECTION */}
+        <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
+          {/* From + To */}
+          <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+            <div className="flex flex-col w-full sm:w-auto">
+              <label className="text-xs text-gray-500 mb-1">From</label>
+              <Controller
+                name="fromDate"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="date"
+                    {...field}
+                    className={`${inputStyle} h-10 w-full sm:w-auto`}
+                  />
+                )}
+              />
+            </div>
 
-      {/* Edit Modal */}
-      <ReusableModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        title="Edit Purchase Order"
-        size="lg"
-        isDarkMode={isDarkMode}
-      >
-        {/* <PurchaseOrderForm
-          initialData={selectedPO}
-          onSubmit={handleEditSubmit}
-          onCancel={() => setIsEditOpen(false)}
-          isDarkMode={isDarkMode}
-        /> */}
-      </ReusableModal>
-
-      {/* View Modal */}
-      {/* <ReusableModal
-        isOpen={isViewOpen}
-        onClose={() => setIsViewOpen(false)}
-        title="View Purchase Order"
-        size="lg"
-        isDarkMode={isDarkMode}
-      >
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {Object.entries(selectedPO || {}).map(([key, value]) => (
-              key !== 'id' && (
-                <div key={key}>
-                  <p className="text-sm font-medium text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                  <p className={`text-base ${theme.text.primary}`}>{String(value)}</p>
-                </div>
-              )
-            ))}
+            <div className="flex flex-col w-full sm:w-auto">
+              <label className="text-xs text-gray-500 mb-1">To</label>
+              <Controller
+                name="toDate"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="date"
+                    {...field}
+                    className={`${inputStyle} h-10 w-full sm:w-auto`}
+                  />
+                )}
+              />
+            </div>
           </div>
-          <div className="flex justify-end pt-4">
-            <Button onClick={() => setIsViewOpen(false)} className={`h-10 rounded-lg ${theme.button.primary}`}>
-              Close
-            </Button>
+
+          {/* SEARCH + BUTTONS */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <div className="w-full sm:w-64">
+              <SearchInput
+                control={control}
+                placeholder="Search purchase orders..."
+                inputStyle={inputStyle}
+                isDarkMode={isDarkMode}
+              />
+            </div>
+
+          <ExportButton
+  headers={headers}
+  data={displayData.map((row) =>
+    columns.map((col: any) => {
+      const key = col.accessorKey ?? col.id;
+      return key && row[key] !== undefined ? row[key] : '';
+    })
+  )}
+  filename="stock-report"
+  title="Stock Report"
+  isDarkMode={isDarkMode}
+/>
           </div>
         </div>
-      </ReusableModal> */}
-
-      {/* Delete Modal */}
-      {/* <ReusableModal
-        isOpen={isDeleteOpen}
-        onClose={() => setIsDeleteOpen(false)}
-        title="Delete Purchase Order"
-        size="sm"
-        isDarkMode={isDarkMode}
-      >
-        <DeleteUserConfirm
-          userData={selectedPO}
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setIsDeleteOpen(false)}
-        />
-      </ReusableModal> */}
-
-      {/* Search, Filter and Column Toggle Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <SearchInput
-          control={control}
-          placeholder="Search purchase orders..."
-          inputStyle={inputStyle}
-          isDarkMode={isDarkMode}
-        />
-
-        <ColumnToggle
-          className="flex-shrink-0"
-          columnVisibility={columnVisibility}
-          onToggleColumn={toggleColumn}
-          disabledColumns={[]}
-          isDarkMode={isDarkMode}
-          columnLabels={{
-            productName: 'Product Name',
-            uom: 'UOM',
-            convUnit: 'Conv Unit',
-            quantity: 'Quantity',
-            bonusQty: 'Bonus Qty',
-            costPrice: 'Cost Price',
-            saleTax: 'Sale Tax',
-            totalCost: 'Total Cost',
-            discount: 'Discount',
-            netCost: 'Net Cost',
-            actions: 'Actions',
-          }}
-        />
       </div>
 
       <InfiniteTable
@@ -289,10 +247,11 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
           </div>
         }
         columnVisibility={columnVisibility}
-        rows={searchTerm ? filteredData : undefined}
         className="max-h-[600px]"
         isDarkMode={isDarkMode}
       />
     </div>
   );
 };
+
+export default StockReportTable;

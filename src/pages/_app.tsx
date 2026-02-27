@@ -75,6 +75,17 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
 
   // Check if current route requires authentication
   const requiresAuth = !publicRoutes.includes(currentRouter.pathname);
+  // Redirect to dashboard if authenticated and trying to access auth page
+  useEffect(() => {
+    if (!loading) {
+      if (!isAuthenticated && currentRouter.pathname !== '/auth') {
+        if (typeof window !== 'undefined') currentRouter.replace('/auth');
+      } else if (isAuthenticated && currentRouter.pathname === '/auth') {
+        const lastCompany = typeof window !== 'undefined' ? localStorage.getItem('lastCompany') || tenantConfig.id : tenantConfig.id;
+        if (typeof window !== 'undefined') currentRouter.replace(`/${lastCompany}/dashboard`);
+      }
+    }
+  }, [isAuthenticated, loading, currentRouter]);
 
   // Show loading spinner while checking authentication
   if (loading) {
@@ -84,26 +95,6 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
       </div>
     );
   }
-
-  // Redirect to auth if not authenticated and trying to access protected route
-  if (requiresAuth && !isAuthenticated) {
-    if (typeof window !== 'undefined') {
-      currentRouter.push('/auth');
-    }
-    return null;
-  }
-
-  // Redirect to dashboard if authenticated and trying to access auth page
-  useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated && currentRouter.pathname !== '/auth') {
-        currentRouter.replace('/auth');
-      } else if (isAuthenticated && currentRouter.pathname === '/auth') {
-        const lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
-        currentRouter.replace(`/${lastCompany}/dashboard`);
-      }
-    }
-  }, [isAuthenticated, loading, currentRouter]);
 
   return (
     <>

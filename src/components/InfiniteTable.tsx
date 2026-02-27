@@ -141,7 +141,7 @@ function InfiniteTable<T = any>({
                         style={{
                           width: header.getSize(),
                         }}
-                        className={`!font-semibold px-2 sm:px-6 ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
+                        className={`!font-semibold px-2 sm:px-6 whitespace-nowrap ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -181,7 +181,7 @@ function InfiniteTable<T = any>({
                       return (
                         <Table.Cell
                           key={cell.id}
-                          className="!text-start py-4 px-2 sm:px-6"
+                          className="!text-start py-4 px-2 sm:px-6 whitespace-nowrap"
                           style={{
                             width: cell.column.getSize(),
                             color: isDarkMode ? '#f1f5f9' : '#0f172a',
