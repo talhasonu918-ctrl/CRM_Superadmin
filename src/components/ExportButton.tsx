@@ -11,6 +11,7 @@ interface ExportButtonProps {
   data: any[][];
   title?: string;
   isDarkMode?: boolean;
+  onlyExcel?: boolean;
 }
 
 export const ExportButton: React.FC<ExportButtonProps> = ({
@@ -20,11 +21,24 @@ export const ExportButton: React.FC<ExportButtonProps> = ({
   data,
   title,
   isDarkMode = false,
+  onlyExcel = false,
 }) => {
   const finalFilename = fileName || filename || 'export';
   const finalTitle = title || finalFilename.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   const { config } = useBranding();
   const primaryColor = config.colors?.primary;
+
+  if (onlyExcel) {
+    return (
+      <button
+        onClick={() => exportToExcel(finalFilename, headers, data)}
+        className="px-4 py-2 bg-primary text-white rounded-lg font-medium text-sm hover:opacity-90 transition-all shadow-md shadow-primary/20 active:scale-95 whitespace-nowrap flex items-center gap-2"
+      >
+        <Table className="w-4 h-4" />
+        Export Excel
+      </button>
+    );
+  }
 
   return (
     <div className="relative inline-block text-left">

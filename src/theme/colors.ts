@@ -17,17 +17,17 @@
 
 // ==================== PRIMARY COLORS ====================
 export const primaryColors = {
-  // Main brand color - Orange
-  50: '#fff7ed',
-  100: '#ffedd5',
-  200: '#fed7aa',
-  300: '#fdba74',
-  400: '#fb923c',
-  500: '#f97316', // Main primary color
-  600: '#ea580c',
-  700: '#c2410c',
-  800: '#9a3412',
-  900: '#7c2d12',
+  // Main brand color - Primary Red
+  50: '#fef2f2',
+  100: '#fee2e2',
+  200: '#fecaca',
+  300: '#fca5a5',
+  400: '#f87171',
+  500: '#D6112C', // Main primary color (Matched to tenant branding)
+  600: '#b91c1c',
+  700: '#991b1b',
+  800: '#7f1d1d',
+  900: '#450a0a',
 } as const;
 
 // ==================== SECONDARY COLORS ====================

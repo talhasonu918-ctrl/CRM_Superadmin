@@ -15,6 +15,7 @@ import {
   Upload,
   RefreshCw
 } from 'lucide-react';
+import { notify } from '../../../../utils/toast';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { InventoryProduct, INITIAL_INVENTORY_PRODUCTS } from '../../pos/mockData';
 import { InventoryProductTable } from './table/inventoryproducts.Table';
@@ -70,49 +71,70 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
       setProducts(JSON.parse(saved));
     } else {
       setProducts(INITIAL_INVENTORY_PRODUCTS);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY_PRODUCTS));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY_PRODUCTS));
+      } catch (e) {
+        console.warn('Initial storage failed: ', e);
+      }
     }
   }, []);
 
+  // Safe Save Helper
+  const safeSaveToLocalStorage = (data: InventoryProduct[]) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      setProducts(data);
+      return true;
+    } catch (error: any) {
+      if (error.name === 'QuotaExceededError') {
+        notify.error('Storage limit exceeded! Try using smaller images or deleting some products.');
+      } else {
+        notify.error('Failed to save data to local storage.');
+      }
+      console.error('Storage Error:', error);
+      return false;
+    }
+  };
+
   // Filter Logic
   const filteredProducts = useMemo(() => {
-    return products.filter(p => {
-      const matchesSearch =
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.barcode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.manufacturerName.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
-
+    return products.filter((product: InventoryProduct) => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.barcode.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.manufacturerName.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [products, searchQuery, selectedCategory]);
 
   const categories = useMemo(() => {
-    const cats = Array.from(new Set(products.map(p => p.category)));
+    const cats = Array.from(new Set(products.map((p: InventoryProduct) => p.category)));
     return ['All', ...cats];
   }, [products]);
 
   // Actions
   const handleSave = (product: InventoryProduct) => {
-    let updated;
+    let updated: InventoryProduct[];
     if (editingId) {
-      updated = products.map(p => p.id === editingId ? { ...product, id: editingId } : p);
+      updated = products.map((p: InventoryProduct) => p.id === editingId ? { ...product, id: editingId } : p);
     } else {
       const newProduct = { ...product, id: Math.random().toString(36).substr(2, 9) };
       updated = [newProduct, ...products];
     }
-    setProducts(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-    setIsModalOpen(false);
-    setEditingId(null);
-    setCurrentProduct(emptyProduct);
+
+    if (safeSaveToLocalStorage(updated)) {
+      setIsModalOpen(false);
+      setEditingId(null);
+      setCurrentProduct(emptyProduct);
+      notify.success(editingId ? 'Product updated successfully' : 'Product created successfully');
+    }
   };
 
   const handleDelete = (id: string) => {
-    const updated = products.filter(p => p.id !== id);
-    setProducts(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    const updated = products.filter((p: InventoryProduct) => p.id !== id);
+    if (safeSaveToLocalStorage(updated)) {
+      notify.success('Product deleted successfully');
+    }
   };
 
   const handleEdit = (product: InventoryProduct) => {
@@ -122,8 +144,8 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
   };
 
   const handleBulkUpdate = (updates: { category?: string; status?: string }) => {
-    const targetIds = new Set(filteredProducts.map(p => p.id));
-    const updated = products.map(p => {
+    const targetIds = new Set(filteredProducts.map((p: InventoryProduct) => p.id));
+    const updated = products.map((p: InventoryProduct) => {
       if (targetIds.has(p.id)) {
         return {
           ...p,
@@ -133,8 +155,9 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
       }
       return p;
     });
-    setProducts(updated);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    if (safeSaveToLocalStorage(updated)) {
+      notify.success(`Successfully updated ${targetIds.size} products`);
+    }
   };
 
   const handleImport = (data: any[]) => {
@@ -149,7 +172,7 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
     'Procurement Class', 'Status'
   ];
 
-  const exportData = filteredProducts.map(p => [
+  const exportData = filteredProducts.map((p: InventoryProduct) => [
     p.id,
     p.name,
     p.manufacturerName,
@@ -170,7 +193,7 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
     p.status
   ]);
 
-  const redButtonClass = "px-4 py-2 bg-[#D6112C] text-white rounded-lg font-medium text-sm hover:opacity-90 transition-all shadow-md shadow-red-500/10 active:scale-95 whitespace-nowrap flex items-center gap-2";
+  const primaryButtonClass = "px-4 py-2 bg-primary text-white rounded-lg font-medium text-sm hover:opacity-90 transition-all shadow-md shadow-primary/20 active:scale-95 whitespace-nowrap flex items-center gap-2";
 
   return (
     <div className={`p-2 sm:p-3 min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-white'}`}>
@@ -181,16 +204,17 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
           data={exportData}
           fileName="inventory-products"
           isDarkMode={isDarkMode}
+          onlyExcel={true}
         />
         <button
           onClick={() => setIsBulkModalOpen(true)}
-          className={redButtonClass}
+          className={primaryButtonClass}
         >
           <RefreshCw size={16} /> Bulk Update
         </button>
         <button
           onClick={() => setIsImportModalOpen(true)}
-          className={redButtonClass}
+          className={primaryButtonClass}
         >
           <Upload size={16} /> Import Product
         </button>
@@ -200,7 +224,7 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
             setEditingId(null);
             setIsModalOpen(true);
           }}
-          className={redButtonClass}
+          className={primaryButtonClass}
         >
           <Plus size={16} /> Add Product
         </button>
@@ -227,13 +251,13 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
           <div className={`flex items-center p-1 rounded  ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white'}`}>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1 rounded transition-all ${viewMode === 'grid' ? 'bg-[#D6112C] text-white shadow-sm' : 'text-slate-400'}`}
+              className={`p-1 rounded transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-400'}`}
             >
               <LayoutGrid size={16} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1 rounded transition-all ${viewMode === 'list' ? 'bg-[#D6112C] text-white shadow-sm' : 'text-slate-400'}`}
+              className={`p-1 rounded transition-all ${viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-slate-400'}`}
             >
               <List size={16} />
             </button>

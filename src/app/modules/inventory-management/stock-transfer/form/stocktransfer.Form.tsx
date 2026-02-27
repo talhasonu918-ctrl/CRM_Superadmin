@@ -266,74 +266,78 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
         </div>
 
         {/* Branch and Location Selection */}
-        <div className={`p-4 rounded-lg border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'} space-y-4`}>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                Branch From
-              </label>
-              <input
-                type="text"
-                value={branchFrom}
-                readOnly
-                className={`${inputClass} cursor-not-allowed bg-slate-50/50 dark:bg-slate-800/50`}
-              />
+        <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-800/40 border-slate-700/50' : 'bg-slate-50 border-slate-100'} space-y-6`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Branch From
+                </label>
+                <SearchableDropdown
+                  options={branches}
+                  value={branchFrom}
+                  onChange={(val) => setBranchFrom(val)}
+                  isDarkMode={isDarkMode}
+                  placeholder="Select Branch"
+                />
+              </div>
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Location From
+                </label>
+                <SearchableDropdown
+                  options={locations}
+                  value={locationFrom}
+                  onChange={(val) => setLocationFrom(val)}
+                  isDarkMode={isDarkMode}
+                  placeholder="Select Location"
+                />
+              </div>
             </div>
-            <div>
-              <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                Branch To
-              </label>
-              <input
-                type="text"
-                value={branchTo}
-                readOnly
-                className={`${inputClass} cursor-not-allowed bg-slate-50/50 dark:bg-slate-800/50`}
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                Location From
-              </label>
-              <SearchableDropdown
-                options={locations}
-                value={locationFrom}
-                onChange={(val) => setLocationFrom(val)}
-                isDarkMode={isDarkMode}
-                placeholder="Select Location"
-              />
-            </div>
-            <div>
-              <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                Location To
-              </label>
-              <SearchableDropdown
-                options={locations}
-                value={locationTo}
-                onChange={(val) => setLocationTo(val)}
-                isDarkMode={isDarkMode}
-                placeholder="Select Location"
-              />
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Branch To
+                </label>
+                <SearchableDropdown
+                  options={branches}
+                  value={branchTo}
+                  onChange={(val) => setBranchTo(val)}
+                  isDarkMode={isDarkMode}
+                  placeholder="Select Branch"
+                />
+              </div>
+              <div>
+                <label className={`block text-xs font-bold uppercase mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  Location To
+                </label>
+                <SearchableDropdown
+                  options={locations}
+                  value={locationTo}
+                  onChange={(val) => setLocationTo(val)}
+                  isDarkMode={isDarkMode}
+                  placeholder="Select Location"
+                />
+              </div>
             </div>
           </div>
         </div>
 
         {/* Total and Buttons */}
-        <div className={`p-4 rounded-lg border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'} flex items-center justify-between`}>
-          <div>
-            <p className={`text-xs font-bold uppercase ${isDarkMode ? 'text-slate-400' : 'text-slate-600'} mb-1`}>
+        <div className={`p-4 rounded-xl border ${isDarkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-100'} flex flex-col sm:flex-row items-center justify-between gap-4`}>
+          <div className="text-center sm:text-left">
+            <p className={`text-[10px] font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-400' : 'text-slate-600'} mb-1`}>
               Total Net Amount:
             </p>
-            <p className="text-2xl font-bold text-emerald-600">
-              {totalNetAmount.toFixed(2)}
+            <p className="text-2xl font-black text-emerald-600">
+              {totalNetAmount.toFixed(2)} <span className="text-xs font-bold text-slate-400">PKR</span>
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <button
               onClick={onClose}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${isDarkMode
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all flex-1 sm:flex-none ${isDarkMode
                 ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
                 }`}
@@ -342,7 +346,7 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
             </button>
             <button
               onClick={handleSave}
-              className="px-8 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/10 active:scale-95"
+              className="px-8 py-2.5 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 flex-1 sm:flex-none"
             >
               Save Stock Transfer
             </button>
