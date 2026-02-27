@@ -1,18 +1,50 @@
-﻿import React from 'react';
+﻿import React, { useState } from 'react';
+import { UserTable as PurchaseOrderTable } from './table/table'; // Changed to default import
 
-export const PurchaseOrderView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+const PurchaseOrderPage: React.FC = () => {
+  const [purchaseOrders, setPurchaseOrders] = useState([
+    {
+      productName: 'Product A',
+      uom: 'kg',
+      convUnit: 1,
+      quantity: 10,
+      bonusQty: 2,
+      costPrice: 100,
+      saleTax: 10,
+      totalCost: 1100,
+      discount: 50,
+      netCost: 1050,
+    },
+    {
+      productName: 'Product B',
+      uom: 'liters',
+      convUnit: 1,
+      quantity: 5,
+      bonusQty: 1,
+      costPrice: 200,
+      saleTax: 20,
+      totalCost: 1020,
+      discount: 20,
+      netCost: 1000,
+    },
+  ]);
+
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Purchase Order</h2>
-        <button className="px-4 py-2 bg-primary text-white rounded-lg font-bold text-sm">Create PO</button>
-      </div>
-      <div className={`p-8 rounded-xl border border-dashed ${isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-400'} text-center`}>
-        Purchase Order Content Implementation Coming Soon
-      </div>
+    <div className="purchase-order-page">
+      <h1 className="text-2xl font-bold mb-4">Purchase Order</h1>
+      <PurchaseOrderTable isDarkMode={false} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
     </div>
   );
 };
 
-export default PurchaseOrderView;
+export const PurchaseOrderView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
+  return (
+    <div className={`purchase-order-view ${isDarkMode ? 'dark-mode' : ''}`}>
+      {/* <h1 className="text-2xl font-bold mb-4">Purchase Order</h1> */}
+      <PurchaseOrderTable isDarkMode={isDarkMode} onAddUser={() => {}} onEditUser={() => {}} onViewUser={() => {}} onDeleteUser={() => {}} />
+    </div>
+  );
+};
+
+export default PurchaseOrderPage;
 

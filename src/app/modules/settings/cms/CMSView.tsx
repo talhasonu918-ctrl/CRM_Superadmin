@@ -15,7 +15,7 @@ import {
 import { Button, Badge } from 'rizzui';
 import notify from '../../../../utils/toast';
 import { useRouter, useParams } from 'next/navigation';
-import { useTheme } from '../../../../contexts/ThemeContext';
+import { useAppSelector } from '../../../../redux/store';
 import { getThemeColors } from '../../../../theme/colors';
 import { ROUTES } from '../../../../const/constants';
 import { CMSTable } from './table/table';
@@ -235,7 +235,7 @@ export const CMSView = () => {
     const router = useRouter();
     const params = useParams();
     const company = params?.company as string;
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     const [pages, setPages] = useState<Record<string, PageContent>>(DEFAULT_CONTENT);
     const [selectedPage, setSelectedPage] = useState<string | null>(null);

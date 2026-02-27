@@ -8,14 +8,14 @@ import { TenantBranding } from '../../../../../theme/types';
 import Select from 'react-select';
 import notify from '../../../../../utils/toast';
 import { getThemeColors } from '../../../../../theme/colors';
-import { useTheme } from '../../../../../contexts/ThemeContext';
+import { useAppSelector } from '../../../../../redux/store';
 
 interface ThemeSettingsFormProps {
     isDarkMode?: boolean;
 }
 
 const SectionBox = ({ title, children, className = "" }: any) => {
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     return (
         <div className={`${theme.neutral.card} border ${theme.border.main} rounded-lg shadow-sm mb-4 md:mb-6 ${className} transition-colors duration-300`}>
@@ -30,7 +30,7 @@ const SectionBox = ({ title, children, className = "" }: any) => {
 };
 
 const InputField = ({ label, name, placeholder, disabled = false, type = "text", className = "" }: any) => {
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     return (
         <div className={`mb-3 md:mb-4 ${className}`}>
@@ -52,7 +52,7 @@ const InputField = ({ label, name, placeholder, disabled = false, type = "text",
 };
 
 const ColorBox = ({ label, name }: any) => {
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     return (
         <div className="mb-4">
@@ -90,7 +90,7 @@ const ColorBox = ({ label, name }: any) => {
 const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
     const { watch, setValue } = useFormContext();
     const [isUploading, setIsUploading] = useState(false);
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     const url = watch(name);
 
@@ -180,7 +180,7 @@ const ImageUploadField = ({ label, name, previewSize = "medium" }: any) => {
 };
 
 const ToggleRow = ({ label, name }: any) => {
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
     return (
         <div className={`flex items-center justify-between py-2.5 md:py-3 border-b ${theme.border.main} last:border-0`}>
@@ -206,7 +206,7 @@ const ToggleRow = ({ label, name }: any) => {
 const FontSelector = () => {
     const { control, setValue } = useFormContext();
     const [systemFonts, setSystemFonts] = useState<any[]>([]);
-    const { isDarkMode } = useTheme();
+    const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
     const theme = getThemeColors(isDarkMode);
 
     useEffect(() => {
@@ -312,9 +312,9 @@ const FontSelector = () => {
     );
 };
 export const ThemeSettingsForm: React.FC<ThemeSettingsFormProps> = ({ isDarkMode }) => {
-    // Use the passed prop if provided, otherwise fallback to context
-    const themeContext = useTheme();
-    const darkMode = typeof isDarkMode === 'boolean' ? isDarkMode : themeContext.isDarkMode;
+    // Use the passed prop if provided, otherwise fallback to Redux
+    const reduxDarkMode = useAppSelector((state) => state.theme.isDarkMode);
+    const darkMode = typeof isDarkMode === 'boolean' ? isDarkMode : reduxDarkMode;
     const theme = getThemeColors(darkMode);
     const { control, watch, setValue } = useFormContext<TenantBranding>();
     const bannerFields = useFieldArray({ control, name: "images.banners" });

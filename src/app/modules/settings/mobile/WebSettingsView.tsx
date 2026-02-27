@@ -3,13 +3,15 @@
 import React, { useEffect } from 'react';
 import { ThemeSettingsForm } from './form/ThemeSettingsForm';
 import { useRouter } from 'next/router';
-import { useCompany } from '../../../../contexts/CompanyContext';
+import { useAppSelector } from '../../../../redux/store';
+import { useAppDispatch } from '../../../../redux/store';
 import { ROUTES } from '../../../../const/constants';
 import { useForm, FormProvider } from 'react-hook-form';
-import { useBranding } from '../../../../contexts/BrandingContext';
 import { Button } from 'rizzui';
 import notify from '../../../../utils/toast';
 import { TenantBranding } from '../../../../theme/types';
+
+import { updateConfig, saveConfig } from '../../../../redux/brandingSlice';
 
 import { ArrowLeft } from 'lucide-react';
 import { getThemeColors } from '../../../../theme/colors';
@@ -20,8 +22,9 @@ import { tenantConfig } from '../../../../config/tenant-color';
 export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }) {
     const theme = getThemeColors(isDarkMode);
     const router = useRouter();
-    const { company } = useCompany();
-    const { config, updateConfig, saveConfig } = useBranding();
+    const company = useAppSelector((state) => state.company.company);
+    const config = useAppSelector((state) => state.branding.config);
+    const dispatch = useAppDispatch();
 
     const [isResetModalOpen, setIsResetModalOpen] = useState(false);
 
@@ -35,35 +38,23 @@ export function WebSettingsView({ isDarkMode = false }: { isDarkMode?: boolean }
 
     const onSubmit = (data: TenantBranding) => {
         try {
-            updateConfig(data);
-            // We need to call saveConfig or directly update localStorage
+            dispatch(updateConfig(data));
+            dispatch(saveConfig());
             localStorage.setItem('tenant_branding_v2', JSON.stringify(data));
 
-            // Update lastCompany to prevent redirect loop to old slug
             if (data.slug && data.slug !== 'default') {
                 localStorage.setItem('lastCompany', data.slug);
             }
 
             notify.success('Configuration saved successfully');
 
-            // Check if slug has changed and redirect
             const currentSlug = (router.query.company as string) || window.location.pathname.split('/')[1];
 
-            console.log('DEBUG REDIRECT:', {
-                formSlug: data.slug,
-                currentSlug,
-                shouldRedirect: data.slug && data.slug !== currentSlug,
-                savedLastCompany: localStorage.getItem('lastCompany')
-            });
-
             if (data.slug && data.slug !== currentSlug) {
-                // Redirect to the new slug URL
                 setTimeout(() => {
-                    console.log('Redirecting to:', `/${data.slug}/settings/web`);
                     window.location.href = `/${data.slug}/settings/web`;
                 }, 500);
             }
-
         } catch (error) {
             notify.error('Failed to save configuration');
         }

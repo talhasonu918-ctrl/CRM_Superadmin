@@ -1,5 +1,5 @@
 import React from 'react';
-import { useBranding } from '../../../../contexts/BrandingContext';
+import { useAppSelector } from '../../../../redux/store';
 
 interface Order {
     id: string;
@@ -42,7 +42,7 @@ export const OrderReceipt: React.FC<OrderReceiptProps> = ({
     order,
     branchInfo = defaultBranch
 }) => {
-    const { config } = useBranding();
+    const config = useAppSelector((state) => state.branding.config);
     if (!order) return null;
 
     // Format date and time

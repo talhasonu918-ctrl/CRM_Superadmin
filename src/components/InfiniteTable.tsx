@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback } from 'react';
 import { Table } from 'rizzui/table';
 import { flexRender, Table as TanStackTableTypes, Row } from '@tanstack/react-table';
 import { getThemeColors } from '../theme/colors';
-import { useTheme } from '../contexts/ThemeContext';
+import { useAppSelector } from '../redux/store';
 
 export interface TableColumn<T = any> {
   id: string;
@@ -45,7 +45,7 @@ function InfiniteTable<T = any>({
   itemName = 'items',
   renderSubComponent,
 }: InfiniteTableProps<T>) {
-  const { isDarkMode: themeDarkMode } = useTheme();
+  const themeDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const isDarkMode = propDarkMode || themeDarkMode;
   const theme = getThemeColors(isDarkMode);
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -141,7 +141,7 @@ function InfiniteTable<T = any>({
                         style={{
                           width: header.getSize(),
                         }}
-                        className={`!font-semibold px-2 sm:px-6 ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
+                        className={`!font-semibold px-2 sm:px-6 whitespace-nowrap ${isDarkMode ? '!text-slate-200' : '!text-slate-700'}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -181,7 +181,7 @@ function InfiniteTable<T = any>({
                       return (
                         <Table.Cell
                           key={cell.id}
-                          className="!text-start py-4 px-2 sm:px-6"
+                          className="!text-start py-4 px-2 sm:px-6 whitespace-nowrap"
                           style={{
                             width: cell.column.getSize(),
                             color: isDarkMode ? '#f1f5f9' : '#0f172a',

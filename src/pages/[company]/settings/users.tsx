@@ -8,12 +8,12 @@ import { AddUserForm, EditUserForm, ViewUserDetails } from '@/src/app/modules/se
 import { Layout } from '@/src/components/NavigationLayout';
 import { User } from '@/src/hooks/useInfiniteTable';
 import { getThemeColors } from '@/src/theme/colors';
-import { useCompany } from '@/src/contexts/CompanyContext';
+import { useAppSelector } from '@/src/redux/store';
 import { ROUTES } from '@/src/const/constants';
 
 export default function UsersSettings() {
     const router = useRouter();
-    const { company } = useCompany();
+    const company = useAppSelector((state) => state.company.company);
     const [addModalOpen, setAddModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [viewModalOpen, setViewModalOpen] = useState(false);
