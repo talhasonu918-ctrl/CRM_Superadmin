@@ -31,6 +31,9 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
       totalCost: 0,
       discount: 0,
       netCost: 0,
+      supplier: '',
+      supplierOrderNumber: '',
+      fileUpload: null,
     },
   });
 
@@ -79,7 +82,44 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             )}
           />
         </div>
+ <div className="col-span-2 sm:col-span-1">
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Supplier</label>
+          <Controller
+            name="supplier"
+            control={control}
+            rules={{ required: 'Supplier is required' }}
+            render={({ field, fieldState }) => (
+              <>
+                <input
+                  {...field}
+                  placeholder="Enter supplier name"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${fieldState.error
+                    ? theme.status.error.border
+                    : `${theme.border.input} focus:border-orange-500`
+                    }`}
+                />
+                {fieldState.error && (
+                  <p className={`text-sm mt-1 ${theme.status.error.text}`}>{fieldState.error.message}</p>
+                )}
+              </>
+            )}
+          />
+        </div>
 
+        <div className="col-span-2 sm:col-span-1">
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Supplier Order Number</label>
+          <Controller
+            name="supplierOrderNumber"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                placeholder="Enter supplier order number"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input} focus:border-orange-500`}
+              />
+            )}
+          />
+        </div>
         <div className="col-span-2 sm:col-span-1">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>UOM</label>
           <Controller
@@ -201,6 +241,23 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
             )}
           />
         </div>
+
+       
+
+        <div className="col-span-2">
+          <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Upload File</label>
+          <Controller
+            name="fileUpload"
+            control={control}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="file"
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none transition-colors ${theme.input.background} ${theme.text.primary} ${theme.border.input}`}
+              />
+            )}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">
@@ -214,7 +271,7 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
         </button>
         <button
           type="submit"
-          className={`px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none transition-colors`}
+          className={`px-4 py-2 rounded-lg text-sm font-medium text-white ${theme.button.primary} hover:${theme.button.hover} focus:outline-none transition-colors`}
         >
           {initialData ? 'Update Purchase Order' : 'Add Purchase Order'}
         </button>

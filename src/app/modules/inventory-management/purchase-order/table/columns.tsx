@@ -37,7 +37,6 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       size: 90,
       cell: ({ getValue }) => <span>{(getValue() as string) ?? ''}</span>,
     },
-  
     {
       accessorKey: 'quantity',
       header: 'Quantity',
@@ -93,6 +92,15 @@ export const userColumns = ({ onEdit, onView, onDelete, isDarkMode = false }: Us
       cell: ({ getValue }) => {
         const v = getValue() as number | undefined;
         return <span>{typeof v === 'number' ? `Rs. ${v.toFixed(2)}` : ''}</span>;
+      },
+    },
+    {
+      accessorKey: 'supplier',
+      header: 'Supplier',
+      size: 140,
+      cell: ({ getValue }) => {
+        const supplier = getValue() as string | undefined;
+        return <span>{supplier ?? ''}</span>;
       },
     },
     {

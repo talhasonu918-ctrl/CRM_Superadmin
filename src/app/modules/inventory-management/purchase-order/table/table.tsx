@@ -13,6 +13,8 @@ import { ReusableModal } from '../../../../../components/ReusableModal';
 import { PurchaseOrderForm } from '../form/AddPerchaseOrder';
 import { DeleteUserConfirm } from '../form/DeleteUserConfirm';
 import { getThemeColors } from '../../../../../theme/colors';
+import { TbFileUpload } from "react-icons/tb";
+
 
 interface UserTableProps {
   isDarkMode: boolean;
@@ -85,8 +87,16 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
 
   // Use state for table data; initialize with sample purchase orders
   const samplePurchaseOrders = [
-    { id: 1, productName: 'Product A', uom: 'kg', convUnit: 1, quantity: 10, bonusQty: 2, costPrice: 100, saleTax: 10, totalCost: 1010, discount: 50, netCost: 960 },
-    { id: 2, productName: 'Product B', uom: 'liters', convUnit: 1, quantity: 5, bonusQty: 0, costPrice: 50, saleTax: 5, totalCost: 255, discount: 0, netCost: 255 },
+    { id: 1, productName: 'Product A', uom: 'kg', convUnit: 1, quantity: 10, bonusQty: 2, costPrice: 100, saleTax: 10, totalCost: 1010, discount: 50, netCost: 960, supplier: 'Supplier A' },
+    { id: 2, productName: 'Product B', uom: 'liters', convUnit: 1, quantity: 5, bonusQty: 0, costPrice: 50, saleTax: 5, totalCost: 255, discount: 0, netCost: 255, supplier: 'Supplier B' },
+    { id: 3, productName: 'Product C', uom: 'pcs', convUnit: 1, quantity: 20, bonusQty: 1, costPrice: 30, saleTax: 3, totalCost: 633, discount: 20, netCost: 613, supplier: 'Supplier C' },
+    { id: 4, productName: 'Product D', uom: 'kg', convUnit: 1, quantity: 15, bonusQty: 3, costPrice: 80, saleTax: 8, totalCost: 1232, discount: 40, netCost: 1192, supplier: 'Supplier D' },
+    { id: 5, productName: 'Product E', uom: 'liters', convUnit: 1, quantity: 8, bonusQty: 0, costPrice: 60, saleTax: 6, totalCost: 528, discount: 10, netCost: 518, supplier: 'Supplier E' },
+    { id: 6, productName: 'Product F', uom: 'pcs', convUnit: 1, quantity: 50, bonusQty: 5, costPrice: 20, saleTax: 2, totalCost: 1100, discount: 100, netCost: 1000, supplier: 'Supplier F' },
+    { id: 7, productName: 'Product G', uom: 'kg', convUnit: 1, quantity: 25, bonusQty: 2, costPrice: 90, saleTax: 9, totalCost: 2349, discount: 150, netCost: 2199, supplier: 'Supplier G' },
+    { id: 8, productName: 'Product H', uom: 'liters', convUnit: 1, quantity: 12, bonusQty: 1, costPrice: 70, saleTax: 7, totalCost: 924, discount: 50, netCost: 874, supplier: 'Supplier H' },
+    { id: 9, productName: 'Product I', uom: 'pcs', convUnit: 1, quantity: 30, bonusQty: 3, costPrice: 40, saleTax: 4, totalCost: 1242, discount: 60, netCost: 1182, supplier: 'Supplier I' },
+    { id: 10, productName: 'Product J', uom: 'kg', convUnit: 1, quantity: 18, bonusQty: 2, costPrice: 110, saleTax: 11, totalCost: 2118, discount: 100, netCost: 2018, supplier: 'Supplier J' },
   ];
 
   const [users, setUsers] = useState<any[]>(() => samplePurchaseOrders);
@@ -156,13 +166,35 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
   <h4 className={`text-lg font-semibold tracking-tight ${theme.text.primary}`}>
     View Purchase Orders
   </h4>
-
+<div className="flex items-center gap-2">
+  
   <Button
     onClick={() => setIsAddOpen(true)}
-    className={`h-10 w-full sm:w-auto rounded-lg ${theme.button.primary}`}
+    className={`h-10 w-full whitespace-nowrap sm:w-auto rounded-lg ${theme.button.primary}`}
   >
     + Add Purchase Order
   </Button>
+
+  <Button
+    onClick={() => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*,application/pdf'; // Accept images and PDFs
+      fileInput.onchange = (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (file) {
+          console.log('Selected file:', file);
+          // Add logic to process the file here
+        }
+      };
+      fileInput.click();
+    }}
+    className={`h-10  w-full sm:w-auto whitespace-nowrap rounded-lg flex items-center gap-2 ${theme.button.primary}`}
+  >
+    <TbFileUpload size={20} />
+    Smart Import
+  </Button>
+</div>
 
 </div>
 
@@ -201,17 +233,67 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         size="lg"
         isDarkMode={isDarkMode}
       >
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {Object.entries(selectedPO || {}).map(([key, value]) => (
-              key !== 'id' && (
-                <div key={key}>
-                  <p className="text-sm font-medium text-gray-500 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                  <p className={`text-base ${theme.text.primary}`}>{String(value)}</p>
-                </div>
-              )
-            ))}
+        <div className="space-y-6">
+          {/* Product Details Section */}
+          <div className="grid grid-cols-3 gap-4 border-b pb-4">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Product Name</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.productName}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">UOM</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.uom}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Conv Unit</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.convUnit}</p>
+            </div>
           </div>
+
+          {/* Pricing Section */}
+          <div className="grid grid-cols-3 gap-4 border-b pb-4">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Cost Price</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.costPrice}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Sale Tax</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.saleTax}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Discount</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.discount}</p>
+            </div>
+          </div>
+
+          {/* Order Summary Section */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Quantity</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.quantity}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Bonus Qty</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.bonusQty}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Total Cost</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.totalCost}</p>
+            </div>
+           
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 border-t pt-4">
+            <div>
+              <p className="text-sm font-medium text-gray-500">Net Cost</p>
+              <p className="text-2xl font-semibold text-blue-600">{selectedPO?.netCost}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-500">Supplier</p>
+              <p className={`text-base ${theme.text.primary}`}>{selectedPO?.supplier}</p>
+            </div>
+          </div>
+
           <div className="flex justify-end pt-4">
             <Button onClick={() => setIsViewOpen(false)} className={`h-10 rounded-lg ${theme.button.primary}`}>
               Close
@@ -288,6 +370,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode, onAddUser, onE
         className="max-h-[600px]"
         isDarkMode={isDarkMode}
       />
+
     </div>
   );
 };

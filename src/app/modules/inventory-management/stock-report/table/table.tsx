@@ -202,7 +202,7 @@ export const StockReportTable: React.FC<StockReportTableProps> = ({ isDarkMode, 
           </div>
 
           {/* SEARCH + BUTTONS */}
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex  sm:flex-row gap-3 w-full sm:w-auto justify-center items-center">
             <div className="w-full sm:w-64">
               <SearchInput
                 control={control}
