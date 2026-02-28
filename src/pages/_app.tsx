@@ -34,19 +34,13 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     if (!hydrationRef.current) {
       hydrationRef.current = true;
-      dispatch(checkAuth());
+      dispatch(checkAuth());       // Sync read from localStorage
       dispatch(syncBrandingFromStorage());
       dispatch(hydrateTheme());
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ✅ FIX 2: iOS/Safari fallback - if loading stuck after 3s, force checkAuth again
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      dispatch(checkAuth());
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // ✅ REMOVED iOS 3s fallback - no longer needed since loading starts as false
 
   // Apply colors when config or dark mode changes
   useEffect(() => {

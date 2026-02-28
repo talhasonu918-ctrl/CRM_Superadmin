@@ -39,7 +39,7 @@ interface AuthState {
 
 const initialState: AuthState = {
 	isAuthenticated: false,
-	loading: true,
+	loading: false,  // ✅ Start as false - localStorage is synchronous, no spinner needed
 	user: null,
 };
 
