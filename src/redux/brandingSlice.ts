@@ -61,16 +61,15 @@ const brandingSlice = createSlice({
 			// Favicon and font logic could go here
 		},
 		syncBrandingFromStorage(state) {
-			if (typeof window !== 'undefined') {
+			try {
+				if (typeof window === 'undefined') return;
 				const savedBranding = localStorage.getItem('tenant_branding_v2');
 				if (savedBranding) {
 					try {
 						state.config = JSON.parse(savedBranding);
-					} catch (e) {
-						console.error('Failed to parse branding from storage', e);
-					}
+					} catch { /* corrupt data - ignore */ }
 				}
-			}
+			} catch { /* iOS private mode - silently fail */ }
 		},
 	},
 });

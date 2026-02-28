@@ -29,14 +29,21 @@ export const BrandingProvider: React.FC<{
     }, []);
 
     const saveConfig = useCallback(() => {
-        localStorage.setItem('brandingConfig', JSON.stringify(config));
+        try {
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('brandingConfig', JSON.stringify(config));
+            }
+        } catch { /* iOS private mode - silently fail */ }
     }, [config]);
 
     useEffect(() => {
-        const savedConfig = localStorage.getItem('brandingConfig');
-        if (savedConfig) {
-            setConfig(JSON.parse(savedConfig));
-        }
+        try {
+            if (typeof window === 'undefined') return;
+            const savedConfig = localStorage.getItem('brandingConfig');
+            if (savedConfig) {
+                setConfig(JSON.parse(savedConfig));
+            }
+        } catch { /* iOS private mode - silently fail */ }
     }, []);
 
     const value = useMemo(() => ({ config, updateConfig, saveConfig }), [config, updateConfig, saveConfig]);

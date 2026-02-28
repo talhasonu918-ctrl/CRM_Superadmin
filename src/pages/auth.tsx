@@ -15,9 +15,14 @@ const AuthPage: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/dashboard');
+      // Use correct company-based routing
+      let lastCompany = 'main';
+      try {
+        lastCompany = localStorage.getItem('lastCompany') || 'main';
+      } catch { /* iOS private mode */ }
+      router.replace(`/${lastCompany}/dashboard`);
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAuthSuccess = async (data: { email: string; password: string; name?: string }) => {
     try {
