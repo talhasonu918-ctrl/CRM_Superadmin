@@ -64,10 +64,12 @@ const authSlice = createSlice({
 			// authApi.logout(); // Call the API logout as well
 		},
 		checkAuth(state) {
-			const authStatus = localStorage.getItem('isAuthenticated');
-			const savedUser = localStorage.getItem('user');
-			state.isAuthenticated = authStatus === 'true';
-			state.user = savedUser ? JSON.parse(savedUser) : null;
+			if (typeof window !== 'undefined') {
+				const authStatus = localStorage.getItem('isAuthenticated');
+				const savedUser = localStorage.getItem('user');
+				state.isAuthenticated = authStatus === 'true';
+				state.user = savedUser ? JSON.parse(savedUser) : null;
+			}
 			state.loading = false;
 		},
 	},

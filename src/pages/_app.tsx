@@ -40,10 +40,12 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(checkAuth());
-    dispatch(syncBrandingFromStorage());
-    // Hydrate theme on client only
-    dispatch(hydrateTheme());
+    // Client-side initialization only
+    if (typeof window !== 'undefined') {
+      dispatch(checkAuth());
+      dispatch(syncBrandingFromStorage());
+      dispatch(hydrateTheme());
+    }
   }, [dispatch]);
 
   // Apply colors when config or dark mode changes
@@ -115,8 +117,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <BrandingProvider>
               <>
               <Head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <script src="https://cdn.tailwindcss.com"></script>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                 <script dangerouslySetInnerHTML={{
                   __html: `
                     window.tailwind = window.tailwind || {};
