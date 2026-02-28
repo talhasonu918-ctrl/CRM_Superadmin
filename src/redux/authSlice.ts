@@ -59,16 +59,28 @@ const authSlice = createSlice({
 		logout(state) {
 			state.isAuthenticated = false;
 			state.user = null;
-			localStorage.removeItem('isAuthenticated');
-			localStorage.removeItem('user');
+			if (typeof window !== 'undefined') {
+				try {
+					localStorage.removeItem('isAuthenticated');
+					localStorage.removeItem('user');
+				} catch (e) {
+					console.warn('localStorage access denied on iOS or private browsing');
+				}
+			}
 			// authApi.logout(); // Call the API logout as well
 		},
 		checkAuth(state) {
 			if (typeof window !== 'undefined') {
-				const authStatus = localStorage.getItem('isAuthenticated');
-				const savedUser = localStorage.getItem('user');
-				state.isAuthenticated = authStatus === 'true';
-				state.user = savedUser ? JSON.parse(savedUser) : null;
+				try {
+					const authStatus = localStorage.getItem('isAuthenticated');
+					const savedUser = localStorage.getItem('user');
+					state.isAuthenticated = authStatus === 'true';
+					state.user = savedUser ? JSON.parse(savedUser) : null;
+				} catch (e) {
+					console.warn('localStorage error on iOS or private browsing:', e);
+					state.isAuthenticated = false;
+					state.user = null;
+				}
 			}
 			state.loading = false;
 		},
