@@ -44,13 +44,9 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   useEffect(() => {
     if (typeof window !== 'undefined' && !hydrationRef.current) {
       hydrationRef.current = true;
-      
-      // Sequential dispatch to prevent race conditions
-      Promise.resolve()
-        .then(() => dispatch(checkAuth()))
-        .then(() => dispatch(syncBrandingFromStorage()))
-        .then(() => dispatch(hydrateTheme()))
-        .catch((err) => console.error('Hydration error:', err));
+      dispatch(checkAuth());
+      dispatch(syncBrandingFromStorage());
+      dispatch(hydrateTheme());
     }
   }, []); // Empty dependency array - runs only ONCE
 
