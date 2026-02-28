@@ -43,12 +43,13 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
   const subTextColor = isDarkMode ? 'text-slate-400' : 'text-slate-500';
 
   return (
-    <div className={`min-h-screen flex ${bgColor} transition-colors duration-300 relative`}>
-      {/* Theme Toggle - Top Right */}
-      <div className="absolute top-8 right-8 z-50">
-        <button 
+    <div className={`min-h-screen flex flex-col lg:flex-row ${bgColor} transition-colors duration-300 relative`}>
+
+      {/* Theme Toggle */}
+      <div className="absolute top-4 right-4 lg:top-8 lg:right-8 z-50">
+        <button
           onClick={toggleTheme}
-          className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${
+          className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${
             isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-orange-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-400'
           }`}
         >
@@ -56,65 +57,21 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
         </button>
       </div>
 
-      {/* Left Side: Visual/Branding Section */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-900">
-        <img 
-          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop" 
-          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 hover:scale-100 transition-transform duration-[10s]"
-          alt="Premium Food"
-        />
-        <div className="absolute inset-0 bg-gradient-to-tr from-orange-600/40 to-slate-900/80"></div>
-        
-        <div className="relative z-10 flex flex-col justify-between p-16 w-full text-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg">
-              <UtensilsCrossed size={20} className="text-white" />
-            </div>
-            <span className="text-2xl font-black tracking-tighter">Nexus<span className="text-orange-400">Food</span></span>
+      {/* =============================================
+          RIGHT SIDE: FORM — First in DOM so mobile
+          always sees the form, not the image panel.
+          On desktop: shown on right via lg:order-2
+         ============================================= */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-16 lg:p-16 relative order-1 lg:order-2">
+        {/* Mobile-only logo */}
+        <div className="lg:hidden absolute top-4 left-4 flex items-center gap-2">
+          <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
+            <UtensilsCrossed size={16} className="text-white" />
           </div>
-
-          <div className="max-w-md">
-            <motion.h2 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-5xl font-black leading-tight mb-6"
-            >
-              Master your <span className="text-orange-400">Kitchen</span> Operations.
-            </motion.h2>
-            <p className="text-lg text-slate-300 font-medium mb-8 leading-relaxed">
-              Join thousands of restaurant owners managing orders, inventory, and staff with the most powerful CRM built for food professionals.
-            </p>
-            <div className="space-y-4">
-              {[
-                "Real-time order tracking",
-                "Advanced inventory forecasting",
-                "Seamless staff coordination"
-              ].map((text, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <CheckCircle2 size={18} className="text-orange-400" />
-                  <span className="text-sm font-bold text-slate-200">{text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">
-            © 2025 NexusFood Global Systems
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side: Authentication Form Section */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 md:p-16 relative">
-        {/* Mobile Logo */}
-        <div className="lg:hidden absolute top-8 left-8 flex items-center gap-2">
-           <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-md">
-              <UtensilsCrossed size={16} className="text-white" />
-           </div>
-           <span className="text-lg font-black tracking-tighter dark:text-white">NexusFood</span>
+          <span className={`text-lg font-black tracking-tighter ${textColor}`}>NexusFood</span>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md"
@@ -124,15 +81,16 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               {mode === AuthMode.LOGIN ? 'Sign In' : 'Get Started'}
             </h1>
             <p className={`${subTextColor} font-medium`}>
-              {mode === AuthMode.LOGIN 
-                ? 'Welcome back! Enter your details to access the dashboard.' 
+              {mode === AuthMode.LOGIN
+                ? 'Welcome back! Enter your details to access the dashboard.'
                 : 'Enter your credentials to create your restaurant account.'}
             </p>
           </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <AnimatePresence mode="wait">
               {mode === AuthMode.SIGNUP && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
@@ -141,9 +99,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Admin Name</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <input 
+                    <input
                       {...register('name', { required: 'Name is required' })}
-                      type="text" 
+                      type="text"
                       placeholder="e.g. Gordon Ramsay"
                       className={`w-full pl-11 pr-4 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                     />
@@ -157,15 +115,12 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input 
-                  {...register('email', { 
+                <input
+                  {...register('email', {
                     required: 'Email is required',
-                    pattern: {
-                      value: /\S+@\S+\.\S+/,
-                      message: "Invalid email format"
-                    }
+                    pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email format' }
                   })}
-                  type="email" 
+                  type="email"
                   placeholder="admin@nexus-food.com"
                   className={`w-full pl-11 pr-4 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                 />
@@ -182,21 +137,21 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input 
-                  {...register('password', { 
+                <input
+                  {...register('password', {
                     required: 'Password is required',
                     minLength: { value: 8, message: 'Minimum 8 characters' },
                     pattern: {
                       value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                      message: "Must include Uppercase, Lowercase, Number & Special Character"
+                      message: 'Must include Uppercase, Lowercase, Number & Special Character'
                     }
                   })}
-                  type={showPassword ? 'text' : 'password'} 
+                  type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
                   className={`w-full pl-11 pr-12 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
@@ -206,8 +161,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               {errors.password && <p className="text-[10px] text-rose-500 font-bold ml-1">{(errors.password as any).message}</p>}
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               disabled={isSubmitting}
               className="w-full bg-primary hover:bg-orange-600 disabled:opacity-50 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest group active:scale-[0.98] mt-4"
             >
@@ -222,10 +177,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
             </button>
           </form>
 
-          <div className="mt-10 pt-8 border-t border-slate-50 dark:border-slate-800 text-center">
+          <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-              {mode === AuthMode.LOGIN ? "Don't have an account?" : "Already managing a kitchen?"}
-              <button 
+              {mode === AuthMode.LOGIN ? "Don't have an account?" : 'Already managing a kitchen?'}
+              <button
                 onClick={() => onSwitchMode(mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN)}
                 className="text-primary ml-2 hover:underline"
               >
@@ -235,6 +190,55 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
           </div>
         </motion.div>
       </div>
+
+      {/* =============================================
+          LEFT SIDE: IMAGE/BRANDING — Second in DOM.
+          Hidden on mobile (display:none), shown on
+          desktop via lg:flex. order-1 = shows on left.
+         ============================================= */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-900 order-2 lg:order-1">
+        <img
+          src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=2070&auto=format&fit=crop"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 scale-105 hover:scale-100 transition-transform duration-[10s]"
+          alt="Premium Food"
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-orange-600/40 to-slate-900/80"></div>
+
+        <div className="relative z-10 flex flex-col justify-between p-16 w-full text-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+              <UtensilsCrossed size={20} className="text-white" />
+            </div>
+            <span className="text-2xl font-black tracking-tighter">Nexus<span className="text-orange-400">Food</span></span>
+          </div>
+
+          <div className="max-w-md">
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-5xl font-black leading-tight mb-6"
+            >
+              Master your <span className="text-orange-400">Kitchen</span> Operations.
+            </motion.h2>
+            <p className="text-lg text-slate-300 font-medium mb-8 leading-relaxed">
+              Join thousands of restaurant owners managing orders, inventory, and staff with the most powerful CRM built for food professionals.
+            </p>
+            <div className="space-y-4">
+              {['Real-time order tracking', 'Advanced inventory forecasting', 'Seamless staff coordination'].map((text, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <CheckCircle2 size={18} className="text-orange-400" />
+                  <span className="text-sm font-bold text-slate-200">{text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-slate-400 text-xs font-bold uppercase tracking-widest">
+            © 2025 NexusFood Global Systems
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 };
