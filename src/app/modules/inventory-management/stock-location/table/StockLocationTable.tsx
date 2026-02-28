@@ -67,7 +67,7 @@ export const StockLocationTable: React.FC<StockLocationTableProps> = ({
         const categories = row.original.categoryName;
         const items = row.original.stockItems?.map(i => i.itemName).join(', ');
         return (
-          <span className="text-xs text-slate-500 max-w-[300px] inline-block break-words">
+          <span className="text-xs  text-slate-500 max-w-[500px] inline-block break-words">
             {categories || items || '-'}
           </span>
         );

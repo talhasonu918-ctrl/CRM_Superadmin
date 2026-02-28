@@ -59,7 +59,7 @@ type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer'
                 ) : null}
               </div>
             </div>
-            <span className={`text-sm font-medium ${theme.text.primary}`}>{item.title}</span>
+            <span className={`text-sm  font-medium ${theme.text.primary}`}>{item.title}</span>
           </div>
         );
       },
@@ -111,7 +111,7 @@ type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer'
                 <button
                   key={item.id}
                   onClick={() => setActiveView(item.id as ViewType)}
-                  className={`flex flex-col items-center justify-center p-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg border ${
+                  className={`flex flex-col  items-center justify-center p-8 rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-lg border ${
                     isDarkMode 
                       ? 'bg-[#16191F] border-slate-800 hover:border-primary/50 text-white' 
                       : 'bg-white border-slate-100 hover:border-primary/50 text-slate-900  shadow-sm'
@@ -129,7 +129,7 @@ type ViewType = 'dashboard' | 'stock-location' | 'stocks-grn' | 'stock-transfer'
                       ) : null}
                     </div>
                   </div>
-                  <span className="text-sm font-semibold text-center tracking-tight">{item.title}</span>
+                  <span className="text-[12px] sm:text-sm  font-semibold text-center tracking-tight">{item.title}</span>
                 </button>
               )}
             />

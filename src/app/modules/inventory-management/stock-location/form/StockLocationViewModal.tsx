@@ -42,18 +42,18 @@ export const StockLocationViewModal: React.FC<StockLocationViewModalProps> = ({
             size="lg"
             isDarkMode={isDarkMode}
         >
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 {/* Header Profile Section */}
-                <div className={`p-6 rounded-2xl border ${isDarkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'} flex items-center gap-5`}>
-                    <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <Building2 size={32} />
+                <div className={`p-4 sm:p-6 rounded-2xl border ${isDarkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'} flex items-center gap-3 sm:gap-5`}>
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary flex items-center justify-center text-white shadow-xl shadow-primary/20 transform -rotate-3 hover:rotate-0 transition-transform duration-300 shrink-0">
+                        <Building2 size={24} className="sm:w-8 sm:h-8" />
                     </div>
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-white text-slate-500 border border-slate-100'}`}>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                            <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-white text-slate-500 border border-slate-100'}`}>
                                 ID: {location.id}
                             </span>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1 ${location.status === 'Active'
+                            <span className={`text-[9px] sm:text-[10px] font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1 ${location.status === 'Active'
                                 ? 'bg-emerald-500/10 text-emerald-500'
                                 : 'bg-red-500/10 text-red-500'
                                 }`}>
@@ -61,20 +61,20 @@ export const StockLocationViewModal: React.FC<StockLocationViewModalProps> = ({
                                 {location.status}
                             </span>
                         </div>
-                        <h3 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{location.name}</h3>
-                        <p className="text-xs text-slate-500 flex items-center gap-1">
-                            <MapPin size={12} className="text-primary" /> {location.type} Location
+                        <h3 className={`text-base sm:text-lg md:text-xl font-bold truncate ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{location.name}</h3>
+                        <p className="text-[10px] sm:text-xs text-slate-500 flex items-center gap-1">
+                            <MapPin size={10} className="text-primary sm:w-3 sm:h-3" /> {location.type} Location
                         </p>
                     </div>
                 </div>
 
                 {/* Primary Info Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <DetailItem
                         icon={Building2}
                         label="Parent Location"
                         value={parentLocation ? (
-                            <div className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                                 <span className="text-primary font-bold">{parentLocation.name}</span>
                                 <span className="text-[10px] text-slate-400">({parentLocation.type})</span>
                             </div>
@@ -99,19 +99,19 @@ export const StockLocationViewModal: React.FC<StockLocationViewModalProps> = ({
                 </div>
 
                 {/* Categories / Items Section */}
-                <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                            <Boxes size={18} />
+                <div className={`p-4 sm:p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-900/40 border-slate-700/50' : 'bg-slate-50/50 border-slate-100'}`}>
+                    <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                        <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10 text-primary">
+                            <Boxes size={16} className="sm:w-[18px] sm:h-[18px]" />
                         </div>
-                        <h4 className={`text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Associated Categories & Items</h4>
+                        <h4 className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Associated Categories & Items</h4>
                     </div>
 
-                    <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-white border border-slate-50'} leading-relaxed text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <div className={`p-3 sm:p-4 rounded-xl ${isDarkMode ? 'bg-slate-800/50' : 'bg-white border border-slate-50'} leading-relaxed text-xs sm:text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                         {location.categoryName || (location.stockItems && location.stockItems.length > 0 ? (
                             <div className="flex flex-wrap gap-2">
                                 {location.stockItems.map((item, idx) => (
-                                    <span key={idx} className={`px-2 py-1 rounded-md text-[11px] font-medium ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
+                                    <span key={idx} className={`px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-medium ${isDarkMode ? 'bg-slate-700 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
                                         {item.itemName} ({item.quantity} {item.unit})
                                     </span>
                                 ))}
@@ -124,7 +124,7 @@ export const StockLocationViewModal: React.FC<StockLocationViewModalProps> = ({
                 <div className="flex items-center justify-end pt-4 border-t border-dashed border-slate-700/20">
                     <button
                         onClick={onClose}
-                        className="px-10 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
+                        className="w-full sm:w-auto px-10 py-3 bg-primary text-white rounded-xl font-bold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all"
                     >
                         Close View
                     </button>

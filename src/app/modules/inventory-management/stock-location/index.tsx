@@ -142,14 +142,13 @@ export const StockLocationView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMod
 
           <button
             onClick={handleAdd}
-            className="flex items-center justify-center gap-2 px-6 py-2 bg-primary text-white rounded-lg font-bold text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/10 active:scale-95 whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-4 py-1.5 sm:px-6 sm:py-2 bg-primary text-white rounded-lg font-semibold text-[11px] sm:text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/10 active:scale-95 whitespace-nowrap"
           >
             <Plus size={18} /> Add Stock Location
           </button>
         </div>
       </div>
-
-      {viewMode === 'list' ? (
+    {viewMode === 'list' ? (
         <StockLocationTable
           data={filteredLocations}
           isDarkMode={isDarkMode}

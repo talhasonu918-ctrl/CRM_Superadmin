@@ -198,27 +198,29 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
   return (
     <div className={`p-2 sm:p-3 min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-white'}`}>
       {/* Top Action Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 lg:mb-4">
-        <h2 className={`text-lg sm:text-3xl font-black ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2>
-        <div className="flex items-center justify-end gap-3 flex-wrap w-full md:w-auto">
-          <ExportButton
-            headers={exportHeaders}
-            data={exportData}
-            fileName="inventory-products"
-            isDarkMode={isDarkMode}
-            onlyExcel={true}
-          />
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 mb-4 lg:mb-4">
+        <h2 className={`text-2xl sm:text-3xl font-black ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2>
+        <div className="grid grid-cols-2 md:flex md:items-center md:justify-end gap-2 sm:gap-3 w-full xl:w-auto">
+          <div className="w-full md:w-auto">
+            <ExportButton
+              headers={exportHeaders}
+              data={exportData}
+              fileName="inventory-products"
+              isDarkMode={isDarkMode}
+              onlyExcel={true}
+            />
+          </div>
           <button
             onClick={() => setIsBulkModalOpen(true)}
-            className={primaryButtonClass}
+            className={`${primaryButtonClass} w-full justify-center text-[11px] sm:text-sm`}
           >
-            <RefreshCw size={16} /> Bulk Update
+            <RefreshCw size={16} className="shrink-0" /> Bulk Update
           </button>
           <button
             onClick={() => setIsImportModalOpen(true)}
-            className={primaryButtonClass}
+            className={`${primaryButtonClass} w-full justify-center text-[11px] sm:text-sm`}
           >
-            <Upload size={16} /> Import Product
+            <Upload size={16} className="shrink-0" /> Import Product
           </button>
           <button
             onClick={() => {
@@ -226,18 +228,17 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
               setEditingId(null);
               setIsModalOpen(true);
             }}
-            className={primaryButtonClass}
+            className={`${primaryButtonClass} w-full justify-center text-[11px] sm:text-sm`}
           >
-            <Plus size={16} /> Add Product
+            <Plus size={16} className="shrink-0" /> Add Product
           </button>
         </div>
       </div>
 
       {/* Main Header & Search */}
-      <div className={`p-4 rounded-xl border-2 flex flex-col md:flex-row items-center justify-between gap-4 mb-4 ${isDarkMode ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          {/* <h2 className={`text-xl font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Products</h2> */}
-          <div className="relative flex-1 md:w-64">
+      <div className={`p-3 md:p-4 rounded-xl border-2 flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 ${isDarkMode ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               type="text"
@@ -250,19 +251,19 @@ const InventoryProductsView: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode: 
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
-          <div className={`flex items-center p-1 rounded  ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white'}`}>
+        <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
+          <div className={`flex items-center p-1 rounded border-2 ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-100'}`}>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1 rounded transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-400'}`}
+              className={`p-1.5 rounded transition-all ${viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              <LayoutGrid size={16} />
+              <LayoutGrid size={18} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1 rounded transition-all ${viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-slate-400'}`}
+              className={`p-1.5 rounded transition-all ${viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
             >
-              <List size={16} />
+              <List size={18} />
             </button>
           </div>
         </div>

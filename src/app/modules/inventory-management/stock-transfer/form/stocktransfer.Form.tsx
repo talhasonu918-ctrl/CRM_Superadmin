@@ -108,7 +108,6 @@ export const StockTransferForm: React.FC<StockTransferFormProps> = ({
       const product = INITIAL_INVENTORY_PRODUCTS.find(p => p.id === row.productId);
       const uomConfig = product?.uomConfig?.find(u => u.uom === uomName);
       if (!uomConfig) return row;
-
       return {
         ...row,
         uom: uomConfig.uom,

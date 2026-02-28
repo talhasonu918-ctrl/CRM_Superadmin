@@ -366,35 +366,35 @@ export const InventoryProductForm: React.FC<InventoryProductFormProps> = ({
                   </div>
 
                   {/* Checkboxes Area */}
-                  <div className="col-span-full flex items-center gap-10 mt-4">
+                  <div className="col-span-full flex flex-wrap items-center gap-x-10 gap-y-4 mt-4">
                     <label className="flex items-center gap-2 cursor-pointer group">
-                      <div className={`w-4 h-4 rounded border flex  items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
-                        {currentProduct.showOnPos && <Check size={12} className="text-white" />}
+                      <div className={`w-4 h-4 rounded border flex shrink-0 items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
+                        {currentProduct.showOnPos && <Check size={12} className="text-white shrink-0" />}
                       </div>
                       <input type="checkbox" className="hidden" checked={currentProduct.showOnPos} onChange={e => setCurrentProduct({ ...currentProduct, showOnPos: e.target.checked })} />
                       <span className="text-xs font-medium text-slate-600">Show on Pos</span>
                     </label>
                     
                        <label className="flex items-center gap-2 cursor-pointer group">
-                      <div className={`w-4 h-4 rounded border flex  items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
-                        {currentProduct.showOnPos && <Check size={12} className="text-white" />}
+                      <div className={`w-4 h-4 rounded border flex shrink-0 items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
+                        {currentProduct.showOnPos && <Check size={12} className="text-white shrink-0" />}
                       </div>
                       <input type="checkbox" className="hidden" checked={currentProduct.showOnPos} onChange={e => setCurrentProduct({ ...currentProduct, showOnPos: e.target.checked })} />
-                      <span className="text-xs font-medium text-slate-600">Show on Web</span>
+                      <span className="text-xs font-medium text-slate-600 whitespace-nowrap">Show on Web</span>
                     </label>
                        <label className="flex items-center gap-2 cursor-pointer group">
-                      <div className={`w-4 h-4 rounded border flex  items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
-                        {currentProduct.showOnPos && <Check size={12} className="text-white" />}
+                      <div className={`w-4 h-4 rounded border flex shrink-0 items-center justify-center transition-all ${currentProduct.showOnPos ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
+                        {currentProduct.showOnPos && <Check size={12} className="text-white shrink-0" />}
                       </div>
                       <input type="checkbox" className="hidden" checked={currentProduct.showOnPos} onChange={e => setCurrentProduct({ ...currentProduct, showOnPos: e.target.checked })} />
-                      <span className="text-xs font-medium text-slate-600">Show on  Mobile</span>
+                      <span className="text-xs font-medium text-slate-600 whitespace-nowrap">Show on Mobile</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${currentProduct.isAutoReady ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
-                        {currentProduct.isAutoReady && <Check size={12} className="text-white" />}
+                    <label className="flex items-center gap-2 cursor-pointer group text-slate-600">
+                      <div className={`w-4 h-4 rounded-full border flex shrink-0 items-center justify-center transition-all ${currentProduct.isAutoReady ? 'bg-primary border-primary' : 'border-slate-400 group-hover:border-primary'}`}>
+                        <div className={`w-1.5 h-1.5 rounded-full bg-white transition-transform ${currentProduct.isAutoReady ? 'scale-100' : 'scale-0'}`} />
                       </div>
                       <input type="checkbox" className="hidden" checked={currentProduct.isAutoReady} onChange={e => setCurrentProduct({ ...currentProduct, isAutoReady: e.target.checked })} />
-                      <span className="text-xs font-medium text-slate-600">Is Auto Ready</span>
+                      <span className="text-xs font-medium">Is Auto Ready</span>
                     </label>
 
 
@@ -403,11 +403,11 @@ export const InventoryProductForm: React.FC<InventoryProductFormProps> = ({
               </div>
 
               {/* UOM Configuration */}
-              <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm shadow-black/[0.01]'} max-w-sm`}>
+              <div className={`p-5 rounded-2xl border ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm shadow-black/[0.01]'} w-full md:max-w-sm`}>
                 <h3 className="text-sm font-medium text-slate-900 mb-5">UOM Configuration</h3>
 
-                <div className="border border-primary rounded-xl overflow-hidden">
-                  <table className="w-full border-collapse">
+                <div className="border border-primary rounded-xl overflow-x-auto">
+                  <table className="w-full border-collapse min-w-[300px]">
                     <thead className="bg-[#F8F9FD]">
                       <tr className="border-b border-slate-100">
                         <th className="py-2.5 px-3 text-left text-[10px] font-medium uppercase text-slate-400">UOM</th>
@@ -557,16 +557,16 @@ export const InventoryProductForm: React.FC<InventoryProductFormProps> = ({
         </div>
 
         {/* Footer */}
-        <div className={`px-6 py-4 border-t ${isDarkMode ? 'border-slate-800' : 'border-slate-100'} flex items-center justify-end gap-3`}>
+        <div className={`px-4 sm:px-6 py-4 border-t ${isDarkMode ? 'border-slate-800' : 'border-slate-100'} flex flex-col-reverse sm:flex-row items-center justify-end gap-3`}>
           <button
             onClick={onClose}
-            className={`px-6 py-2 rounded-lg font-medium text-xs transition-all ${isDarkMode ? 'bg-slate-800 text-slate-400 hover:text-white' : 'bg-[#F8FAFC] border border-slate-200 text-slate-600 hover:bg-slate-100'}`}
+            className={`w-full sm:w-auto px-6 py-2 rounded-lg font-medium text-xs transition-all ${isDarkMode ? 'bg-slate-800 text-slate-400 hover:text-white' : 'bg-[#F8FAFC] border border-slate-200 text-slate-600 hover:bg-slate-100'}`}
           >
             Back
           </button>
           <button
             onClick={() => onSave(currentProduct)}
-            className="px-8 py-2 bg-primary text-white rounded-lg font-medium text-xs hover:bg-primary/90 shadow-sm active:scale-[0.98] transition-all"
+            className="w-full sm:w-auto px-8 py-2 bg-primary text-white rounded-lg font-medium text-xs hover:bg-primary/90 shadow-sm active:scale-[0.98] transition-all"
           >
             {activeTab === 'Summary'
               ? (editingId ? 'Update Product' : 'Create Product')

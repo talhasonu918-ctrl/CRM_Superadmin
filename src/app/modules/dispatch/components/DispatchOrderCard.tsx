@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, User, Phone, Printer, CheckCircle, ShoppingBag, CheckSquare, Square, Send, Star } from 'lucide-react';
 import { getThemeColors } from '../../../../theme/colors';
 import { DispatchOrder } from '../../pos/mockData';
@@ -28,10 +28,42 @@ export const DispatchOrderCard: React.FC<DispatchOrderCardProps> = ({
   const theme = getThemeColors(isDarkMode);
   const [isSelectingRider, setIsSelectingRider] = useState(false);
   const agingClassName = useAgingColor(order.readyTime);
+  const [timeLeft, setTimeLeft] = useState<number>(25 * 60); // 25 minutes in seconds
+
+  useEffect(() => {
+    // Calculate initial time left based on readyTime if it represents when the order was ready
+    // For a 25-minute countdown from readyTime:
+    const calculateTimeLeft = () => {
+      const now = Date.now();
+      const readyTime = order.readyTime;
+      const elapsedSeconds = Math.floor((now - readyTime) / 1000);
+      const remainingSeconds = Math.max(0, (25 * 60) - elapsedSeconds);
+      setTimeLeft(remainingSeconds);
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [order.readyTime]);
 
   const totalItemsCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
   const totalDealsCount = order.deals?.length || 0;
   const totalDisplayCount = totalItemsCount + totalDealsCount;
+
+  const formatCountdown = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}m left`;
+  };
+
+  const getTimeColor = (seconds: number) => {
+    const mins = seconds / 60;
+    if (mins > 15) return 'text-emerald-500 font-black'; // Green for > 15 mins
+    if (mins > 5) return 'text-amber-500 font-black animate-pulse'; // Yellow for 5-15 mins
+    if (seconds > 0) return 'text-rose-500 font-black animate-bounce'; // Red for < 5 mins
+    return 'text-red-700 font-black'; // Expired
+  };
 
   const formatReadyTime = (ms: number) => {
     const mins = Math.floor((Date.now() - ms) / 60000);
@@ -61,11 +93,14 @@ export const DispatchOrderCard: React.FC<DispatchOrderCardProps> = ({
         {isSelected ? <CheckSquare size={20} fill="currentColor" className="text-white bg-primary rounded" /> : <Square size={20} className="opacity-30 group-hover:opacity-100" />}
       </button>
 
-      {/* Aging Timer Indicator */}
+      {/* Aging Timer Indicator - Now with 25m Countdown & Color Transition */}
       <div className="absolute top-12 right-4 z-20 flex flex-col items-end">
-        <div className={`flex items-center gap-1 text-[10px] uppercase tracking-tighter ${agingClassName}`}>
-          <Clock size={10} />
-          {formatReadyTime(order.readyTime)}
+        <div className={`flex items-center gap-1 text-[11px] uppercase tracking-tight ${getTimeColor(timeLeft)}`}>
+          <Clock size={12} className={timeLeft <= 300 ? 'animate-spin-slow' : ''} />
+          {timeLeft > 0 ? formatCountdown(timeLeft) : 'OVERDUE'}
+        </div>
+        <div className={`text-[8px] font-bold opacity-40 ${agingClassName}`}>
+          Ready: {formatReadyTime(order.readyTime)}
         </div>
       </div>
 

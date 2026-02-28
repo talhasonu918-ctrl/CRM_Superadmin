@@ -129,23 +129,16 @@ export const StockAdjustmentView: React.FC<{ isDarkMode: boolean }> = ({ isDarkM
   return (
     <div className={`p-4 min-h-screen transition-all duration-300 ${isDarkMode ? 'bg-[#0f172a]' : 'bg-slate-50/50'}`}>
       {/* Top Action Bar */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <div>
-          <h2 className={`text-2xl font-black flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-            {/* <Settings2 className="text-primary" size={28} /> */}
-            Stock Adjustment
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="min-w-0">
+          <h2 className={`text-xl sm:text-2xl font-black flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+            <ClipboardList className="text-primary shrink-0" size={24} />
+            <span className="truncate">Stock Adjustment</span>
           </h2>
-          <p className="text-slate-500 text-sm font-medium mt-1">Manage manual inventory increases and decreases</p>
+          <p className="text-slate-500 text-xs sm:text-sm font-medium mt-1">Manage manual inventory increases and decreases</p>
         </div>
         
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="hidden md:flex flex-col items-end mr-4">
-            {/* <span className="text-[11px] font-black text-[#5e6e82] uppercase tracking-widest leading-none mb-1">DATE</span> */}
-            {/* <div className={`flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-[#0f172a]'}`}>
-              <span className="font-black text-lg leading-none">{new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
-              <Calendar size={18} className={`${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-            </div> */}
-          </div>
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
           <ExportButton
             headers={exportHeaders}
             data={exportData}
@@ -159,7 +152,7 @@ export const StockAdjustmentView: React.FC<{ isDarkMode: boolean }> = ({ isDarkM
               setEditingId(null);
               setIsModalOpen(true);
             }}
-            className="px-4 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 whitespace-nowrap"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-white rounded-xl font-bold text-sm shadow-lg shadow-primary/20 hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 whitespace-nowrap"
           >
             <Plus size={18} /> New Adjustment
           </button>
@@ -187,8 +180,8 @@ export const StockAdjustmentView: React.FC<{ isDarkMode: boolean }> = ({ isDarkM
 
       {/* Main Header & Search */}
       <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 mb-4 ${isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100 shadow-sm'}`}>
-        <div className="flex items-center gap-4 w-full md:w-auto">
-          <div className="relative flex-1 md:w-80">
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input
               type="text"
@@ -201,12 +194,12 @@ export const StockAdjustmentView: React.FC<{ isDarkMode: boolean }> = ({ isDarkM
             />
           </div>
           
-          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+          <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-full sm:w-auto">
             {(['All', 'Increase', 'Decrease'] as const).map(type => (
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
                   filterType === type 
                     ? 'bg-primary text-white shadow-sm' 
                     : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
@@ -219,18 +212,18 @@ export const StockAdjustmentView: React.FC<{ isDarkMode: boolean }> = ({ isDarkM
         </div>
 
         {/* View Mode Toggle */}
-        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shrink-0 w-full sm:w-auto">
           <button
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+            className={`flex-1 sm:flex-none p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
           >
-            <List size={18} />
+            <List size={20} />
           </button>
           <button
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+            className={`flex-1 sm:flex-none p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
           >
-            <LayoutGrid size={18} />
+            <LayoutGrid size={20} />
           </button>
         </div>
       </div>

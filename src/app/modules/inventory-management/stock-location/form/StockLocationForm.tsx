@@ -85,30 +85,30 @@ export const StockLocationForm: React.FC<StockLocationFormProps> = ({
       size="lg"
       isDarkMode={isDarkMode}
     >
-      <div className="space-y-8 ">
+      <div className="space-y-4 sm:space-y-6 md:space-y-8">
         {/* Decorative Header */}
-        <div className={`p-4 rounded-2xl border ${isDarkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'} flex items-center gap-4`}>
-          <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20">
-            <MapPin size={24} />
+        <div className={`p-3 sm:p-4 rounded-2xl border ${isDarkMode ? 'bg-primary/5 border-primary/10' : 'bg-primary/5 border-primary/10'} flex items-center gap-3 sm:gap-4`}>
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary flex items-center justify-center text-white shadow-lg shadow-primary/20 shrink-0">
+            <MapPin size={20} className="sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 className={`font-medium text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h4 className={`font-medium text-xs sm:text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
               Identity & Configuration
             </h4>
-            <p className="text-xs text-slate-500">
+            <p className="text-[10px] sm:text-xs text-slate-500">
               {parentLocationId ? 'Defining sub-location for existing point' : 'Define your stock point and its organizational type.'}
             </p>
           </div>
         </div>
 
-        <div className={`p-6 rounded-2xl border ${isDarkMode ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className={`p-4 sm:p-6 rounded-2xl border ${isDarkMode ? 'border-slate-800 bg-slate-900/40' : 'border-slate-100 bg-slate-50/50'}`}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Step 1: Select Existing Location (Optional) */}
             <div className="space-y-1 col-span-full">
               <label className={labelClass}>
                 <Layers size={12} /> Select Existing Location (Optional)
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex-1">
                   <SearchableDropdown
                     options={parentOptions}
@@ -121,7 +121,7 @@ export const StockLocationForm: React.FC<StockLocationFormProps> = ({
                 {parentLocationId && (
                   <button
                     onClick={() => setParentLocationId('')}
-                    className={`px-3 py-2 rounded-xl border text-xs font-semibold whitespace-nowrap active:scale-95 transition-all ${
+                    className={`w-full sm:w-auto px-3 py-2.5 sm:py-2 rounded-xl border text-xs font-semibold whitespace-nowrap active:scale-95 transition-all ${
                       isDarkMode 
                         ? 'bg-slate-800 border-slate-700 text-slate-400 hover:text-white' 
                         : 'bg-slate-100 border-slate-200 text-slate-600'
@@ -187,10 +187,10 @@ export const StockLocationForm: React.FC<StockLocationFormProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-dashed border-slate-700/20">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 border-t border-dashed border-slate-700/20">
           <button
             onClick={onClose}
-            className={`px-8 py-2.5 rounded-xl font-medium text-sm transition-all ${
+            className={`w-full sm:w-auto px-8 py-2.5 rounded-xl font-medium text-sm transition-all ${
               isDarkMode 
                 ? 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white' 
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -200,7 +200,7 @@ export const StockLocationForm: React.FC<StockLocationFormProps> = ({
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 md:flex-none px-10 py-2.5 bg-primary text-white rounded-xl  text-sm hover:bg-[#0070AC]/90 shadow-lg shadow-[#0070AC]/25 active:scale-[0.98] transition-all"
+            className="w-full sm:flex-1 md:flex-none px-10 py-2.5 bg-primary text-white rounded-xl text-sm hover:bg-[#0070AC]/90 shadow-lg shadow-[#0070AC]/25 active:scale-[0.98] transition-all"
           >
             {editingId ? "Update Location" : "Save Stock Location"}
           </button>

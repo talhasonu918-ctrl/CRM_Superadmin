@@ -85,16 +85,18 @@ export const GridView: React.FC<GridViewProps> = ({
     return (
         <div className="space-y-6">
             {title && (
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h2 className="text-xl sm:text-3xl font-medium tracking-tight whitespace-nowrap">{title}</h2>
-                        {subtitle && <p className="text-slate-400 text-sm font-medium">{subtitle}</p>}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="min-w-0">
+                        <h2 className={`text-xl sm:text-3xl font-medium tracking-tight break-words ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{title}</h2>
+                        {subtitle && <p className="text-slate-400 text-sm font-medium mt-1">{subtitle}</p>}
                     </div>
-                    <ViewToggle
-                        viewMode={viewMode}
-                        onViewModeChange={onViewModeChange}
-                        isDarkMode={isDarkMode}
-                    />
+                    <div className="flex-shrink-0">
+                        <ViewToggle
+                            viewMode={viewMode}
+                            onViewModeChange={onViewModeChange}
+                            isDarkMode={isDarkMode}
+                        />
+                    </div>
                 </div>
             )}
 
