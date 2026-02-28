@@ -9,17 +9,16 @@ export const tableStateManager = {
      * Get all tables with persisted status overrides
      */
     getTables(): Table[] {
-        const savedState = localStorage.getItem(STORAGE_KEY);
-        if (!savedState) return mockTables;
-
+        if (typeof window === 'undefined') return mockTables; // SSR guard
         try {
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            if (!savedState) return mockTables;
             const overrides = JSON.parse(savedState);
             return mockTables.map(table => ({
                 ...table,
                 status: overrides[table.id] || table.status
             }));
-        } catch (e) {
-            console.error('Error parsing table state:', e);
+        } catch {
             return mockTables;
         }
     },
@@ -28,20 +27,17 @@ export const tableStateManager = {
      * Update a specific table's status and notify listeners
      */
     updateStatus(tableId: string, status: 'available' | 'occupied' | 'reserved') {
-        const savedState = localStorage.getItem(STORAGE_KEY);
-        let overrides: Record<string, string> = {};
-
+        if (typeof window === 'undefined') return; // SSR guard
         try {
+            const savedState = localStorage.getItem(STORAGE_KEY);
+            let overrides: Record<string, string> = {};
             if (savedState) overrides = JSON.parse(savedState);
-        } catch (e) {
-            console.error('Error parsing table state for update:', e);
+            overrides[tableId] = status;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
+            window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { tableId, status } }));
+        } catch {
+            // Silently fail on iOS private mode
         }
-
-        overrides[tableId] = status;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(overrides));
-
-        // Dispatch custom event for cross-component sync
-        window.dispatchEvent(new CustomEvent(EVENT_NAME, { detail: { tableId, status } }));
     },
 
     /**
@@ -55,6 +51,7 @@ export const tableStateManager = {
      * Subscribe to status updates
      */
     subscribe(callback: (detail: { tableId: string, status: string }) => void) {
+        if (typeof window === 'undefined') return () => {}; // SSR guard
         const handler = (e: any) => callback(e.detail);
         window.addEventListener(EVENT_NAME, handler);
         return () => window.removeEventListener(EVENT_NAME, handler);

@@ -29,10 +29,12 @@ export const sendToKitchen = (order: Partial<KitchenOrder>) => {
   }
 
   // Dispatch custom event to notify Kitchen Display
-  const event = new CustomEvent('sendToKitchen', {
-    detail: kitchenOrder,
-  });
-  window.dispatchEvent(event);
+  if (typeof window !== 'undefined') {
+    const event = new CustomEvent('sendToKitchen', {
+      detail: kitchenOrder,
+    });
+    window.dispatchEvent(event);
+  }
 
   console.log('Order sent to kitchen:', kitchenOrder);
   return kitchenOrder;
