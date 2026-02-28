@@ -23,7 +23,7 @@ interface AppContentProps {
 }
 
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAppDispatch } from '../redux/store';
 import { checkAuth } from '../redux/authSlice';
 import { syncBrandingFromStorage, applyBrandColors } from '../redux/brandingSlice';
@@ -38,20 +38,28 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const currentRouter = useRouter();
   const dispatch = useAppDispatch();
+  const hydrationRef = useRef(false);
 
+  // Initialize auth only ONCE on mount to prevent infinite loading on iOS
   useEffect(() => {
-    // Client-side initialization only
-    if (typeof window !== 'undefined') {
-      dispatch(checkAuth());
-      dispatch(syncBrandingFromStorage());
-      dispatch(hydrateTheme());
+    if (typeof window !== 'undefined' && !hydrationRef.current) {
+      hydrationRef.current = true;
+      
+      // Sequential dispatch to prevent race conditions
+      Promise.resolve()
+        .then(() => dispatch(checkAuth()))
+        .then(() => dispatch(syncBrandingFromStorage()))
+        .then(() => dispatch(hydrateTheme()))
+        .catch((err) => console.error('Hydration error:', err));
     }
-  }, [dispatch]);
+  }, []); // Empty dependency array - runs only ONCE
 
   // Apply colors when config or dark mode changes
   useEffect(() => {
-    dispatch(applyBrandColors({ colors: config.colors, isDarkMode }));
-  }, [config.colors, isDarkMode, dispatch]);
+    if (config?.colors) {
+      dispatch(applyBrandColors({ colors: config.colors, isDarkMode }));
+    }
+  }, [config?.colors, isDarkMode, dispatch]);
 
   // Apply fonts
   useEffect(() => {
@@ -74,9 +82,6 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
 
   // Public routes that don't require authentication
   const publicRoutes = ['/auth'];
-
-  // Check if current route requires authentication
-  const requiresAuth = !publicRoutes.includes(currentRouter.pathname);
   // Redirect to dashboard if authenticated and trying to access auth page
   useEffect(() => {
     if (!loading) {
@@ -117,35 +122,10 @@ function MyApp({ Component, pageProps }: AppProps) {
             <BrandingProvider>
               <>
               <Head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                <script dangerouslySetInnerHTML={{
-                  __html: `
-                    window.tailwind = window.tailwind || {};
-                    window.tailwind.config = {
-                      darkMode: 'class',
-                      theme: {
-                        extend: {
-                          fontFamily: {
-                            sans: ['var(--font-tenant)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                          },
-                          colors: {
-                            primary: 'var(--color-primary)',
-                            secondary: 'var(--color-secondary)',
-                            accent: 'var(--color-accent)',
-                            background: 'var(--color-background)',
-                            surface: 'var(--color-surface)',
-                            textPrimary: 'var(--color-text-primary)',
-                            textSecondary: 'var(--color-text-secondary)',
-                            border: 'var(--color-border)',
-                            success: 'var(--color-success)',
-                            warning: 'var(--color-warning)',
-                            error: 'var(--color-error)',
-                          }
-                        }
-                      }
-                    }
-                  `
-                }} />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+                <meta name="apple-mobile-web-app-capable" content="yes" />
+                <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+                <meta name="format-detection" content="telephone=no" />
               </Head>
               <Toaster
                 position="top-right"
