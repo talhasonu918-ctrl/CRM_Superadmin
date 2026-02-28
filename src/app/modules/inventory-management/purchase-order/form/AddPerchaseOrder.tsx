@@ -244,7 +244,7 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
 
        
 
-        <div className="col-span-2">
+        {/* <div className="col-span-2">
           <label className={`block text-sm font-medium mb-2 ${theme.text.primary}`}>Upload File</label>
           <Controller
             name="fileUpload"
@@ -257,7 +257,7 @@ export const PurchaseOrderForm: React.FC<PurchaseOrderFormProps> = ({
               />
             )}
           />
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col sm:flex-row justify-end gap-4 mt-4">

@@ -56,6 +56,7 @@ interface GridViewProps {
     isDarkMode: boolean;
     viewMode: 'grid' | 'list';
     onViewModeChange: (mode: 'grid' | 'list') => void;
+    showHeaderToggle?: boolean;
     items: GridViewItem[];
     onItemClick?: (item: GridViewItem) => void;
     table?: any;
@@ -70,6 +71,7 @@ export const GridView: React.FC<GridViewProps> = ({
     isDarkMode,
     viewMode,
     onViewModeChange,
+    showHeaderToggle = true,
     items,
     onItemClick = () => {},
     table,
@@ -90,11 +92,13 @@ export const GridView: React.FC<GridViewProps> = ({
                         <h2 className="text-xl sm:text-3xl font-medium tracking-tight whitespace-nowrap">{title}</h2>
                         {subtitle && <p className="text-slate-400 text-sm font-medium">{subtitle}</p>}
                     </div>
-                    <ViewToggle
-                        viewMode={viewMode}
-                        onViewModeChange={onViewModeChange}
-                        isDarkMode={isDarkMode}
-                    />
+                            {showHeaderToggle && (
+                                <ViewToggle
+                                    viewMode={viewMode}
+                                    onViewModeChange={onViewModeChange}
+                                    isDarkMode={isDarkMode}
+                                />
+                            )}
                 </div>
             )}
 
