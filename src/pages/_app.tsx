@@ -1,35 +1,25 @@
-import { useAppSelector } from '../redux/store';
-import React from 'react';
+// ✅ All imports consolidated at top - fixes iOS Safari module order issue
+import React, { useEffect, useRef } from 'react';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { Provider } from 'react-redux';
-import { store } from '../redux/store';
-// import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
-// import { ThemeProvider } from '@/src/contexts/ThemeContext';
-// import { BrandingProvider, useBranding } from '@/src/contexts/BrandingContext';
-// import { CompanyProvider } from '@/src/contexts/CompanyContext';
+import { store, useAppSelector, useAppDispatch } from '../redux/store';
 import { OrderProvider } from '@/src/contexts/OrderContext';
 import { NotificationProvider } from '@/src/contexts/NotificationContext';
-import toast, { Toaster } from 'react-hot-toast';
-import '../styles/globals.css'; // Corrected path to src/styles/globals.css
-
+import { Toaster } from 'react-hot-toast';
+import '../styles/globals.css';
 import { tenantConfig } from '@/src/config/tenant-color';
-
-// Component that handles authentication routing
-interface AppContentProps {
-  Component: AppProps['Component'];
-  pageProps: AppProps['pageProps'];
-}
-
-
-import { useEffect, useRef } from 'react';
-import { useAppDispatch } from '../redux/store';
 import { checkAuth } from '../redux/authSlice';
 import { syncBrandingFromStorage, applyBrandColors } from '../redux/brandingSlice';
 import { hydrateTheme } from '../redux/themeSlice';
 import { ThemeProvider } from '@/src/contexts/ThemeContext';
 import { BrandingProvider } from '@/src/contexts/BrandingContext';
+
+interface AppContentProps {
+  Component: AppProps['Component'];
+  pageProps: AppProps['pageProps'];
+}
 
 const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -40,29 +30,35 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   const dispatch = useAppDispatch();
   const hydrationRef = useRef(false);
 
-  // Initialize auth only ONCE on mount to prevent infinite loading on iOS
+  // ✅ FIX 1: Initialize auth only ONCE - prevents iOS re-render loop
   useEffect(() => {
-    if (typeof window !== 'undefined' && !hydrationRef.current) {
+    if (!hydrationRef.current) {
       hydrationRef.current = true;
       dispatch(checkAuth());
       dispatch(syncBrandingFromStorage());
       dispatch(hydrateTheme());
     }
-  }, []); // Empty dependency array - runs only ONCE
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ✅ FIX 2: iOS/Safari fallback - if loading stuck after 3s, force checkAuth again
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      dispatch(checkAuth());
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply colors when config or dark mode changes
   useEffect(() => {
     if (config?.colors) {
       dispatch(applyBrandColors({ colors: config.colors, isDarkMode }));
     }
-  }, [config?.colors, isDarkMode, dispatch]);
+  }, [config?.colors, isDarkMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply fonts
   useEffect(() => {
-    if (typeof document !== 'undefined' && config.fonts?.primary) {
+    if (typeof document !== 'undefined' && config?.fonts?.primary) {
       document.documentElement.style.setProperty('--font-tenant', config.fonts.primary);
-
-      // Basic dynamic font loading (Google Fonts)
       const fontId = 'tenant-font-link';
       let link = document.getElementById(fontId) as HTMLLinkElement;
       if (!link) {
@@ -74,21 +70,23 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
       const fontName = config.fonts.primary.split(',')[0].replace(/['"]/g, '').replace(/ /g, '+');
       link.href = `https://fonts.googleapis.com/css2?family=${fontName}:wght@400;500;600;700&display=swap`;
     }
-  }, [config.fonts]);
+  }, [config?.fonts]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/auth'];
-  // Redirect to dashboard if authenticated and trying to access auth page
+  // ✅ FIX 3: Safe router redirect with localStorage try-catch (iOS private mode safe)
   useEffect(() => {
-    if (!loading) {
-      if (!isAuthenticated && currentRouter.pathname !== '/auth') {
-        if (typeof window !== 'undefined') currentRouter.replace('/auth');
-      } else if (isAuthenticated && currentRouter.pathname === '/auth') {
-        const lastCompany = typeof window !== 'undefined' ? localStorage.getItem('lastCompany') || tenantConfig.id : tenantConfig.id;
-        if (typeof window !== 'undefined') currentRouter.replace(`/${lastCompany}/dashboard`);
+    if (loading) return;
+    if (!isAuthenticated && currentRouter.pathname !== '/auth') {
+      currentRouter.replace('/auth');
+    } else if (isAuthenticated && currentRouter.pathname === '/auth') {
+      let lastCompany = tenantConfig.id;
+      try {
+        lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
+      } catch {
+        // iOS private browsing - use default tenant
       }
+      currentRouter.replace(`/${lastCompany}/dashboard`);
     }
-  }, [isAuthenticated, loading, currentRouter]);
+  }, [isAuthenticated, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Show loading spinner while checking authentication
   if (loading) {

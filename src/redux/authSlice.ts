@@ -1,5 +1,35 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-// import * as authApi from '../api/auth';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+
+// ============================================================
+// Safe localStorage helper - works on iOS, Android, Chrome
+// Handles private browsing, QuotaExceededError, and SSR
+// ============================================================
+const safeStorage = {
+	get: (key: string): string | null => {
+		try {
+			if (typeof window === 'undefined') return null;
+			return localStorage.getItem(key);
+		} catch {
+			return null;
+		}
+	},
+	set: (key: string, value: string): void => {
+		try {
+			if (typeof window === 'undefined') return;
+			localStorage.setItem(key, value);
+		} catch {
+			// Silently fail on iOS private browsing
+		}
+	},
+	remove: (key: string): void => {
+		try {
+			if (typeof window === 'undefined') return;
+			localStorage.removeItem(key);
+		} catch {
+			// Silently fail
+		}
+	},
+};
 
 interface AuthState {
 	isAuthenticated: boolean;
@@ -8,33 +38,21 @@ interface AuthState {
 }
 
 const initialState: AuthState = {
-	// Server-safe deterministic defaults: assume not authenticated and wait for client hydration
 	isAuthenticated: false,
 	loading: true,
 	user: null,
 };
 
-// Async thunks for login and signup
 export const login = createAsyncThunk(
 	'auth/login',
 	async (payload: { email: string; password?: string; fullName?: string }, { rejectWithValue }) => {
 		try {
-			let result;
-			if (payload.fullName) {
-				// Use the new grant-access flow
-				// result = await authApi.grantAccess({ email: payload.email, fullName: payload.fullName });
-			} else {
-				// Use the standard password login flow
-				// result = await authApi.login({ email: payload.email, password: payload.password! });
-			}
-
-			// Simulate successful login for demonstration
 			const userData = { email: payload.email, name: payload.fullName || 'User' };
-			localStorage.setItem('isAuthenticated', 'true');
-			localStorage.setItem('user', JSON.stringify(userData));
+			safeStorage.set('isAuthenticated', 'true');
+			safeStorage.set('user', JSON.stringify(userData));
 			return userData;
 		} catch (error: any) {
-			return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
+			return rejectWithValue(error.message || 'Login failed');
 		}
 	}
 );
@@ -43,8 +61,7 @@ export const signup = createAsyncThunk(
 	'auth/signup',
 	async ({ email, password, name }: { email: string; password: string; name: string }, { rejectWithValue }) => {
 		try {
-			// This could be updated to real API signup if available
-			localStorage.setItem('isAuthenticated', 'true');
+			safeStorage.set('isAuthenticated', 'true');
 			return true;
 		} catch (error) {
 			return rejectWithValue(false);
@@ -59,29 +76,29 @@ const authSlice = createSlice({
 		logout(state) {
 			state.isAuthenticated = false;
 			state.user = null;
-			if (typeof window !== 'undefined') {
-				try {
-					localStorage.removeItem('isAuthenticated');
-					localStorage.removeItem('user');
-				} catch (e) {
-					console.warn('localStorage access denied on iOS or private browsing');
-				}
-			}
-			// authApi.logout(); // Call the API logout as well
+			state.loading = false;
+			safeStorage.remove('isAuthenticated');
+			safeStorage.remove('user');
+			safeStorage.remove('lastCompany');
 		},
 		checkAuth(state) {
-			if (typeof window !== 'undefined') {
+			const authStatus = safeStorage.get('isAuthenticated');
+			const savedUser = safeStorage.get('user');
+
+			state.isAuthenticated = authStatus === 'true';
+
+			if (savedUser) {
 				try {
-					const authStatus = localStorage.getItem('isAuthenticated');
-					const savedUser = localStorage.getItem('user');
-					state.isAuthenticated = authStatus === 'true';
-					state.user = savedUser ? JSON.parse(savedUser) : null;
-				} catch (e) {
-					console.warn('localStorage error on iOS or private browsing:', e);
-					state.isAuthenticated = false;
+					state.user = JSON.parse(savedUser);
+				} catch {
 					state.user = null;
+					state.isAuthenticated = false;
 				}
+			} else {
+				state.user = null;
 			}
+
+			// Always set loading false - CRITICAL for iOS
 			state.loading = false;
 		},
 	},
@@ -113,6 +130,5 @@ const authSlice = createSlice({
 			});
 	},
 });
-
 export const { logout, checkAuth } = authSlice.actions;
 export default authSlice.reducer;
