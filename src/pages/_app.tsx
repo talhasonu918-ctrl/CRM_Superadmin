@@ -83,10 +83,11 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
   }, [isAuthenticated, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Show loading spinner while checking authentication
+  // NOTE: loading starts as false, so this only shows briefly during login action
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
+        {/* Show nothing while redirecting - prevents flash of spinner on iOS */}
       </div>
     );
   }
