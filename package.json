@@ -27,7 +27,7 @@
     "libphonenumber-js": "^1.12.36",
     "lottie-react": "^2.4.1",
     "lucide-react": "^0.563.0",
-    "next": "15.3.9",
+    "next": "^16.1.6",
     "quill": "^2.0.3",
     "react": "19.0.0",
     "react-datepicker": "^9.1.0",

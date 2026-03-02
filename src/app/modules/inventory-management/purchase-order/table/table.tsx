@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
-import { Search, Filter, Eye, Trash2 } from 'lucide-react';
+import { Search, Filter, Edit, Trash2 } from 'lucide-react';
 import { Select, Button } from 'rizzui';
 import { useForm, Controller } from 'react-hook-form';
 import { SearchInput } from '../../../../../components/SearchInput';
@@ -215,7 +215,7 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode }) => {
           isDarkMode={isDarkMode}
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
-          items={users.map(u => ({ id: String(u.id), name: u.productName, title: u.supplier, icon: () => <Eye size={18} />, original: u }))}
+          items={users.map(u => ({ id: String(u.id), name: u.productName, title: u.supplier, icon: () => <Edit size={18} />, original: u }))}
           renderCustomCard={(item) => {
             const r = item.original || item;
             const format = (v: any) => (v !== undefined && v !== null ? v : '—');
@@ -291,8 +291,8 @@ export const UserTable: React.FC<UserTableProps> = ({ isDarkMode }) => {
                   </div> */}
 
                   <div className="flex gap-2 pt-2">
-                    <button onClick={() => handleView(r)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isDarkMode ? 'bg-blue-900/30 text-blue-400 hover:bg-blue-900/50' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}>
-                      <Eye size={14} /> View
+                    <button onClick={() => handleEdit(r)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isDarkMode ? 'bg-orange-900/30 text-orange-400 hover:bg-orange-900/50' : 'bg-orange-100 text-orange-600 hover:bg-orange-200'}`}>
+                      <Edit size={14} /> Edit
                     </button>
                     <button onClick={() => handleDelete(r)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isDarkMode ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}>
                       <Trash2 size={14} /> Delete

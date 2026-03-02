@@ -5,6 +5,8 @@ import { ColumnToggle } from '../../../../../components/ColumnToggle';
 import { useInfiniteTable } from '../../../../../hooks/useInfiniteTable';
 import { getThemeColors } from '../../../../../theme/colors';
 import { SearchInput } from '../../../../../components/SearchInput';
+import { GridView, ViewToggle } from '../../../../../components/GridView';
+import { Eye, Trash2 } from 'lucide-react';
 import { ReusableModal } from '../../../../../components/ReusableModal';
 import { format } from "date-fns";
 import {useEffect} from "react";
@@ -64,7 +66,7 @@ const columns = (isDarkMode = false) => [
 
 const StockVarianceTable: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) => {
 	const theme = getThemeColors(isDarkMode);
-	const cardStyle = `rounded-xl shadow-sm p-6 ${theme.neutral.background}`;
+	const cardStyle = `rounded-xl shadow-sm  ${theme.neutral.background}`;
 	const inputStyle = `px-4 py-2.5 rounded-lg border text-sm outline-none transition-all ${theme.input.background} ${theme.border.input} ${theme.text.primary}`;
 
 	const { control, watch, setValue } = useForm({
@@ -105,6 +107,16 @@ const StockVarianceTable: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
 	});
 
 	const [rowsData, setRowsData] = useState<any[]>(() => generateSampleVariance(PAGE_SIZE));
+
+	const [viewMode, setViewMode] = useState<'grid'|'list'>('list');
+	const [isViewOpen, setIsViewOpen] = useState(false);
+	const [selectedRow, setSelectedRow] = useState<any>(null);
+
+	const handleView = (row: any) => { setSelectedRow(row); setIsViewOpen(true); };
+	const handleDelete = (row: any) => {
+		// remove row by id
+		setRowsData(prev => prev.filter(r => r.id !== row.id));
+	};
 
 	const { table, isLoading, hasNextPage, loadMore } = useInfiniteTable<any>({
 		columns: columns(isDarkMode),
@@ -172,8 +184,10 @@ const StockVarianceTable: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
 
 	return (
 		<div className={cardStyle}>
-			<div className="flex flex-wrap sm:flex-nowrap items-center gap-2 mb-6">
-  <button
+			<div className="flex  justify-between items-center gap-2 mb-6">
+
+ <div className="flex gap-2 ">
+        <button
     className={`
       flex-1 sm:flex-none
       text-xs sm:text-sm
@@ -215,6 +229,24 @@ const StockVarianceTable: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
   >
     Add All Product
   </button>
+ </div>
+
+  <div>
+      <button
+      className={`sm:px-6  px-2 sm:h-10 h-8 rounded-lg transition-colors ${theme.button.primary} hover:${theme.button.hover}`}
+      type="button"
+      onClick={() => {
+        setRowsData(
+          generateSampleVariance(PAGE_SIZE).filter((row) => {
+            const rowDate = new Date(row.date);
+            return rowDate >= new Date(fromDate) && rowDate <= new Date(toDate);
+          })
+        );
+      }}
+    >
+      Update
+	    </button>
+  </div>
 </div>
 			<ReusableModal
 				isOpen={isModalOpen}
@@ -236,79 +268,140 @@ const StockVarianceTable: React.FC<{ isDarkMode: boolean }> = ({ isDarkMode }) =
 						Save
 					</button>
 				</div>
+                
 			</ReusableModal>
 
-			<div className="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
-
-  <SearchInput
-    control={control}
-    placeholder="Search products..."
-    inputStyle={inputStyle}
-    isDarkMode={isDarkMode}
-  />
-
-  <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
-    <div className="flex flex-col w-full sm:w-auto">
-      <label className="text-xs text-gray-500 mb-1">From</label>
-      <Controller
-        name="fromDate"
-        control={control}
-        render={({ field }) => (
-          <input
-            type="date"
-            {...field}
-            className={`${inputStyle} h-10 w-full sm:w-auto`}
-            onChange={(e) => handleDateChange("fromDate", e.target.value)}
-          />
-        )}
-      />
+			{/* Controls: search, view-toggle, date range and update. Mobile-first stacking */}
+			<div className="flex flex-col sm:flex-row flex-nowrap sm:items-end gap-4 mb-6">
+			<div className="flex items-center gap-2 sm:gap-4 flex-nowrap w-full">
+    <div className="flex-1 min-w-0">
+        <SearchInput 
+            control={control} 
+            placeholder="Search products..." 
+            inputStyle={inputStyle} 
+            isDarkMode={isDarkMode} 
+        />
     </div>
-
-    <div className="flex flex-col w-full sm:w-auto">
-      <label className="text-xs text-gray-500 mb-1">To</label>
-      <Controller
-        name="toDate"
-        control={control}
-        render={({ field }) => (
-          <input
-            type="date"
-            {...field}
-            className={`${inputStyle} h-10 w-full sm:w-auto`}
-            onChange={(e) => handleDateChange("toDate", e.target.value)}
-          />
-        )}
-      />
-    </div>
-
-    <button
-      className={`sm:px-6 px-2 h-10 rounded-lg transition-colors ${theme.button.primary} hover:${theme.button.hover}`}
-      type="button"
-      onClick={() => {
-        setRowsData(
-          generateSampleVariance(PAGE_SIZE).filter((row) => {
-            const rowDate = new Date(row.date);
-            return rowDate >= new Date(fromDate) && rowDate <= new Date(toDate);
-          })
-        );
-      }}
-    >
-      Update
-    </button>
-  </div>
+    <ViewToggle 
+        viewMode={viewMode} 
+        onViewModeChange={(m) => setViewMode(m)} 
+        isDarkMode={isDarkMode} 
+    />
 </div>
+				<div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
+					<div className="flex flex-col w-full sm:w-auto">
+						<label className="text-xs text-gray-500 mb-1">From</label>
+						<Controller
+							name="fromDate"
+							control={control}
+							render={({ field }) => (
+								<input
+									type="date"
+									{...field}
+									className={`${inputStyle} h-10 w-full sm:w-auto`}
+									onChange={(e) => handleDateChange("fromDate", e.target.value)}
+								/>
+							)}
+						/>
+					</div>
 
-			<InfiniteTable
-				table={table}
-				isLoading={isLoading}
-				hasNextPage={hasNextPage}
-				onLoadMore={undefined}
-				itemName="stock variance rows"
-				emptyComponent={<div className={`text-center py-8 ${theme.text.tertiary}`}>No variance rows found</div>}
-				columnVisibility={columnVisibility}
-				rows={searchTerm ? filtered : undefined}
-				className="max-h-[600px]"
-				isDarkMode={isDarkMode}
-			/>
+					<div className="flex flex-col w-full sm:w-auto">
+						<label className="text-xs text-gray-500 mb-1">To</label>
+						<Controller
+							name="toDate"
+							control={control}
+							render={({ field }) => (
+								<input
+									type="date"
+									{...field}
+									className={`${inputStyle} h-10 w-full sm:w-auto`}
+									onChange={(e) => handleDateChange("toDate", e.target.value)}
+								/>
+							)}
+						/>
+					</div>
+
+					
+				</div>
+			</div>
+
+	
+
+		{viewMode === 'grid' ? (
+				<GridView
+					isDarkMode={isDarkMode}
+					viewMode={viewMode}
+					onViewModeChange={(m) => setViewMode(m)}
+					items={rowsData.map(u => ({ id: String(u.id), name: u.productName, title: u.uom, icon: () => <Eye size={18} />, original: u }))}
+					renderCustomCard={(item) => {
+						const r = item.original || item;
+						const format = (v: any) => (v !== undefined && v !== null ? v : '—');
+						return (
+							<div key={r.id} className={`rounded-xl border p-4 transition-all hover:shadow-md ${isDarkMode ? 'bg-slate-900 border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 hover:border-slate-300'}`}>
+								<div className="space-y-3">
+									<div className="flex items-start justify-between gap-2">
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Item ID</p>
+											<p className="text-sm font-bold text-primary">{r.id}</p>
+										</div>
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Date</p>
+											<p className="text-sm font-medium">{format(r.date)}</p>
+										</div>
+									</div>
+
+									<div className="grid grid-cols-3 gap-2">
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Product</p>
+											<p className="text-xs text-slate-500">{format(r.productName)}</p>
+										</div>
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>UOM</p>
+											<p className="text-xs text-slate-500">{format(r.uom)}</p>
+										</div>
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Available</p>
+											<p className="text-sm font-medium">{format(r.availableStock)}</p>
+										</div>
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Actual Closing</p>
+											<p className="text-sm font-medium">{format(r.actualClosing)}</p>
+										</div>
+										<div>
+											<p className={`text-xs font-semibold ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>Variance Qty</p>
+											<p className="text-sm font-medium">{format(r.varianceQty)}</p>
+										</div>
+									</div>
+
+									{/* <div className="flex gap-2 pt-2">
+										<button onClick={() => handleView(r)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isDarkMode ? 'bg-blue-900/30 text-blue-400 hover:bg-blue-900/50' : 'bg-blue-100 text-blue-600 hover:bg-blue-200'}`}>
+											<Eye size={14} /> View
+										</button>
+										<button onClick={() => handleDelete(r)} className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1 ${isDarkMode ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' : 'bg-red-100 text-red-600 hover:bg-red-200'}`}>
+											<Trash2 size={14} /> Delete
+										</button>
+									</div> */}
+								</div>
+							</div>
+						);
+					}}
+					gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+					showHeaderToggle={false}
+				/>
+			) : (
+				<InfiniteTable
+					table={table}
+					isLoading={isLoading}
+					hasNextPage={hasNextPage}
+					onLoadMore={undefined}
+					itemName="stock variance rows"
+					emptyComponent={<div className={`text-center py-8 ${theme.text.tertiary}`}>No variance rows found</div>}
+					columnVisibility={columnVisibility}
+					rows={searchTerm ? filtered : undefined}
+					className="max-h-[600px]"
+					isDarkMode={isDarkMode}
+				/>
+			)}
 		</div>
 	);
 };
