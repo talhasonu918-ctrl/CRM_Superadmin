@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, UtensilsCrossed, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { AuthMode } from '../../lib/types';
 import toast from 'react-hot-toast';
@@ -14,20 +13,41 @@ interface AuthViewProps {
 }
 
 export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSuccess, isDarkMode, toggleTheme }) => {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string }>({});
 
-  const onSubmit = async (data: any) => {
+  // Direct click handler — no form submit event, works reliably on iOS Safari
+  const handleSignIn = async () => {
+    // Validate
+    const newErrors: { email?: string; password?: string; name?: string } = {};
+    if (mode === AuthMode.SIGNUP && !name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim()) newErrors.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Invalid email format';
+    if (!password) newErrors.password = 'Password is required';
+    else if (password.length < 6) newErrors.password = 'Minimum 6 characters';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+    setIsSubmitting(true);
     try {
       if (mode === AuthMode.SIGNUP) {
         toast.success('Account created successfully!');
       } else {
         toast.success('Welcome back!');
       }
-      onSuccess(data);
+      await onSuccess({ email, password, name: name || undefined });
     } catch (error: any) {
       console.error('Auth Error:', error);
       toast.error('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -43,7 +63,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
       {/* Theme Toggle */}
       <div className="absolute top-4 right-4 lg:top-8 lg:right-8 z-50">
         <button
+          type="button"
           onClick={toggleTheme}
+          onTouchEnd={(e) => { e.preventDefault(); toggleTheme(); }}
           className={`w-10 h-10 lg:w-12 lg:h-12 rounded-2xl flex items-center justify-center transition-all shadow-sm ${
             isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-orange-400' : 'bg-slate-50 hover:bg-slate-100 text-slate-400'
           }`}
@@ -78,20 +100,22 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {/* ✅ No form onSubmit — direct button onClick for iOS Safari compatibility */}
+          <div className="space-y-5">
               {mode === AuthMode.SIGNUP && (
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Admin Name</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
-                      {...register('name', { required: 'Name is required' })}
                       type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. Gordon Ramsay"
                       className={`w-full pl-11 pr-4 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                     />
                   </div>
-                  {errors.name && <p className="text-[10px] text-rose-500 font-bold ml-1">{(errors.name as any).message}</p>}
+                  {errors.name && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.name}</p>}
                 </div>
               )}
 
@@ -100,16 +124,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
-                  {...register('email', {
-                    required: 'Email is required',
-                    pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email format' }
-                  })}
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
                   placeholder="admin@nexus-food.com"
                   className={`w-full pl-11 pr-4 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                 />
               </div>
-              {errors.email && <p className="text-[10px] text-rose-500 font-bold ml-1">{(errors.email as any).message}</p>}
+              {errors.email && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -122,11 +145,10 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
-                  {...register('password', {
-                    required: 'Password is required',
-                    minLength: { value: 6, message: 'Minimum 6 characters' },
-                  })}
                   type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete={mode === AuthMode.LOGIN ? 'current-password' : 'new-password'}
                   placeholder="••••••••"
                   className={`w-full pl-11 pr-12 py-3.5 rounded-xl border ${inputBorder} ${inputBg} outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all text-sm font-medium ${textColor}`}
                 />
@@ -138,12 +160,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.password && <p className="text-[10px] text-rose-500 font-bold ml-1">{(errors.password as any).message}</p>}
+              {errors.password && <p className="text-[10px] text-rose-500 font-bold ml-1">{errors.password}</p>}
             </div>
 
+            {/* ✅ onClick + onTouchEnd both wired — iOS Safari keyboard dismissal won't block this */}
             <button
-              type="submit"
+              type="button"
               disabled={isSubmitting}
+              onClick={handleSignIn}
+              onTouchEnd={(e) => { e.preventDefault(); if (!isSubmitting) handleSignIn(); }}
               className="w-full bg-primary hover:bg-orange-600 disabled:opacity-50 text-white font-black py-4 rounded-xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-widest group active:scale-[0.98] mt-4"
             >
               {isSubmitting ? (
@@ -155,13 +180,15 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 </>
               )}
             </button>
-          </form>
+          </div>
 
           <div className="mt-10 pt-8 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
               {mode === AuthMode.LOGIN ? "Don't have an account?" : 'Already managing a kitchen?'}
               <button
+                type="button"
                 onClick={() => onSwitchMode(mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN)}
+                onTouchEnd={(e) => { e.preventDefault(); onSwitchMode(mode === AuthMode.LOGIN ? AuthMode.SIGNUP : AuthMode.LOGIN); }}
                 className="text-primary ml-2 hover:underline"
               >
                 {mode === AuthMode.LOGIN ? 'Register Now' : 'Login Here'}

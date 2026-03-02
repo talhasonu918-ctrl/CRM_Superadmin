@@ -82,15 +82,8 @@ const AppContent: React.FC<AppContentProps> = ({ Component, pageProps }) => {
     }
   }, [isAuthenticated, loading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Show loading spinner while checking authentication
-  // NOTE: loading starts as false, so this only shows briefly during login action
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
-        {/* Show nothing while redirecting - prevents flash of spinner on iOS */}
-      </div>
-    );
-  }
+  // ✅ Never block render with loading state — it unmounts auth page on iOS during login.pending
+  // Redirect is handled both in auth.tsx handleAuthSuccess and the useEffect above.
 
   return (
     <>
