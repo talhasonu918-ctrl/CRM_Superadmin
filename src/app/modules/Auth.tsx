@@ -124,11 +124,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                 <input
                   {...register('password', {
                     required: 'Password is required',
-                    minLength: { value: 8, message: 'Minimum 8 characters' },
-                    pattern: {
-                      value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                      message: 'Must include Uppercase, Lowercase, Number & Special Character'
-                    }
+                    minLength: { value: 6, message: 'Minimum 6 characters' },
                   })}
                   type={showPassword ? 'text' : 'password'}
                   placeholder="••••••••"
