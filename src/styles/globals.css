@@ -45,6 +45,24 @@ body,
   font-family: var(--font-tenant), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* ============================================================
+   iOS Safari Touch Fixes
+   - touch-action: manipulation removes 300ms tap delay on iOS
+   - cursor: pointer makes div/span onClick work on iOS Safari
+   - overflow-x on body (NOT on divs) prevents iOS fixed-pos bug
+   ============================================================ */
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+/* Prevent horizontal scroll WITHOUT breaking fixed positioning on iOS */
+body {
+  overflow-x: hidden;
+}
+
 @layer utilities {
 
   /* Custom scrollbar styles */
