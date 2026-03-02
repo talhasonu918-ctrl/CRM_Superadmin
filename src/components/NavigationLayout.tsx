@@ -90,7 +90,7 @@ export function Layout({ children }: LayoutProps) {
     }
   };
   return (
-    <div className={`min-h-screen transition-colors duration-300 bg-background text-textPrimary`}>
+    <div className={`min-h-screen transition-colors duration-300 overflow-x-hidden bg-background text-textPrimary`}>
       {/* Top Header - Integrated with sidebar */}
       <div className="fixed top-0 left-0 right-0 h-16 flex items-center z-50">
         {/* Left Section - Orange background matching sidebar (Desktop) */}
@@ -170,7 +170,7 @@ export function Layout({ children }: LayoutProps) {
               {/* Notification Dropdown */}
               {isNotificationOpen && (
                 <>
-                  <div className="fixed inset-0 z-40 cursor-pointer" onClick={() => setIsNotificationOpen(false)} onTouchEnd={(e) => { e.preventDefault(); setIsNotificationOpen(false); }} />
+                  <div className="fixed inset-0 z-40" onClick={() => setIsNotificationOpen(false)} />
                   <div className="fixed md:absolute right-4 md:right-0 inset-x-4 md:inset-auto mt-2 md:w-96 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-border z-50 max-h-[80vh] md:max-h-96 overflow-y-auto">
                     <div className="p-4 border-b border-border sticky top-0 bg-white dark:bg-slate-800 z-10">
                       <div className="flex items-center justify-between">
@@ -298,7 +298,7 @@ export function Layout({ children }: LayoutProps) {
               {/* Branch Dropdown Menu */}
               {isBranchDropdownOpen && (
                 <>
-                  <div className="fixed inset-0 z-40 cursor-pointer" onClick={() => setIsBranchDropdownOpen(false)} onTouchEnd={(e) => { e.preventDefault(); setIsBranchDropdownOpen(false); }} />
+                  <div className="fixed inset-0 z-40" onClick={() => setIsBranchDropdownOpen(false)} />
                   <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-border z-50">
                     <div className="p-3 border-b border-border">
                       <h3 className="font-semibold text-sm text-slate-800 dark:text-white">Select Branch</h3>
@@ -348,11 +348,8 @@ export function Layout({ children }: LayoutProps) {
       {/* Overlay for mobile menu */}
       {isMobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity mt-16 cursor-pointer"
+          className="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity mt-16"
           onClick={closeMobileMenu}
-          onTouchEnd={(e) => { e.preventDefault(); closeMobileMenu(); }}
-          role="button"
-          aria-label="Close menu"
         />
       )}
 

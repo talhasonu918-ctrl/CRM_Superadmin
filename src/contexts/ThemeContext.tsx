@@ -50,7 +50,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       }
     } catch { /* silently fail on iOS */ }
   }, []);
-
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
@@ -67,6 +66,5 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     isDarkMode,
     toggleTheme,
   };
-
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+ return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

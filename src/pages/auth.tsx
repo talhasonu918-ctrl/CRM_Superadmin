@@ -14,9 +14,9 @@ const AuthPage: React.FC = () => {
   const isDarkMode = useAppSelector((state) => state.theme.isDarkMode);
   const router = useRouter();
 
-  // Fallback: if somehow isAuthenticated changes (e.g. page reload), also redirect
   useEffect(() => {
     if (isAuthenticated) {
+      // Use correct company-based routing
       let lastCompany = tenantConfig.id;
       try {
         lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
@@ -32,12 +32,8 @@ const AuthPage: React.FC = () => {
       } else {
         await dispatch(login({ email: data.email, fullName: data.name }));
       }
-      // Redirect immediately after dispatch resolves — don't rely solely on useEffect on iOS
-      let lastCompany = tenantConfig.id;
-      try {
-        lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
-      } catch { /* iOS private mode */ }
-      router.replace(`/${lastCompany}/dashboard`);
+      // ✅ DO NOT redirect here — useEffect watches isAuthenticated and redirects
+      // to /${lastCompany}/dashboard correctly. Dual router.push causes iOS nav crash.
     } catch (error) {
       console.error('Authentication failed:', error);
     }
@@ -47,10 +43,8 @@ const AuthPage: React.FC = () => {
     setMode(newMode);
   };
 
-  // Don't return null — let router.replace handle navigation
-  // Returning null causes unmount race condition on iOS before redirect fires
-  if (isAuthenticated && typeof window !== 'undefined' && !window.location.pathname.includes('/dashboard')) {
-    return null;
+  if (isAuthenticated) {
+    return null; // Will redirect
   }
 
   return (
