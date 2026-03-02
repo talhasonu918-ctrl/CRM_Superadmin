@@ -19,18 +19,14 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
 
   const onSubmit = async (data: any) => {
     try {
-      // Simulation delay
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
       if (mode === AuthMode.SIGNUP) {
         toast.success('Account created successfully!');
-        onSuccess(data);
       } else {
         toast.success('Welcome back!');
-        onSuccess(data);
       }
+      onSuccess(data);
     } catch (error: any) {
-      console.error('Simulated Auth Error:', error);
+      console.error('Auth Error:', error);
       toast.error('An error occurred. Please try again.');
     }
   };

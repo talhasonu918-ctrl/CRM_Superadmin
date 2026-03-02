@@ -5,6 +5,7 @@ import { AuthMode } from '@/src/lib/types';
 import { useAppSelector, useAppDispatch } from '@/src/redux/store';
 import { toggleTheme } from '@/src/redux/themeSlice';
 import { login, signup } from '@/src/redux/authSlice';
+import { tenantConfig } from '@/src/config/tenant-color';
 
 const AuthPage: React.FC = () => {
   const [mode, setMode] = useState<AuthMode>(AuthMode.LOGIN);
@@ -16,9 +17,9 @@ const AuthPage: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       // Use correct company-based routing
-      let lastCompany = 'main';
+      let lastCompany = tenantConfig.id;
       try {
-        lastCompany = localStorage.getItem('lastCompany') || 'main';
+        lastCompany = localStorage.getItem('lastCompany') || tenantConfig.id;
       } catch { /* iOS private mode */ }
       router.replace(`/${lastCompany}/dashboard`);
     }
@@ -26,16 +27,13 @@ const AuthPage: React.FC = () => {
 
   const handleAuthSuccess = async (data: { email: string; password: string; name?: string }) => {
     try {
-      let result;
       if (mode === AuthMode.LOGIN) {
-        result = await dispatch(login({ email: data.email, password: data.password }));
+        await dispatch(login({ email: data.email, password: data.password }));
       } else {
-        // Use the new grant-access flow for signup/admin creation
-        result = await dispatch(login({ email: data.email, fullName: data.name }));
+        await dispatch(login({ email: data.email, fullName: data.name }));
       }
-      if (result && result.meta && result.meta.requestStatus === 'fulfilled') {
-        router.push('/dashboard');
-      }
+      // ✅ DO NOT redirect here — useEffect watches isAuthenticated and redirects
+      // to /${lastCompany}/dashboard correctly. Dual router.push causes iOS nav crash.
     } catch (error) {
       console.error('Authentication failed:', error);
     }
