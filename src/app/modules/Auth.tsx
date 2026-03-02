@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, UtensilsCrossed, CheckCircle2, Moon, Sun } from 'lucide-react';
 import { AuthMode } from '../../lib/types';
 import toast from 'react-hot-toast';
@@ -71,11 +70,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
           <span className={`text-lg font-black tracking-tighter ${textColor}`}>NexusFood</span>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
+        <div className="w-full max-w-md">
           <div className="mb-10 text-center lg:text-left">
             <h1 className={`text-3xl font-extrabold tracking-tight mb-2 ${textColor}`}>
               {mode === AuthMode.LOGIN ? 'Sign In' : 'Get Started'}
@@ -88,14 +83,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <AnimatePresence mode="wait">
               {mode === AuthMode.SIGNUP && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="space-y-2"
-                >
+                <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Business Admin Name</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -107,9 +96,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
                     />
                   </div>
                   {errors.name && <p className="text-[10px] text-rose-500 font-bold ml-1">{(errors.name as any).message}</p>}
-                </motion.div>
+                </div>
               )}
-            </AnimatePresence>
 
             <div className="space-y-2">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
@@ -188,7 +176,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
               </button>
             </p>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* =============================================
@@ -213,13 +201,9 @@ export const AuthView: React.FC<AuthViewProps> = ({ mode, onSwitchMode, onSucces
           </div>
 
           <div className="max-w-md">
-            <motion.h2
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="text-5xl font-black leading-tight mb-6"
-            >
+            <h2 className="text-5xl font-black leading-tight mb-6">
               Master your <span className="text-orange-400">Kitchen</span> Operations.
-            </motion.h2>
+            </h2>
             <p className="text-lg text-slate-300 font-medium mb-8 leading-relaxed">
               Join thousands of restaurant owners managing orders, inventory, and staff with the most powerful CRM built for food professionals.
             </p>
